@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import { signUp } from "@/actions/auth";
 import { Zap } from "lucide-react";
 
 export default function SignupPage() {
@@ -21,19 +22,23 @@ export default function SignupPage() {
     setLoading(true);
     setError("");
 
-    const { error } = await supabase.auth.signUp({
+    // Create user via server action (admin API)
+    const result = await signUp({ email, password, firstName, lastName });
+
+    if (!result.success) {
+      setError(result.error || "Erreur lors de la création du compte");
+      setLoading(false);
+      return;
+    }
+
+    // Sign in the newly created user client-side
+    const { error: signInError } = await supabase.auth.signInWithPassword({
       email,
       password,
-      options: {
-        data: {
-          first_name: firstName,
-          last_name: lastName,
-        },
-      },
     });
 
-    if (error) {
-      setError(error.message);
+    if (signInError) {
+      setError("Compte créé mais connexion échouée. Essayez de vous connecter.");
       setLoading(false);
       return;
     }
