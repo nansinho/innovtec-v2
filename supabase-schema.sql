@@ -82,6 +82,8 @@ CREATE TABLE profiles (
   job_title TEXT DEFAULT '',
   phone TEXT DEFAULT '',
   avatar_url TEXT DEFAULT '',
+  date_of_birth DATE,
+  hire_date DATE,
   is_active BOOLEAN NOT NULL DEFAULT true,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -236,7 +238,47 @@ CREATE TABLE sse_indicators (
 );
 
 -- ==========================================
--- 4. TABLES RH
+-- 4. TABLES PROFIL UTILISATEUR
+-- ==========================================
+
+CREATE TABLE user_experiences (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  company TEXT NOT NULL,
+  job_title TEXT NOT NULL,
+  location TEXT DEFAULT '',
+  date_start DATE NOT NULL,
+  date_end DATE,
+  description TEXT DEFAULT '',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE user_diplomas (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  school TEXT NOT NULL,
+  year_obtained INTEGER,
+  description TEXT DEFAULT '',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE user_formations (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  organisme TEXT DEFAULT '',
+  date_obtained DATE,
+  expiry_date DATE,
+  description TEXT DEFAULT '',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- ==========================================
+-- 5. TABLES RH
 -- ==========================================
 
 CREATE TABLE formations (
@@ -286,6 +328,9 @@ CREATE INDEX idx_feed_posts_created ON feed_posts(created_at DESC);
 CREATE INDEX idx_danger_reports_status ON danger_reports(status);
 CREATE INDEX idx_conges_user ON conges(user_id, date_start);
 CREATE INDEX idx_documents_category ON documents(category, created_at DESC);
+CREATE INDEX idx_user_experiences_user ON user_experiences(user_id, date_start DESC);
+CREATE INDEX idx_user_diplomas_user ON user_diplomas(user_id, year_obtained DESC);
+CREATE INDEX idx_user_formations_user ON user_formations(user_id, date_obtained DESC);
 
 -- ==========================================
 -- 6. FONCTIONS UTILITAIRES
@@ -306,6 +351,9 @@ CREATE TRIGGER tr_todos_updated BEFORE UPDATE ON todos FOR EACH ROW EXECUTE FUNC
 CREATE TRIGGER tr_feed_posts_updated BEFORE UPDATE ON feed_posts FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 CREATE TRIGGER tr_danger_reports_updated BEFORE UPDATE ON danger_reports FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 CREATE TRIGGER tr_conges_updated BEFORE UPDATE ON conges FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+CREATE TRIGGER tr_user_experiences_updated BEFORE UPDATE ON user_experiences FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+CREATE TRIGGER tr_user_diplomas_updated BEFORE UPDATE ON user_diplomas FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+CREATE TRIGGER tr_user_formations_updated BEFORE UPDATE ON user_formations FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
 CREATE OR REPLACE FUNCTION handle_new_user()
 RETURNS TRIGGER AS $$
@@ -353,6 +401,9 @@ ALTER TABLE gallery_photos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE danger_reports ENABLE ROW LEVEL SECURITY;
 ALTER TABLE rex ENABLE ROW LEVEL SECURITY;
 ALTER TABLE sse_indicators ENABLE ROW LEVEL SECURITY;
+ALTER TABLE user_experiences ENABLE ROW LEVEL SECURITY;
+ALTER TABLE user_diplomas ENABLE ROW LEVEL SECURITY;
+ALTER TABLE user_formations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE formations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE formation_registrations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE conges ENABLE ROW LEVEL SECURITY;
@@ -438,6 +489,21 @@ CREATE POLICY "Authentifiés créent des REX" ON rex FOR INSERT WITH CHECK (auth
 -- SSE INDICATORS
 CREATE POLICY "Tout le monde voit les indicateurs SSE" ON sse_indicators FOR SELECT USING (true);
 CREATE POLICY "QSE/Admin gèrent les indicateurs" ON sse_indicators FOR ALL USING (is_admin_rh_or_qse());
+
+-- USER EXPERIENCES
+CREATE POLICY "Voir les expériences des profils actifs" ON user_experiences FOR SELECT USING (EXISTS (SELECT 1 FROM profiles WHERE id = user_id AND is_active = true));
+CREATE POLICY "Gérer ses expériences" ON user_experiences FOR ALL USING (user_id = auth.uid());
+CREATE POLICY "Admin/RH gèrent les expériences" ON user_experiences FOR ALL USING (is_admin_or_rh());
+
+-- USER DIPLOMAS
+CREATE POLICY "Voir les diplômes des profils actifs" ON user_diplomas FOR SELECT USING (EXISTS (SELECT 1 FROM profiles WHERE id = user_id AND is_active = true));
+CREATE POLICY "Gérer ses diplômes" ON user_diplomas FOR ALL USING (user_id = auth.uid());
+CREATE POLICY "Admin/RH gèrent les diplômes" ON user_diplomas FOR ALL USING (is_admin_or_rh());
+
+-- USER FORMATIONS (personal/external)
+CREATE POLICY "Voir les formations perso des profils actifs" ON user_formations FOR SELECT USING (EXISTS (SELECT 1 FROM profiles WHERE id = user_id AND is_active = true));
+CREATE POLICY "Gérer ses formations perso" ON user_formations FOR ALL USING (user_id = auth.uid());
+CREATE POLICY "Admin/RH gèrent les formations perso" ON user_formations FOR ALL USING (is_admin_or_rh());
 
 -- FORMATIONS
 CREATE POLICY "Tout le monde voit les formations" ON formations FOR SELECT USING (true);
