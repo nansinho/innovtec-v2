@@ -7,6 +7,7 @@ import {
   UserX,
   Shield,
 } from "lucide-react";
+import { toast } from "sonner";
 import { updateUserRole, toggleUserActive } from "@/actions/users";
 import type { Profile, UserRole } from "@/lib/types/database";
 
@@ -57,7 +58,12 @@ export default function UsersTable({ users, currentUserId }: UsersTableProps) {
 
   async function handleRoleChange(userId: string, role: UserRole) {
     setLoading(userId);
-    await updateUserRole(userId, role);
+    const result = await updateUserRole(userId, role);
+    if (result.success) {
+      toast.success("Rôle mis à jour");
+    } else {
+      toast.error(result.error || "Erreur lors du changement de rôle");
+    }
     setEditingRole(null);
     setLoading(null);
   }
@@ -73,13 +79,17 @@ export default function UsersTable({ users, currentUserId }: UsersTableProps) {
       return;
 
     setLoading(userId);
-    await toggleUserActive(userId, isActive);
+    const result = await toggleUserActive(userId, isActive);
+    if (result.success) {
+      toast.success(isActive ? "Utilisateur réactivé" : "Utilisateur désactivé");
+    } else {
+      toast.error(result.error || "Erreur lors de la modification");
+    }
     setLoading(null);
   }
 
   return (
     <div>
-      {/* Search */}
       <div className="relative mb-4">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-secondary)]" />
         <input
@@ -91,7 +101,6 @@ export default function UsersTable({ users, currentUserId }: UsersTableProps) {
         />
       </div>
 
-      {/* Table */}
       <div className="overflow-x-auto rounded-[var(--radius)] border border-[var(--border-1)]">
         <table className="w-full text-left text-sm">
           <thead className="border-b border-[var(--border-1)] bg-gray-50/80">
@@ -123,11 +132,10 @@ export default function UsersTable({ users, currentUserId }: UsersTableProps) {
               return (
                 <tr
                   key={user.id}
-                  className={`transition-colors hover:bg-gray-50/50 ${
+                  className={`transition-colors duration-150 hover:bg-gray-50/50 ${
                     !user.is_active ? "opacity-50" : ""
                   }`}
                 >
-                  {/* Name + email */}
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
                       <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--navy)] text-[10px] font-medium text-white">
@@ -149,12 +157,10 @@ export default function UsersTable({ users, currentUserId }: UsersTableProps) {
                     </div>
                   </td>
 
-                  {/* Job title */}
                   <td className="px-4 py-3 text-xs text-[var(--text-secondary)]">
                     {user.job_title || "—"}
                   </td>
 
-                  {/* Role */}
                   <td className="px-4 py-3">
                     {editingRole === user.id ? (
                       <select
@@ -176,7 +182,7 @@ export default function UsersTable({ users, currentUserId }: UsersTableProps) {
                       <button
                         onClick={() => !isMe && setEditingRole(user.id)}
                         disabled={isMe}
-                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium ${
+                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium transition-opacity duration-150 ${
                           roleBadgeColors[user.role] ?? "bg-gray-100 text-gray-700"
                         } ${isMe ? "cursor-default" : "cursor-pointer hover:opacity-80"}`}
                         title={isMe ? "Vous ne pouvez pas changer votre propre rôle" : "Cliquer pour modifier"}
@@ -186,7 +192,6 @@ export default function UsersTable({ users, currentUserId }: UsersTableProps) {
                     )}
                   </td>
 
-                  {/* Status */}
                   <td className="px-4 py-3">
                     <span
                       className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium ${
@@ -199,7 +204,6 @@ export default function UsersTable({ users, currentUserId }: UsersTableProps) {
                     </span>
                   </td>
 
-                  {/* Actions */}
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-1">
                       {!isMe && (
@@ -207,7 +211,7 @@ export default function UsersTable({ users, currentUserId }: UsersTableProps) {
                           <button
                             onClick={() => setEditingRole(user.id)}
                             disabled={loading === user.id}
-                            className="rounded p-1.5 text-[var(--text-secondary)] transition-colors hover:bg-gray-100"
+                            className="rounded p-1.5 text-[var(--text-secondary)] transition-colors duration-150 hover:bg-gray-100 disabled:opacity-50"
                             title="Changer le rôle"
                           >
                             <Shield className="h-3.5 w-3.5" />
@@ -217,7 +221,7 @@ export default function UsersTable({ users, currentUserId }: UsersTableProps) {
                               handleToggleActive(user.id, !user.is_active)
                             }
                             disabled={loading === user.id}
-                            className={`rounded p-1.5 transition-colors ${
+                            className={`rounded p-1.5 transition-colors duration-150 disabled:opacity-50 ${
                               user.is_active
                                 ? "text-red-400 hover:bg-red-50"
                                 : "text-green-500 hover:bg-green-50"

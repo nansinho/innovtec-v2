@@ -37,7 +37,7 @@ export default function DocumentsSection({
               href={doc.file_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex items-center justify-between rounded-[var(--radius-sm)] border border-[var(--border-1)] p-3 transition-colors hover:bg-gray-50"
+              className="group flex items-center justify-between rounded-[var(--radius-sm)] border border-[var(--border-1)] p-3 transition-colors duration-150 hover:bg-gray-50"
             >
               <div className="flex items-center gap-3">
                 <div className="flex h-8 w-8 items-center justify-center rounded bg-gray-100 text-[10px] font-medium uppercase text-[var(--text-secondary)]">
@@ -53,7 +53,7 @@ export default function DocumentsSection({
                   </div>
                 </div>
               </div>
-              <Download className="h-4 w-4 text-[var(--text-secondary)] opacity-0 transition-opacity group-hover:opacity-100" />
+              <Download className="h-4 w-4 text-[var(--text-secondary)] opacity-0 transition-opacity duration-150 group-hover:opacity-100" />
             </a>
           ))}
         </div>

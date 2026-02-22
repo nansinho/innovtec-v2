@@ -10,6 +10,7 @@ import {
   Save,
   MapPin,
 } from "lucide-react";
+import { toast } from "sonner";
 import { upsertExperience, deleteExperience } from "@/actions/profile";
 import type { UserExperience } from "@/lib/types/database";
 
@@ -45,18 +46,28 @@ export default function ExperiencesSection({
     if (!editing) return;
     setSaving(true);
 
-    await upsertExperience({
+    const result = await upsertExperience({
       ...editing,
       date_end: editing.date_end || null,
     });
 
+    if (result.success) {
+      toast.success(editing.id ? "Expérience mise à jour" : "Expérience ajoutée");
+      setEditing(null);
+    } else {
+      toast.error(result.error || "Erreur lors de l'enregistrement");
+    }
     setSaving(false);
-    setEditing(null);
   }
 
   async function handleDelete(id: string) {
     if (!confirm("Supprimer cette expérience ?")) return;
-    await deleteExperience(id);
+    const result = await deleteExperience(id);
+    if (result.success) {
+      toast.success("Expérience supprimée");
+    } else {
+      toast.error(result.error || "Erreur lors de la suppression");
+    }
   }
 
   function formatDate(dateStr: string) {
@@ -80,7 +91,7 @@ export default function ExperiencesSection({
         {!editing && (
           <button
             onClick={() => setEditing({ ...emptyForm })}
-            className="inline-flex items-center gap-1.5 rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-1.5 text-xs font-medium text-[var(--text-secondary)] transition-colors hover:bg-gray-50"
+            className="inline-flex items-center gap-1.5 rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-1.5 text-xs font-medium text-[var(--text-secondary)] transition-colors duration-150 hover:bg-gray-50"
           >
             <Plus className="h-3.5 w-3.5" />
             Ajouter
@@ -88,7 +99,6 @@ export default function ExperiencesSection({
         )}
       </div>
 
-      {/* Form */}
       {editing && (
         <form
           onSubmit={handleSubmit}
@@ -169,7 +179,7 @@ export default function ExperiencesSection({
             <button
               type="submit"
               disabled={saving}
-              className="inline-flex items-center gap-1.5 rounded-[var(--radius-xs)] bg-[var(--yellow)] px-3 py-1.5 text-xs font-medium text-[var(--navy)] hover:bg-[var(--yellow-hover)] disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 rounded-[var(--radius-xs)] bg-[var(--yellow)] px-3 py-1.5 text-xs font-medium text-[var(--navy)] transition-colors duration-150 hover:bg-[var(--yellow-hover)] disabled:opacity-50"
             >
               <Save className="h-3.5 w-3.5" />
               {saving ? "Enregistrement..." : "Enregistrer"}
@@ -177,7 +187,7 @@ export default function ExperiencesSection({
             <button
               type="button"
               onClick={() => setEditing(null)}
-              className="inline-flex items-center gap-1.5 rounded-[var(--radius-xs)] border border-[var(--border-1)] bg-white px-3 py-1.5 text-xs text-[var(--text-secondary)] hover:bg-gray-50"
+              className="inline-flex items-center gap-1.5 rounded-[var(--radius-xs)] border border-[var(--border-1)] bg-white px-3 py-1.5 text-xs text-[var(--text-secondary)] transition-colors duration-150 hover:bg-gray-50"
             >
               <X className="h-3.5 w-3.5" />
               Annuler
@@ -186,7 +196,6 @@ export default function ExperiencesSection({
         </form>
       )}
 
-      {/* List */}
       {experiences.length === 0 && !editing ? (
         <p className="text-xs text-[var(--text-secondary)]">
           Aucune expérience renseignée.
@@ -221,7 +230,7 @@ export default function ExperiencesSection({
                   </p>
                 )}
               </div>
-              <div className="ml-2 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+              <div className="ml-2 flex gap-1 opacity-0 transition-opacity duration-150 group-hover:opacity-100">
                 <button
                   onClick={() =>
                     setEditing({
@@ -234,13 +243,13 @@ export default function ExperiencesSection({
                       description: exp.description,
                     })
                   }
-                  className="rounded p-1 text-[var(--text-secondary)] hover:bg-gray-100"
+                  className="rounded p-1 text-[var(--text-secondary)] transition-colors duration-150 hover:bg-gray-100"
                 >
                   <Pencil className="h-3.5 w-3.5" />
                 </button>
                 <button
                   onClick={() => handleDelete(exp.id)}
-                  className="rounded p-1 text-red-400 hover:bg-red-50"
+                  className="rounded p-1 text-red-400 transition-colors duration-150 hover:bg-red-50"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>
