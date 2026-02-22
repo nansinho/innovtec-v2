@@ -6,7 +6,9 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { Zap } from "lucide-react";
 
-export default function LoginPage() {
+export default function SignupPage() {
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -19,13 +21,19 @@ export default function LoginPage() {
     setLoading(true);
     setError("");
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        data: {
+          first_name: firstName,
+          last_name: lastName,
+        },
+      },
     });
 
     if (error) {
-      setError("Email ou mot de passe incorrect");
+      setError(error.message);
       setLoading(false);
       return;
     }
@@ -51,13 +59,50 @@ export default function LoginPage() {
         </div>
 
         <h1 className="mb-1 text-center text-lg font-semibold text-[var(--heading)]">
-          Connexion
+          Créer un compte
         </h1>
         <p className="mb-6 text-center text-xs text-[var(--text-secondary)]">
-          Accédez à votre espace intranet
+          Inscrivez-vous pour accéder à l&apos;intranet
         </p>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label
+                htmlFor="firstName"
+                className="mb-1 block text-xs font-medium text-[var(--text-secondary)]"
+              >
+                Prénom
+              </label>
+              <input
+                id="firstName"
+                type="text"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                placeholder="Jean"
+                required
+                className="w-full rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="lastName"
+                className="mb-1 block text-xs font-medium text-[var(--text-secondary)]"
+              >
+                Nom
+              </label>
+              <input
+                id="lastName"
+                type="text"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                placeholder="Dupont"
+                required
+                className="w-full rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+              />
+            </div>
+          </div>
+
           <div>
             <label
               htmlFor="email"
@@ -90,6 +135,7 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               required
+              minLength={6}
               className="w-full rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
             />
           </div>
@@ -103,17 +149,17 @@ export default function LoginPage() {
             disabled={loading}
             className="w-full rounded-[var(--radius-sm)] bg-[var(--yellow)] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[var(--yellow-hover)] disabled:opacity-50"
           >
-            {loading ? "Connexion..." : "Se connecter"}
+            {loading ? "Création..." : "Créer mon compte"}
           </button>
         </form>
 
         <p className="mt-4 text-center text-xs text-[var(--text-secondary)]">
-          Pas encore de compte ?{" "}
+          Déjà un compte ?{" "}
           <Link
-            href="/signup"
+            href="/login"
             className="font-medium text-[var(--yellow)] hover:underline"
           >
-            Créer un compte
+            Se connecter
           </Link>
         </p>
       </div>
