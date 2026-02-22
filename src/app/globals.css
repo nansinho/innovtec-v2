@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+:root {
+  /* Brand */
+  --navy: #1a2d4e;
+  --yellow: #f5a623;
+  --yellow-hover: #ffb840;
+  --yellow-surface: rgba(245, 166, 35, 0.06);
+  --yellow-border: rgba(245, 166, 35, 0.16);
+
+  /* Backgrounds */
+  --bg: #f3f4f6;
+  --card: #ffffff;
+  --hover: #f8f9fb;
+
+  /* Borders */
+  --border-1: #e5e7eb;
+  --border-2: #d1d5db;
+
+  /* Text */
+  --heading: #1f2937;
+  --text: #4b5563;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
+
+  /* Status */
+  --red: #dc2626;
+  --red-surface: rgba(220, 38, 38, 0.06);
+  --green: #16a34a;
+  --green-surface: rgba(22, 163, 74, 0.06);
+  --blue: #2563eb;
+  --blue-surface: rgba(37, 99, 235, 0.06);
+  --purple: #7c3aed;
+  --purple-surface: rgba(124, 58, 237, 0.06);
+
+  /* Radii */
+  --radius: 14px;
+  --radius-sm: 10px;
+  --radius-xs: 6px;
+
+  /* Layout */
+  --sidebar-width: 236px;
+  --right-width: 320px;
+}
+
+@theme inline {
+  --color-background: var(--bg);
+  --color-foreground: var(--text);
+  --color-card: var(--card);
+  --color-navy: var(--navy);
+  --color-brand: var(--yellow);
+  --color-brand-hover: var(--yellow-hover);
+  --color-heading: var(--heading);
+  --color-muted: var(--text-muted);
+  --color-border: var(--border-1);
+  --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+  font-size: 13px;
+  -webkit-font-smoothing: antialiased;
+  font-weight: 400;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-1);
+  border-radius: 2px;
+}
