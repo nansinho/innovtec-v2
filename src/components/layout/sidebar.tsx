@@ -17,6 +17,8 @@ import {
   HelpCircle,
   Settings,
   LogOut,
+  Newspaper,
+  UserCog,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { signOut } from "@/actions/auth";
@@ -32,7 +34,7 @@ const roleLabels: Record<string, string> = {
 
 const mainNav = [
   { href: "/", label: "Tableau de bord", icon: LayoutGrid },
-  { href: "/actualites", label: "Actualités", icon: BookOpen, badge: "3" },
+  { href: "/actualites", label: "Actualités", icon: BookOpen },
 ];
 
 const qseNav = [
@@ -50,6 +52,12 @@ const equipeNav = [
 const ressourcesNav = [
   { href: "/documents", label: "Documents", icon: FileText },
   { href: "/galerie", label: "Galerie", icon: Image },
+];
+
+const adminNav = [
+  { href: "/admin/users", label: "Utilisateurs", icon: UserCog },
+  { href: "/admin/news", label: "Actualités", icon: Newspaper },
+  { href: "/admin/settings", label: "Paramètres", icon: Settings },
 ];
 
 interface NavItemProps {
@@ -116,6 +124,8 @@ export default function Sidebar({ profile }: SidebarProps) {
 
   const roleLabel = profile ? (roleLabels[profile.role] ?? profile.role) : "";
 
+  const isAdmin = profile && ["admin", "rh"].includes(profile.role);
+
   return (
     <aside className="fixed bottom-0 left-0 top-0 z-[100] hidden w-[var(--sidebar-width)] flex-col overflow-y-auto bg-[var(--navy)] text-white md:flex">
       {/* Logo */}
@@ -132,7 +142,15 @@ export default function Sidebar({ profile }: SidebarProps) {
       {/* Navigation */}
       <nav className="flex flex-1 flex-col gap-px px-2.5 py-3">
         {mainNav.map((item) => (
-          <NavItem key={item.href} {...item} isActive={pathname === item.href} />
+          <NavItem
+            key={item.href}
+            {...item}
+            isActive={
+              item.href === "/"
+                ? pathname === "/"
+                : pathname.startsWith(item.href)
+            }
+          />
         ))}
 
         <SectionLabel label="QSE" />
@@ -161,6 +179,20 @@ export default function Sidebar({ profile }: SidebarProps) {
             isActive={pathname.startsWith(item.href)}
           />
         ))}
+
+        {/* Admin section - only visible for admin/rh */}
+        {isAdmin && (
+          <>
+            <SectionLabel label="Administration" />
+            {adminNav.map((item) => (
+              <NavItem
+                key={item.href}
+                {...item}
+                isActive={pathname.startsWith(item.href)}
+              />
+            ))}
+          </>
+        )}
       </nav>
 
       {/* Bottom */}
@@ -171,13 +203,6 @@ export default function Sidebar({ profile }: SidebarProps) {
         >
           <HelpCircle className="h-[15px] w-[15px] opacity-35" />
           Support
-        </Link>
-        <Link
-          href="/admin/settings"
-          className="flex items-center gap-2.5 rounded-[var(--radius-xs)] px-2 py-2 text-[11.5px] text-white/30 transition-all hover:bg-white/[0.04] hover:text-white/55"
-        >
-          <Settings className="h-[15px] w-[15px] opacity-35" />
-          Paramètres
         </Link>
       </div>
 
