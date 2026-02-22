@@ -183,13 +183,19 @@ export default function Sidebar({ profile }: SidebarProps) {
 
       {/* User */}
       <div className="flex items-center gap-2.5 border-t border-white/[0.06] px-3.5 py-3.5">
-        <div className="flex h-[34px] w-[34px] items-center justify-center rounded-full bg-white/10 text-[11px] font-medium text-white/65">
+        <Link
+          href="/profil"
+          className="flex h-[34px] w-[34px] items-center justify-center rounded-full bg-white/10 text-[11px] font-medium text-white/65 transition-colors hover:bg-white/20"
+        >
           {initials}
-        </div>
+        </Link>
         <div className="flex-1">
-          <div className="text-[12.5px] font-medium text-white/80">
+          <Link
+            href="/profil"
+            className="block text-[12.5px] font-medium text-white/80 transition-colors hover:text-white"
+          >
             {displayName}
-          </div>
+          </Link>
           <div className="text-[10.5px] text-white/30">{roleLabel}</div>
         </div>
         <form action={signOut}>

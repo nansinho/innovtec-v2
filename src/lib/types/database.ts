@@ -49,6 +49,8 @@ export interface Profile {
   job_title: string;
   phone: string;
   avatar_url: string;
+  date_of_birth: string | null;
+  hire_date: string | null;
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -234,6 +236,46 @@ export interface Conge {
   reason: string;
   status: CongeStatus;
   approved_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+// ==========================================
+// PROFIL UTILISATEUR
+// ==========================================
+
+export interface UserExperience {
+  id: string;
+  user_id: string;
+  company: string;
+  job_title: string;
+  location: string;
+  date_start: string;
+  date_end: string | null;
+  description: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface UserDiploma {
+  id: string;
+  user_id: string;
+  title: string;
+  school: string;
+  year_obtained: number | null;
+  description: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface UserFormation {
+  id: string;
+  user_id: string;
+  title: string;
+  organisme: string;
+  date_obtained: string | null;
+  expiry_date: string | null;
+  description: string;
   created_at: string;
   updated_at: string;
 }
