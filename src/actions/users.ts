@@ -5,6 +5,67 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
 import type { Profile, UserRole } from "@/lib/types/database";
 
+/**
+ * If no admin user exists, promote the current user to admin.
+ * This solves the bootstrap problem where the first user is `technicien` by default.
+ */
+export async function ensureAdminExists(): Promise<{
+  promoted: boolean;
+  hasAdmin: boolean;
+}> {
+  const supabaseAdmin = createAdminClient();
+
+  // Check if any admin exists
+  const { data: admins } = await supabaseAdmin
+    .from("profiles")
+    .select("id")
+    .eq("role", "admin")
+    .eq("is_active", true)
+    .limit(1);
+
+  if (admins && admins.length > 0) {
+    return { promoted: false, hasAdmin: true };
+  }
+
+  // No admin exists — promote the current user
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { promoted: false, hasAdmin: false };
+
+  const { error } = await supabaseAdmin
+    .from("profiles")
+    .update({ role: "admin" })
+    .eq("id", user.id);
+
+  if (error) return { promoted: false, hasAdmin: false };
+
+  revalidatePath("/", "layout");
+  return { promoted: true, hasAdmin: true };
+}
+
+/**
+ * Self-promote to admin. Only allowed if NO admin exists in the system.
+ */
+export async function promoteToAdmin(): Promise<{
+  success: boolean;
+  error?: string;
+}> {
+  const result = await ensureAdminExists();
+  if (result.promoted) {
+    return { success: true };
+  }
+  if (result.hasAdmin) {
+    return {
+      success: false,
+      error: "Un administrateur existe déjà. Contactez-le pour changer votre rôle.",
+    };
+  }
+  return { success: false, error: "Erreur lors de la promotion" };
+}
+
 export async function getAllUsers(): Promise<Profile[]> {
   const supabase = await createClient();
   const { data } = await supabase

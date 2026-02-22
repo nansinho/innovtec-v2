@@ -301,6 +301,40 @@ export interface BirthdayWish {
 }
 
 // ==========================================
+// AI CREDITS
+// ==========================================
+
+export interface AiCredit {
+  id: string;
+  user_id: string;
+  credits_used: number;
+  credits_limit: number;
+  period: string;
+  created_at: string;
+  updated_at: string;
+}
+
+// ==========================================
+// QSE CONTENT
+// ==========================================
+
+export interface QseContentSection {
+  title: string;
+  content: string;
+}
+
+export interface QseContent {
+  id: string;
+  type: string;
+  title: string;
+  sections: QseContentSection[];
+  source_file_url: string;
+  updated_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+// ==========================================
 // PROFIL UTILISATEUR
 // ==========================================
 

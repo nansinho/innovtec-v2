@@ -8,6 +8,10 @@ import {
   EyeOff,
   Trash2,
   X,
+  Sparkles,
+  Loader2,
+  ToggleLeft,
+  ToggleRight,
 } from "lucide-react";
 import { cn, formatDate } from "@/lib/utils";
 import {
@@ -50,6 +54,12 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
   const [isPending, startTransition] = useTransition();
   const [loading, setLoading] = useState<string | null>(null);
 
+  // AI state
+  const [formMode, setFormMode] = useState<"ai" | "manual">("ai");
+  const [aiPrompt, setAiPrompt] = useState("");
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState("");
+
   // Form state
   const [form, setForm] = useState({
     title: "",
@@ -88,6 +98,41 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
         window.location.reload();
       }
     });
+  }
+
+  async function handleAiGenerate() {
+    if (!aiPrompt.trim()) return;
+    setAiLoading(true);
+    setAiError("");
+
+    try {
+      const res = await fetch("/api/ai/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: aiPrompt, type: "news" }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        setAiError(data.error || "Erreur IA");
+        return;
+      }
+
+      const result = data.result;
+      setForm({
+        ...form,
+        title: result.title || "",
+        excerpt: result.excerpt || "",
+        content: result.content || "",
+        category: result.category || "entreprise",
+        priority: result.priority || "normal",
+      });
+      setFormMode("manual");
+    } catch {
+      setAiError("Erreur de connexion au serveur");
+    } finally {
+      setAiLoading(false);
+    }
   }
 
   function handleTogglePublish(newsId: string, publish: boolean) {
@@ -145,9 +190,54 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
       {/* Create form */}
       {showForm && (
         <div className="mb-6 rounded-[var(--radius)] border border-[var(--border-1)] bg-white p-5">
-          <h3 className="mb-4 text-sm font-semibold text-[var(--heading)]">
-            Créer une actualité
-          </h3>
+          <div className="mb-4 flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-[var(--heading)]">
+              Créer une actualité
+            </h3>
+            <button
+              onClick={() => setFormMode(formMode === "ai" ? "manual" : "ai")}
+              className="flex items-center gap-1.5 text-[11px] font-medium text-purple-600 transition-colors hover:text-purple-700"
+            >
+              {formMode === "ai" ? (
+                <ToggleRight className="h-4 w-4" />
+              ) : (
+                <ToggleLeft className="h-4 w-4" />
+              )}
+              {formMode === "ai" ? "Mode IA actif" : "Mode manuel"}
+            </button>
+          </div>
+
+          {/* AI Mode */}
+          {formMode === "ai" && (
+            <div className="mb-4 space-y-3 rounded-[var(--radius-sm)] border border-purple-200 bg-purple-50/30 p-4">
+              <p className="text-[12px] text-[var(--text-secondary)]">
+                Décrivez le sujet de l&apos;actualité et l&apos;IA générera le titre, l&apos;extrait, le contenu et suggérera la catégorie.
+              </p>
+              <textarea
+                value={aiPrompt}
+                onChange={(e) => setAiPrompt(e.target.value)}
+                placeholder="Ex: Nous avons remporté le marché de fibre optique de la ville de Nantes. Le chantier débutera en mars 2026 et durera 8 mois..."
+                rows={3}
+                className="w-full resize-none rounded-[var(--radius-xs)] border border-purple-200 bg-white px-3 py-2 text-[12.5px] text-[var(--heading)] outline-none placeholder:text-[var(--text-muted)] focus:border-purple-400"
+              />
+              <button
+                onClick={handleAiGenerate}
+                disabled={aiLoading || !aiPrompt.trim()}
+                className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-2 text-sm font-medium text-white transition-all hover:from-purple-700 hover:to-indigo-700 disabled:opacity-50"
+              >
+                {aiLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Sparkles className="h-4 w-4" />
+                )}
+                {aiLoading ? "Génération..." : "Générer l'actualité"}
+              </button>
+              {aiError && (
+                <p className="text-[12px] text-red-500">{aiError}</p>
+              )}
+            </div>
+          )}
+
           <div className="space-y-3">
             <div>
               <label className="mb-1 block text-[11px] font-medium text-[var(--text-secondary)]">
