@@ -32,19 +32,24 @@ export default function SignupPage() {
     }
 
     // Sign in the newly created user client-side
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    try {
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-    if (signInError) {
-      setError("Compte créé mais connexion échouée. Essayez de vous connecter.");
+      if (signInError) {
+        setError("Compte créé mais connexion échouée. Essayez de vous connecter.");
+        setLoading(false);
+        return;
+      }
+
+      router.push("/");
+      router.refresh();
+    } catch {
+      setError("Compte créé mais impossible de se connecter automatiquement. Essayez de vous connecter.");
       setLoading(false);
-      return;
     }
-
-    router.push("/");
-    router.refresh();
   }
 
   return (
