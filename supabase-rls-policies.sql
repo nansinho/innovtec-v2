@@ -1,13 +1,20 @@
 -- ==========================================
--- INNOVTEC Réseaux — RLS Policies Migration
+-- INNOVTEC Réseaux — RLS Policies (COMPLET)
 -- ==========================================
 -- Script idempotent : peut être exécuté plusieurs fois sans erreur.
--- À exécuter dans l'éditeur SQL de Supabase pour sécuriser toutes les tables.
+-- À exécuter dans l'éditeur SQL de Supabase pour sécuriser TOUTES les tables.
+--
+-- Corrige le lint Supabase : rls_disabled_in_public
+-- Tables concernées : profiles, news, events, event_participants, todos,
+-- documents, timebits, feed_posts, feed_likes, feed_comments, gallery_photos,
+-- danger_reports, rex, sse_indicators, formations, formation_registrations, conges
 -- ==========================================
 
+-- ==========================================
 -- 1. ENABLE RLS ON ALL TABLES
 -- ==========================================
 
+-- Tables principales
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE news ENABLE ROW LEVEL SECURITY;
 ALTER TABLE events ENABLE ROW LEVEL SECURITY;
@@ -26,6 +33,18 @@ ALTER TABLE formations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE formation_registrations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE conges ENABLE ROW LEVEL SECURITY;
 
+-- Tables profil enrichi
+ALTER TABLE user_experiences ENABLE ROW LEVEL SECURITY;
+ALTER TABLE user_diplomas ENABLE ROW LEVEL SECURITY;
+ALTER TABLE user_formations ENABLE ROW LEVEL SECURITY;
+
+-- Tables notifications / blog / anniversaires
+ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
+ALTER TABLE news_views ENABLE ROW LEVEL SECURITY;
+ALTER TABLE news_comments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE birthday_wishes ENABLE ROW LEVEL SECURITY;
+
+-- ==========================================
 -- 2. HELPER FUNCTIONS
 -- ==========================================
 
@@ -44,6 +63,7 @@ RETURNS BOOLEAN AS $$
   SELECT get_my_role() IN ('admin', 'rh', 'responsable_qse');
 $$ LANGUAGE sql STABLE SECURITY DEFINER;
 
+-- ==========================================
 -- 3. DROP EXISTING POLICIES (idempotent)
 -- ==========================================
 
@@ -114,6 +134,21 @@ DROP POLICY IF EXISTS "Authentifiés créent des REX" ON rex;
 DROP POLICY IF EXISTS "Tout le monde voit les indicateurs SSE" ON sse_indicators;
 DROP POLICY IF EXISTS "QSE/Admin gèrent les indicateurs" ON sse_indicators;
 
+-- USER EXPERIENCES
+DROP POLICY IF EXISTS "Voir les expériences des profils actifs" ON user_experiences;
+DROP POLICY IF EXISTS "Gérer ses expériences" ON user_experiences;
+DROP POLICY IF EXISTS "Admin/RH gèrent les expériences" ON user_experiences;
+
+-- USER DIPLOMAS
+DROP POLICY IF EXISTS "Voir les diplômes des profils actifs" ON user_diplomas;
+DROP POLICY IF EXISTS "Gérer ses diplômes" ON user_diplomas;
+DROP POLICY IF EXISTS "Admin/RH gèrent les diplômes" ON user_diplomas;
+
+-- USER FORMATIONS
+DROP POLICY IF EXISTS "Voir les formations perso des profils actifs" ON user_formations;
+DROP POLICY IF EXISTS "Gérer ses formations perso" ON user_formations;
+DROP POLICY IF EXISTS "Admin/RH gèrent les formations perso" ON user_formations;
+
 -- FORMATIONS
 DROP POLICY IF EXISTS "Tout le monde voit les formations" ON formations;
 DROP POLICY IF EXISTS "Admin/RH gèrent les formations" ON formations;
@@ -129,6 +164,25 @@ DROP POLICY IF EXISTS "Demander un congé" ON conges;
 DROP POLICY IF EXISTS "Modifier sa demande en attente" ON conges;
 DROP POLICY IF EXISTS "Admin/RH suppriment" ON conges;
 
+-- NOTIFICATIONS
+DROP POLICY IF EXISTS "Voir ses notifications" ON notifications;
+DROP POLICY IF EXISTS "Gérer ses notifications" ON notifications;
+DROP POLICY IF EXISTS "Admin crée des notifications" ON notifications;
+DROP POLICY IF EXISTS "Supprimer ses notifications" ON notifications;
+
+-- NEWS VIEWS
+DROP POLICY IF EXISTS "Voir les vues" ON news_views;
+DROP POLICY IF EXISTS "Enregistrer une vue" ON news_views;
+
+-- NEWS COMMENTS
+DROP POLICY IF EXISTS "Voir les commentaires news" ON news_comments;
+DROP POLICY IF EXISTS "Commenter une news" ON news_comments;
+DROP POLICY IF EXISTS "Supprimer son commentaire news" ON news_comments;
+
+-- BIRTHDAY WISHES
+DROP POLICY IF EXISTS "Voir les voeux" ON birthday_wishes;
+DROP POLICY IF EXISTS "Envoyer des voeux" ON birthday_wishes;
+
 -- STORAGE
 DROP POLICY IF EXISTS "Avatars publics" ON storage.objects;
 DROP POLICY IF EXISTS "Upload son avatar" ON storage.objects;
@@ -143,6 +197,7 @@ DROP POLICY IF EXISTS "Upload feed images" ON storage.objects;
 DROP POLICY IF EXISTS "Danger photos auth" ON storage.objects;
 DROP POLICY IF EXISTS "Upload danger photos" ON storage.objects;
 
+-- ==========================================
 -- 4. CREATE POLICIES
 -- ==========================================
 
@@ -179,7 +234,7 @@ CREATE POLICY "Admin supprime les documents" ON documents FOR DELETE USING (uplo
 CREATE POLICY "Chacun gère son pointage" ON timebits FOR ALL USING (user_id = auth.uid());
 CREATE POLICY "Admin/RH voient tous les pointages" ON timebits FOR SELECT USING (is_admin_or_rh());
 
--- FEED
+-- FEED POSTS
 CREATE POLICY "Tout le monde lit le feed" ON feed_posts FOR SELECT USING (true);
 CREATE POLICY "Authentifiés publient" ON feed_posts FOR INSERT WITH CHECK (author_id = auth.uid());
 CREATE POLICY "Auteur ou admin modifie" ON feed_posts FOR UPDATE USING (author_id = auth.uid() OR get_my_role() = 'admin');
@@ -213,6 +268,21 @@ CREATE POLICY "Authentifiés créent des REX" ON rex FOR INSERT WITH CHECK (auth
 CREATE POLICY "Tout le monde voit les indicateurs SSE" ON sse_indicators FOR SELECT USING (true);
 CREATE POLICY "QSE/Admin gèrent les indicateurs" ON sse_indicators FOR ALL USING (is_admin_rh_or_qse());
 
+-- USER EXPERIENCES
+CREATE POLICY "Voir les expériences des profils actifs" ON user_experiences FOR SELECT USING (EXISTS (SELECT 1 FROM profiles WHERE id = user_id AND is_active = true));
+CREATE POLICY "Gérer ses expériences" ON user_experiences FOR ALL USING (user_id = auth.uid());
+CREATE POLICY "Admin/RH gèrent les expériences" ON user_experiences FOR ALL USING (is_admin_or_rh());
+
+-- USER DIPLOMAS
+CREATE POLICY "Voir les diplômes des profils actifs" ON user_diplomas FOR SELECT USING (EXISTS (SELECT 1 FROM profiles WHERE id = user_id AND is_active = true));
+CREATE POLICY "Gérer ses diplômes" ON user_diplomas FOR ALL USING (user_id = auth.uid());
+CREATE POLICY "Admin/RH gèrent les diplômes" ON user_diplomas FOR ALL USING (is_admin_or_rh());
+
+-- USER FORMATIONS (personal/external)
+CREATE POLICY "Voir les formations perso des profils actifs" ON user_formations FOR SELECT USING (EXISTS (SELECT 1 FROM profiles WHERE id = user_id AND is_active = true));
+CREATE POLICY "Gérer ses formations perso" ON user_formations FOR ALL USING (user_id = auth.uid());
+CREATE POLICY "Admin/RH gèrent les formations perso" ON user_formations FOR ALL USING (is_admin_or_rh());
+
 -- FORMATIONS
 CREATE POLICY "Tout le monde voit les formations" ON formations FOR SELECT USING (true);
 CREATE POLICY "Admin/RH gèrent les formations" ON formations FOR ALL USING (is_admin_or_rh());
@@ -228,6 +298,26 @@ CREATE POLICY "Demander un congé" ON conges FOR INSERT WITH CHECK (user_id = au
 CREATE POLICY "Modifier sa demande en attente" ON conges FOR UPDATE USING ((user_id = auth.uid() AND status = 'en_attente') OR is_admin_or_rh());
 CREATE POLICY "Admin/RH suppriment" ON conges FOR DELETE USING (is_admin_or_rh());
 
+-- NOTIFICATIONS
+CREATE POLICY "Voir ses notifications" ON notifications FOR SELECT USING (user_id = auth.uid());
+CREATE POLICY "Gérer ses notifications" ON notifications FOR UPDATE USING (user_id = auth.uid());
+CREATE POLICY "Admin crée des notifications" ON notifications FOR INSERT WITH CHECK (auth.uid() IS NOT NULL);
+CREATE POLICY "Supprimer ses notifications" ON notifications FOR DELETE USING (user_id = auth.uid());
+
+-- NEWS VIEWS
+CREATE POLICY "Voir les vues" ON news_views FOR SELECT USING (true);
+CREATE POLICY "Enregistrer une vue" ON news_views FOR INSERT WITH CHECK (user_id = auth.uid());
+
+-- NEWS COMMENTS
+CREATE POLICY "Voir les commentaires news" ON news_comments FOR SELECT USING (true);
+CREATE POLICY "Commenter une news" ON news_comments FOR INSERT WITH CHECK (author_id = auth.uid());
+CREATE POLICY "Supprimer son commentaire news" ON news_comments FOR DELETE USING (author_id = auth.uid() OR (SELECT role FROM profiles WHERE id = auth.uid()) = 'admin');
+
+-- BIRTHDAY WISHES
+CREATE POLICY "Voir les voeux" ON birthday_wishes FOR SELECT USING (true);
+CREATE POLICY "Envoyer des voeux" ON birthday_wishes FOR INSERT WITH CHECK (from_user_id = auth.uid());
+
+-- ==========================================
 -- 5. STORAGE POLICIES
 -- ==========================================
 
