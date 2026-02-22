@@ -241,6 +241,66 @@ export interface Conge {
 }
 
 // ==========================================
+// NOTIFICATIONS
+// ==========================================
+
+export type NotificationType =
+  | "news"
+  | "event"
+  | "birthday"
+  | "comment"
+  | "conge"
+  | "danger"
+  | "formation"
+  | "system";
+
+export interface Notification {
+  id: string;
+  user_id: string;
+  type: NotificationType;
+  title: string;
+  message: string;
+  link: string;
+  is_read: boolean;
+  related_id: string | null;
+  created_at: string;
+}
+
+// ==========================================
+// NEWS VIEWS & COMMENTS
+// ==========================================
+
+export interface NewsView {
+  id: string;
+  news_id: string;
+  user_id: string;
+  viewed_at: string;
+}
+
+export interface NewsComment {
+  id: string;
+  news_id: string;
+  author_id: string;
+  content: string;
+  created_at: string;
+  author?: Profile;
+}
+
+// ==========================================
+// BIRTHDAY WISHES
+// ==========================================
+
+export interface BirthdayWish {
+  id: string;
+  from_user_id: string;
+  to_user_id: string;
+  message: string;
+  year: number;
+  created_at: string;
+  from_user?: Profile;
+}
+
+// ==========================================
 // PROFIL UTILISATEUR
 // ==========================================
 

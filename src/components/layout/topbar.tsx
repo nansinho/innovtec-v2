@@ -1,15 +1,21 @@
 "use client";
 
-import { Bell, MessageSquare, Settings, Search } from "lucide-react";
+import { useState } from "react";
+import { Bell, MessageSquare, Settings } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import type { Profile } from "@/lib/types/database";
+import NotificationSidebar from "@/components/notifications/notification-sidebar";
+import SearchBar from "@/components/search/search-bar";
 
 interface TopbarProps {
   profile: Profile | null;
+  unreadCount?: number;
 }
 
-export default function Topbar({ profile }: TopbarProps) {
+export default function Topbar({ profile, unreadCount = 0 }: TopbarProps) {
+  const [notifOpen, setNotifOpen] = useState(false);
+
   const today = new Date();
   const dateStr = format(today, "EEEE d MMMM, yyyy", { locale: fr });
   const dateFormatted = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
@@ -31,9 +37,16 @@ export default function Topbar({ profile }: TopbarProps) {
           </h1>
         </div>
         <div className="flex items-center gap-1.5">
-          <button className="relative flex h-[38px] w-[38px] items-center justify-center rounded-full border border-[var(--border-1)] bg-[var(--card)] text-[var(--text-secondary)] transition-colors hover:bg-[var(--hover)] hover:text-[var(--heading)]">
+          <button
+            onClick={() => setNotifOpen(true)}
+            className="relative flex h-[38px] w-[38px] items-center justify-center rounded-full border border-[var(--border-1)] bg-[var(--card)] text-[var(--text-secondary)] transition-colors hover:bg-[var(--hover)] hover:text-[var(--heading)]"
+          >
             <Bell className="h-[18px] w-[18px]" />
-            <div className="absolute right-0.5 top-0.5 h-2 w-2 rounded-full border-2 border-[var(--bg)] bg-[var(--yellow)]" />
+            {unreadCount > 0 && (
+              <div className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-[var(--yellow)] text-[8px] font-bold text-white">
+                {unreadCount > 9 ? "9+" : unreadCount}
+              </div>
+            )}
           </button>
           <button className="flex h-[38px] w-[38px] items-center justify-center rounded-full border border-[var(--border-1)] bg-[var(--card)] text-[var(--text-secondary)] transition-colors hover:bg-[var(--hover)] hover:text-[var(--heading)]">
             <MessageSquare className="h-[18px] w-[18px]" />
@@ -45,16 +58,13 @@ export default function Topbar({ profile }: TopbarProps) {
       </div>
 
       {/* Search bar */}
-      <div className="flex items-center gap-2.5 rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] px-4 py-2.5 transition-all focus-within:border-[var(--yellow)] focus-within:shadow-[0_0_0_3px_var(--yellow-surface)]">
-        <Search className="h-4 w-4 shrink-0 text-[var(--text-muted)]" />
-        <input
-          placeholder="Rechercher des fichiers, actualités, documents..."
-          className="w-full bg-transparent text-[13px] text-[var(--heading)] outline-none placeholder:text-[var(--text-muted)]"
-        />
-        <button className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-sm)] bg-[var(--yellow)] transition-colors hover:bg-[var(--yellow-hover)]">
-          <Search className="h-4 w-4 text-white" />
-        </button>
-      </div>
+      <SearchBar />
+
+      {/* Notification sidebar */}
+      <NotificationSidebar
+        isOpen={notifOpen}
+        onClose={() => setNotifOpen(false)}
+      />
     </div>
   );
 }
