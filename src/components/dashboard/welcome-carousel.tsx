@@ -3,6 +3,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
+import type { News } from "@/lib/types/database";
+import { getCarouselNews } from "@/actions/news";
 
 interface Slide {
   badge: string;
@@ -13,45 +15,60 @@ interface Slide {
   gradient: string;
 }
 
-const slides: Slide[] = [
+const fallbackSlides: Slide[] = [
   {
-    badge: "Urgent \u00b7 S\u00e9curit\u00e9",
-    title: "Mise \u00e0 jour du protocole EPI pour les chantiers enterr\u00e9s",
-    description:
-      "Nouvelles consignes obligatoires avant le 1er mars 2026. Consultez le document mis \u00e0 jour.",
-    cta: "Lire la suite",
-    image: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=500&q=80",
-    gradient: "from-[#F5A623] to-[#f0c060]",
-  },
-  {
-    badge: "Entreprise",
-    title: "Nouveau chantier fibre optique Marseille 8\u00e8me",
-    description:
-      "D\u00e9marrage en mars, 12 techniciens mobilis\u00e9s. R\u00e9union de lancement jeudi.",
-    cta: "En savoir plus",
-    image: "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=500&q=80",
+    badge: "Bienvenue",
+    title: "Bienvenue sur l\u2019intranet INNOVTEC R\u00e9seaux",
+    description: "Retrouvez toutes les informations de l\u2019entreprise, les actualit\u00e9s et vos outils au quotidien.",
+    cta: "D\u00e9couvrir",
+    image: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=500&q=80",
     gradient: "from-[var(--navy)] to-[#2a4a7a]",
-  },
-  {
-    badge: "Formation",
-    title: "Sessions MASE de mars \u2014 Inscriptions ouvertes",
-    description: "Places limit\u00e9es, inscrivez-vous avant le 28 f\u00e9vrier.",
-    cta: "S\u2019inscrire",
-    image: "https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=500&q=80",
-    gradient: "from-[#16a34a] to-[#22c55e]",
   },
 ];
 
+const categoryGradients: Record<string, string> = {
+  securite: "from-[#F5A623] to-[#f0c060]",
+  entreprise: "from-[var(--navy)] to-[#2a4a7a]",
+  formation: "from-[#16a34a] to-[#22c55e]",
+  chantier: "from-[#2563eb] to-[#3b82f6]",
+  social: "from-[#7c3aed] to-[#8b5cf6]",
+  rh: "from-[#ec4899] to-[#f472b6]",
+};
+
+function newsToSlide(news: News): Slide {
+  const badge = news.priority === "urgent"
+    ? `Urgent \u00b7 ${news.category}`
+    : news.category.charAt(0).toUpperCase() + news.category.slice(1);
+
+  return {
+    badge,
+    title: news.title,
+    description: news.excerpt || news.content.slice(0, 120),
+    cta: "Lire la suite",
+    image: news.image_url || "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=500&q=80",
+    gradient: categoryGradients[news.category] ?? categoryGradients.entreprise,
+  };
+}
+
 export default function WelcomeCarousel() {
+  const [slides, setSlides] = useState<Slide[]>(fallbackSlides);
   const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    getCarouselNews().then((news) => {
+      if (news.length > 0) {
+        setSlides(news.map((n) => newsToSlide(n as News)));
+      }
+    });
+  }, []);
 
   const next = useCallback(() => {
     setCurrent((c) => (c + 1) % slides.length);
-  }, []);
+  }, [slides.length]);
 
   const prev = useCallback(() => {
     setCurrent((c) => (c - 1 + slides.length) % slides.length);
-  }, []);
+  }, [slides.length]);
 
   useEffect(() => {
     const timer = setInterval(next, 6000);
@@ -103,20 +120,22 @@ export default function WelcomeCarousel() {
       </div>
 
       {/* Arrows */}
-      <div className="absolute bottom-5 right-5 z-[5] flex gap-1">
-        <button
-          onClick={prev}
-          className="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm transition-colors hover:bg-white/40"
-        >
-          <ChevronLeft className="h-3.5 w-3.5" />
-        </button>
-        <button
-          onClick={next}
-          className="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm transition-colors hover:bg-white/40"
-        >
-          <ChevronRight className="h-3.5 w-3.5" />
-        </button>
-      </div>
+      {slides.length > 1 && (
+        <div className="absolute bottom-5 right-5 z-[5] flex gap-1">
+          <button
+            onClick={prev}
+            className="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm transition-colors hover:bg-white/40"
+          >
+            <ChevronLeft className="h-3.5 w-3.5" />
+          </button>
+          <button
+            onClick={next}
+            className="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm transition-colors hover:bg-white/40"
+          >
+            <ChevronRight className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      )}
 
       {/* Dots */}
       <div className="absolute bottom-5 left-8 z-[5] flex gap-[5px]">

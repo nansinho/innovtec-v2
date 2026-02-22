@@ -2,20 +2,12 @@ import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { Card, CardHeader } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { getUpcomingEvents } from "@/actions/events";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
+import type { EventColor } from "@/lib/types/database";
 
-interface EventItem {
-  name: string;
-  date: string;
-  color: "yellow" | "blue" | "purple" | "green";
-}
-
-const events: EventItem[] = [
-  { name: "Réunion chantier Voltaire", date: "22 Fév 2026 · 9:15", color: "yellow" },
-  { name: "Formation sécurité — EPI", date: "24 Fév 2026 · 14:00", color: "blue" },
-  { name: "Audit QSE trimestriel", date: "28 Fév 2026 · 10:00", color: "purple" },
-];
-
-const colorMap = {
+const colorMap: Record<string, { bg: string; bar: string }> = {
   yellow: {
     bg: "bg-[rgba(245,166,35,0.04)]",
     bar: "bg-[var(--yellow)]",
@@ -32,9 +24,15 @@ const colorMap = {
     bg: "bg-[rgba(22,163,74,0.04)]",
     bar: "bg-[var(--green)]",
   },
+  red: {
+    bg: "bg-[rgba(239,68,68,0.04)]",
+    bar: "bg-[var(--red)]",
+  },
 };
 
-export default function EventsList() {
+export default async function EventsList() {
+  const events = await getUpcomingEvents();
+
   return (
     <Card>
       <CardHeader
@@ -49,30 +47,43 @@ export default function EventsList() {
         }
       />
       <div className="space-y-2 px-4 py-2">
-        {events.map((event) => (
-          <div
-            key={event.name}
-            className={cn(
-              "flex overflow-hidden rounded-[var(--radius-sm)] border border-[var(--border-1)]",
-              colorMap[event.color].bg
-            )}
-          >
-            <div className={cn("w-1 shrink-0", colorMap[event.color].bar)} />
-            <div className="flex flex-1 items-center justify-between px-3 py-2.5">
-              <div>
-                <div className="text-[12.5px] font-medium text-[var(--heading)]">
-                  {event.name}
-                </div>
-                <div className="text-[10.5px] text-[var(--text-muted)]">
-                  {event.date}
+        {events.length === 0 ? (
+          <div className="py-4 text-center text-[12px] text-[var(--text-muted)]">
+            Aucun événement à venir
+          </div>
+        ) : (
+          events.slice(0, 5).map((event) => {
+            const colors = colorMap[event.color] ?? colorMap.blue;
+            const dateStr = format(new Date(event.start_at), "d MMM yyyy · HH:mm", {
+              locale: fr,
+            });
+
+            return (
+              <div
+                key={event.id}
+                className={cn(
+                  "flex overflow-hidden rounded-[var(--radius-sm)] border border-[var(--border-1)]",
+                  colors.bg
+                )}
+              >
+                <div className={cn("w-1 shrink-0", colors.bar)} />
+                <div className="flex flex-1 items-center justify-between px-3 py-2.5">
+                  <div>
+                    <div className="text-[12.5px] font-medium text-[var(--heading)]">
+                      {event.title}
+                    </div>
+                    <div className="text-[10.5px] text-[var(--text-muted)]">
+                      {dateStr}
+                    </div>
+                  </div>
+                  <button className="px-2 py-2.5 text-sm text-[var(--text-muted)]">
+                    ···
+                  </button>
                 </div>
               </div>
-              <button className="px-2 py-2.5 text-sm text-[var(--text-muted)]">
-                ···
-              </button>
-            </div>
-          </div>
-        ))}
+            );
+          })
+        )}
       </div>
     </Card>
   );

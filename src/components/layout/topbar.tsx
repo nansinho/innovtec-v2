@@ -3,12 +3,20 @@
 import { Bell, MessageSquare, Settings, Search } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import type { Profile } from "@/lib/types/database";
 
-export default function Topbar() {
+interface TopbarProps {
+  profile: Profile | null;
+}
+
+export default function Topbar({ profile }: TopbarProps) {
   const today = new Date();
   const dateStr = format(today, "EEEE d MMMM, yyyy", { locale: fr });
-  // Capitalize first letter
   const dateFormatted = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
+
+  const displayName = profile
+    ? `${profile.first_name} ${profile.last_name}`.trim() || profile.email
+    : "Utilisateur";
 
   return (
     <div className="px-7 pt-6">
@@ -19,7 +27,7 @@ export default function Topbar() {
             {dateFormatted}
           </div>
           <h1 className="text-2xl font-medium tracking-tight text-[var(--heading)]">
-            Bonjour, <span>Jean Dupont</span> !
+            Bonjour, <span>{displayName}</span> !
           </h1>
         </div>
         <div className="flex items-center gap-1.5">
