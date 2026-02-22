@@ -19,6 +19,16 @@ import {
   LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { signOut } from "@/actions/auth";
+import type { Profile } from "@/lib/types/database";
+
+const roleLabels: Record<string, string> = {
+  admin: "Administrateur",
+  rh: "Ressources Humaines",
+  responsable_qse: "Responsable QSE",
+  chef_chantier: "Chef de chantier",
+  technicien: "Technicien",
+};
 
 const mainNav = [
   { href: "/", label: "Tableau de bord", icon: LayoutGrid },
@@ -89,8 +99,22 @@ function SectionLabel({ label }: { label: string }) {
   );
 }
 
-export default function Sidebar() {
+interface SidebarProps {
+  profile: Profile | null;
+}
+
+export default function Sidebar({ profile }: SidebarProps) {
   const pathname = usePathname();
+
+  const displayName = profile
+    ? `${profile.first_name} ${profile.last_name}`.trim() || profile.email
+    : "Utilisateur";
+
+  const initials = profile
+    ? `${profile.first_name?.[0] ?? ""}${profile.last_name?.[0] ?? ""}`.toUpperCase() || "?"
+    : "?";
+
+  const roleLabel = profile ? (roleLabels[profile.role] ?? profile.role) : "";
 
   return (
     <aside className="fixed bottom-0 left-0 top-0 z-[100] hidden w-[var(--sidebar-width)] flex-col overflow-y-auto bg-[var(--navy)] text-white md:flex">
@@ -160,17 +184,19 @@ export default function Sidebar() {
       {/* User */}
       <div className="flex items-center gap-2.5 border-t border-white/[0.06] px-3.5 py-3.5">
         <div className="flex h-[34px] w-[34px] items-center justify-center rounded-full bg-white/10 text-[11px] font-medium text-white/65">
-          JD
+          {initials}
         </div>
         <div className="flex-1">
           <div className="text-[12.5px] font-medium text-white/80">
-            Jean Dupont
+            {displayName}
           </div>
-          <div className="text-[10.5px] text-white/30">Chef de chantier</div>
+          <div className="text-[10.5px] text-white/30">{roleLabel}</div>
         </div>
-        <button className="text-white/20 hover:text-white/50">
-          <LogOut className="h-[15px] w-[15px]" />
-        </button>
+        <form action={signOut}>
+          <button type="submit" className="text-white/20 hover:text-white/50">
+            <LogOut className="h-[15px] w-[15px]" />
+          </button>
+        </form>
       </div>
     </aside>
   );
