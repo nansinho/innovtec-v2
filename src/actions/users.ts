@@ -7,11 +7,20 @@ import type { Profile, UserRole } from "@/lib/types/database";
 
 export async function getAllUsers(): Promise<Profile[]> {
   const supabase = await createClient();
-  const { data } = await supabase
+
+  console.log("[getAllUsers] Fetching all profiles");
+
+  const { data, error } = await supabase
     .from("profiles")
     .select("*")
     .order("last_name", { ascending: true });
 
+  if (error) {
+    console.error("[getAllUsers] Error:", error.message);
+    return [];
+  }
+
+  console.log("[getAllUsers] Found", data?.length ?? 0, "users");
   return (data as Profile[]) ?? [];
 }
 
@@ -21,11 +30,15 @@ export async function updateUserRole(
 ): Promise<{ success: boolean; error?: string }> {
   const supabase = await createClient();
 
-  // Verify caller is admin or rh
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { success: false, error: "Non authentifié" };
+  if (!user) {
+    console.error("[updateUserRole] Non authentifié");
+    return { success: false, error: "Non authentifié" };
+  }
+
+  console.log("[updateUserRole] caller:", user.id, "target:", userId, "newRole:", role);
 
   const { data: callerProfile } = await supabase
     .from("profiles")
@@ -34,6 +47,7 @@ export async function updateUserRole(
     .single();
 
   if (!callerProfile || !["admin", "rh"].includes(callerProfile.role)) {
+    console.error("[updateUserRole] Accès refusé, caller role:", callerProfile?.role);
     return { success: false, error: "Accès refusé" };
   }
 
@@ -43,8 +57,12 @@ export async function updateUserRole(
     .update({ role })
     .eq("id", userId);
 
-  if (error) return { success: false, error: error.message };
+  if (error) {
+    console.error("[updateUserRole] Error:", error.message);
+    return { success: false, error: error.message };
+  }
 
+  console.log("[updateUserRole] Success: user", userId, "→", role);
   revalidatePath("/admin/users");
   return { success: true };
 }
@@ -58,7 +76,12 @@ export async function toggleUserActive(
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { success: false, error: "Non authentifié" };
+  if (!user) {
+    console.error("[toggleUserActive] Non authentifié");
+    return { success: false, error: "Non authentifié" };
+  }
+
+  console.log("[toggleUserActive] caller:", user.id, "target:", userId, "isActive:", isActive);
 
   const { data: callerProfile } = await supabase
     .from("profiles")
@@ -67,11 +90,12 @@ export async function toggleUserActive(
     .single();
 
   if (!callerProfile || !["admin", "rh"].includes(callerProfile.role)) {
+    console.error("[toggleUserActive] Accès refusé, caller role:", callerProfile?.role);
     return { success: false, error: "Accès refusé" };
   }
 
-  // Prevent deactivating yourself
   if (userId === user.id) {
+    console.error("[toggleUserActive] Tentative d'auto-désactivation");
     return { success: false, error: "Vous ne pouvez pas vous désactiver vous-même" };
   }
 
@@ -81,8 +105,12 @@ export async function toggleUserActive(
     .update({ is_active: isActive })
     .eq("id", userId);
 
-  if (error) return { success: false, error: error.message };
+  if (error) {
+    console.error("[toggleUserActive] Error:", error.message);
+    return { success: false, error: error.message };
+  }
 
+  console.log("[toggleUserActive] Success: user", userId, "→ active:", isActive);
   revalidatePath("/admin/users");
   return { success: true };
 }

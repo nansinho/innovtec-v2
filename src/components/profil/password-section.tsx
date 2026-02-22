@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Lock, Save } from "lucide-react";
+import { toast } from "sonner";
 import { updatePassword } from "@/actions/profile";
 
 export default function PasswordSection() {
@@ -11,28 +12,17 @@ export default function PasswordSection() {
     confirmPassword: "",
   });
   const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState<{
-    type: "success" | "error";
-    text: string;
-  } | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setMessage(null);
 
     if (form.newPassword !== form.confirmPassword) {
-      setMessage({
-        type: "error",
-        text: "Les mots de passe ne correspondent pas",
-      });
+      toast.error("Les mots de passe ne correspondent pas");
       return;
     }
 
     if (form.newPassword.length < 6) {
-      setMessage({
-        type: "error",
-        text: "Le nouveau mot de passe doit contenir au moins 6 caractères",
-      });
+      toast.error("Le nouveau mot de passe doit contenir au moins 6 caractères");
       return;
     }
 
@@ -44,17 +34,13 @@ export default function PasswordSection() {
     });
 
     if (result.success) {
-      setMessage({ type: "success", text: "Mot de passe mis à jour" });
+      toast.success("Mot de passe mis à jour");
       setForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
     } else {
-      setMessage({
-        type: "error",
-        text: result.error || "Erreur lors de la mise à jour",
-      });
+      toast.error(result.error || "Erreur lors de la mise à jour");
     }
 
     setSaving(false);
-    setTimeout(() => setMessage(null), 4000);
   }
 
   return (
@@ -116,26 +102,15 @@ export default function PasswordSection() {
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div>
           <button
             type="submit"
             disabled={saving}
-            className="inline-flex items-center gap-2 rounded-[var(--radius-xs)] bg-[var(--yellow)] px-4 py-2 text-xs font-medium text-[var(--navy)] transition-colors hover:bg-[var(--yellow-hover)] disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-[var(--radius-xs)] bg-[var(--yellow)] px-4 py-2 text-xs font-medium text-[var(--navy)] transition-colors duration-150 hover:bg-[var(--yellow-hover)] disabled:opacity-50"
           >
             <Save className="h-3.5 w-3.5" />
             {saving ? "Modification..." : "Modifier le mot de passe"}
           </button>
-          {message && (
-            <span
-              className={`text-xs ${
-                message.type === "success"
-                  ? "text-green-600"
-                  : "text-red-500"
-              }`}
-            >
-              {message.text}
-            </span>
-          )}
         </div>
       </form>
     </section>

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { User, Save } from "lucide-react";
+import { toast } from "sonner";
 import { updateProfile } from "@/actions/profile";
 import type { Profile } from "@/lib/types/database";
 
@@ -61,28 +62,19 @@ export default function ProfileInfoSection({
     hire_date: profile.hire_date || "",
   });
   const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState<{
-    type: "success" | "error";
-    text: string;
-  } | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
-    setMessage(null);
 
     const result = await updateProfile(form);
 
     if (result.success) {
-      setMessage({ type: "success", text: "Profil mis à jour" });
+      toast.success("Profil mis à jour");
     } else {
-      setMessage({
-        type: "error",
-        text: result.error || "Erreur lors de la mise à jour",
-      });
+      toast.error(result.error || "Erreur lors de la mise à jour");
     }
     setSaving(false);
-    setTimeout(() => setMessage(null), 3000);
   }
 
   return (
@@ -237,26 +229,15 @@ export default function ProfileInfoSection({
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div>
           <button
             type="submit"
             disabled={saving}
-            className="inline-flex items-center gap-2 rounded-[var(--radius-xs)] bg-[var(--yellow)] px-4 py-2 text-xs font-medium text-[var(--navy)] transition-colors hover:bg-[var(--yellow-hover)] disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-[var(--radius-xs)] bg-[var(--yellow)] px-4 py-2 text-xs font-medium text-[var(--navy)] transition-colors duration-150 hover:bg-[var(--yellow-hover)] disabled:opacity-50"
           >
             <Save className="h-3.5 w-3.5" />
             {saving ? "Enregistrement..." : "Enregistrer"}
           </button>
-          {message && (
-            <span
-              className={`text-xs ${
-                message.type === "success"
-                  ? "text-green-600"
-                  : "text-red-500"
-              }`}
-            >
-              {message.text}
-            </span>
-          )}
         </div>
       </form>
     </section>

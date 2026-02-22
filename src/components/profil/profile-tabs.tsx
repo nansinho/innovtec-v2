@@ -48,7 +48,6 @@ export default function ProfileTabs({
 
   return (
     <div>
-      {/* Tab bar */}
       <div className="mb-6 flex gap-1 overflow-x-auto rounded-[var(--radius)] border border-[var(--border-1)] bg-gray-50/80 p-1">
         {tabs.map((tab) => {
           const Icon = tab.icon;
@@ -58,7 +57,7 @@ export default function ProfileTabs({
               key={tab.id}
               onClick={() => setActive(tab.id)}
               className={cn(
-                "flex shrink-0 items-center gap-2 rounded-[var(--radius-sm)] px-3.5 py-2 text-xs font-medium transition-all",
+                "flex shrink-0 items-center gap-2 rounded-[var(--radius-sm)] px-3.5 py-2 text-xs font-medium transition-colors duration-150",
                 isActive
                   ? "bg-white text-[var(--heading)] shadow-sm"
                   : "text-[var(--text-secondary)] hover:bg-white/60 hover:text-[var(--heading)]"
@@ -71,7 +70,6 @@ export default function ProfileTabs({
         })}
       </div>
 
-      {/* Tab content */}
       {active === "info" && <ProfileInfoSection profile={profile} />}
       {active === "experiences" && <ExperiencesSection experiences={experiences} />}
       {active === "diplomas" && <DiplomasSection diplomas={diplomas} />}
