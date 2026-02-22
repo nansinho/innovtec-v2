@@ -53,34 +53,56 @@ CREATE INDEX IF NOT EXISTS idx_user_experiences_user ON user_experiences(user_id
 CREATE INDEX IF NOT EXISTS idx_user_diplomas_user ON user_diplomas(user_id, year_obtained DESC);
 CREATE INDEX IF NOT EXISTS idx_user_formations_user ON user_formations(user_id, date_obtained DESC);
 
--- 6. Triggers updated_at
-CREATE TRIGGER tr_user_experiences_updated BEFORE UPDATE ON user_experiences FOR EACH ROW EXECUTE FUNCTION update_updated_at();
-CREATE TRIGGER tr_user_diplomas_updated BEFORE UPDATE ON user_diplomas FOR EACH ROW EXECUTE FUNCTION update_updated_at();
-CREATE TRIGGER tr_user_formations_updated BEFORE UPDATE ON user_formations FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+-- 6. Triggers updated_at (idempotent)
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'tr_user_experiences_updated') THEN
+    CREATE TRIGGER tr_user_experiences_updated BEFORE UPDATE ON user_experiences FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'tr_user_diplomas_updated') THEN
+    CREATE TRIGGER tr_user_diplomas_updated BEFORE UPDATE ON user_diplomas FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'tr_user_formations_updated') THEN
+    CREATE TRIGGER tr_user_formations_updated BEFORE UPDATE ON user_formations FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+  END IF;
+END $$;
 
 -- 7. RLS
 ALTER TABLE user_experiences ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_diplomas ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_formations ENABLE ROW LEVEL SECURITY;
 
--- 8. Politiques RLS
+-- 8. Politiques RLS — user_experiences
 DROP POLICY IF EXISTS "Voir les expériences des profils actifs" ON user_experiences;
 DROP POLICY IF EXISTS "Gérer ses expériences" ON user_experiences;
 DROP POLICY IF EXISTS "Admin/RH gèrent les expériences" ON user_experiences;
-CREATE POLICY "Voir les expériences des profils actifs" ON user_experiences FOR SELECT USING (EXISTS (SELECT 1 FROM profiles WHERE id = user_id AND is_active = true));
-CREATE POLICY "Gérer ses expériences" ON user_experiences FOR ALL USING (user_id = auth.uid());
-CREATE POLICY "Admin/RH gèrent les expériences" ON user_experiences FOR ALL USING (is_admin_or_rh());
 
+CREATE POLICY "Voir les expériences des profils actifs" ON user_experiences
+  FOR SELECT USING (EXISTS (SELECT 1 FROM profiles WHERE id = user_id AND is_active = true));
+CREATE POLICY "Gérer ses expériences" ON user_experiences
+  FOR ALL USING (user_id = auth.uid());
+CREATE POLICY "Admin/RH gèrent les expériences" ON user_experiences
+  FOR ALL USING (is_admin_or_rh());
+
+-- 9. Politiques RLS — user_diplomas
 DROP POLICY IF EXISTS "Voir les diplômes des profils actifs" ON user_diplomas;
 DROP POLICY IF EXISTS "Gérer ses diplômes" ON user_diplomas;
 DROP POLICY IF EXISTS "Admin/RH gèrent les diplômes" ON user_diplomas;
-CREATE POLICY "Voir les diplômes des profils actifs" ON user_diplomas FOR SELECT USING (EXISTS (SELECT 1 FROM profiles WHERE id = user_id AND is_active = true));
-CREATE POLICY "Gérer ses diplômes" ON user_diplomas FOR ALL USING (user_id = auth.uid());
-CREATE POLICY "Admin/RH gèrent les diplômes" ON user_diplomas FOR ALL USING (is_admin_or_rh());
 
+CREATE POLICY "Voir les diplômes des profils actifs" ON user_diplomas
+  FOR SELECT USING (EXISTS (SELECT 1 FROM profiles WHERE id = user_id AND is_active = true));
+CREATE POLICY "Gérer ses diplômes" ON user_diplomas
+  FOR ALL USING (user_id = auth.uid());
+CREATE POLICY "Admin/RH gèrent les diplômes" ON user_diplomas
+  FOR ALL USING (is_admin_or_rh());
+
+-- 10. Politiques RLS — user_formations
 DROP POLICY IF EXISTS "Voir les formations perso des profils actifs" ON user_formations;
 DROP POLICY IF EXISTS "Gérer ses formations perso" ON user_formations;
 DROP POLICY IF EXISTS "Admin/RH gèrent les formations perso" ON user_formations;
-CREATE POLICY "Voir les formations perso des profils actifs" ON user_formations FOR SELECT USING (EXISTS (SELECT 1 FROM profiles WHERE id = user_id AND is_active = true));
-CREATE POLICY "Gérer ses formations perso" ON user_formations FOR ALL USING (user_id = auth.uid());
-CREATE POLICY "Admin/RH gèrent les formations perso" ON user_formations FOR ALL USING (is_admin_or_rh());
+
+CREATE POLICY "Voir les formations perso des profils actifs" ON user_formations
+  FOR SELECT USING (EXISTS (SELECT 1 FROM profiles WHERE id = user_id AND is_active = true));
+CREATE POLICY "Gérer ses formations perso" ON user_formations
+  FOR ALL USING (user_id = auth.uid());
+CREATE POLICY "Admin/RH gèrent les formations perso" ON user_formations
+  FOR ALL USING (is_admin_or_rh());

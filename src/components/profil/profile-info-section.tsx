@@ -13,6 +13,40 @@ const roleLabels: Record<string, string> = {
   technicien: "Technicien",
 };
 
+const jobTitles = [
+  "Technicien fibre optique",
+  "Technicien réseau",
+  "Technicien télécom",
+  "Technicien courant faible",
+  "Technicien courant fort",
+  "Technicien de maintenance",
+  "Technicien d'installation",
+  "Technicien polyvalent",
+  "Chef d'équipe",
+  "Chef de chantier",
+  "Conducteur de travaux",
+  "Responsable technique",
+  "Responsable QSE",
+  "Responsable RH",
+  "Chargé d'affaires",
+  "Chargé d'études",
+  "Dessinateur / Projeteur",
+  "Ingénieur réseau",
+  "Ingénieur télécom",
+  "Assistant(e) administratif(ve)",
+  "Assistant(e) de direction",
+  "Comptable",
+  "Responsable administratif",
+  "Commercial",
+  "Directeur technique",
+  "Directeur général",
+  "Magasinier",
+  "Logisticien",
+  "Chauffeur / Livreur",
+  "Apprenti / Alternant",
+  "Stagiaire",
+];
+
 export default function ProfileInfoSection({
   profile,
 }: {
@@ -122,17 +156,43 @@ export default function ProfileInfoSection({
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
             <label className="mb-1 block text-xs font-medium text-[var(--text-secondary)]">
-              Poste
+              Poste / Métier
             </label>
-            <input
-              type="text"
-              value={form.job_title}
-              onChange={(e) =>
-                setForm({ ...form, job_title: e.target.value })
+            <select
+              value={
+                form.job_title && !jobTitles.includes(form.job_title)
+                  ? "__custom__"
+                  : form.job_title
               }
-              placeholder="Ex: Technicien fibre optique"
-              className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2 text-sm text-[var(--heading)] outline-none placeholder:text-[var(--text-secondary)]/50 focus:border-[var(--yellow)] focus:ring-1 focus:ring-[var(--yellow)]"
-            />
+              onChange={(e) => {
+                if (e.target.value === "__custom__") {
+                  setForm({ ...form, job_title: "" });
+                } else {
+                  setForm({ ...form, job_title: e.target.value });
+                }
+              }}
+              className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2 text-sm text-[var(--heading)] outline-none focus:border-[var(--yellow)] focus:ring-1 focus:ring-[var(--yellow)]"
+            >
+              <option value="">-- Sélectionner un poste --</option>
+              {jobTitles.map((title) => (
+                <option key={title} value={title}>
+                  {title}
+                </option>
+              ))}
+              <option value="__custom__">Autre (saisie libre)</option>
+            </select>
+            {form.job_title !== "" &&
+              !jobTitles.includes(form.job_title) && (
+                <input
+                  type="text"
+                  value={form.job_title}
+                  onChange={(e) =>
+                    setForm({ ...form, job_title: e.target.value })
+                  }
+                  placeholder="Saisissez votre poste"
+                  className="mt-2 w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2 text-sm text-[var(--heading)] outline-none placeholder:text-[var(--text-secondary)]/50 focus:border-[var(--yellow)] focus:ring-1 focus:ring-[var(--yellow)]"
+                />
+              )}
           </div>
           <div>
             <label className="mb-1 block text-xs font-medium text-[var(--text-secondary)]">

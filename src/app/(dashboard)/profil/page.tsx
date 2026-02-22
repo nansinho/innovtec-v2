@@ -5,12 +5,7 @@ import {
   getUserFormations,
   getUserDocuments,
 } from "@/actions/profile";
-import ProfileInfoSection from "@/components/profil/profile-info-section";
-import ExperiencesSection from "@/components/profil/experiences-section";
-import DiplomasSection from "@/components/profil/diplomas-section";
-import FormationsSection from "@/components/profil/formations-section";
-import PasswordSection from "@/components/profil/password-section";
-import DocumentsSection from "@/components/profil/documents-section";
+import ProfileTabs from "@/components/profil/profile-tabs";
 
 export const dynamic = "force-dynamic";
 
@@ -40,14 +35,13 @@ export default async function ProfilPage() {
         Mon profil
       </h1>
 
-      <div className="flex flex-col gap-6">
-        <ProfileInfoSection profile={profile} />
-        <ExperiencesSection experiences={experiences} />
-        <DiplomasSection diplomas={diplomas} />
-        <FormationsSection formations={formations} />
-        <PasswordSection />
-        <DocumentsSection documents={documents} />
-      </div>
+      <ProfileTabs
+        profile={profile}
+        experiences={experiences}
+        diplomas={diplomas}
+        formations={formations}
+        documents={documents}
+      />
     </div>
   );
 }
