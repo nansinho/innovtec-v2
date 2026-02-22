@@ -3,11 +3,31 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
 export async function signOut() {
   const supabase = await createClient();
   await supabase.auth.signOut();
   redirect("/login");
+}
+
+export async function signIn(formData: {
+  email: string;
+  password: string;
+}): Promise<{ error: string }> {
+  const supabase = await createClient();
+
+  const { error } = await supabase.auth.signInWithPassword({
+    email: formData.email,
+    password: formData.password,
+  });
+
+  if (error) {
+    return { error: "Email ou mot de passe incorrect" };
+  }
+
+  revalidatePath("/", "layout");
+  redirect("/");
 }
 
 export async function getSession() {

@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
+import { signIn } from "@/actions/auth";
 import { Zap } from "lucide-react";
 
 export default function LoginPage() {
@@ -11,8 +10,6 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
-  const supabase = useMemo(() => createClient(), []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -20,19 +17,11 @@ export default function LoginPage() {
     setError("");
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) {
-        setError("Email ou mot de passe incorrect");
+      const result = await signIn({ email, password });
+      if (result?.error) {
+        setError(result.error);
         setLoading(false);
-        return;
       }
-
-      router.push("/");
-      router.refresh();
     } catch {
       setError("Impossible de contacter le serveur. Vérifiez votre connexion.");
       setLoading(false);

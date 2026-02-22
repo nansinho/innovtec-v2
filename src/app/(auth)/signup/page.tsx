@@ -1,10 +1,8 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
-import { signUp } from "@/actions/auth";
+import { signUp, signIn } from "@/actions/auth";
 import { Zap } from "lucide-react";
 
 export default function SignupPage() {
@@ -14,38 +12,28 @@ export default function SignupPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
-  const supabase = useMemo(() => createClient(), []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setError("");
 
-    // Create user via server action (admin API)
-    const result = await signUp({ email, password, firstName, lastName });
-
-    if (!result.success) {
-      setError(result.error || "Erreur lors de la création du compte");
-      setLoading(false);
-      return;
-    }
-
-    // Sign in the newly created user client-side
     try {
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      // Create user via server action (admin API)
+      const result = await signUp({ email, password, firstName, lastName });
 
-      if (signInError) {
-        setError("Compte créé mais connexion échouée. Essayez de vous connecter.");
+      if (!result.success) {
+        setError(result.error || "Erreur lors de la création du compte");
         setLoading(false);
         return;
       }
 
-      router.push("/");
-      router.refresh();
+      // Sign in the newly created user via server action
+      const signInResult = await signIn({ email, password });
+      if (signInResult?.error) {
+        setError("Compte créé mais connexion échouée. Essayez de vous connecter.");
+        setLoading(false);
+      }
     } catch {
       setError("Compte créé mais impossible de se connecter automatiquement. Essayez de vous connecter.");
       setLoading(false);
