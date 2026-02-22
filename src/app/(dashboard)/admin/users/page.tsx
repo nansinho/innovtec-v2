@@ -1,15 +1,38 @@
 import { getProfile } from "@/actions/auth";
-import { getAllUsers } from "@/actions/users";
+import { getAllUsers, ensureAdminExists } from "@/actions/users";
 import { redirect } from "next/navigation";
 import UsersTable from "@/components/admin/users-table";
+import AdminBootstrap from "@/components/admin/admin-bootstrap";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminUsersPage() {
   const profile = await getProfile();
 
-  if (!profile || !["admin", "rh"].includes(profile.role)) {
+  if (!profile) {
+    redirect("/login");
+  }
+
+  // Check if there's an admin — if not, show the bootstrap UI
+  const adminCheck = await ensureAdminExists();
+
+  // If user was just promoted, profile.role will be stale — reload
+  if (adminCheck.promoted) {
+    redirect("/admin/users");
+  }
+
+  // If user is not admin/rh and an admin already exists, redirect
+  if (!["admin", "rh"].includes(profile.role) && adminCheck.hasAdmin) {
     redirect("/");
+  }
+
+  // If no admin and user was NOT promoted (shouldn't happen normally)
+  if (!adminCheck.hasAdmin && !["admin", "rh"].includes(profile.role)) {
+    return (
+      <div className="px-7 py-6 pb-20 md:pb-7">
+        <AdminBootstrap />
+      </div>
+    );
   }
 
   const users = await getAllUsers();
