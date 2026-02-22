@@ -1,27 +1,25 @@
 -- ============================================================
 -- INNOVTEC Réseaux — Migration : Notifications, Blog, Anniversaires
 -- ============================================================
+-- Script IDEMPOTENT : peut être exécuté plusieurs fois sans erreur.
 
 -- ==========================================
 -- 1. TYPES ENUM
 -- ==========================================
 
-CREATE TYPE notification_type AS ENUM (
-  'news',
-  'event',
-  'birthday',
-  'comment',
-  'conge',
-  'danger',
-  'formation',
-  'system'
-);
+DO $$ BEGIN
+  CREATE TYPE notification_type AS ENUM (
+    'news', 'event', 'birthday', 'comment',
+    'conge', 'danger', 'formation', 'system'
+  );
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 -- ==========================================
 -- 2. TABLE NOTIFICATIONS
 -- ==========================================
 
-CREATE TABLE notifications (
+CREATE TABLE IF NOT EXISTS notifications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   type notification_type NOT NULL DEFAULT 'system',
@@ -33,13 +31,13 @@ CREATE TABLE notifications (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE INDEX idx_notifications_user ON notifications(user_id, is_read, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id, is_read, created_at DESC);
 
 -- ==========================================
 -- 3. TABLE NEWS_VIEWS (comptage des vues)
 -- ==========================================
 
-CREATE TABLE news_views (
+CREATE TABLE IF NOT EXISTS news_views (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   news_id UUID NOT NULL REFERENCES news(id) ON DELETE CASCADE,
   user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
@@ -47,13 +45,13 @@ CREATE TABLE news_views (
   UNIQUE(news_id, user_id)
 );
 
-CREATE INDEX idx_news_views_news ON news_views(news_id);
+CREATE INDEX IF NOT EXISTS idx_news_views_news ON news_views(news_id);
 
 -- ==========================================
 -- 4. TABLE NEWS_COMMENTS
 -- ==========================================
 
-CREATE TABLE news_comments (
+CREATE TABLE IF NOT EXISTS news_comments (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   news_id UUID NOT NULL REFERENCES news(id) ON DELETE CASCADE,
   author_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
@@ -61,13 +59,13 @@ CREATE TABLE news_comments (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE INDEX idx_news_comments_news ON news_comments(news_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_news_comments_news ON news_comments(news_id, created_at DESC);
 
 -- ==========================================
 -- 5. TABLE BIRTHDAY_WISHES
 -- ==========================================
 
-CREATE TABLE birthday_wishes (
+CREATE TABLE IF NOT EXISTS birthday_wishes (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   from_user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   to_user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
@@ -77,16 +75,29 @@ CREATE TABLE birthday_wishes (
   UNIQUE(from_user_id, to_user_id, year)
 );
 
-CREATE INDEX idx_birthday_wishes_to ON birthday_wishes(to_user_id, year);
+CREATE INDEX IF NOT EXISTS idx_birthday_wishes_to ON birthday_wishes(to_user_id, year);
 
 -- ==========================================
--- 6. RLS POLICIES
+-- 6. RLS POLICIES (idempotent: drop then create)
 -- ==========================================
 
 ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE news_views ENABLE ROW LEVEL SECURITY;
 ALTER TABLE news_comments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE birthday_wishes ENABLE ROW LEVEL SECURITY;
+
+-- Drop existing policies first
+DROP POLICY IF EXISTS "Voir ses notifications" ON notifications;
+DROP POLICY IF EXISTS "Gérer ses notifications" ON notifications;
+DROP POLICY IF EXISTS "Admin crée des notifications" ON notifications;
+DROP POLICY IF EXISTS "Supprimer ses notifications" ON notifications;
+DROP POLICY IF EXISTS "Voir les vues" ON news_views;
+DROP POLICY IF EXISTS "Enregistrer une vue" ON news_views;
+DROP POLICY IF EXISTS "Voir les commentaires news" ON news_comments;
+DROP POLICY IF EXISTS "Commenter une news" ON news_comments;
+DROP POLICY IF EXISTS "Supprimer son commentaire news" ON news_comments;
+DROP POLICY IF EXISTS "Voir les voeux" ON birthday_wishes;
+DROP POLICY IF EXISTS "Envoyer des voeux" ON birthday_wishes;
 
 -- Notifications : chacun voit les siennes
 CREATE POLICY "Voir ses notifications" ON notifications FOR SELECT USING (user_id = auth.uid());
