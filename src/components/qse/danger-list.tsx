@@ -15,17 +15,17 @@ const statusConfig: Record<
   string,
   { label: string; color: string; bg: string }
 > = {
-  signale: { label: "Signalé", color: "text-red-700", bg: "bg-red-50" },
+  signale: { label: "Signalé", color: "text-[var(--red)]", bg: "bg-[var(--red-surface)]" },
   en_cours: { label: "En cours", color: "text-orange-700", bg: "bg-orange-50" },
-  resolu: { label: "Résolu", color: "text-green-700", bg: "bg-green-50" },
-  cloture: { label: "Clôturé", color: "text-gray-600", bg: "bg-gray-100" },
+  resolu: { label: "Résolu", color: "text-[var(--green)]", bg: "bg-[var(--green-surface)]" },
+  cloture: { label: "Clôturé", color: "text-[var(--text-secondary)]", bg: "bg-[var(--hover)]" },
 };
 
 const severityLabels: Record<number, { label: string; color: string }> = {
-  1: { label: "Faible", color: "text-green-600" },
-  2: { label: "Modérée", color: "text-yellow-600" },
+  1: { label: "Faible", color: "text-[var(--green)]" },
+  2: { label: "Modérée", color: "text-[var(--yellow)]" },
   3: { label: "Sérieuse", color: "text-orange-600" },
-  4: { label: "Grave", color: "text-red-600" },
+  4: { label: "Grave", color: "text-[var(--red)]" },
   5: { label: "Critique", color: "text-red-800" },
 };
 
@@ -84,14 +84,14 @@ export default function DangerList({ dangers: initialDangers, canManage }: Dange
             <div
               key={status}
               className={cn(
-                "rounded-[var(--radius-sm)] border border-[var(--border-1)] p-3 text-center",
+                "rounded-[var(--radius-sm)] border border-[var(--border-1)] p-4 text-center shadow-xs",
                 config.bg
               )}
             >
               <p className={cn("text-xl font-bold", config.color)}>
                 {statusCounts[status] || 0}
               </p>
-              <p className="text-[10px] font-medium text-[var(--text-secondary)]">
+              <p className="text-[11px] font-medium text-[var(--text-secondary)]">
                 {config.label}
               </p>
             </div>
@@ -105,10 +105,10 @@ export default function DangerList({ dangers: initialDangers, canManage }: Dange
         <button
           onClick={() => setFilterStatus("all")}
           className={cn(
-            "rounded-full px-3 py-1 text-[11px] font-medium transition-colors",
+            "rounded-full px-3 py-1.5 text-[11px] font-medium transition-all duration-200",
             filterStatus === "all"
-              ? "bg-[var(--navy)] text-white"
-              : "bg-gray-100 text-[var(--text-secondary)] hover:bg-gray-200"
+              ? "bg-[var(--navy)] text-white shadow-xs"
+              : "bg-[var(--hover)] text-[var(--text-secondary)] hover:bg-[var(--border-1)]"
           )}
         >
           Tous ({dangers.length})
@@ -118,10 +118,10 @@ export default function DangerList({ dangers: initialDangers, canManage }: Dange
             key={key}
             onClick={() => setFilterStatus(key)}
             className={cn(
-              "rounded-full px-3 py-1 text-[11px] font-medium transition-colors",
+              "rounded-full px-3 py-1.5 text-[11px] font-medium transition-all duration-200",
               filterStatus === key
-                ? "bg-[var(--navy)] text-white"
-                : "bg-gray-100 text-[var(--text-secondary)] hover:bg-gray-200"
+                ? "bg-[var(--navy)] text-white shadow-xs"
+                : "bg-[var(--hover)] text-[var(--text-secondary)] hover:bg-[var(--border-1)]"
             )}
           >
             {config.label} ({statusCounts[key] || 0})
@@ -131,7 +131,7 @@ export default function DangerList({ dangers: initialDangers, canManage }: Dange
 
       {/* List */}
       {filtered.length === 0 ? (
-        <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-white py-12 text-center">
+        <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] py-12 text-center shadow-sm">
           <AlertTriangle className="mx-auto mb-3 h-10 w-10 text-[var(--border-1)]" />
           <p className="text-sm text-[var(--text-secondary)]">
             Aucune situation dangereuse signalée.
@@ -147,14 +147,14 @@ export default function DangerList({ dangers: initialDangers, canManage }: Dange
             return (
               <div
                 key={danger.id}
-                className="rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-white p-4"
+                className="rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] p-4 shadow-xs transition-shadow duration-200 hover:shadow-sm"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1">
                     <div className="mb-1.5 flex flex-wrap items-center gap-2">
                       <span
                         className={cn(
-                          "rounded-full px-2 py-0.5 text-[10px] font-medium",
+                          "rounded-full px-2.5 py-0.5 text-[10px] font-medium",
                           status.bg,
                           status.color
                         )}
@@ -171,7 +171,7 @@ export default function DangerList({ dangers: initialDangers, canManage }: Dange
                     <p className="mt-1 text-[12px] leading-relaxed text-[var(--text-secondary)] line-clamp-2">
                       {danger.description}
                     </p>
-                    <div className="mt-2 flex flex-wrap items-center gap-3 text-[10.5px] text-[var(--text-muted)]">
+                    <div className="mt-2 flex flex-wrap items-center gap-3 text-[11px] text-[var(--text-muted)]">
                       {danger.location && (
                         <span className="flex items-center gap-1">
                           <MapPin className="h-3 w-3" />
@@ -199,7 +199,7 @@ export default function DangerList({ dangers: initialDangers, canManage }: Dange
                           handleStatusChange(danger.id, e.target.value)
                         }
                         disabled={isPending}
-                        className="appearance-none rounded-[var(--radius-xs)] border border-[var(--border-1)] bg-white py-1 pl-2 pr-6 text-[11px] outline-none focus:border-[var(--yellow)]"
+                        className="appearance-none rounded-[var(--radius-xs)] border border-[var(--border-1)] bg-[var(--card)] py-1.5 pl-2.5 pr-6 text-[11px] outline-none transition-colors focus:border-[var(--yellow)]"
                       >
                         <option value="signale">Signalé</option>
                         <option value="en_cours">En cours</option>

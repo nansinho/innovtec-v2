@@ -15,10 +15,10 @@ export default function DocumentsSection({
   documents: Document[];
 }) {
   return (
-    <section className="rounded-[var(--radius)] border border-[var(--border-1)] bg-white p-5">
-      <div className="mb-4 flex items-center gap-2.5">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-50">
-          <FileText className="h-4 w-4 text-orange-500" />
+    <section className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] p-6 shadow-sm">
+      <div className="mb-5 flex items-center gap-3">
+        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-50">
+          <FileText className="h-[18px] w-[18px] text-orange-500" />
         </div>
         <h2 className="text-sm font-semibold text-[var(--heading)]">
           Mes documents
@@ -26,34 +26,34 @@ export default function DocumentsSection({
       </div>
 
       {documents.length === 0 ? (
-        <p className="text-xs text-[var(--text-secondary)]">
+        <p className="py-4 text-center text-xs text-[var(--text-secondary)]">
           Aucun document synchronisé.
         </p>
       ) : (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-3">
           {documents.map((doc) => (
             <a
               key={doc.id}
               href={doc.file_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex items-center justify-between rounded-[var(--radius-sm)] border border-[var(--border-1)] p-3 transition-colors duration-150 hover:bg-gray-50"
+              className="group flex items-center justify-between rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] p-4 shadow-xs transition-all duration-200 hover:shadow-sm"
             >
               <div className="flex items-center gap-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded bg-gray-100 text-[10px] font-medium uppercase text-[var(--text-secondary)]">
+                <div className="flex h-9 w-9 items-center justify-center rounded-[var(--radius-xs)] bg-[var(--hover)] text-[10px] font-semibold uppercase text-[var(--text-secondary)]">
                   {doc.file_type}
                 </div>
                 <div>
                   <div className="text-sm font-medium text-[var(--heading)]">
                     {doc.name}
                   </div>
-                  <div className="text-xs text-[var(--text-secondary)]">
+                  <div className="mt-0.5 text-xs text-[var(--text-secondary)]">
                     {formatFileSize(doc.file_size)} —{" "}
                     {new Date(doc.created_at).toLocaleDateString("fr-FR")}
                   </div>
                 </div>
               </div>
-              <Download className="h-4 w-4 text-[var(--text-secondary)] opacity-0 transition-opacity duration-150 group-hover:opacity-100" />
+              <Download className="h-4 w-4 text-[var(--text-muted)] opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
             </a>
           ))}
         </div>

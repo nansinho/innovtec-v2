@@ -17,20 +17,20 @@ const categoryConfig: Record<
   actualite: {
     label: "Actualités",
     icon: Newspaper,
-    color: "text-blue-600",
-    bg: "bg-blue-50",
+    color: "text-[var(--blue)]",
+    bg: "bg-[var(--blue-surface)]",
   },
   document: {
     label: "Documents",
     icon: FileText,
-    color: "text-green-600",
-    bg: "bg-green-50",
+    color: "text-[var(--green)]",
+    bg: "bg-[var(--green-surface)]",
   },
   collaborateur: {
     label: "Collaborateurs",
     icon: User,
-    color: "text-purple-600",
-    bg: "bg-purple-50",
+    color: "text-[var(--purple)]",
+    bg: "bg-[var(--purple-surface)]",
   },
   formation: {
     label: "Formations",
@@ -132,7 +132,7 @@ export default function SearchBar() {
 
       {/* Results dropdown */}
       {isOpen && (
-        <div className="absolute left-0 right-0 top-full z-50 mt-2 max-h-[480px] overflow-y-auto rounded-[var(--radius)] border border-[var(--border-1)] bg-white shadow-xl">
+        <div className="absolute left-0 right-0 top-full z-50 mt-2 max-h-[480px] overflow-y-auto rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] shadow-lg">
           {isPending ? (
             <div className="flex items-center justify-center py-8">
               <div className="h-5 w-5 animate-spin rounded-full border-2 border-[var(--yellow)] border-t-transparent" />
@@ -154,7 +154,7 @@ export default function SearchBar() {
                   return (
                     <div key={category}>
                       {/* Category header */}
-                      <div className="flex items-center gap-2 bg-gray-50/80 px-4 py-2">
+                      <div className="flex items-center gap-2 bg-[var(--hover)] px-4 py-2">
                         <Icon className={cn("h-3.5 w-3.5", config.color)} />
                         <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
                           {config.label}

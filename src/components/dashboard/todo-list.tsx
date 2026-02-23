@@ -37,7 +37,7 @@ export default function TodoList() {
       <CardHeader
         title="To-do List"
         action={
-          <button className="rounded-[var(--radius-xs)] border border-[var(--yellow-border)] bg-[var(--yellow-surface)] px-3 py-1 text-[10px] font-medium text-[#b07800] transition-colors hover:border-[var(--yellow)] hover:bg-[var(--yellow)] hover:text-white">
+          <button className="rounded-[var(--radius-xs)] border border-[var(--border-1)] bg-[var(--card)] px-3 py-1.5 text-[11px] font-medium text-[var(--text-secondary)] shadow-xs transition-all duration-200 hover:bg-[var(--hover)] hover:shadow-sm">
             Ajouter
           </button>
         }
