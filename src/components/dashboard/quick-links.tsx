@@ -2,7 +2,7 @@ import { Mail, Calendar, FileText, MessageSquare, Shield } from "lucide-react";
 import { Card } from "@/components/ui/card";
 
 const links = [
-  { icon: Mail, color: "text-[#ea4335]", label: "Mail" },
+  { icon: Mail, color: "text-[var(--red)]", label: "Mail" },
   { icon: Calendar, color: "text-[var(--blue)]", label: "Calendrier" },
   { icon: FileText, color: "text-[var(--green)]", label: "Drive" },
   { icon: MessageSquare, color: "text-[var(--purple)]", label: "Chat" },

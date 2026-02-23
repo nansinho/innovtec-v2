@@ -31,11 +31,11 @@ const categoryLabels: Record<NewsCategory, string> = {
 };
 
 const categoryColors: Record<NewsCategory, string> = {
-  entreprise: "bg-blue-50 text-blue-700",
-  securite: "bg-red-50 text-red-700",
-  formation: "bg-green-50 text-green-700",
+  entreprise: "bg-[var(--blue-surface)] text-[var(--blue)]",
+  securite: "bg-[var(--red-surface)] text-[var(--red)]",
+  formation: "bg-[var(--green-surface)] text-[var(--green)]",
   chantier: "bg-orange-50 text-orange-700",
-  social: "bg-purple-50 text-purple-700",
+  social: "bg-[var(--purple-surface)] text-[var(--purple)]",
   rh: "bg-indigo-50 text-indigo-700",
 };
 
@@ -169,18 +169,18 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
       {/* Toolbar */}
       <div className="mb-4 flex items-center gap-3">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-secondary)]" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-muted)]" />
           <input
             type="text"
             placeholder="Rechercher une actualité..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-[var(--radius-sm)] border border-[var(--border-1)] py-2.5 pl-10 pr-4 text-sm text-[var(--heading)] outline-none placeholder:text-[var(--text-secondary)]/50 focus:border-[var(--yellow)] focus:ring-1 focus:ring-[var(--yellow)]"
+            className="w-full rounded-[var(--radius-sm)] border border-[var(--border-1)] py-2.5 pl-10 pr-4 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
           />
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[var(--yellow-hover)]"
+          className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-4 py-2.5 text-sm font-medium text-white shadow-xs transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-sm"
         >
           {showForm ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
           {showForm ? "Annuler" : "Nouvelle actualité"}
@@ -189,14 +189,14 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
 
       {/* Create form */}
       {showForm && (
-        <div className="mb-6 rounded-[var(--radius)] border border-[var(--border-1)] bg-white p-5">
+        <div className="mb-6 rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] p-5 shadow-sm">
           <div className="mb-4 flex items-center justify-between">
             <h3 className="text-sm font-semibold text-[var(--heading)]">
               Créer une actualité
             </h3>
             <button
               onClick={() => setFormMode(formMode === "ai" ? "manual" : "ai")}
-              className="flex items-center gap-1.5 text-[11px] font-medium text-purple-600 transition-colors hover:text-purple-700"
+              className="flex items-center gap-1.5 text-[11px] font-medium text-[var(--navy)] transition-colors hover:text-[var(--navy)]/80"
             >
               {formMode === "ai" ? (
                 <ToggleRight className="h-4 w-4" />
@@ -209,7 +209,7 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
 
           {/* AI Mode */}
           {formMode === "ai" && (
-            <div className="mb-4 space-y-3 rounded-[var(--radius-sm)] border border-purple-200 bg-purple-50/30 p-4">
+            <div className="mb-4 space-y-3 rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--hover)] p-4">
               <p className="text-[12px] text-[var(--text-secondary)]">
                 Décrivez le sujet de l&apos;actualité et l&apos;IA générera le titre, l&apos;extrait, le contenu et suggérera la catégorie.
               </p>
@@ -218,64 +218,64 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
                 onChange={(e) => setAiPrompt(e.target.value)}
                 placeholder="Ex: Nous avons remporté le marché de fibre optique de la ville de Nantes. Le chantier débutera en mars 2026 et durera 8 mois..."
                 rows={3}
-                className="w-full resize-none rounded-[var(--radius-xs)] border border-purple-200 bg-white px-3 py-2 text-[12.5px] text-[var(--heading)] outline-none placeholder:text-[var(--text-muted)] focus:border-purple-400"
+                className="w-full resize-none rounded-[var(--radius-xs)] border border-[var(--border-1)] bg-[var(--card)] px-3 py-2.5 text-[12.5px] text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
               />
               <button
                 onClick={handleAiGenerate}
                 disabled={aiLoading || !aiPrompt.trim()}
-                className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-2 text-sm font-medium text-white transition-all hover:from-purple-700 hover:to-indigo-700 disabled:opacity-50"
+                className="flex items-center gap-2 rounded-[var(--radius-sm)] border border-[var(--navy)] bg-transparent px-4 py-2.5 text-sm font-medium text-[var(--navy)] shadow-xs transition-all duration-200 hover:bg-[var(--navy)] hover:text-white hover:shadow-sm disabled:opacity-50"
               >
                 {aiLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                  <Sparkles className="h-4 w-4" />
+                  <Sparkles className="h-4 w-4 text-[var(--yellow)]" />
                 )}
                 {aiLoading ? "Génération..." : "Générer l'actualité"}
               </button>
               {aiError && (
-                <p className="text-[12px] text-red-500">{aiError}</p>
+                <p className="text-[12px] text-[var(--red)]">{aiError}</p>
               )}
             </div>
           )}
 
           <div className="space-y-3">
             <div>
-              <label className="mb-1 block text-[11px] font-medium text-[var(--text-secondary)]">
+              <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">
                 Titre *
               </label>
               <input
                 value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
-                className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2 text-sm text-[var(--heading)] outline-none focus:border-[var(--yellow)]"
+                className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
                 placeholder="Titre de l'actualité"
               />
             </div>
             <div>
-              <label className="mb-1 block text-[11px] font-medium text-[var(--text-secondary)]">
+              <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">
                 Extrait
               </label>
               <input
                 value={form.excerpt}
                 onChange={(e) => setForm({ ...form, excerpt: e.target.value })}
-                className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2 text-sm text-[var(--heading)] outline-none focus:border-[var(--yellow)]"
+                className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
                 placeholder="Court résumé"
               />
             </div>
             <div>
-              <label className="mb-1 block text-[11px] font-medium text-[var(--text-secondary)]">
+              <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">
                 Contenu
               </label>
               <textarea
                 value={form.content}
                 onChange={(e) => setForm({ ...form, content: e.target.value })}
                 rows={5}
-                className="w-full resize-none rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2 text-sm text-[var(--heading)] outline-none focus:border-[var(--yellow)]"
+                className="w-full resize-none rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
                 placeholder="Contenu détaillé de l'actualité"
               />
             </div>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               <div>
-                <label className="mb-1 block text-[11px] font-medium text-[var(--text-secondary)]">
+                <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">
                   Catégorie
                 </label>
                 <select
@@ -283,7 +283,7 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
                   onChange={(e) =>
                     setForm({ ...form, category: e.target.value as NewsCategory })
                   }
-                  className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-2 py-2 text-sm outline-none focus:border-[var(--yellow)]"
+                  className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-2 py-2.5 text-sm outline-none transition-colors focus:border-[var(--yellow)]"
                 >
                   {(Object.entries(categoryLabels) as [NewsCategory, string][]).map(
                     ([val, lab]) => (
@@ -295,7 +295,7 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
                 </select>
               </div>
               <div>
-                <label className="mb-1 block text-[11px] font-medium text-[var(--text-secondary)]">
+                <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">
                   Priorité
                 </label>
                 <select
@@ -306,7 +306,7 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
                       priority: e.target.value as NewsPriority,
                     })
                   }
-                  className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-2 py-2 text-sm outline-none focus:border-[var(--yellow)]"
+                  className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-2 py-2.5 text-sm outline-none transition-colors focus:border-[var(--yellow)]"
                 >
                   <option value="normal">Normal</option>
                   <option value="important">Important</option>
@@ -314,7 +314,7 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
                 </select>
               </div>
               <div className="col-span-2">
-                <label className="mb-1 block text-[11px] font-medium text-[var(--text-secondary)]">
+                <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">
                   URL de l&apos;image
                 </label>
                 <input
@@ -322,7 +322,7 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
                   onChange={(e) =>
                     setForm({ ...form, image_url: e.target.value })
                   }
-                  className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2 text-sm text-[var(--heading)] outline-none focus:border-[var(--yellow)]"
+                  className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
                   placeholder="https://..."
                 />
               </div>
@@ -335,7 +335,7 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
                   onChange={(e) =>
                     setForm({ ...form, is_carousel: e.target.checked })
                   }
-                  className="h-4 w-4 rounded border-gray-300 accent-[var(--yellow)]"
+                  className="h-4 w-4 rounded border-[var(--border-2)] accent-[var(--yellow)]"
                 />
                 Afficher dans le carousel
               </label>
@@ -346,7 +346,7 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
                   onChange={(e) =>
                     setForm({ ...form, is_published: e.target.checked })
                   }
-                  className="h-4 w-4 rounded border-gray-300 accent-[var(--yellow)]"
+                  className="h-4 w-4 rounded border-[var(--border-2)] accent-[var(--yellow)]"
                 />
                 Publier immédiatement
               </label>
@@ -355,7 +355,7 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
               <button
                 onClick={handleSubmit}
                 disabled={isPending || !form.title.trim()}
-                className="rounded-[var(--radius-sm)] bg-[var(--yellow)] px-6 py-2 text-sm font-medium text-white transition-colors hover:bg-[var(--yellow-hover)] disabled:opacity-50"
+                className="rounded-[var(--radius-sm)] bg-[var(--yellow)] px-6 py-2.5 text-sm font-medium text-white shadow-xs transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-sm disabled:opacity-50"
               >
                 {isPending ? "Création..." : "Créer l'actualité"}
               </button>
@@ -365,28 +365,28 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
       )}
 
       {/* News table */}
-      <div className="overflow-x-auto rounded-[var(--radius)] border border-[var(--border-1)]">
+      <div className="overflow-x-auto rounded-[var(--radius)] border border-[var(--border-1)] shadow-sm">
         <table className="w-full text-left text-sm">
-          <thead className="border-b border-[var(--border-1)] bg-gray-50/80">
+          <thead className="border-b border-[var(--border-1)] bg-[var(--hover)]">
             <tr>
-              <th className="px-4 py-3 text-xs font-medium text-[var(--text-secondary)]">
+              <th className="px-4 py-3.5 text-xs font-medium text-[var(--text-secondary)]">
                 Titre
               </th>
-              <th className="px-4 py-3 text-xs font-medium text-[var(--text-secondary)]">
+              <th className="px-4 py-3.5 text-xs font-medium text-[var(--text-secondary)]">
                 Catégorie
               </th>
-              <th className="px-4 py-3 text-xs font-medium text-[var(--text-secondary)]">
+              <th className="px-4 py-3.5 text-xs font-medium text-[var(--text-secondary)]">
                 Statut
               </th>
-              <th className="px-4 py-3 text-xs font-medium text-[var(--text-secondary)]">
+              <th className="px-4 py-3.5 text-xs font-medium text-[var(--text-secondary)]">
                 Date
               </th>
-              <th className="px-4 py-3 text-xs font-medium text-[var(--text-secondary)]">
+              <th className="px-4 py-3.5 text-xs font-medium text-[var(--text-secondary)]">
                 Actions
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[var(--border-1)] bg-white">
+          <tbody className="divide-y divide-[var(--border-1)] bg-[var(--card)]">
             {filtered.map((article) => {
               const authorName = article.author
                 ? `${article.author.first_name} ${article.author.last_name}`
@@ -395,9 +395,9 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
               return (
                 <tr
                   key={article.id}
-                  className="transition-colors hover:bg-gray-50/50"
+                  className="transition-colors hover:bg-[var(--hover)]"
                 >
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3.5">
                     <div>
                       <div className="font-medium text-[var(--heading)]">
                         {article.title}
@@ -407,7 +407,7 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
                       </div>
                     </div>
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3.5">
                     <span
                       className={cn(
                         "rounded-full px-2.5 py-0.5 text-[10px] font-medium",
@@ -417,24 +417,24 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
                       {categoryLabels[article.category]}
                     </span>
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3.5">
                     <span
                       className={cn(
                         "inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-medium",
                         article.is_published
-                          ? "bg-green-50 text-green-700"
-                          : "bg-gray-100 text-gray-600"
+                          ? "bg-[var(--green-surface)] text-[var(--green)]"
+                          : "bg-[var(--hover)] text-[var(--text-secondary)]"
                       )}
                     >
                       {article.is_published ? "Publié" : "Brouillon"}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-xs text-[var(--text-muted)]">
+                  <td className="px-4 py-3.5 text-xs text-[var(--text-muted)]">
                     {article.published_at
                       ? formatDate(article.published_at)
                       : formatDate(article.created_at)}
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3.5">
                     <div className="flex items-center gap-1">
                       <button
                         onClick={() =>
@@ -445,10 +445,10 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
                         }
                         disabled={loading === article.id}
                         className={cn(
-                          "rounded p-1.5 transition-colors",
+                          "rounded-[var(--radius-xs)] p-1.5 transition-colors",
                           article.is_published
-                            ? "text-green-500 hover:bg-green-50"
-                            : "text-gray-400 hover:bg-gray-100"
+                            ? "text-[var(--green)] hover:bg-[var(--green-surface)]"
+                            : "text-[var(--text-muted)] hover:bg-[var(--hover)]"
                         )}
                         title={
                           article.is_published ? "Dépublier" : "Publier"
@@ -463,7 +463,7 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
                       <button
                         onClick={() => handleDelete(article.id)}
                         disabled={loading === article.id}
-                        className="rounded p-1.5 text-red-400 transition-colors hover:bg-red-50"
+                        className="rounded-[var(--radius-xs)] p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--red-surface)] hover:text-[var(--red)]"
                         title="Supprimer"
                       >
                         <Trash2 className="h-3.5 w-3.5" />

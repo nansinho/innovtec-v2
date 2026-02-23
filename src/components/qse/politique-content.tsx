@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Edit3, Save, Plus, Trash2, ChevronDown, ChevronRight } from "lucide-react";
+import { Edit3, Save, Plus, Trash2, ChevronDown, ChevronRight, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import FileUploadAi from "@/components/ai/file-upload-ai";
 import { saveQseContent } from "@/actions/qse";
@@ -80,16 +80,16 @@ export default function PolitiqueContent({ content, canEdit }: PolitiqueContentP
             <>
               <button
                 onClick={() => setEditing(true)}
-                className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[var(--yellow-hover)]"
+                className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-4 py-2.5 text-sm font-medium text-white shadow-xs transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-sm"
               >
                 <Edit3 className="h-4 w-4" />
                 Modifier manuellement
               </button>
               <button
                 onClick={() => setShowUpload(!showUpload)}
-                className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-2 text-sm font-medium text-white transition-all hover:from-purple-700 hover:to-indigo-700"
+                className="flex items-center gap-2 rounded-[var(--radius-sm)] border border-[var(--navy)] bg-transparent px-4 py-2.5 text-sm font-medium text-[var(--navy)] shadow-xs transition-all duration-200 hover:bg-[var(--navy)] hover:text-white hover:shadow-sm"
               >
-                <Plus className="h-4 w-4" />
+                <Sparkles className="h-4 w-4 text-[var(--yellow)]" />
                 Importer un PDF / Image (IA)
               </button>
             </>
@@ -98,7 +98,7 @@ export default function PolitiqueContent({ content, canEdit }: PolitiqueContentP
               <button
                 onClick={handleSave}
                 disabled={isPending}
-                className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-green-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-green-700 disabled:opacity-50"
+                className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-4 py-2.5 text-sm font-medium text-white shadow-xs transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-sm disabled:opacity-50"
               >
                 <Save className="h-4 w-4" />
                 {isPending ? "Enregistrement..." : "Enregistrer"}
@@ -109,7 +109,7 @@ export default function PolitiqueContent({ content, canEdit }: PolitiqueContentP
                   setTitle(content?.title ?? "Politique Qualité, Sécurité et Environnement");
                   setSections(content?.sections ?? []);
                 }}
-                className="rounded-[var(--radius-sm)] border border-[var(--border-1)] px-4 py-2 text-sm text-[var(--text-secondary)] hover:bg-gray-50"
+                className="rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] px-4 py-2.5 text-sm text-[var(--text-secondary)] shadow-xs transition-all duration-200 hover:bg-[var(--hover)]"
               >
                 Annuler
               </button>
@@ -120,7 +120,7 @@ export default function PolitiqueContent({ content, canEdit }: PolitiqueContentP
 
       {/* File upload zone */}
       {showUpload && (
-        <div className="mb-6 rounded-[var(--radius)] border border-purple-200 bg-purple-50/30 p-5">
+        <div className="mb-6 rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--hover)] p-5 shadow-xs">
           <h3 className="mb-3 text-sm font-semibold text-[var(--heading)]">
             Import IA — Analysez un PDF ou une image
           </h3>
@@ -140,13 +140,13 @@ export default function PolitiqueContent({ content, canEdit }: PolitiqueContentP
         <div className="space-y-4">
           {/* Title */}
           <div>
-            <label className="mb-1 block text-[11px] font-medium text-[var(--text-secondary)]">
+            <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">
               Titre du document
             </label>
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2 text-sm font-semibold text-[var(--heading)] outline-none focus:border-[var(--yellow)]"
+              className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2.5 text-sm font-semibold text-[var(--heading)] outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
             />
           </div>
 
@@ -154,7 +154,7 @@ export default function PolitiqueContent({ content, canEdit }: PolitiqueContentP
           {sections.map((section, index) => (
             <div
               key={index}
-              className="rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-white p-4"
+              className="rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] p-5 shadow-xs"
             >
               <div className="mb-3 flex items-center gap-2">
                 <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--navy)] text-[9px] font-bold text-white">
@@ -164,11 +164,11 @@ export default function PolitiqueContent({ content, canEdit }: PolitiqueContentP
                   value={section.title}
                   onChange={(e) => updateSection(index, "title", e.target.value)}
                   placeholder="Titre de la section"
-                  className="flex-1 border-b border-[var(--border-1)] pb-1 text-sm font-semibold text-[var(--heading)] outline-none focus:border-[var(--yellow)]"
+                  className="flex-1 border-b border-[var(--border-1)] pb-1 text-sm font-semibold text-[var(--heading)] outline-none transition-colors focus:border-[var(--yellow)]"
                 />
                 <button
                   onClick={() => removeSection(index)}
-                  className="rounded p-1 text-red-400 hover:bg-red-50"
+                  className="rounded-[var(--radius-xs)] p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--red-surface)] hover:text-[var(--red)]"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>
@@ -178,21 +178,21 @@ export default function PolitiqueContent({ content, canEdit }: PolitiqueContentP
                 onChange={(e) => updateSection(index, "content", e.target.value)}
                 placeholder="Contenu de la section..."
                 rows={4}
-                className="w-full resize-none rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2 text-[12.5px] text-[var(--text)] outline-none focus:border-[var(--yellow)]"
+                className="w-full resize-none rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2.5 text-[12.5px] text-[var(--text)] outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
               />
             </div>
           ))}
 
           <button
             onClick={addSection}
-            className="flex w-full items-center justify-center gap-2 rounded-[var(--radius-sm)] border-2 border-dashed border-[var(--border-1)] py-3 text-sm text-[var(--text-muted)] transition-colors hover:border-[var(--yellow)] hover:text-[var(--yellow)]"
+            className="flex w-full items-center justify-center gap-2 rounded-[var(--radius-sm)] border-2 border-dashed border-[var(--border-1)] py-3.5 text-sm text-[var(--text-muted)] transition-all duration-200 hover:border-[var(--yellow)] hover:text-[var(--yellow)]"
           >
             <Plus className="h-4 w-4" />
             Ajouter une section
           </button>
         </div>
       ) : isEmpty ? (
-        <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-white py-16 text-center">
+        <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] py-16 text-center shadow-sm">
           <p className="text-sm text-[var(--text-secondary)]">
             Aucun contenu de politique QSE n&apos;a été défini.
           </p>
@@ -205,19 +205,19 @@ export default function PolitiqueContent({ content, canEdit }: PolitiqueContentP
       ) : (
         <div className="space-y-3">
           {/* Title */}
-          <h2 className="mb-4 text-lg font-bold text-[var(--heading)]">{title}</h2>
+          <h2 className="mb-5 text-lg font-bold text-[var(--heading)]">{title}</h2>
 
           {/* Sections */}
           {sections.map((section, index) => (
             <div
               key={index}
-              className="rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-white overflow-hidden"
+              className="overflow-hidden rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] shadow-xs transition-shadow duration-200 hover:shadow-sm"
             >
               <button
                 onClick={() => toggleSection(index)}
-                className="flex w-full items-center gap-3 px-5 py-3.5 text-left transition-colors hover:bg-gray-50"
+                className="flex w-full items-center gap-3 px-5 py-4 text-left transition-colors hover:bg-[var(--hover)]"
               >
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[var(--navy)] text-[9px] font-bold text-white">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--navy)] text-[10px] font-bold text-white">
                   {index + 1}
                 </span>
                 <span className="flex-1 text-[13px] font-semibold text-[var(--heading)]">
@@ -231,7 +231,7 @@ export default function PolitiqueContent({ content, canEdit }: PolitiqueContentP
               </button>
               {expandedSections.has(index) && (
                 <div className="border-t border-[var(--border-1)] px-5 py-4">
-                  <p className="whitespace-pre-wrap text-[12.5px] leading-relaxed text-[var(--text)]">
+                  <p className="whitespace-pre-wrap text-[13px] leading-relaxed text-[var(--text)]">
                     {section.content}
                   </p>
                 </div>

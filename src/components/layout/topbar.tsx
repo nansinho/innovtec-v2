@@ -39,7 +39,7 @@ export default function Topbar({ profile, unreadCount = 0 }: TopbarProps) {
         <div className="flex items-center gap-1.5">
           <button
             onClick={() => setNotifOpen(true)}
-            className="relative flex h-[38px] w-[38px] items-center justify-center rounded-full border border-[var(--border-1)] bg-[var(--card)] text-[var(--text-secondary)] transition-colors hover:bg-[var(--hover)] hover:text-[var(--heading)]"
+            className="relative flex h-[38px] w-[38px] items-center justify-center rounded-full border border-[var(--border-1)] bg-[var(--card)] text-[var(--text-secondary)] shadow-xs transition-all duration-200 hover:bg-[var(--hover)] hover:text-[var(--heading)] hover:shadow-sm"
           >
             <Bell className="h-[18px] w-[18px]" />
             {unreadCount > 0 && (
@@ -48,10 +48,10 @@ export default function Topbar({ profile, unreadCount = 0 }: TopbarProps) {
               </div>
             )}
           </button>
-          <button className="flex h-[38px] w-[38px] items-center justify-center rounded-full border border-[var(--border-1)] bg-[var(--card)] text-[var(--text-secondary)] transition-colors hover:bg-[var(--hover)] hover:text-[var(--heading)]">
+          <button className="flex h-[38px] w-[38px] items-center justify-center rounded-full border border-[var(--border-1)] bg-[var(--card)] text-[var(--text-secondary)] shadow-xs transition-all duration-200 hover:bg-[var(--hover)] hover:text-[var(--heading)] hover:shadow-sm">
             <MessageSquare className="h-[18px] w-[18px]" />
           </button>
-          <button className="flex h-[38px] w-[38px] items-center justify-center rounded-full border border-[var(--border-1)] bg-[var(--card)] text-[var(--text-secondary)] transition-colors hover:bg-[var(--hover)] hover:text-[var(--heading)]">
+          <button className="flex h-[38px] w-[38px] items-center justify-center rounded-full border border-[var(--border-1)] bg-[var(--card)] text-[var(--text-secondary)] shadow-xs transition-all duration-200 hover:bg-[var(--hover)] hover:text-[var(--heading)] hover:shadow-sm">
             <Settings className="h-[18px] w-[18px]" />
           </button>
         </div>

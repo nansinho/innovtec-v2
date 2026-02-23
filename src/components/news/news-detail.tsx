@@ -26,11 +26,11 @@ const categoryLabels: Record<NewsCategory, string> = {
 };
 
 const categoryColors: Record<NewsCategory, string> = {
-  entreprise: "bg-blue-50 text-blue-700",
-  securite: "bg-red-50 text-red-700",
-  formation: "bg-green-50 text-green-700",
+  entreprise: "bg-[var(--blue-surface)] text-[var(--blue)]",
+  securite: "bg-[var(--red-surface)] text-[var(--red)]",
+  formation: "bg-[var(--green-surface)] text-[var(--green)]",
   chantier: "bg-orange-50 text-orange-700",
-  social: "bg-purple-50 text-purple-700",
+  social: "bg-[var(--purple-surface)] text-[var(--purple)]",
   rh: "bg-indigo-50 text-indigo-700",
 };
 
@@ -167,7 +167,7 @@ export default function NewsDetail({
 
         {/* Image */}
         {article.image_url && (
-          <div className="relative mb-6 aspect-[16/9] overflow-hidden rounded-[var(--radius)] bg-gray-100">
+          <div className="relative mb-6 aspect-[16/9] overflow-hidden rounded-[var(--radius)] bg-[var(--hover)]">
             <Image
               src={article.image_url}
               alt={article.title}
@@ -180,7 +180,7 @@ export default function NewsDetail({
         )}
 
         {/* Content */}
-        <div className="prose-sm mb-8 rounded-[var(--radius)] border border-[var(--border-1)] bg-white p-6">
+        <div className="prose-sm mb-8 rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] p-6 shadow-sm">
           <div
             className="whitespace-pre-wrap text-[13.5px] leading-relaxed text-[var(--text)]"
           >
@@ -189,7 +189,7 @@ export default function NewsDetail({
         </div>
 
         {/* Comments section */}
-        <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-white">
+        <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] shadow-sm">
           <div className="border-b border-[var(--border-1)] px-5 py-3.5">
             <h3 className="flex items-center gap-2 text-sm font-semibold text-[var(--heading)]">
               <MessageSquare className="h-4 w-4" />
@@ -261,7 +261,7 @@ export default function NewsDetail({
                       {isOwn && (
                         <button
                           onClick={() => handleDeleteComment(comment.id)}
-                          className="rounded p-1 text-[var(--text-muted)] transition-colors hover:bg-red-50 hover:text-red-500"
+                          className="rounded-[var(--radius-xs)] p-1 text-[var(--text-muted)] transition-colors hover:bg-[var(--red-surface)] hover:text-[var(--red)]"
                           title="Supprimer"
                         >
                           <Trash2 className="h-3.5 w-3.5" />

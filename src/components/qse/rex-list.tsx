@@ -20,7 +20,7 @@ interface RexListProps {
 export default function RexList({ rexList }: RexListProps) {
   if (rexList.length === 0) {
     return (
-      <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-white py-12 text-center">
+      <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] py-12 text-center shadow-sm">
         <BookOpen className="mx-auto mb-3 h-10 w-10 text-[var(--border-1)]" />
         <p className="text-sm text-[var(--text-secondary)]">
           Aucun retour d&apos;expérience enregistré.
@@ -40,11 +40,11 @@ export default function RexList({ rexList }: RexListProps) {
         return (
           <div
             key={rex.id}
-            className="rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-white p-5"
+            className="rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] p-5 shadow-xs transition-shadow duration-200 hover:shadow-sm"
           >
             <div className="mb-2 flex flex-wrap items-center gap-2">
               {rex.chantier && (
-                <span className="flex items-center gap-1 rounded-full bg-blue-50 px-2.5 py-0.5 text-[10px] font-medium text-blue-700">
+                <span className="flex items-center gap-1 rounded-full bg-[var(--blue-surface)] px-2.5 py-0.5 text-[10px] font-medium text-[var(--blue)]">
                   <MapPin className="h-3 w-3" />
                   {rex.chantier}
                 </span>

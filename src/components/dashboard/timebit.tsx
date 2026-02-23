@@ -97,7 +97,7 @@ export default function Timebit() {
             className={cn(
               "flex-1 rounded-[var(--radius-sm)] border py-[7px] text-center text-[11px] transition-colors",
               mode === "chantier"
-                ? "border-[var(--yellow)] bg-[var(--yellow-surface)] font-medium text-[#b07800]"
+                ? "border-[var(--yellow)] bg-[var(--yellow-surface)] font-medium text-[var(--yellow)]"
                 : "border-[var(--border-1)] bg-[var(--card)] text-[var(--text-secondary)]",
               active && "opacity-50 cursor-not-allowed"
             )}
@@ -110,7 +110,7 @@ export default function Timebit() {
             className={cn(
               "flex-1 rounded-[var(--radius-sm)] border py-[7px] text-center text-[11px] transition-colors",
               mode === "bureau"
-                ? "border-[var(--yellow)] bg-[var(--yellow-surface)] font-medium text-[#b07800]"
+                ? "border-[var(--yellow)] bg-[var(--yellow-surface)] font-medium text-[var(--yellow)]"
                 : "border-[var(--border-1)] bg-[var(--card)] text-[var(--text-secondary)]",
               active && "opacity-50 cursor-not-allowed"
             )}
@@ -163,7 +163,7 @@ export default function Timebit() {
           <button
             onClick={handleStart}
             disabled={isPending || loading}
-            className="mb-1.5 w-full rounded-[var(--radius-sm)] border border-[var(--yellow)] bg-[var(--yellow-surface)] py-[9px] text-xs font-medium text-[#b07800] transition-colors hover:bg-[var(--yellow)] hover:text-white disabled:opacity-50"
+            className="mb-1.5 w-full rounded-[var(--radius-sm)] border border-[var(--yellow)] bg-[var(--yellow-surface)] py-[9px] text-xs font-medium text-[var(--yellow)] transition-colors hover:bg-[var(--yellow)] hover:text-white disabled:opacity-50"
           >
             {isPending ? "..." : "D\u00e9marrer le pointage"}
           </button>

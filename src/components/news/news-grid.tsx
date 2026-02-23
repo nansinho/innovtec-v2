@@ -24,11 +24,11 @@ const categoryLabels: Record<NewsCategory, string> = {
 };
 
 const categoryColors: Record<NewsCategory, string> = {
-  entreprise: "bg-blue-50 text-blue-700",
-  securite: "bg-red-50 text-red-700",
-  formation: "bg-green-50 text-green-700",
+  entreprise: "bg-[var(--blue-surface)] text-[var(--blue)]",
+  securite: "bg-[var(--red-surface)] text-[var(--red)]",
+  formation: "bg-[var(--green-surface)] text-[var(--green)]",
   chantier: "bg-orange-50 text-orange-700",
-  social: "bg-purple-50 text-purple-700",
+  social: "bg-[var(--purple-surface)] text-[var(--purple)]",
   rh: "bg-indigo-50 text-indigo-700",
 };
 
@@ -84,7 +84,7 @@ export default function NewsGrid({ news }: NewsGridProps) {
             "rounded-full px-3 py-1 text-[11px] font-medium transition-colors",
             selectedCategory === "all"
               ? "bg-[var(--navy)] text-white"
-              : "bg-gray-100 text-[var(--text-secondary)] hover:bg-gray-200"
+              : "bg-[var(--hover)] text-[var(--text-secondary)] hover:bg-[var(--border-1)]"
           )}
         >
           Toutes ({news.length})
@@ -100,7 +100,7 @@ export default function NewsGrid({ news }: NewsGridProps) {
                 "rounded-full px-3 py-1 text-[11px] font-medium transition-colors",
                 selectedCategory === cat
                   ? "bg-[var(--navy)] text-white"
-                  : "bg-gray-100 text-[var(--text-secondary)] hover:bg-gray-200"
+                  : "bg-[var(--hover)] text-[var(--text-secondary)] hover:bg-[var(--border-1)]"
               )}
             >
               {categoryLabels[cat]} ({count})
@@ -111,7 +111,7 @@ export default function NewsGrid({ news }: NewsGridProps) {
 
       {/* Grid */}
       {filtered.length === 0 ? (
-        <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-white py-16 text-center">
+        <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] py-16 text-center shadow-sm">
           <AlertCircle className="mx-auto mb-3 h-10 w-10 text-[var(--border-1)]" />
           <p className="text-sm text-[var(--text-secondary)]">
             Aucune actualité pour le moment.
@@ -130,12 +130,12 @@ export default function NewsGrid({ news }: NewsGridProps) {
                 key={article.id}
                 href={`/actualites/${article.id}`}
                 className={cn(
-                  "group flex flex-col overflow-hidden rounded-[var(--radius)] border border-[var(--border-1)] bg-white transition-all hover:shadow-md hover:-translate-y-0.5",
+                  "group flex flex-col overflow-hidden rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] shadow-xs transition-all duration-200 hover:shadow-md hover:-translate-y-0.5",
                   priority.className
                 )}
               >
                 {/* Image */}
-                <div className="relative aspect-[16/9] overflow-hidden bg-gray-100">
+                <div className="relative aspect-[16/9] overflow-hidden bg-[var(--hover)]">
                   {article.image_url ? (
                     <Image
                       src={article.image_url}
