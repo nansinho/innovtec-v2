@@ -17,7 +17,9 @@ import {
   Calendar,
   ChevronDown,
   ChevronRight,
-  X,
+  ArrowLeft,
+  Eye,
+  Upload,
 } from "lucide-react";
 import { cn, formatDate } from "@/lib/utils";
 import FileUploadAi from "@/components/ai/file-upload-ai";
@@ -42,6 +44,7 @@ const PILLARS = [
     color: "var(--yellow)",
     surface: "var(--yellow-surface)",
     border: "var(--yellow-border)",
+    gradient: "from-amber-500/10 to-yellow-500/5",
   },
   {
     key: "sante",
@@ -51,6 +54,7 @@ const PILLARS = [
     color: "var(--green)",
     surface: "var(--green-surface)",
     border: "rgba(22, 163, 74, 0.16)",
+    gradient: "from-green-500/10 to-emerald-500/5",
   },
   {
     key: "securite",
@@ -60,6 +64,7 @@ const PILLARS = [
     color: "var(--blue)",
     surface: "var(--blue-surface)",
     border: "rgba(37, 99, 235, 0.16)",
+    gradient: "from-blue-500/10 to-indigo-500/5",
   },
   {
     key: "environnement",
@@ -69,6 +74,7 @@ const PILLARS = [
     color: "var(--navy)",
     surface: "rgba(26, 45, 78, 0.06)",
     border: "rgba(26, 45, 78, 0.16)",
+    gradient: "from-slate-500/10 to-gray-500/5",
   },
 ] as const;
 
@@ -79,6 +85,7 @@ interface Pillar {
   color: string;
   surface: string;
   border: string;
+  gradient: string;
   engagements: string[];
   objectifs: string[];
 }
@@ -138,6 +145,7 @@ function parsePillars(sections: QseContentSection[]): {
     color: p.color,
     surface: p.surface,
     border: p.border,
+    gradient: p.gradient,
     engagements: pillarMap[p.key].engagements,
     objectifs: pillarMap[p.key].objectifs,
   })).filter((p) => p.engagements.length > 0 || p.objectifs.length > 0);
@@ -154,12 +162,16 @@ function PillarCard({ pillar }: { pillar: Pillar }) {
 
   return (
     <div
-      className="overflow-hidden rounded-[var(--radius)] border bg-[var(--card)] shadow-sm"
+      className={cn(
+        "group/pillar overflow-hidden rounded-[var(--radius)] border bg-[var(--card)] shadow-sm",
+        "transition-all duration-300 hover:shadow-md hover:-translate-y-0.5"
+      )}
       style={{ borderColor: pillar.border }}
     >
-      <div className="flex items-center gap-3 px-5 py-4">
+      {/* Header with gradient accent */}
+      <div className={cn("relative flex items-center gap-3 px-5 py-4 bg-gradient-to-r", pillar.gradient)}>
         <div
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--radius-sm)]"
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl shadow-sm transition-transform duration-300 group-hover/pillar:scale-110"
           style={{ background: pillar.surface }}
         >
           <Icon className="h-5 w-5" style={{ color: pillar.color }} />
@@ -167,46 +179,53 @@ function PillarCard({ pillar }: { pillar: Pillar }) {
         <h3 className="text-[15px] font-bold uppercase tracking-wide text-[var(--heading)]">
           {pillar.label}
         </h3>
+        {/* Decorative accent bar */}
+        <div
+          className="absolute bottom-0 left-5 right-5 h-[2px] rounded-full opacity-30"
+          style={{ background: pillar.color }}
+        />
       </div>
 
+      {/* Engagements */}
       {pillar.engagements.length > 0 && (
-        <div className="border-t border-[var(--border-1)] px-5 py-4">
-          <div className="mb-2.5 flex items-center gap-2">
+        <div className="px-5 py-4">
+          <div className="mb-3 flex items-center gap-2">
             <div
-              className="h-1 w-5 rounded-full"
+              className="h-1 w-6 rounded-full"
               style={{ background: pillar.color }}
             />
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
+            <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[var(--text-secondary)]">
               Nos engagements
             </span>
           </div>
-          <ul className="space-y-2">
+          <ul className="space-y-2.5">
             {pillar.engagements.map((item, i) => (
-              <li key={i} className="flex gap-2 text-[12.5px] leading-relaxed text-[var(--text)]">
+              <li key={i} className="flex gap-2.5 text-[12.5px] leading-relaxed text-[var(--text)]">
                 <span
-                  className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full"
+                  className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full transition-transform duration-200"
                   style={{ background: pillar.color }}
                 />
-                {item}
+                <span>{item}</span>
               </li>
             ))}
           </ul>
         </div>
       )}
 
+      {/* Objectifs */}
       {pillar.objectifs.length > 0 && (
-        <div className="mx-4 mb-4 rounded-[var(--radius-sm)] bg-[var(--navy)] px-4 py-3.5">
-          <div className="mb-2 flex items-center gap-2">
-            <div className="h-1 w-5 rounded-full bg-[var(--yellow)]" />
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-white/60">
+        <div className="mx-4 mb-4 overflow-hidden rounded-xl bg-gradient-to-br from-[var(--navy)] to-[#1e3a5f] px-4 py-4 shadow-inner">
+          <div className="mb-2.5 flex items-center gap-2">
+            <div className="h-1 w-6 rounded-full bg-[var(--yellow)]" />
+            <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-white/50">
               Nos objectifs
             </span>
           </div>
-          <ul className="space-y-1.5">
+          <ul className="space-y-2">
             {pillar.objectifs.map((item, i) => (
-              <li key={i} className="flex gap-2 text-[12.5px] leading-relaxed text-white/90">
-                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--yellow)]" />
-                {item}
+              <li key={i} className="flex gap-2.5 text-[12.5px] leading-relaxed text-white/90">
+                <span className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--yellow)]" />
+                <span>{item}</span>
               </li>
             ))}
           </ul>
@@ -286,14 +305,8 @@ export default function PolitiqueContent({
     setSections(sections.filter((_, i) => i !== index));
   }
 
-  function updateSection(
-    index: number,
-    field: keyof QseContentSection,
-    value: string
-  ) {
-    setSections(
-      sections.map((s, i) => (i === index ? { ...s, [field]: value } : s))
-    );
+  function updateSection(index: number, field: keyof QseContentSection, value: string) {
+    setSections(sections.map((s, i) => (i === index ? { ...s, [field]: value } : s)));
   }
 
   function toggleEditSection(index: number) {
@@ -309,22 +322,9 @@ export default function PolitiqueContent({
     startTransition(async () => {
       let result;
       if (editingId) {
-        result = await saveQseContent(
-          "politique",
-          title,
-          sections,
-          sourceFileUrl || undefined,
-          editingId,
-          year
-        );
+        result = await saveQseContent("politique", title, sections, sourceFileUrl || undefined, editingId, year);
       } else {
-        result = await createQseContent(
-          "politique",
-          title,
-          sections,
-          sourceFileUrl || undefined,
-          year
-        );
+        result = await createQseContent("politique", title, sections, sourceFileUrl || undefined, year);
       }
       if (result.success) {
         setEditing(false);
@@ -373,11 +373,8 @@ export default function PolitiqueContent({
     setIsDownloading(true);
     try {
       const { url, error } = await getQseFileDownloadUrl(filePath);
-      if (url) {
-        window.open(url, "_blank");
-      } else if (error) {
-        console.error("Download error:", error);
-      }
+      if (url) window.open(url, "_blank");
+      else if (error) console.error("Download error:", error);
     } finally {
       setIsDownloading(false);
     }
@@ -388,30 +385,27 @@ export default function PolitiqueContent({
   // ==========================================
   if (editing) {
     return (
-      <div>
-        <div className="mb-5 flex flex-wrap items-center gap-2">
+      <div className="space-y-5">
+        {/* Action bar */}
+        <div className="flex flex-wrap items-center gap-2.5">
           <button
             onClick={handleSave}
             disabled={isPending}
-            className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-3 py-1.5 text-sm font-medium text-white shadow-xs transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-sm disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-xl bg-[var(--yellow)] px-4 py-2 text-[13px] font-semibold text-white shadow-sm transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-md active:scale-[0.97] disabled:opacity-50"
           >
             <Save className="h-4 w-4" />
             {isPending ? "Enregistrement..." : "Enregistrer"}
           </button>
           <button
-            onClick={() => {
-              setEditing(false);
-              setEditingId(null);
-              setShowUpload(false);
-            }}
-            className="rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] px-3 py-1.5 text-sm text-[var(--text-secondary)] shadow-xs transition-all duration-200 hover:bg-[var(--hover)] active:scale-[0.97]"
+            onClick={() => { setEditing(false); setEditingId(null); setShowUpload(false); }}
+            className="inline-flex items-center gap-2 rounded-xl border border-[var(--border-1)] bg-[var(--card)] px-4 py-2 text-[13px] font-medium text-[var(--text-secondary)] shadow-xs transition-all duration-200 hover:bg-[var(--hover)] hover:shadow-sm active:scale-[0.97]"
           >
             Annuler
           </button>
           {!showUpload && (
             <button
               onClick={() => setShowUpload(true)}
-              className="flex items-center gap-2 rounded-[var(--radius-sm)] border border-[var(--navy)] bg-transparent px-3 py-1.5 text-sm font-medium text-[var(--navy)] shadow-xs transition-all duration-200 hover:bg-[var(--navy)] hover:text-white hover:shadow-sm active:scale-[0.97]"
+              className="inline-flex items-center gap-2 rounded-xl border border-[var(--navy)]/20 bg-[var(--navy)]/5 px-4 py-2 text-[13px] font-medium text-[var(--navy)] transition-all duration-200 hover:bg-[var(--navy)] hover:text-white hover:shadow-sm active:scale-[0.97]"
             >
               <Sparkles className="h-4 w-4 text-[var(--yellow)]" />
               Importer un PDF / Image (IA)
@@ -419,112 +413,102 @@ export default function PolitiqueContent({
           )}
         </div>
 
+        {/* Upload zone */}
         {showUpload && (
-          <div className="mb-6 rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--hover)] p-5 shadow-xs">
-            <h3 className="mb-3 text-sm font-semibold text-[var(--heading)]">
-              Import IA — Analysez un PDF ou une image
-            </h3>
-            <p className="mb-4 text-[12px] text-[var(--text-secondary)]">
-              L&apos;IA va analyser votre document et generer automatiquement le
-              contenu structure de la politique QSE.
+          <div className="rounded-2xl border border-[var(--border-1)] bg-gradient-to-b from-[var(--card)] to-[var(--hover)] p-6 shadow-sm">
+            <div className="mb-1 flex items-center gap-2">
+              <Upload className="h-4 w-4 text-[var(--yellow)]" />
+              <h3 className="text-sm font-semibold text-[var(--heading)]">Import IA</h3>
+            </div>
+            <p className="mb-4 text-[12px] text-[var(--text-muted)]">
+              L&apos;IA va analyser votre document et generer automatiquement le contenu structure.
             </p>
-            <FileUploadAi
-              onAnalysisComplete={handleAiResult}
-              type="politique"
-              label="Importer votre politique QSE (PDF ou image)"
-            />
+            <FileUploadAi onAnalysisComplete={handleAiResult} type="politique" label="Importer votre politique QSE (PDF ou image)" />
           </div>
         )}
 
-        <div className="space-y-4">
-          {/* Year + Title */}
-          <div className="flex gap-4">
-            <div className="w-32 shrink-0">
-              <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">
-                Annee
-              </label>
+        {/* Form */}
+        <div className="rounded-2xl border border-[var(--border-1)] bg-[var(--card)] shadow-sm">
+          {/* Year + Title header */}
+          <div className="flex gap-4 border-b border-[var(--border-1)] p-5">
+            <div className="w-28 shrink-0">
+              <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Annee</label>
               <input
                 type="number"
                 min={2000}
                 max={2100}
                 value={year ?? new Date().getFullYear()}
                 onChange={(e) => setYear(parseInt(e.target.value) || null)}
-                className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                className="w-full rounded-lg border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2 text-sm font-semibold text-[var(--heading)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
               />
             </div>
             <div className="flex-1">
-              <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">
-                Titre du document
-              </label>
+              <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Titre du document</label>
               <input
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2.5 text-sm font-semibold text-[var(--heading)] outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                className="w-full rounded-lg border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2 text-sm font-semibold text-[var(--heading)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
               />
             </div>
           </div>
 
-          {sections.map((section, index) => (
-            <div
-              key={index}
-              className="rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] shadow-xs"
-            >
-              <button
-                onClick={() => toggleEditSection(index)}
-                className="flex w-full items-center gap-2 px-5 py-3.5 text-left"
-              >
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--navy)] text-[9px] font-bold text-white">
-                  {index + 1}
-                </span>
-                <span className="flex-1 text-sm font-semibold text-[var(--heading)]">
-                  {section.title || "Section sans titre"}
-                </span>
+          {/* Sections */}
+          <div className="divide-y divide-[var(--border-1)]">
+            {sections.map((section, index) => (
+              <div key={index}>
                 <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    removeSection(index);
-                  }}
-                  className="rounded-[var(--radius-xs)] p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--red-surface)] hover:text-[var(--red)]"
+                  onClick={() => toggleEditSection(index)}
+                  className="flex w-full items-center gap-3 px-5 py-3.5 text-left transition-colors hover:bg-[var(--hover)]"
                 >
-                  <Trash2 className="h-3.5 w-3.5" />
+                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[var(--navy)] text-[10px] font-bold text-white shadow-sm">
+                    {index + 1}
+                  </span>
+                  <span className="flex-1 text-[13px] font-semibold text-[var(--heading)]">
+                    {section.title || "Section sans titre"}
+                  </span>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); removeSection(index); }}
+                    className="rounded-lg p-1.5 text-[var(--text-muted)] transition-all hover:bg-red-50 hover:text-red-500"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                  {expandedEdit.has(index) ? (
+                    <ChevronDown className="h-4 w-4 text-[var(--text-muted)] transition-transform" />
+                  ) : (
+                    <ChevronRight className="h-4 w-4 text-[var(--text-muted)] transition-transform" />
+                  )}
                 </button>
-                {expandedEdit.has(index) ? (
-                  <ChevronDown className="h-4 w-4 text-[var(--text-muted)]" />
-                ) : (
-                  <ChevronRight className="h-4 w-4 text-[var(--text-muted)]" />
+                {expandedEdit.has(index) && (
+                  <div className="space-y-3 bg-[var(--bg)] px-5 py-4">
+                    <input
+                      value={section.title}
+                      onChange={(e) => updateSection(index, "title", e.target.value)}
+                      placeholder="Titre de la section (ex: QUALITE - Nos engagements)"
+                      className="w-full rounded-lg border border-[var(--border-1)] bg-[var(--card)] px-3 py-2 text-sm font-semibold text-[var(--heading)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                    />
+                    <textarea
+                      value={section.content}
+                      onChange={(e) => updateSection(index, "content", e.target.value)}
+                      placeholder="Contenu de la section..."
+                      rows={4}
+                      className="w-full resize-none rounded-lg border border-[var(--border-1)] bg-[var(--card)] px-3 py-2.5 text-[12.5px] leading-relaxed text-[var(--text)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                    />
+                  </div>
                 )}
-              </button>
-              {expandedEdit.has(index) && (
-                <div className="space-y-3 border-t border-[var(--border-1)] px-5 py-4">
-                  <input
-                    value={section.title}
-                    onChange={(e) =>
-                      updateSection(index, "title", e.target.value)
-                    }
-                    placeholder="Titre de la section (ex: QUALITE - Nos engagements)"
-                    className="w-full border-b border-[var(--border-1)] pb-1 text-sm font-semibold text-[var(--heading)] outline-none transition-colors focus:border-[var(--yellow)]"
-                  />
-                  <textarea
-                    value={section.content}
-                    onChange={(e) =>
-                      updateSection(index, "content", e.target.value)
-                    }
-                    placeholder="Contenu de la section..."
-                    rows={4}
-                    className="w-full resize-none rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2.5 text-[12.5px] text-[var(--text)] outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
-                  />
-                </div>
-              )}
-            </div>
-          ))}
+              </div>
+            ))}
+          </div>
 
-          <button
-            onClick={addSection}
-            className="flex w-full items-center justify-center gap-2 rounded-[var(--radius-sm)] border-2 border-dashed border-[var(--border-1)] py-3.5 text-sm text-[var(--text-muted)] transition-all duration-200 hover:border-[var(--yellow)] hover:text-[var(--yellow)]"
-          >
-            <Plus className="h-4 w-4" />
-            Ajouter une section
-          </button>
+          {/* Add section button */}
+          <div className="p-4">
+            <button
+              onClick={addSection}
+              className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-[var(--border-1)] py-3 text-[13px] font-medium text-[var(--text-muted)] transition-all duration-200 hover:border-[var(--yellow)] hover:bg-[var(--yellow-surface)] hover:text-[var(--yellow)]"
+            >
+              <Plus className="h-4 w-4" />
+              Ajouter une section
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -539,112 +523,107 @@ export default function PolitiqueContent({
     const imageUrl = fileUrls[selected.id] || null;
 
     return (
-      <div>
-        {/* Back button */}
-        <button
-          onClick={() => setSelectedId(null)}
-          className="mb-4 flex items-center gap-1.5 text-[12px] font-medium text-[var(--text-secondary)] transition-colors hover:text-[var(--heading)]"
-        >
-          <ChevronRight className="h-3.5 w-3.5 rotate-180" />
-          Retour a la liste
-        </button>
+      <div className="space-y-5">
+        {/* Navigation + actions bar */}
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <button
+            onClick={() => setSelectedId(null)}
+            className="inline-flex items-center gap-2 rounded-xl px-3 py-1.5 text-[13px] font-medium text-[var(--text-secondary)] transition-all duration-200 hover:bg-[var(--hover)] hover:text-[var(--heading)]"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Retour
+          </button>
 
-        {/* Admin actions */}
-        {canEdit && (
-          <div className="mb-5 flex flex-wrap items-center gap-2">
-            <button
-              onClick={() => startEditing(selected)}
-              className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-3 py-1.5 text-sm font-medium text-white shadow-xs transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-sm active:scale-[0.97]"
-            >
-              <Edit3 className="h-4 w-4" />
-              Modifier
-            </button>
-            <button
-              onClick={() => setShowUpload(!showUpload)}
-              className="flex items-center gap-2 rounded-[var(--radius-sm)] border border-[var(--navy)] bg-transparent px-3 py-1.5 text-sm font-medium text-[var(--navy)] shadow-xs transition-all duration-200 hover:bg-[var(--navy)] hover:text-white hover:shadow-sm active:scale-[0.97]"
-            >
-              <Sparkles className="h-4 w-4 text-[var(--yellow)]" />
-              Reimporter un PDF (IA)
-            </button>
-            <button
-              onClick={() => handleDelete(selected.id, selected.title)}
-              disabled={isPending}
-              className="flex items-center gap-2 rounded-[var(--radius-sm)] border border-red-200 bg-transparent px-3 py-1.5 text-sm font-medium text-red-600 shadow-xs transition-all duration-200 hover:bg-red-50 hover:shadow-sm active:scale-[0.97] disabled:opacity-50"
-            >
-              <Trash2 className="h-4 w-4" />
-              Supprimer
-            </button>
-          </div>
-        )}
+          {canEdit && (
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => startEditing(selected)}
+                className="inline-flex items-center gap-2 rounded-xl bg-[var(--yellow)] px-3.5 py-1.5 text-[13px] font-semibold text-white shadow-sm transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-md active:scale-[0.97]"
+              >
+                <Edit3 className="h-3.5 w-3.5" />
+                Modifier
+              </button>
+              <button
+                onClick={() => setShowUpload(!showUpload)}
+                className="inline-flex items-center gap-2 rounded-xl border border-[var(--navy)]/20 bg-[var(--navy)]/5 px-3.5 py-1.5 text-[13px] font-medium text-[var(--navy)] transition-all duration-200 hover:bg-[var(--navy)] hover:text-white active:scale-[0.97]"
+              >
+                <Sparkles className="h-3.5 w-3.5" />
+                Reimporter
+              </button>
+              <button
+                onClick={() => handleDelete(selected.id, selected.title)}
+                disabled={isPending}
+                className="inline-flex items-center gap-2 rounded-xl border border-red-100 px-3.5 py-1.5 text-[13px] font-medium text-red-500 transition-all duration-200 hover:bg-red-50 hover:text-red-600 active:scale-[0.97] disabled:opacity-50"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                Supprimer
+              </button>
+            </div>
+          )}
+        </div>
 
         {showUpload && (
-          <div className="mb-6 rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--hover)] p-5 shadow-xs">
+          <div className="rounded-2xl border border-[var(--border-1)] bg-gradient-to-b from-[var(--card)] to-[var(--hover)] p-6 shadow-sm">
             <FileUploadAi
-              onAnalysisComplete={(result, fileUrl) => {
-                handleAiResult(result, fileUrl);
-                setEditingId(selected.id);
-              }}
+              onAnalysisComplete={(result, fileUrl) => { handleAiResult(result, fileUrl); setEditingId(selected.id); }}
               type="politique"
               label="Importer votre politique QSE (PDF ou image)"
             />
           </div>
         )}
 
-        {/* Original image display OR structured view */}
+        {/* Content: image or structured view */}
         {imageUrl ? (
-          <>
+          <div className="space-y-4">
             {/* Original imported image */}
-            <div className="overflow-hidden rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] shadow-md">
+            <div className="overflow-hidden rounded-2xl border border-[var(--border-1)] bg-[var(--card)] shadow-lg transition-shadow duration-300 hover:shadow-xl">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={imageUrl}
-                alt={selected.title}
-                className="w-full h-auto"
-              />
+              <img src={imageUrl} alt={selected.title} className="w-full h-auto" />
             </div>
 
-            {/* Download button */}
-            <div className="mt-5 flex items-center gap-3">
+            {/* Actions below image */}
+            <div className="flex flex-wrap items-center gap-3">
               <button
                 onClick={() => handleDownloadFile(selected.source_file_url)}
                 disabled={isDownloading}
-                className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--navy)] px-4 py-2 text-sm font-medium text-white shadow-xs transition-all duration-200 hover:bg-[var(--navy)]/90 hover:shadow-sm disabled:opacity-50"
+                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[var(--navy)] to-[#2a4a7a] px-5 py-2.5 text-[13px] font-semibold text-white shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.97] disabled:opacity-50"
               >
                 <Download className="h-4 w-4" />
-                {isDownloading ? "Chargement..." : "Telecharger le document original"}
+                {isDownloading ? "Chargement..." : "Telecharger le document"}
               </button>
+              <span className="flex items-center gap-1.5 text-[11px] text-[var(--text-muted)]">
+                <Calendar className="h-3 w-3" />
+                Mis a jour le {formatDate(selected.updated_at, "d MMMM yyyy")}
+              </span>
             </div>
-
-            {/* Signature line */}
-            <div className="mt-6 border-t border-[var(--border-1)] pt-4 text-center text-[11px] text-[var(--text-muted)]">
-              Document mis a jour le {formatDate(selected.updated_at, "d MMMM yyyy")}
-            </div>
-          </>
+          </div>
         ) : (
           <>
-            {/* Fallback: structured pillar view when no image */}
             {/* Hero Banner */}
-            <div className="mb-6 overflow-hidden rounded-[var(--radius)] bg-gradient-to-br from-[var(--navy)] to-[#2a4a7a] px-8 py-8 shadow-md">
-              <div className="flex items-start justify-between">
-                <div>
-                  <span className="mb-3 inline-block rounded-full bg-[var(--yellow)]/20 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--yellow)]">
-                    Politique QSE {docYear}
-                  </span>
-                  <h2 className="mt-2 text-[22px] font-bold leading-tight text-white">
-                    {selected.title}
-                  </h2>
-                  <div className="mt-2 flex items-center gap-2 text-[12px] text-white/50">
-                    <Calendar className="h-3.5 w-3.5" />
-                    Mise a jour le {formatDate(selected.updated_at)}
-                  </div>
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[var(--navy)] via-[#1e3a5f] to-[#2a4a7a] px-8 py-10 shadow-lg">
+              {/* Decorative circles */}
+              <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-white/5" />
+              <div className="absolute -bottom-4 -left-4 h-20 w-20 rounded-full bg-[var(--yellow)]/10" />
+
+              <div className="relative">
+                <span className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-[var(--yellow)]/15 px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider text-[var(--yellow)] backdrop-blur-sm">
+                  <Award className="h-3 w-3" />
+                  Politique QSE {docYear}
+                </span>
+                <h2 className="mt-3 text-2xl font-bold leading-tight text-white">
+                  {selected.title}
+                </h2>
+                <div className="mt-3 flex items-center gap-2 text-[12px] text-white/40">
+                  <Calendar className="h-3.5 w-3.5" />
+                  Mise a jour le {formatDate(selected.updated_at, "d MMMM yyyy")}
                 </div>
               </div>
             </div>
 
             {/* Introduction */}
             {intro && (
-              <div className="mb-6 rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] px-6 py-5 shadow-sm">
-                <p className="text-[13px] leading-relaxed text-[var(--text)]">
+              <div className="rounded-2xl border border-[var(--border-1)] bg-[var(--card)] px-6 py-5 shadow-sm">
+                <p className="text-[13px] leading-[1.7] text-[var(--text)]">
                   {intro}
                 </p>
               </div>
@@ -662,21 +641,17 @@ export default function PolitiqueContent({
                 {selected.sections.map((section, index) => (
                   <div
                     key={index}
-                    className="rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] p-5 shadow-xs"
+                    className="rounded-2xl border border-[var(--border-1)] bg-[var(--card)] p-5 shadow-xs transition-shadow hover:shadow-sm"
                   >
-                    <h3 className="mb-2 text-[13px] font-semibold text-[var(--heading)]">
-                      {section.title}
-                    </h3>
-                    <p className="whitespace-pre-wrap text-[12.5px] leading-relaxed text-[var(--text)]">
-                      {section.content}
-                    </p>
+                    <h3 className="mb-2 text-[13px] font-semibold text-[var(--heading)]">{section.title}</h3>
+                    <p className="whitespace-pre-wrap text-[12.5px] leading-relaxed text-[var(--text)]">{section.content}</p>
                   </div>
                 ))}
               </div>
             )}
 
-            {/* Signature line */}
-            <div className="mt-8 border-t border-[var(--border-1)] pt-4 text-center text-[11px] text-[var(--text-muted)]">
+            {/* Footer */}
+            <div className="border-t border-[var(--border-1)] pt-4 text-center text-[11px] text-[var(--text-muted)]">
               Document mis a jour le {formatDate(selected.updated_at, "d MMMM yyyy")}
             </div>
           </>
@@ -686,25 +661,23 @@ export default function PolitiqueContent({
   }
 
   // ==========================================
-  // LIST VIEW (always shown by default)
+  // LIST VIEW
   // ==========================================
   return (
-    <div>
+    <div className="space-y-5">
+      {/* Actions */}
       {canEdit && (
-        <div className="mb-5 flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2.5">
           <button
             onClick={startNew}
-            className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-3 py-1.5 text-sm font-medium text-white shadow-xs transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-sm active:scale-[0.97]"
+            className="inline-flex items-center gap-2 rounded-xl bg-[var(--yellow)] px-4 py-2.5 text-[13px] font-semibold text-white shadow-sm transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-md hover:-translate-y-0.5 active:scale-[0.97]"
           >
             <Plus className="h-4 w-4" />
             Nouvelle politique QSE
           </button>
           <button
-            onClick={() => {
-              setShowUpload(!showUpload);
-              setEditingId(null);
-            }}
-            className="flex items-center gap-2 rounded-[var(--radius-sm)] border border-[var(--navy)] bg-transparent px-3 py-1.5 text-sm font-medium text-[var(--navy)] shadow-xs transition-all duration-200 hover:bg-[var(--navy)] hover:text-white hover:shadow-sm active:scale-[0.97]"
+            onClick={() => { setShowUpload(!showUpload); setEditingId(null); }}
+            className="inline-flex items-center gap-2 rounded-xl border border-[var(--navy)]/20 bg-[var(--navy)]/5 px-4 py-2.5 text-[13px] font-medium text-[var(--navy)] transition-all duration-200 hover:bg-[var(--navy)] hover:text-white hover:shadow-md hover:-translate-y-0.5 active:scale-[0.97]"
           >
             <Sparkles className="h-4 w-4 text-[var(--yellow)]" />
             Importer un PDF / Image (IA)
@@ -713,33 +686,30 @@ export default function PolitiqueContent({
       )}
 
       {showUpload && (
-        <div className="mb-6 rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--hover)] p-5 shadow-xs">
-          <h3 className="mb-3 text-sm font-semibold text-[var(--heading)]">
-            Import IA — Analysez un PDF ou une image
-          </h3>
-          <p className="mb-4 text-[12px] text-[var(--text-secondary)]">
-            L&apos;IA va analyser votre document et generer automatiquement le
-            contenu structure de la politique QSE.
+        <div className="rounded-2xl border border-[var(--border-1)] bg-gradient-to-b from-[var(--card)] to-[var(--hover)] p-6 shadow-sm">
+          <div className="mb-1 flex items-center gap-2">
+            <Upload className="h-4 w-4 text-[var(--yellow)]" />
+            <h3 className="text-sm font-semibold text-[var(--heading)]">Import IA</h3>
+          </div>
+          <p className="mb-4 text-[12px] text-[var(--text-muted)]">
+            L&apos;IA va analyser votre document et generer automatiquement le contenu structure.
           </p>
-          <FileUploadAi
-            onAnalysisComplete={handleAiResult}
-            type="politique"
-            label="Importer votre politique QSE (PDF ou image)"
-          />
+          <FileUploadAi onAnalysisComplete={handleAiResult} type="politique" label="Importer votre politique QSE (PDF ou image)" />
         </div>
       )}
 
+      {/* Empty state */}
       {allContent.length === 0 ? (
-        <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] py-16 text-center shadow-sm">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--navy)]/10">
-            <FileText className="h-8 w-8 text-[var(--navy)]" />
+        <div className="rounded-2xl border border-dashed border-[var(--border-1)] bg-gradient-to-b from-[var(--card)] to-[var(--bg)] py-20 text-center">
+          <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--navy)]/10 to-[var(--navy)]/5 shadow-inner">
+            <FileText className="h-9 w-9 text-[var(--navy)]/60" />
           </div>
-          <p className="text-sm font-medium text-[var(--heading)]">
-            Aucune politique QSE definie
+          <p className="text-[15px] font-semibold text-[var(--heading)]">
+            Aucune politique QSE
           </p>
           {canEdit && (
-            <p className="mt-1 text-[12px] text-[var(--text-muted)]">
-              Utilisez les boutons ci-dessus pour creer une nouvelle politique ou importer un PDF.
+            <p className="mx-auto mt-2 max-w-xs text-[12px] leading-relaxed text-[var(--text-muted)]">
+              Creez une nouvelle politique ou importez un PDF/image pour commencer.
             </p>
           )}
         </div>
@@ -747,69 +717,81 @@ export default function PolitiqueContent({
         <div className="space-y-3">
           {allContent.map((doc) => {
             const docYear = getDocYear(doc);
+            const hasThumb = !!fileUrls[doc.id];
+
             return (
               <div
                 key={doc.id}
-                className="group flex w-full items-center gap-4 rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] px-5 py-4 shadow-xs transition-all duration-200 hover:shadow-sm hover:border-[var(--yellow)]/40"
+                className="group relative overflow-hidden rounded-2xl border border-[var(--border-1)] bg-[var(--card)] shadow-xs transition-all duration-300 hover:shadow-md hover:border-[var(--yellow)]/30 hover:-translate-y-0.5"
               >
-                <button
-                  onClick={() => setSelectedId(doc.id)}
-                  className="flex flex-1 items-center gap-4 text-left min-w-0"
-                >
-                  {fileUrls[doc.id] ? (
-                    <div className="h-12 w-12 shrink-0 overflow-hidden rounded-[var(--radius-sm)] border border-[var(--border-1)]">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={fileUrls[doc.id]}
-                        alt={doc.title}
-                        className="h-full w-full object-cover"
-                      />
+                <div className="flex items-center gap-4 p-4">
+                  {/* Thumbnail / icon */}
+                  <button
+                    onClick={() => setSelectedId(doc.id)}
+                    className="flex flex-1 items-center gap-4 text-left min-w-0"
+                  >
+                    {hasThumb ? (
+                      <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-[var(--border-1)] shadow-xs transition-transform duration-300 group-hover:scale-105">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={fileUrls[doc.id]} alt={doc.title} className="h-full w-full object-cover" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+                      </div>
+                    ) : (
+                      <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[var(--navy)] to-[#2a4a7a] shadow-sm transition-transform duration-300 group-hover:scale-105">
+                        <FileText className="h-6 w-6 text-[var(--yellow)]" />
+                      </div>
+                    )}
+
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[14px] font-semibold text-[var(--heading)] truncate transition-colors group-hover:text-[var(--navy)]">
+                        {doc.title}
+                      </div>
+                      <div className="mt-1 flex items-center gap-3 text-[11px] text-[var(--text-muted)]">
+                        <span className="flex items-center gap-1">
+                          <Calendar className="h-3 w-3" />
+                          {formatDate(doc.updated_at)}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Eye className="h-3 w-3" />
+                          Voir le detail
+                        </span>
+                      </div>
                     </div>
-                  ) : (
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--radius-sm)] bg-[var(--navy)]">
-                      <FileText className="h-5 w-5 text-[var(--yellow)]" />
+
+                    {/* Year badge */}
+                    <span className="rounded-full bg-gradient-to-r from-[var(--yellow)] to-[#ffb840] px-3.5 py-1 text-[11px] font-bold text-white shadow-sm transition-transform duration-200 group-hover:scale-105">
+                      {docYear}
+                    </span>
+
+                    {/* Arrow */}
+                    <ChevronRight className="h-5 w-5 text-[var(--text-muted)] transition-all duration-200 group-hover:translate-x-1 group-hover:text-[var(--yellow)]" />
+                  </button>
+
+                  {/* Admin actions */}
+                  {canEdit && (
+                    <div className="flex items-center gap-0.5 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); startEditing(doc); }}
+                        className="rounded-lg p-2 text-[var(--text-muted)] transition-all hover:bg-[var(--yellow-surface)] hover:text-[var(--yellow)] hover:scale-110"
+                        title="Modifier"
+                      >
+                        <Edit3 className="h-4 w-4" />
+                      </button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleDelete(doc.id, doc.title); }}
+                        disabled={isPending}
+                        className="rounded-lg p-2 text-[var(--text-muted)] transition-all hover:bg-red-50 hover:text-red-500 hover:scale-110 disabled:opacity-50"
+                        title="Supprimer"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
                     </div>
                   )}
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-semibold text-[var(--heading)] truncate">
-                      {doc.title}
-                    </div>
-                    <div className="mt-0.5 flex items-center gap-2 text-[11px] text-[var(--text-muted)]">
-                      <Calendar className="h-3 w-3" />
-                      Mise a jour le {formatDate(doc.updated_at)}
-                    </div>
-                  </div>
-                  <span className="rounded-full bg-[var(--yellow)] px-3 py-1 text-[11px] font-bold text-white">
-                    {docYear}
-                  </span>
-                  <ChevronRight className="h-4 w-4 text-[var(--text-muted)] transition-transform group-hover:translate-x-0.5" />
-                </button>
+                </div>
 
-                {canEdit && (
-                  <div className="flex items-center gap-1 shrink-0">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        startEditing(doc);
-                      }}
-                      className="rounded-[var(--radius-xs)] p-2 text-[var(--text-muted)] transition-colors hover:bg-[var(--yellow-surface)] hover:text-[var(--yellow)]"
-                      title="Modifier"
-                    >
-                      <Edit3 className="h-4 w-4" />
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDelete(doc.id, doc.title);
-                      }}
-                      disabled={isPending}
-                      className="rounded-[var(--radius-xs)] p-2 text-[var(--text-muted)] transition-colors hover:bg-[var(--red-surface)] hover:text-[var(--red)] disabled:opacity-50"
-                      title="Supprimer"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
-                )}
+                {/* Accent line on hover */}
+                <div className="absolute bottom-0 left-0 h-[2px] w-0 bg-gradient-to-r from-[var(--yellow)] to-[#ffb840] transition-all duration-500 group-hover:w-full" />
               </div>
             );
           })}
