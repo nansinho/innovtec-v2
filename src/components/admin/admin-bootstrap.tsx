@@ -1,18 +1,20 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { Shield, AlertCircle } from "lucide-react";
 import { promoteToAdmin } from "@/actions/users";
 
 export default function AdminBootstrap() {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState("");
+  const router = useRouter();
 
   function handlePromote() {
     startTransition(async () => {
       const result = await promoteToAdmin();
       if (result.success) {
-        window.location.reload();
+        router.refresh();
       } else {
         setError(result.error || "Erreur");
       }

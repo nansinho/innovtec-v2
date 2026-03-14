@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Plus, X } from "lucide-react";
 import RexForm from "./rex-form";
 
 export default function RexFormWrapper() {
   const [showForm, setShowForm] = useState(false);
+  const router = useRouter();
 
   return (
     <div>
@@ -31,7 +33,7 @@ export default function RexFormWrapper() {
           <RexForm
             onCreated={() => {
               setShowForm(false);
-              window.location.reload();
+              router.refresh();
             }}
           />
         </div>

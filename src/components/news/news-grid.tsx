@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -66,10 +66,13 @@ export default function NewsGrid({ news }: NewsGridProps) {
     NewsCategory | "all"
   >("all");
 
-  const filtered =
-    selectedCategory === "all"
-      ? news
-      : news.filter((n) => n.category === selectedCategory);
+  const filtered = useMemo(
+    () =>
+      selectedCategory === "all"
+        ? news
+        : news.filter((n) => n.category === selectedCategory),
+    [news, selectedCategory]
+  );
 
   const categories = Object.keys(categoryLabels) as NewsCategory[];
 
@@ -141,7 +144,7 @@ export default function NewsGrid({ news }: NewsGridProps) {
                       src={article.image_url}
                       alt={article.title}
                       fill
-                      className="object-cover transition-transform duration-300 group-hover:scale-105"
+                      className="object-cover transition-transform duration-300 will-change-transform group-hover:scale-105"
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     />
                   ) : (

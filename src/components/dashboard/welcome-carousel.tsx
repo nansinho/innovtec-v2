@@ -78,7 +78,7 @@ export default function WelcomeCarousel() {
   return (
     <div className="relative h-[260px] overflow-hidden rounded-2xl">
       <div
-        className="flex h-full transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]"
+        className="flex h-full transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] will-change-transform"
         style={{ transform: `translateX(-${current * 100}%)` }}
       >
         {slides.map((slide, i) => (
@@ -106,6 +106,8 @@ export default function WelcomeCarousel() {
                 src={slide.image}
                 alt=""
                 fill
+                priority={i === 0}
+                sizes="(max-width: 768px) 0vw, 42vw"
                 className="object-cover"
               />
             </div>

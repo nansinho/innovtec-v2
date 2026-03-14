@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
+import { getAnthropicApiKey } from "@/actions/settings";
 
 const ROLE_CREDITS: Record<string, number> = {
   admin: 999999,
@@ -72,10 +73,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Fichier requis" }, { status: 400 });
     }
 
-    const apiKey = process.env.ANTHROPIC_API_KEY;
+    const apiKey = await getAnthropicApiKey();
     if (!apiKey) {
       return NextResponse.json(
-        { error: "Clé API Anthropic non configurée" },
+        { error: "Clé API Anthropic non configurée. Rendez-vous dans Paramètres pour la configurer." },
         { status: 500 }
       );
     }
