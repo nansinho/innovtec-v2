@@ -51,6 +51,10 @@ export interface Profile {
   avatar_url: string;
   date_of_birth: string | null;
   hire_date: string | null;
+  department: string;
+  team: string;
+  agency: string;
+  must_change_password: boolean;
   is_active: boolean;
   created_at: string;
   updated_at: string;

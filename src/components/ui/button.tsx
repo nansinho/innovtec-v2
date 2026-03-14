@@ -14,7 +14,7 @@ export function Button({
   return (
     <button
       className={cn(
-        "inline-flex items-center justify-center rounded-[var(--radius-sm)] font-medium transition-all duration-200",
+        "inline-flex items-center justify-center rounded-[var(--radius-sm)] font-medium transition-all duration-200 active:scale-[0.97]",
         {
           "bg-[var(--yellow)] text-white shadow-xs hover:bg-[var(--yellow-hover)] hover:shadow-sm":
             variant === "primary",
@@ -26,9 +26,9 @@ export function Button({
             variant === "danger",
         },
         {
-          "px-3 py-1.5 text-[11px]": size === "sm",
-          "px-4 py-2 text-xs": size === "md",
-          "px-5 py-2.5 text-sm": size === "lg",
+          "px-2.5 py-1 text-[11px]": size === "sm",
+          "px-3 py-1.5 text-xs": size === "md",
+          "px-4 py-2 text-sm": size === "lg",
         },
         className
       )}

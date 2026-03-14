@@ -322,14 +322,14 @@ export default function PolitiqueContent({
                 setSelectedId(null);
                 setEditing(true);
               }}
-              className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-4 py-2.5 text-sm font-medium text-white shadow-xs transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-sm"
+              className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-3 py-1.5 text-sm font-medium text-white shadow-xs transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-sm active:scale-[0.97]"
             >
               <Edit3 className="h-4 w-4" />
               Modifier manuellement
             </button>
             <button
               onClick={() => setShowUpload(!showUpload)}
-              className="flex items-center gap-2 rounded-[var(--radius-sm)] border border-[var(--navy)] bg-transparent px-4 py-2.5 text-sm font-medium text-[var(--navy)] shadow-xs transition-all duration-200 hover:bg-[var(--navy)] hover:text-white hover:shadow-sm"
+              className="flex items-center gap-2 rounded-[var(--radius-sm)] border border-[var(--navy)] bg-transparent px-3 py-1.5 text-sm font-medium text-[var(--navy)] shadow-xs transition-all duration-200 hover:bg-[var(--navy)] hover:text-white hover:shadow-sm active:scale-[0.97]"
             >
               <Sparkles className="h-4 w-4 text-[var(--yellow)]" />
               Importer un PDF / Image (IA)
@@ -413,14 +413,14 @@ export default function PolitiqueContent({
                 setExpandedEdit(new Set(selected.sections.map((_, i) => i)));
                 setEditing(true);
               }}
-              className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-4 py-2.5 text-sm font-medium text-white shadow-xs transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-sm"
+              className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-3 py-1.5 text-sm font-medium text-white shadow-xs transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-sm active:scale-[0.97]"
             >
               <Edit3 className="h-4 w-4" />
               Modifier
             </button>
             <button
               onClick={() => setShowUpload(!showUpload)}
-              className="flex items-center gap-2 rounded-[var(--radius-sm)] border border-[var(--navy)] bg-transparent px-4 py-2.5 text-sm font-medium text-[var(--navy)] shadow-xs transition-all duration-200 hover:bg-[var(--navy)] hover:text-white hover:shadow-sm"
+              className="flex items-center gap-2 rounded-[var(--radius-sm)] border border-[var(--navy)] bg-transparent px-3 py-1.5 text-sm font-medium text-[var(--navy)] shadow-xs transition-all duration-200 hover:bg-[var(--navy)] hover:text-white hover:shadow-sm active:scale-[0.97]"
             >
               <Sparkles className="h-4 w-4 text-[var(--yellow)]" />
               Reimporter un PDF (IA)
@@ -458,7 +458,7 @@ export default function PolitiqueContent({
                 href={selected.source_file_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-white/10 px-4 py-2.5 text-[12px] font-medium text-white backdrop-blur-sm transition-all hover:bg-white/20"
+                className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-white/10 px-3 py-1.5 text-[12px] font-medium text-white backdrop-blur-sm transition-all hover:bg-white/20"
               >
                 <Download className="h-4 w-4" />
                 Telecharger le PDF
@@ -522,14 +522,14 @@ export default function PolitiqueContent({
             <>
               <button
                 onClick={() => setEditing(true)}
-                className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-4 py-2.5 text-sm font-medium text-white shadow-xs transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-sm"
+                className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-3 py-1.5 text-sm font-medium text-white shadow-xs transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-sm active:scale-[0.97]"
               >
                 <Edit3 className="h-4 w-4" />
                 Modifier manuellement
               </button>
               <button
                 onClick={() => setShowUpload(!showUpload)}
-                className="flex items-center gap-2 rounded-[var(--radius-sm)] border border-[var(--navy)] bg-transparent px-4 py-2.5 text-sm font-medium text-[var(--navy)] shadow-xs transition-all duration-200 hover:bg-[var(--navy)] hover:text-white hover:shadow-sm"
+                className="flex items-center gap-2 rounded-[var(--radius-sm)] border border-[var(--navy)] bg-transparent px-3 py-1.5 text-sm font-medium text-[var(--navy)] shadow-xs transition-all duration-200 hover:bg-[var(--navy)] hover:text-white hover:shadow-sm active:scale-[0.97]"
               >
                 <Sparkles className="h-4 w-4 text-[var(--yellow)]" />
                 Importer un PDF / Image (IA)
@@ -540,7 +540,7 @@ export default function PolitiqueContent({
               <button
                 onClick={handleSave}
                 disabled={isPending}
-                className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-4 py-2.5 text-sm font-medium text-white shadow-xs transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-sm disabled:opacity-50"
+                className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-3 py-1.5 text-sm font-medium text-white shadow-xs transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-sm disabled:opacity-50"
               >
                 <Save className="h-4 w-4" />
                 {isPending ? "Enregistrement..." : "Enregistrer"}
@@ -554,7 +554,7 @@ export default function PolitiqueContent({
                   );
                   setSections(content?.sections ?? []);
                 }}
-                className="rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] px-4 py-2.5 text-sm text-[var(--text-secondary)] shadow-xs transition-all duration-200 hover:bg-[var(--hover)]"
+                className="rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] px-3 py-1.5 text-sm text-[var(--text-secondary)] shadow-xs transition-all duration-200 hover:bg-[var(--hover)] active:scale-[0.97]"
               >
                 Annuler
               </button>
