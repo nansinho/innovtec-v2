@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import {
   Edit3,
@@ -18,10 +18,11 @@ import {
   ChevronDown,
   ChevronRight,
   X,
+  Image as ImageIcon,
 } from "lucide-react";
 import { cn, formatDate } from "@/lib/utils";
 import FileUploadAi from "@/components/ai/file-upload-ai";
-import { saveQseContent } from "@/actions/qse";
+import { saveQseContent, createQseContent } from "@/actions/qse";
 import type { QseContent, QseContentSection } from "@/lib/types/database";
 
 // ==========================================
@@ -92,7 +93,6 @@ function parsePillars(sections: QseContentSection[]): {
   for (const section of sections) {
     const titleLower = section.title.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
-    // Check for intro/presentation
     if (
       titleLower.includes("presentation") ||
       titleLower.includes("generale") ||
@@ -102,7 +102,6 @@ function parsePillars(sections: QseContentSection[]): {
       continue;
     }
 
-    // Match to pillar
     let matched = false;
     for (const p of PILLARS) {
       const sectionTitleNorm = section.title.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -123,7 +122,6 @@ function parsePillars(sections: QseContentSection[]): {
       }
     }
 
-    // Fallback: if not matched, try to add as intro
     if (!matched && !intro) {
       intro = section.content;
     }
@@ -155,7 +153,6 @@ function PillarCard({ pillar }: { pillar: Pillar }) {
       className="overflow-hidden rounded-[var(--radius)] border bg-[var(--card)] shadow-sm"
       style={{ borderColor: pillar.border }}
     >
-      {/* Header */}
       <div className="flex items-center gap-3 px-5 py-4">
         <div
           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--radius-sm)]"
@@ -168,7 +165,6 @@ function PillarCard({ pillar }: { pillar: Pillar }) {
         </h3>
       </div>
 
-      {/* Engagements */}
       {pillar.engagements.length > 0 && (
         <div className="border-t border-[var(--border-1)] px-5 py-4">
           <div className="mb-2.5 flex items-center gap-2">
@@ -194,7 +190,6 @@ function PillarCard({ pillar }: { pillar: Pillar }) {
         </div>
       )}
 
-      {/* Objectifs */}
       {pillar.objectifs.length > 0 && (
         <div className="mx-4 mb-4 rounded-[var(--radius-sm)] bg-[var(--navy)] px-4 py-3.5">
           <div className="mb-2 flex items-center gap-2">
@@ -232,10 +227,9 @@ export default function PolitiqueContent({
   allContent,
   canEdit,
 }: PolitiqueContentProps) {
-  const [selectedId, setSelectedId] = useState<string | null>(
-    content?.id ?? null
-  );
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [title, setTitle] = useState(
     content?.title ?? "Politique Qualite, Securite et Environnement"
   );
@@ -247,9 +241,11 @@ export default function PolitiqueContent({
   const [expandedEdit, setExpandedEdit] = useState<Set<number>>(
     new Set(sections.map((_, i) => i))
   );
+  const [isDownloading, setIsDownloading] = useState(false);
   const router = useRouter();
+  const detailRef = useRef<HTMLDivElement>(null);
 
-  const selected = allContent.find((c) => c.id === selectedId) ?? content;
+  const selected = allContent.find((c) => c.id === selectedId) ?? null;
   const { pillars, intro } = selected
     ? parsePillars(selected.sections)
     : { pillars: [], intro: "" };
@@ -298,291 +294,115 @@ export default function PolitiqueContent({
 
   function handleSave() {
     startTransition(async () => {
-      const result = await saveQseContent("politique", title, sections);
+      let result;
+      if (editingId) {
+        // Update existing
+        result = await saveQseContent("politique", title, sections, undefined, editingId);
+      } else {
+        // Create new
+        result = await createQseContent("politique", title, sections);
+      }
       if (result.success) {
         setEditing(false);
+        setEditingId(null);
         router.refresh();
       }
     });
   }
 
-  const isEmpty = !selected || selected.sections.length === 0;
-  const showDetail = selectedId && !isEmpty && !editing;
+  function startEditing(doc: QseContent) {
+    setTitle(doc.title);
+    setSections(doc.sections);
+    setExpandedEdit(new Set(doc.sections.map((_, i) => i)));
+    setEditingId(doc.id);
+    setEditing(true);
+    setSelectedId(null);
+  }
+
+  function startNew() {
+    setTitle("Politique Qualite, Securite et Environnement");
+    setSections([]);
+    setExpandedEdit(new Set());
+    setEditingId(null);
+    setEditing(true);
+    setSelectedId(null);
+  }
+
+  const handleDownloadImage = useCallback(async () => {
+    if (!detailRef.current) return;
+    setIsDownloading(true);
+    try {
+      const html2canvas = (await import("html2canvas-pro")).default;
+      const canvas = await html2canvas(detailRef.current, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#ffffff",
+      });
+      const link = document.createElement("a");
+      const year = selected ? new Date(selected.updated_at).getFullYear() : new Date().getFullYear();
+      link.download = `politique-qse-${year}.png`;
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    } catch {
+      // Silently fail
+    } finally {
+      setIsDownloading(false);
+    }
+  }, [selected]);
 
   // ==========================================
-  // LIST VIEW (landing)
+  // EDIT MODE
   // ==========================================
-  if (!selectedId && allContent.length > 1 && !editing) {
+  if (editing) {
     return (
       <div>
-        {canEdit && (
-          <div className="mb-5 flex flex-wrap items-center gap-2">
+        <div className="mb-5 flex flex-wrap items-center gap-2">
+          <button
+            onClick={handleSave}
+            disabled={isPending}
+            className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-3 py-1.5 text-sm font-medium text-white shadow-xs transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-sm disabled:opacity-50"
+          >
+            <Save className="h-4 w-4" />
+            {isPending ? "Enregistrement..." : "Enregistrer"}
+          </button>
+          <button
+            onClick={() => {
+              setEditing(false);
+              setEditingId(null);
+              setShowUpload(false);
+            }}
+            className="rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] px-3 py-1.5 text-sm text-[var(--text-secondary)] shadow-xs transition-all duration-200 hover:bg-[var(--hover)] active:scale-[0.97]"
+          >
+            Annuler
+          </button>
+          {!showUpload && (
             <button
-              onClick={() => {
-                setSelectedId(null);
-                setEditing(true);
-              }}
-              className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-3 py-1.5 text-sm font-medium text-white shadow-xs transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-sm active:scale-[0.97]"
-            >
-              <Edit3 className="h-4 w-4" />
-              Modifier manuellement
-            </button>
-            <button
-              onClick={() => setShowUpload(!showUpload)}
+              onClick={() => setShowUpload(true)}
               className="flex items-center gap-2 rounded-[var(--radius-sm)] border border-[var(--navy)] bg-transparent px-3 py-1.5 text-sm font-medium text-[var(--navy)] shadow-xs transition-all duration-200 hover:bg-[var(--navy)] hover:text-white hover:shadow-sm active:scale-[0.97]"
             >
               <Sparkles className="h-4 w-4 text-[var(--yellow)]" />
               Importer un PDF / Image (IA)
             </button>
-          </div>
-        )}
+          )}
+        </div>
 
         {showUpload && (
           <div className="mb-6 rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--hover)] p-5 shadow-xs">
             <h3 className="mb-3 text-sm font-semibold text-[var(--heading)]">
               Import IA — Analysez un PDF ou une image
             </h3>
-            <FileUploadAi
-              onAnalysisComplete={handleAiResult}
-              type="politique"
-              label="Importer votre politique QSE (PDF ou image)"
-            />
-          </div>
-        )}
-
-        <div className="space-y-3">
-          {allContent.map((doc) => {
-            const year = new Date(doc.updated_at).getFullYear();
-            return (
-              <button
-                key={doc.id}
-                onClick={() => setSelectedId(doc.id)}
-                className="flex w-full items-center gap-4 rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] px-5 py-4 text-left shadow-xs transition-all duration-200 hover:shadow-sm hover:border-[var(--yellow)]/40"
-              >
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--radius-sm)] bg-[var(--navy)]">
-                  <FileText className="h-5 w-5 text-[var(--yellow)]" />
-                </div>
-                <div className="flex-1">
-                  <div className="text-sm font-semibold text-[var(--heading)]">
-                    {doc.title}
-                  </div>
-                  <div className="mt-0.5 flex items-center gap-2 text-[11px] text-[var(--text-muted)]">
-                    <Calendar className="h-3 w-3" />
-                    Mise a jour le {formatDate(doc.updated_at)}
-                  </div>
-                </div>
-                <span className="rounded-full bg-[var(--navy)] px-3 py-1 text-[11px] font-bold text-white">
-                  {year}
-                </span>
-                <ChevronRight className="h-4 w-4 text-[var(--text-muted)]" />
-              </button>
-            );
-          })}
-        </div>
-      </div>
-    );
-  }
-
-  // ==========================================
-  // DETAIL VIEW (with hero + pillars)
-  // ==========================================
-  if (showDetail && selected) {
-    const year = new Date(selected.updated_at).getFullYear();
-    const hasFile = selected.source_file_url && selected.source_file_url.length > 0;
-
-    return (
-      <div>
-        {/* Back button if multiple */}
-        {allContent.length > 1 && (
-          <button
-            onClick={() => setSelectedId(null)}
-            className="mb-4 flex items-center gap-1.5 text-[12px] font-medium text-[var(--text-secondary)] transition-colors hover:text-[var(--heading)]"
-          >
-            <ChevronRight className="h-3.5 w-3.5 rotate-180" />
-            Retour a la liste
-          </button>
-        )}
-
-        {/* Admin actions */}
-        {canEdit && (
-          <div className="mb-5 flex flex-wrap items-center gap-2">
-            <button
-              onClick={() => {
-                setTitle(selected.title);
-                setSections(selected.sections);
-                setExpandedEdit(new Set(selected.sections.map((_, i) => i)));
-                setEditing(true);
-              }}
-              className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-3 py-1.5 text-sm font-medium text-white shadow-xs transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-sm active:scale-[0.97]"
-            >
-              <Edit3 className="h-4 w-4" />
-              Modifier
-            </button>
-            <button
-              onClick={() => setShowUpload(!showUpload)}
-              className="flex items-center gap-2 rounded-[var(--radius-sm)] border border-[var(--navy)] bg-transparent px-3 py-1.5 text-sm font-medium text-[var(--navy)] shadow-xs transition-all duration-200 hover:bg-[var(--navy)] hover:text-white hover:shadow-sm active:scale-[0.97]"
-            >
-              <Sparkles className="h-4 w-4 text-[var(--yellow)]" />
-              Reimporter un PDF (IA)
-            </button>
-          </div>
-        )}
-
-        {showUpload && (
-          <div className="mb-6 rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--hover)] p-5 shadow-xs">
-            <FileUploadAi
-              onAnalysisComplete={handleAiResult}
-              type="politique"
-              label="Importer votre politique QSE (PDF ou image)"
-            />
-          </div>
-        )}
-
-        {/* Hero Banner */}
-        <div className="mb-6 overflow-hidden rounded-[var(--radius)] bg-gradient-to-br from-[var(--navy)] to-[#2a4a7a] px-8 py-8 shadow-md">
-          <div className="flex items-start justify-between">
-            <div>
-              <span className="mb-3 inline-block rounded-full bg-[var(--yellow)]/20 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--yellow)]">
-                Politique QSE {year}
-              </span>
-              <h2 className="mt-2 text-[22px] font-bold leading-tight text-white">
-                {selected.title}
-              </h2>
-              <div className="mt-2 flex items-center gap-2 text-[12px] text-white/50">
-                <Calendar className="h-3.5 w-3.5" />
-                Mise a jour le {formatDate(selected.updated_at)}
-              </div>
-            </div>
-            {hasFile && (
-              <a
-                href={selected.source_file_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-white/10 px-3 py-1.5 text-[12px] font-medium text-white backdrop-blur-sm transition-all hover:bg-white/20"
-              >
-                <Download className="h-4 w-4" />
-                Telecharger le PDF
-              </a>
-            )}
-          </div>
-        </div>
-
-        {/* Introduction */}
-        {intro && (
-          <div className="mb-6 rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] px-6 py-5 shadow-sm">
-            <p className="text-[13px] leading-relaxed text-[var(--text)]">
-              {intro}
+            <p className="mb-4 text-[12px] text-[var(--text-secondary)]">
+              L&apos;IA va analyser votre document et generer automatiquement le
+              contenu structure de la politique QSE.
             </p>
+            <FileUploadAi
+              onAnalysisComplete={handleAiResult}
+              type="politique"
+              label="Importer votre politique QSE (PDF ou image)"
+            />
           </div>
         )}
 
-        {/* Pillars Grid */}
-        {pillars.length > 0 ? (
-          <div className="grid gap-5 md:grid-cols-2">
-            {pillars.map((pillar) => (
-              <PillarCard key={pillar.key} pillar={pillar} />
-            ))}
-          </div>
-        ) : (
-          /* Fallback: raw sections if no pillars matched */
-          <div className="space-y-3">
-            {selected.sections.map((section, index) => (
-              <div
-                key={index}
-                className="rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] p-5 shadow-xs"
-              >
-                <h3 className="mb-2 text-[13px] font-semibold text-[var(--heading)]">
-                  {section.title}
-                </h3>
-                <p className="whitespace-pre-wrap text-[12.5px] leading-relaxed text-[var(--text)]">
-                  {section.content}
-                </p>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Signature line */}
-        <div className="mt-8 border-t border-[var(--border-1)] pt-4 text-center text-[11px] text-[var(--text-muted)]">
-          Document mis a jour le {formatDate(selected.updated_at, "d MMMM yyyy")}
-        </div>
-      </div>
-    );
-  }
-
-  // ==========================================
-  // EDIT MODE / EMPTY STATE
-  // ==========================================
-  return (
-    <div>
-      {/* Actions bar */}
-      {canEdit && (
-        <div className="mb-5 flex flex-wrap items-center gap-2">
-          {!editing ? (
-            <>
-              <button
-                onClick={() => setEditing(true)}
-                className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-3 py-1.5 text-sm font-medium text-white shadow-xs transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-sm active:scale-[0.97]"
-              >
-                <Edit3 className="h-4 w-4" />
-                Modifier manuellement
-              </button>
-              <button
-                onClick={() => setShowUpload(!showUpload)}
-                className="flex items-center gap-2 rounded-[var(--radius-sm)] border border-[var(--navy)] bg-transparent px-3 py-1.5 text-sm font-medium text-[var(--navy)] shadow-xs transition-all duration-200 hover:bg-[var(--navy)] hover:text-white hover:shadow-sm active:scale-[0.97]"
-              >
-                <Sparkles className="h-4 w-4 text-[var(--yellow)]" />
-                Importer un PDF / Image (IA)
-              </button>
-            </>
-          ) : (
-            <>
-              <button
-                onClick={handleSave}
-                disabled={isPending}
-                className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-3 py-1.5 text-sm font-medium text-white shadow-xs transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-sm disabled:opacity-50"
-              >
-                <Save className="h-4 w-4" />
-                {isPending ? "Enregistrement..." : "Enregistrer"}
-              </button>
-              <button
-                onClick={() => {
-                  setEditing(false);
-                  setTitle(
-                    content?.title ??
-                      "Politique Qualite, Securite et Environnement"
-                  );
-                  setSections(content?.sections ?? []);
-                }}
-                className="rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] px-3 py-1.5 text-sm text-[var(--text-secondary)] shadow-xs transition-all duration-200 hover:bg-[var(--hover)] active:scale-[0.97]"
-              >
-                Annuler
-              </button>
-            </>
-          )}
-        </div>
-      )}
-
-      {/* File upload zone */}
-      {showUpload && (
-        <div className="mb-6 rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--hover)] p-5 shadow-xs">
-          <h3 className="mb-3 text-sm font-semibold text-[var(--heading)]">
-            Import IA — Analysez un PDF ou une image
-          </h3>
-          <p className="mb-4 text-[12px] text-[var(--text-secondary)]">
-            L&apos;IA va analyser votre document et generer automatiquement le
-            contenu structure de la politique QSE.
-          </p>
-          <FileUploadAi
-            onAnalysisComplete={handleAiResult}
-            type="politique"
-            label="Importer votre politique QSE (PDF ou image)"
-          />
-        </div>
-      )}
-
-      {/* Edit mode */}
-      {editing ? (
         <div className="space-y-4">
           <div>
             <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">
@@ -657,8 +477,192 @@ export default function PolitiqueContent({
             Ajouter une section
           </button>
         </div>
-      ) : (
-        /* Empty state */
+      </div>
+    );
+  }
+
+  // ==========================================
+  // DETAIL VIEW
+  // ==========================================
+  if (selectedId && selected) {
+    const year = new Date(selected.updated_at).getFullYear();
+    const hasFile = selected.source_file_url && selected.source_file_url.length > 0;
+
+    return (
+      <div>
+        {/* Back button */}
+        <button
+          onClick={() => setSelectedId(null)}
+          className="mb-4 flex items-center gap-1.5 text-[12px] font-medium text-[var(--text-secondary)] transition-colors hover:text-[var(--heading)]"
+        >
+          <ChevronRight className="h-3.5 w-3.5 rotate-180" />
+          Retour a la liste
+        </button>
+
+        {/* Admin actions */}
+        {canEdit && (
+          <div className="mb-5 flex flex-wrap items-center gap-2">
+            <button
+              onClick={() => startEditing(selected)}
+              className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-3 py-1.5 text-sm font-medium text-white shadow-xs transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-sm active:scale-[0.97]"
+            >
+              <Edit3 className="h-4 w-4" />
+              Modifier
+            </button>
+            <button
+              onClick={() => setShowUpload(!showUpload)}
+              className="flex items-center gap-2 rounded-[var(--radius-sm)] border border-[var(--navy)] bg-transparent px-3 py-1.5 text-sm font-medium text-[var(--navy)] shadow-xs transition-all duration-200 hover:bg-[var(--navy)] hover:text-white hover:shadow-sm active:scale-[0.97]"
+            >
+              <Sparkles className="h-4 w-4 text-[var(--yellow)]" />
+              Reimporter un PDF (IA)
+            </button>
+          </div>
+        )}
+
+        {showUpload && (
+          <div className="mb-6 rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--hover)] p-5 shadow-xs">
+            <FileUploadAi
+              onAnalysisComplete={(result) => {
+                handleAiResult(result);
+                setEditingId(selected.id);
+              }}
+              type="politique"
+              label="Importer votre politique QSE (PDF ou image)"
+            />
+          </div>
+        )}
+
+        {/* Downloadable content */}
+        <div ref={detailRef}>
+          {/* Hero Banner */}
+          <div className="mb-6 overflow-hidden rounded-[var(--radius)] bg-gradient-to-br from-[var(--navy)] to-[#2a4a7a] px-8 py-8 shadow-md">
+            <div className="flex items-start justify-between">
+              <div>
+                <span className="mb-3 inline-block rounded-full bg-[var(--yellow)]/20 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--yellow)]">
+                  Politique QSE {year}
+                </span>
+                <h2 className="mt-2 text-[22px] font-bold leading-tight text-white">
+                  {selected.title}
+                </h2>
+                <div className="mt-2 flex items-center gap-2 text-[12px] text-white/50">
+                  <Calendar className="h-3.5 w-3.5" />
+                  Mise a jour le {formatDate(selected.updated_at)}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Introduction */}
+          {intro && (
+            <div className="mb-6 rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] px-6 py-5 shadow-sm">
+              <p className="text-[13px] leading-relaxed text-[var(--text)]">
+                {intro}
+              </p>
+            </div>
+          )}
+
+          {/* Pillars Grid */}
+          {pillars.length > 0 ? (
+            <div className="grid gap-5 md:grid-cols-2">
+              {pillars.map((pillar) => (
+                <PillarCard key={pillar.key} pillar={pillar} />
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {selected.sections.map((section, index) => (
+                <div
+                  key={index}
+                  className="rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] p-5 shadow-xs"
+                >
+                  <h3 className="mb-2 text-[13px] font-semibold text-[var(--heading)]">
+                    {section.title}
+                  </h3>
+                  <p className="whitespace-pre-wrap text-[12.5px] leading-relaxed text-[var(--text)]">
+                    {section.content}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Signature line */}
+          <div className="mt-8 border-t border-[var(--border-1)] pt-4 text-center text-[11px] text-[var(--text-muted)]">
+            Document mis a jour le {formatDate(selected.updated_at, "d MMMM yyyy")}
+          </div>
+        </div>
+
+        {/* Download buttons */}
+        <div className="mt-6 flex flex-wrap items-center gap-3">
+          <button
+            onClick={handleDownloadImage}
+            disabled={isDownloading}
+            className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--navy)] px-4 py-2 text-sm font-medium text-white shadow-xs transition-all duration-200 hover:bg-[var(--navy)]/90 hover:shadow-sm disabled:opacity-50"
+          >
+            <ImageIcon className="h-4 w-4" />
+            {isDownloading ? "Generation en cours..." : "Telecharger l'image"}
+          </button>
+          {hasFile && (
+            <a
+              href={selected.source_file_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] px-4 py-2 text-sm font-medium text-[var(--heading)] shadow-xs transition-all hover:bg-[var(--hover)]"
+            >
+              <Download className="h-4 w-4" />
+              Telecharger le PDF source
+            </a>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // ==========================================
+  // LIST VIEW (always shown by default)
+  // ==========================================
+  return (
+    <div>
+      {canEdit && (
+        <div className="mb-5 flex flex-wrap items-center gap-2">
+          <button
+            onClick={startNew}
+            className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-3 py-1.5 text-sm font-medium text-white shadow-xs transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-sm active:scale-[0.97]"
+          >
+            <Plus className="h-4 w-4" />
+            Nouvelle politique QSE
+          </button>
+          <button
+            onClick={() => {
+              setShowUpload(!showUpload);
+              setEditingId(null);
+            }}
+            className="flex items-center gap-2 rounded-[var(--radius-sm)] border border-[var(--navy)] bg-transparent px-3 py-1.5 text-sm font-medium text-[var(--navy)] shadow-xs transition-all duration-200 hover:bg-[var(--navy)] hover:text-white hover:shadow-sm active:scale-[0.97]"
+          >
+            <Sparkles className="h-4 w-4 text-[var(--yellow)]" />
+            Importer un PDF / Image (IA)
+          </button>
+        </div>
+      )}
+
+      {showUpload && (
+        <div className="mb-6 rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--hover)] p-5 shadow-xs">
+          <h3 className="mb-3 text-sm font-semibold text-[var(--heading)]">
+            Import IA — Analysez un PDF ou une image
+          </h3>
+          <p className="mb-4 text-[12px] text-[var(--text-secondary)]">
+            L&apos;IA va analyser votre document et generer automatiquement le
+            contenu structure de la politique QSE.
+          </p>
+          <FileUploadAi
+            onAnalysisComplete={handleAiResult}
+            type="politique"
+            label="Importer votre politique QSE (PDF ou image)"
+          />
+        </div>
+      )}
+
+      {allContent.length === 0 ? (
         <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] py-16 text-center shadow-sm">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--navy)]/10">
             <FileText className="h-8 w-8 text-[var(--navy)]" />
@@ -668,10 +672,39 @@ export default function PolitiqueContent({
           </p>
           {canEdit && (
             <p className="mt-1 text-[12px] text-[var(--text-muted)]">
-              Utilisez les boutons ci-dessus pour importer un PDF ou ajouter du
-              contenu manuellement.
+              Utilisez les boutons ci-dessus pour creer une nouvelle politique ou importer un PDF.
             </p>
           )}
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {allContent.map((doc) => {
+            const year = new Date(doc.updated_at).getFullYear();
+            return (
+              <button
+                key={doc.id}
+                onClick={() => setSelectedId(doc.id)}
+                className="group flex w-full items-center gap-4 rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] px-5 py-4 text-left shadow-xs transition-all duration-200 hover:shadow-sm hover:border-[var(--yellow)]/40"
+              >
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--radius-sm)] bg-[var(--navy)]">
+                  <FileText className="h-5 w-5 text-[var(--yellow)]" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-semibold text-[var(--heading)] truncate">
+                    {doc.title}
+                  </div>
+                  <div className="mt-0.5 flex items-center gap-2 text-[11px] text-[var(--text-muted)]">
+                    <Calendar className="h-3 w-3" />
+                    Mise a jour le {formatDate(doc.updated_at)}
+                  </div>
+                </div>
+                <span className="rounded-full bg-[var(--yellow)] px-3 py-1 text-[11px] font-bold text-white">
+                  {year}
+                </span>
+                <ChevronRight className="h-4 w-4 text-[var(--text-muted)] transition-transform group-hover:translate-x-0.5" />
+              </button>
+            );
+          })}
         </div>
       )}
     </div>
