@@ -21,26 +21,32 @@ CREATE OR REPLACE FUNCTION create_innovtec_user(
   p_date_of_birth DATE DEFAULT NULL
 ) RETURNS UUID AS $$
 DECLARE
-  new_id UUID := gen_random_uuid();
+  new_id UUID;
 BEGIN
-  -- Create auth user
-  INSERT INTO auth.users (
-    instance_id, id, aud, role, email,
-    encrypted_password, email_confirmed_at,
-    raw_app_meta_data, raw_user_meta_data,
-    created_at, updated_at,
-    confirmation_token, recovery_token,
-    is_super_admin
-  ) VALUES (
-    '00000000-0000-0000-0000-000000000000',
-    new_id, 'authenticated', 'authenticated', p_email,
-    crypt('Innovtec2025!', gen_salt('bf')), now(),
-    '{"provider":"email","providers":["email"]}'::jsonb,
-    jsonb_build_object('first_name', p_first_name, 'last_name', p_last_name),
-    now(), now(),
-    '', '',
-    false
-  ) ON CONFLICT (email) DO NOTHING;
+  -- Check if user already exists
+  SELECT id INTO new_id FROM auth.users WHERE email = p_email;
+
+  IF new_id IS NULL THEN
+    new_id := gen_random_uuid();
+
+    INSERT INTO auth.users (
+      instance_id, id, aud, role, email,
+      encrypted_password, email_confirmed_at,
+      raw_app_meta_data, raw_user_meta_data,
+      created_at, updated_at,
+      confirmation_token, recovery_token,
+      is_super_admin
+    ) VALUES (
+      '00000000-0000-0000-0000-000000000000',
+      new_id, 'authenticated', 'authenticated', p_email,
+      crypt('Innovtec2025!', gen_salt('bf')), now(),
+      '{"provider":"email","providers":["email"]}'::jsonb,
+      jsonb_build_object('first_name', p_first_name, 'last_name', p_last_name),
+      now(), now(),
+      '', '',
+      false
+    );
+  END IF;
 
   -- Create/update profile
   INSERT INTO profiles (
