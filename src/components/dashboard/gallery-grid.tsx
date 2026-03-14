@@ -35,7 +35,9 @@ export default async function GalleryGrid() {
                 src={photo.image_url}
                 alt={photo.caption || ""}
                 fill
-                className="object-cover transition-transform duration-300 group-hover:scale-105"
+                sizes="(max-width: 640px) 50vw, 33vw"
+                loading="lazy"
+                className="object-cover transition-transform duration-300 will-change-transform group-hover:scale-105"
               />
               {photo.caption && (
                 <div className="absolute inset-0 flex items-end bg-gradient-to-t from-black/45 to-transparent p-2 opacity-0 transition-opacity group-hover:opacity-100">

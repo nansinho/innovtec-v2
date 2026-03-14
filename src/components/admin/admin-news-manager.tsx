@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useMemo, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import {
   Plus,
   Search,
@@ -53,6 +54,7 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
   const [showForm, setShowForm] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [loading, setLoading] = useState<string | null>(null);
+  const router = useRouter();
 
   // AI state
   const [formMode, setFormMode] = useState<"ai" | "manual">("ai");
@@ -72,9 +74,15 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
     is_published: false,
   });
 
-  const filtered = news.filter((n) =>
-    n.title.toLowerCase().includes(search.toLowerCase()) ||
-    n.excerpt.toLowerCase().includes(search.toLowerCase())
+  const searchLower = search.toLowerCase();
+  const filtered = useMemo(
+    () =>
+      news.filter(
+        (n) =>
+          n.title.toLowerCase().includes(searchLower) ||
+          n.excerpt.toLowerCase().includes(searchLower)
+      ),
+    [news, searchLower]
   );
 
   function handleSubmit() {
@@ -94,8 +102,7 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
           is_carousel: false,
           is_published: false,
         });
-        // Refresh the list
-        window.location.reload();
+        router.refresh();
       }
     });
   }

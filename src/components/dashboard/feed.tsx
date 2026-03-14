@@ -44,7 +44,7 @@ export default async function Feed() {
             >
               <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full bg-[var(--bg)]">
                 {author?.avatar_url ? (
-                  <Image src={author.avatar_url} alt="" fill className="object-cover" />
+                  <Image src={author.avatar_url} alt="" fill sizes="32px" loading="lazy" className="object-cover" />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center text-[10px] font-medium text-[var(--text-muted)]">
                     {authorName.charAt(0)}
@@ -69,6 +69,8 @@ export default async function Feed() {
                       src={post.image_url}
                       alt=""
                       fill
+                      sizes="(max-width: 1024px) 100vw, 60vw"
+                      loading="lazy"
                       className="object-cover"
                     />
                   </div>

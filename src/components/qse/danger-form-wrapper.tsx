@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Plus, X } from "lucide-react";
 import DangerForm from "./danger-form";
 
 export default function DangerFormWrapper() {
   const [showForm, setShowForm] = useState(false);
+  const router = useRouter();
 
   return (
     <div>
@@ -31,7 +33,7 @@ export default function DangerFormWrapper() {
           <DangerForm
             onCreated={() => {
               setShowForm(false);
-              window.location.reload();
+              router.refresh();
             }}
           />
         </div>

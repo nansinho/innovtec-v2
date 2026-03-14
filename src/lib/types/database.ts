@@ -301,6 +301,19 @@ export interface BirthdayWish {
 }
 
 // ==========================================
+// APP SETTINGS
+// ==========================================
+
+export interface AppSetting {
+  id: string;
+  key: string;
+  value: string;
+  updated_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+// ==========================================
 // AI CREDITS
 // ==========================================
 

@@ -102,6 +102,8 @@ body {
 
 .animate-confetti-fall {
   animation: confetti-fall linear infinite;
+  will-change: transform, opacity;
+  contain: layout style;
 }
 
 /* Line clamp utility */

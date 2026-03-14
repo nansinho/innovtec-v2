@@ -26,8 +26,10 @@ export default async function DashboardLayout({
     }
   }
 
-  const unreadCount = await getUnreadCount();
-  const isBirthday = await isMyBirthday();
+  const [unreadCount, isBirthday] = await Promise.all([
+    getUnreadCount(),
+    isMyBirthday(),
+  ]);
   const wishes = isBirthday ? await getMyBirthdayWishes() : [];
 
   const userName = profile
