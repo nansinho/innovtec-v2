@@ -34,15 +34,15 @@ export default async function DashboardPage() {
     <div className="p-6 pb-20 md:pb-6">
       {/* Greeting */}
       <div className="mb-6">
-        <p className="text-sm text-[var(--text-muted)]">{dateFormatted}</p>
-        <h1 className="text-2xl font-semibold tracking-tight text-[var(--heading)]">
-          Bonjour, {displayName} !
+        <p className="text-[13px] font-medium text-zinc-400">{dateFormatted}</p>
+        <h1 className="text-2xl font-bold tracking-tight text-[var(--heading)]">
+          Bonjour, {displayName}
         </h1>
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_var(--right-width)]">
         {/* Main column */}
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-6">
           <WelcomeCarousel />
 
           {birthdays.length > 0 && profile && (
@@ -54,7 +54,7 @@ export default async function DashboardPage() {
 
           <KpiCards />
 
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
             <TodoList />
             <RecentDocs />
           </div>
@@ -64,7 +64,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* Right column */}
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-6">
           <QuickLinks />
           <EventsList />
           <Meetings />

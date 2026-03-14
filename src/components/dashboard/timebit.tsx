@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useTransition } from "react";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Timer } from "lucide-react";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -77,28 +77,29 @@ export default function Timebit() {
     <Card>
       <div className="px-5 py-4">
         {/* Header */}
-        <div className="mb-3 flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-[var(--heading)]">
-            Timebit
-          </h3>
+        <div className="mb-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Timer className="h-4 w-4 text-[var(--text-muted)]" />
+            <h3 className="text-sm font-semibold text-[var(--heading)]">Timebit</h3>
+          </div>
           <Link
             href="#"
-            className="flex items-center gap-1 text-xs font-medium text-[var(--yellow)] transition-opacity hover:opacity-80"
+            className="flex h-7 w-7 items-center justify-center rounded-lg text-[var(--text-muted)] transition-colors hover:bg-zinc-100 hover:text-[var(--heading)]"
           >
-            Voir logs <ChevronRight className="h-3.5 w-3.5" />
+            <ChevronRight className="h-4 w-4" />
           </Link>
         </div>
 
         {/* Mode toggle */}
-        <div className="mb-4 flex gap-1.5">
+        <div className="mb-5 flex gap-1 rounded-lg bg-zinc-100 p-1">
           <button
             onClick={() => !active && setMode("chantier")}
             disabled={!!active}
             className={cn(
-              "flex-1 rounded-[var(--radius)] border py-2 text-center text-xs font-medium transition-colors",
+              "flex-1 rounded-md py-1.5 text-center text-xs font-medium transition-all duration-200",
               mode === "chantier"
-                ? "border-[var(--yellow)] bg-amber-50 text-amber-700"
-                : "border-[var(--border-1)] bg-white text-[var(--text-secondary)]",
+                ? "bg-white text-[var(--heading)] shadow-sm"
+                : "text-[var(--text-muted)] hover:text-[var(--text-secondary)]",
               active && "cursor-not-allowed opacity-50"
             )}
           >
@@ -108,10 +109,10 @@ export default function Timebit() {
             onClick={() => !active && setMode("bureau")}
             disabled={!!active}
             className={cn(
-              "flex-1 rounded-[var(--radius)] border py-2 text-center text-xs font-medium transition-colors",
+              "flex-1 rounded-md py-1.5 text-center text-xs font-medium transition-all duration-200",
               mode === "bureau"
-                ? "border-[var(--yellow)] bg-amber-50 text-amber-700"
-                : "border-[var(--border-1)] bg-white text-[var(--text-secondary)]",
+                ? "bg-white text-[var(--heading)] shadow-sm"
+                : "text-[var(--text-muted)] hover:text-[var(--text-secondary)]",
               active && "cursor-not-allowed opacity-50"
             )}
           >
@@ -120,32 +121,32 @@ export default function Timebit() {
         </div>
 
         {/* Clock ring */}
-        <div className="mb-4 flex flex-col items-center">
+        <div className="mb-5 flex flex-col items-center">
           <div
-            className="mb-2 flex h-[110px] w-[110px] items-center justify-center rounded-full"
+            className="mb-3 flex h-[120px] w-[120px] items-center justify-center rounded-full shadow-inner"
             style={{
               background: active
-                ? `conic-gradient(#F59E0B 0deg ${progress}deg, #e4e4e7 ${progress}deg 360deg)`
-                : "conic-gradient(#e4e4e7 0deg 360deg)",
+                ? `conic-gradient(#f59e0b 0deg, #d97706 ${progress}deg, #f4f4f5 ${progress}deg 360deg)`
+                : "conic-gradient(#f4f4f5 0deg 360deg)",
             }}
           >
-            <div className="flex h-[90px] w-[90px] flex-col items-center justify-center rounded-full bg-white">
-              <div className="text-[8px] uppercase tracking-[1.5px] text-[var(--text-muted)]">
+            <div className="flex h-[96px] w-[96px] flex-col items-center justify-center rounded-full bg-white shadow-sm">
+              <div className="text-[9px] font-semibold uppercase tracking-[1.5px] text-zinc-400">
                 Temps travaill\u00e9
               </div>
-              <div className="font-mono text-xl font-medium text-[var(--heading)]">
+              <div className="font-mono text-xl font-bold tracking-tight text-[var(--heading)]">
                 {loading ? "--:--" : elapsed}
               </div>
             </div>
           </div>
-          <div className="flex gap-4 text-[10px] text-[var(--text-muted)]">
+          <div className="flex gap-5 text-[10px] text-zinc-400">
             <div className="flex items-center gap-1.5">
-              <div className="h-1.5 w-1.5 rounded-full bg-[#F59E0B]" />
-              temps normal
+              <div className="h-2 w-2 rounded-full bg-amber-500" />
+              <span className="font-medium">Temps normal</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <div className="h-1.5 w-1.5 rounded-full bg-zinc-300" />
-              heures sup.
+              <div className="h-2 w-2 rounded-full bg-zinc-200" />
+              <span className="font-medium">Heures sup.</span>
             </div>
           </div>
         </div>
@@ -155,7 +156,7 @@ export default function Timebit() {
           <button
             onClick={handleStop}
             disabled={isPending}
-            className="mb-2 w-full rounded-[var(--radius)] bg-[var(--yellow)] py-2.5 text-sm font-medium text-white transition-colors hover:bg-[var(--yellow-hover)] disabled:opacity-50"
+            className="mb-2 w-full rounded-lg bg-gradient-to-b from-amber-500 to-amber-600 py-2.5 text-sm font-semibold text-white shadow-sm shadow-amber-600/20 transition-all duration-200 hover:from-amber-600 hover:to-amber-700 hover:shadow-md active:scale-[0.98] disabled:opacity-50"
           >
             {isPending ? "..." : "Arr\u00eater le pointage"}
           </button>
@@ -163,13 +164,13 @@ export default function Timebit() {
           <button
             onClick={handleStart}
             disabled={isPending || loading}
-            className="mb-2 w-full rounded-[var(--radius)] border border-[var(--yellow)] bg-amber-50 py-2.5 text-sm font-medium text-amber-700 transition-colors hover:bg-[var(--yellow)] hover:text-white disabled:opacity-50"
+            className="mb-2 w-full rounded-lg border border-zinc-200 bg-white py-2.5 text-sm font-semibold text-[var(--heading)] shadow-xs transition-all duration-200 hover:bg-zinc-50 hover:border-zinc-300 active:scale-[0.98] disabled:opacity-50"
           >
             {isPending ? "..." : "D\u00e9marrer le pointage"}
           </button>
         )}
         {startedLabel && (
-          <div className="text-center font-mono text-[10px] text-[var(--text-muted)]">
+          <div className="text-center font-mono text-[10px] text-zinc-400">
             {startedLabel}
           </div>
         )}

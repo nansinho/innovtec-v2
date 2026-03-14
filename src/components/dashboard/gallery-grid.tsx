@@ -11,28 +11,31 @@ export default async function GalleryGrid() {
     <Card>
       <CardHeader
         title="Galerie photos"
+        icon={ImageIcon}
         action={
           <Link
             href="/galerie"
-            className="flex items-center gap-1 text-xs font-medium text-[var(--yellow)] transition-opacity hover:opacity-80"
+            className="flex items-center gap-1 text-xs font-medium text-[var(--text-muted)] transition-colors hover:text-[var(--heading)]"
           >
             Voir tout <ChevronRight className="h-3.5 w-3.5" />
           </Link>
         }
       />
       {photos.length === 0 ? (
-        <div className="flex flex-col items-center py-10 text-center">
-          <ImageIcon className="mb-2 h-8 w-8 text-zinc-300" />
-          <p className="text-sm text-[var(--text-muted)]">
+        <div className="flex flex-col items-center py-12 text-center">
+          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-zinc-100">
+            <ImageIcon className="h-6 w-6 text-zinc-400" />
+          </div>
+          <p className="text-sm font-medium text-[var(--text-muted)]">
             Aucune photo dans la galerie
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-1.5 p-4 sm:grid-cols-3">
+        <div className="grid grid-cols-2 gap-2 p-3 sm:grid-cols-3">
           {photos.map((photo) => (
             <div
               key={photo.id}
-              className="group relative aspect-square cursor-pointer overflow-hidden rounded-[var(--radius)]"
+              className="group relative aspect-square cursor-pointer overflow-hidden rounded-xl"
             >
               <Image
                 src={photo.image_url}
@@ -43,8 +46,8 @@ export default async function GalleryGrid() {
                 className="object-cover transition-transform duration-300 will-change-transform group-hover:scale-105"
               />
               {photo.caption && (
-                <div className="absolute inset-0 flex items-end bg-gradient-to-t from-black/50 to-transparent p-2.5 opacity-0 transition-opacity group-hover:opacity-100">
-                  <span className="text-xs text-white">{photo.caption}</span>
+                <div className="absolute inset-0 flex items-end bg-gradient-to-t from-black/50 via-transparent to-transparent p-3 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                  <span className="text-xs font-medium text-white">{photo.caption}</span>
                 </div>
               )}
             </div>

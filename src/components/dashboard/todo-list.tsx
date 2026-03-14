@@ -59,10 +59,10 @@ export default function TodoList() {
 
   return (
     <Card>
-      <CardHeader title="To-do List" />
+      <CardHeader title="To-do List" icon={ListTodo} />
 
       {loading ? (
-        <div className="space-y-2 px-5 py-4">
+        <div className="space-y-3 px-5 py-4">
           {[1, 2, 3].map((i) => (
             <Skeleton key={i} className="h-5 w-full" />
           ))}
@@ -70,26 +70,29 @@ export default function TodoList() {
       ) : (
         <>
           {todos.length === 0 && (
-            <div className="flex flex-col items-center py-8 text-center">
-              <ListTodo className="mb-2 h-8 w-8 text-zinc-300" />
-              <p className="text-sm text-[var(--text-muted)]">
-                Aucune t\u00e2che pour le moment
+            <div className="flex flex-col items-center py-10 text-center">
+              <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-zinc-100">
+                <ListTodo className="h-6 w-6 text-zinc-400" />
+              </div>
+              <p className="text-sm font-medium text-[var(--text-muted)]">
+                Aucune t&acirc;che pour le moment
               </p>
+              <p className="mt-0.5 text-xs text-zinc-400">Ajoutez votre premi&egrave;re t&acirc;che ci-dessous</p>
             </div>
           )}
 
           {todos.map((todo) => (
             <div
               key={todo.id}
-              className="group flex items-center gap-2.5 px-5 py-2.5 transition-colors hover:bg-zinc-50"
+              className="group flex items-center gap-3 px-5 py-2.5 transition-colors hover:bg-amber-50/30"
             >
               <button
                 onClick={() => toggle(todo.id)}
                 className={cn(
-                  "flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-[var(--radius-xs)] border-[1.5px] transition-colors",
+                  "flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-[1.5px] transition-all duration-200",
                   todo.status === "done"
-                    ? "border-[var(--yellow)] bg-[var(--yellow)]"
-                    : "border-zinc-300 hover:border-[var(--yellow)]"
+                    ? "border-amber-500 bg-amber-500 shadow-sm shadow-amber-500/20"
+                    : "border-zinc-300 hover:border-amber-400 hover:bg-amber-50"
                 )}
               >
                 {todo.status === "done" && (
@@ -98,9 +101,9 @@ export default function TodoList() {
               </button>
               <span
                 className={cn(
-                  "flex-1 text-sm",
+                  "flex-1 text-sm transition-all duration-200",
                   todo.status === "done"
-                    ? "text-[var(--text-muted)] line-through"
+                    ? "text-zinc-400 line-through"
                     : "text-[var(--text)]"
                 )}
               >
@@ -108,7 +111,7 @@ export default function TodoList() {
               </span>
               <button
                 onClick={() => handleDelete(todo.id)}
-                className="hidden text-zinc-400 transition-colors hover:text-red-500 group-hover:block"
+                className="rounded-md p-1 text-zinc-400 opacity-0 transition-all hover:bg-red-50 hover:text-red-500 group-hover:opacity-100"
                 aria-label="Supprimer"
               >
                 <Trash2 className="h-3.5 w-3.5" />
@@ -117,14 +120,16 @@ export default function TodoList() {
           ))}
 
           {/* Inline add */}
-          <div className="flex items-center gap-2 border-t border-[var(--border-1)] px-5 py-3">
-            <Plus className="h-4 w-4 shrink-0 text-[var(--text-muted)]" />
+          <div className="flex items-center gap-3 border-t border-zinc-100 px-5 py-3">
+            <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-[1.5px] border-dashed border-zinc-300">
+              <Plus className="h-3 w-3 text-zinc-400" />
+            </div>
             <input
               value={newLabel}
               onChange={(e) => setNewLabel(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleAdd()}
-              placeholder="Ajouter une t\u00e2che..."
-              className="flex-1 bg-transparent text-sm outline-none placeholder:text-[var(--text-muted)]"
+              placeholder="Ajouter une t&acirc;che..."
+              className="flex-1 bg-transparent text-sm outline-none placeholder:text-zinc-400"
             />
           </div>
         </>
