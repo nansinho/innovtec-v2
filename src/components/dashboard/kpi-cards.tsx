@@ -5,10 +5,10 @@ import { getTodayEvents } from "@/actions/events";
 import { getUserTodos } from "@/actions/todos";
 
 const kpis = [
-  { key: "documents", label: "Documents", icon: FileText, color: "text-blue-600 bg-blue-50" },
-  { key: "collaborateurs", label: "Collaborateurs", icon: Users, color: "text-emerald-600 bg-emerald-50" },
-  { key: "reunions", label: "Réunions du jour", icon: Calendar, color: "text-purple-600 bg-purple-50" },
-  { key: "taches", label: "Tâches en cours", icon: CheckSquare, color: "text-amber-600 bg-amber-50" },
+  { key: "documents", label: "Documents", icon: FileText, color: "text-blue-600 bg-blue-500/10" },
+  { key: "collaborateurs", label: "Collaborateurs", icon: Users, color: "text-emerald-600 bg-emerald-500/10" },
+  { key: "reunions", label: "Réunions du jour", icon: Calendar, color: "text-purple-600 bg-purple-500/10" },
+  { key: "taches", label: "Tâches en cours", icon: CheckSquare, color: "text-amber-600 bg-amber-500/10" },
 ];
 
 export default async function KpiCards() {
