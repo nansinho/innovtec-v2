@@ -21,6 +21,17 @@ export async function getQseContent(type: string): Promise<QseContent | null> {
   return data as QseContent | null;
 }
 
+export async function getAllQseContent(type: string): Promise<QseContent[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("qse_content")
+    .select("*")
+    .eq("type", type)
+    .order("updated_at", { ascending: false });
+
+  return (data as QseContent[]) ?? [];
+}
+
 export async function saveQseContent(
   type: string,
   title: string,
