@@ -17,10 +17,12 @@ const roleLabels: Record<string, string> = {
   responsable_qse: "Responsable QSE",
   chef_chantier: "Chef de chantier",
   technicien: "Technicien",
+  collaborateur: "Collaborateur",
 };
 
 const roleOptions: { value: UserRole; label: string }[] = [
   { value: "admin", label: "Administrateur" },
+  { value: "collaborateur", label: "Collaborateur" },
   { value: "rh", label: "Ressources Humaines" },
   { value: "responsable_qse", label: "Responsable QSE" },
   { value: "chef_chantier", label: "Chef de chantier" },
@@ -33,6 +35,7 @@ const roleBadgeColors: Record<string, string> = {
   responsable_qse: "bg-[var(--blue-surface)] text-[var(--blue)]",
   chef_chantier: "bg-orange-50 text-orange-700",
   technicien: "bg-[var(--hover)] text-[var(--text-secondary)]",
+  collaborateur: "bg-[var(--green-surface)] text-[var(--green)]",
 };
 
 interface UsersTableProps {

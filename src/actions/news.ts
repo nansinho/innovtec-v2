@@ -3,7 +3,11 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
-import type { News, NewsComment } from "@/lib/types/database";
+import type { News, NewsComment, NewsAttachment } from "@/lib/types/database";
+
+// ==========================================
+// PUBLIC: Read operations
+// ==========================================
 
 export async function getPublishedNews() {
   const supabase = await createClient();
@@ -38,6 +42,20 @@ export async function getNewsById(newsId: string) {
   return data;
 }
 
+export async function getNewsByIdAdmin(newsId: string) {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("news")
+    .select("*, author:profiles(first_name, last_name, avatar_url)")
+    .eq("id", newsId)
+    .single();
+  return data;
+}
+
+// ==========================================
+// VIEWS
+// ==========================================
+
 export async function getNewsViewsCount(newsId: string): Promise<number> {
   const supabase = await createClient();
   const { count } = await supabase
@@ -54,7 +72,6 @@ export async function recordNewsView(newsId: string) {
   } = await supabase.auth.getUser();
   if (!user) return;
 
-  // Upsert so we count unique views per user
   await supabase
     .from("news_views")
     .upsert(
@@ -62,6 +79,10 @@ export async function recordNewsView(newsId: string) {
       { onConflict: "news_id,user_id" }
     );
 }
+
+// ==========================================
+// COMMENTS
+// ==========================================
 
 export async function getNewsComments(newsId: string): Promise<NewsComment[]> {
   const supabase = await createClient();
@@ -114,6 +135,189 @@ export async function deleteNewsComment(
   return { success: true };
 }
 
+// ==========================================
+// LIKES
+// ==========================================
+
+export async function toggleNewsLike(
+  newsId: string
+): Promise<{ success: boolean; liked: boolean; error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { success: false, liked: false, error: "Non authentifié" };
+
+  // Check if already liked
+  const { data: existing } = await supabase
+    .from("news_likes")
+    .select("id")
+    .eq("news_id", newsId)
+    .eq("user_id", user.id)
+    .single();
+
+  if (existing) {
+    // Unlike
+    await supabase.from("news_likes").delete().eq("id", existing.id);
+    revalidatePath(`/actualites/${newsId}`);
+    return { success: true, liked: false };
+  } else {
+    // Like
+    const { error } = await supabase.from("news_likes").insert({
+      news_id: newsId,
+      user_id: user.id,
+    });
+    if (error) return { success: false, liked: false, error: error.message };
+    revalidatePath(`/actualites/${newsId}`);
+    return { success: true, liked: true };
+  }
+}
+
+export async function getNewsLikesCount(newsId: string): Promise<number> {
+  const supabase = await createClient();
+  const { count } = await supabase
+    .from("news_likes")
+    .select("*", { count: "exact", head: true })
+    .eq("news_id", newsId);
+  return count ?? 0;
+}
+
+export async function hasUserLikedNews(newsId: string): Promise<boolean> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return false;
+
+  const { data } = await supabase
+    .from("news_likes")
+    .select("id")
+    .eq("news_id", newsId)
+    .eq("user_id", user.id)
+    .single();
+
+  return !!data;
+}
+
+// ==========================================
+// SHARES
+// ==========================================
+
+export async function shareNews(
+  newsId: string
+): Promise<{ success: boolean; error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { success: false, error: "Non authentifié" };
+
+  // Get article info for feed post
+  const { data: article } = await supabase
+    .from("news")
+    .select("title")
+    .eq("id", newsId)
+    .single();
+
+  if (!article) return { success: false, error: "Article introuvable" };
+
+  // Record share
+  const { error } = await supabase.from("news_shares").insert({
+    news_id: newsId,
+    user_id: user.id,
+  });
+
+  if (error) return { success: false, error: error.message };
+
+  // Create feed post for the share
+  await supabase.from("feed_posts").insert({
+    author_id: user.id,
+    content: `a partagé l'article : "${article.title}"`,
+    image_url: "",
+    news_id: newsId,
+  });
+
+  revalidatePath(`/actualites/${newsId}`);
+  revalidatePath("/");
+  return { success: true };
+}
+
+export async function getNewsSharesCount(newsId: string): Promise<number> {
+  const supabase = await createClient();
+  const { count } = await supabase
+    .from("news_shares")
+    .select("*", { count: "exact", head: true })
+    .eq("news_id", newsId);
+  return count ?? 0;
+}
+
+// ==========================================
+// ATTACHMENTS
+// ==========================================
+
+export async function getNewsAttachments(
+  newsId: string
+): Promise<NewsAttachment[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("news_attachments")
+    .select("*")
+    .eq("news_id", newsId)
+    .order("created_at", { ascending: true });
+
+  return (data as NewsAttachment[]) ?? [];
+}
+
+export async function addNewsAttachment(
+  newsId: string,
+  attachment: {
+    file_name: string;
+    file_url: string;
+    file_size: number;
+    file_type: string;
+  }
+): Promise<{ success: boolean; error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { success: false, error: "Non authentifié" };
+
+  const { error } = await supabase.from("news_attachments").insert({
+    news_id: newsId,
+    file_name: attachment.file_name,
+    file_url: attachment.file_url,
+    file_size: attachment.file_size,
+    file_type: attachment.file_type,
+    uploaded_by: user.id,
+  });
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath(`/actualites/${newsId}`);
+  return { success: true };
+}
+
+export async function deleteNewsAttachment(
+  attachmentId: string,
+  newsId: string
+): Promise<{ success: boolean; error?: string }> {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("news_attachments")
+    .delete()
+    .eq("id", attachmentId);
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath(`/actualites/${newsId}`);
+  return { success: true };
+}
+
+// ==========================================
+// NEWS LIST with counts
+// ==========================================
+
 export async function getNewsWithViewCounts() {
   const supabase = await createClient();
   const { data: news } = await supabase
@@ -124,27 +328,44 @@ export async function getNewsWithViewCounts() {
 
   if (!news) return [];
 
-  // Get view counts for all news
-  const newsWithViews = await Promise.all(
+  const newsWithCounts = await Promise.all(
     news.map(async (n) => {
-      const { count } = await supabase
-        .from("news_views")
-        .select("*", { count: "exact", head: true })
-        .eq("news_id", n.id);
+      const [views, comments, likes, shares] = await Promise.all([
+        supabase
+          .from("news_views")
+          .select("*", { count: "exact", head: true })
+          .eq("news_id", n.id),
+        supabase
+          .from("news_comments")
+          .select("*", { count: "exact", head: true })
+          .eq("news_id", n.id),
+        supabase
+          .from("news_likes")
+          .select("*", { count: "exact", head: true })
+          .eq("news_id", n.id),
+        supabase
+          .from("news_shares")
+          .select("*", { count: "exact", head: true })
+          .eq("news_id", n.id),
+      ]);
 
-      const { count: commentCount } = await supabase
-        .from("news_comments")
-        .select("*", { count: "exact", head: true })
-        .eq("news_id", n.id);
-
-      return { ...n, views_count: count ?? 0, comments_count: commentCount ?? 0 };
+      return {
+        ...n,
+        views_count: views.count ?? 0,
+        comments_count: comments.count ?? 0,
+        likes_count: likes.count ?? 0,
+        shares_count: shares.count ?? 0,
+      };
     })
   );
 
-  return newsWithViews;
+  return newsWithCounts;
 }
 
-// Admin: create a news article
+// ==========================================
+// ADMIN: Create & Update
+// ==========================================
+
 export async function createNews(formData: {
   title: string;
   excerpt: string;
@@ -173,8 +394,16 @@ export async function createNews(formData: {
 
   if (error) return { success: false, error: error.message };
 
-  // Notify all users about new published news
+  // Create feed post when published
   if (formData.is_published && data) {
+    await supabase.from("feed_posts").insert({
+      author_id: user.id,
+      content: `a publié un nouvel article : "${formData.title}"`,
+      image_url: formData.image_url || "",
+      news_id: data.id,
+    });
+
+    // Notify all users about new published news
     const supabaseAdmin = createAdminClient();
     const { data: profiles } = await supabaseAdmin
       .from("profiles")
@@ -201,7 +430,92 @@ export async function createNews(formData: {
 
   revalidatePath("/actualites");
   revalidatePath("/admin/news");
+  revalidatePath("/");
   return { success: true, id: data?.id };
+}
+
+export async function updateNews(
+  newsId: string,
+  formData: {
+    title: string;
+    excerpt: string;
+    content: string;
+    category: News["category"];
+    priority: News["priority"];
+    image_url: string;
+    is_carousel: boolean;
+    is_published: boolean;
+  }
+): Promise<{ success: boolean; error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { success: false, error: "Non authentifié" };
+
+  // Get current state to check if it was previously unpublished
+  const { data: current } = await supabase
+    .from("news")
+    .select("is_published, published_at")
+    .eq("id", newsId)
+    .single();
+
+  const updateData: Record<string, unknown> = {
+    ...formData,
+  };
+
+  // Set published_at if being published for the first time
+  if (formData.is_published && !current?.published_at) {
+    updateData.published_at = new Date().toISOString();
+  } else if (!formData.is_published) {
+    updateData.published_at = null;
+  }
+
+  const { error } = await supabase
+    .from("news")
+    .update(updateData)
+    .eq("id", newsId);
+
+  if (error) return { success: false, error: error.message };
+
+  // If just published, create feed post and notifications
+  if (formData.is_published && !current?.is_published) {
+    await supabase.from("feed_posts").insert({
+      author_id: user.id,
+      content: `a publié un nouvel article : "${formData.title}"`,
+      image_url: formData.image_url || "",
+      news_id: newsId,
+    });
+
+    const supabaseAdmin = createAdminClient();
+    const { data: profiles } = await supabaseAdmin
+      .from("profiles")
+      .select("id")
+      .eq("is_active", true);
+
+    if (profiles) {
+      const notifications = profiles
+        .filter((p) => p.id !== user.id)
+        .map((p) => ({
+          user_id: p.id,
+          type: "news" as const,
+          title: "Nouvelle actualité",
+          message: formData.title,
+          link: `/actualites/${newsId}`,
+          related_id: newsId,
+        }));
+
+      if (notifications.length > 0) {
+        await supabaseAdmin.from("notifications").insert(notifications);
+      }
+    }
+  }
+
+  revalidatePath("/actualites");
+  revalidatePath(`/actualites/${newsId}`);
+  revalidatePath("/admin/news");
+  revalidatePath("/");
+  return { success: true };
 }
 
 // Admin: get all news (including unpublished)

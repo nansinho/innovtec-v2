@@ -1,15 +1,18 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import {
   Eye,
   MessageSquare,
+  Heart,
+  Share2,
   Clock,
   Tag,
   AlertCircle,
   Filter,
+  ChevronRight,
 } from "lucide-react";
 import { cn, formatRelative } from "@/lib/utils";
 import type { NewsCategory, NewsPriority } from "@/lib/types/database";
@@ -32,15 +35,20 @@ const categoryColors: Record<NewsCategory, string> = {
   rh: "bg-indigo-50 text-indigo-700",
 };
 
-const priorityConfig: Record<NewsPriority, { label: string; className: string }> = {
-  normal: { label: "", className: "" },
+const priorityConfig: Record<
+  NewsPriority,
+  { label: string; className: string; dot: string }
+> = {
+  normal: { label: "", className: "", dot: "" },
   important: {
     label: "Important",
-    className: "border-l-4 border-l-[var(--yellow)]",
+    className: "bg-[var(--yellow-surface)] text-[var(--yellow)]",
+    dot: "bg-[var(--yellow)]",
   },
   urgent: {
     label: "Urgent",
-    className: "border-l-4 border-l-[var(--red)]",
+    className: "bg-[var(--red-surface)] text-[var(--red)]",
+    dot: "bg-[var(--red)]",
   },
 };
 
@@ -54,14 +62,21 @@ interface NewsItem {
   published_at: string | null;
   views_count: number;
   comments_count: number;
-  author?: { first_name: string; last_name: string; avatar_url?: string } | null;
+  likes_count?: number;
+  shares_count?: number;
+  author?: {
+    first_name: string;
+    last_name: string;
+    avatar_url?: string;
+  } | null;
 }
 
-interface NewsGridProps {
+interface NewsTableProps {
   news: NewsItem[];
 }
 
-export default function NewsGrid({ news }: NewsGridProps) {
+export default function NewsTable({ news }: NewsTableProps) {
+  const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState<
     NewsCategory | "all"
   >("all");
@@ -112,7 +127,7 @@ export default function NewsGrid({ news }: NewsGridProps) {
         })}
       </div>
 
-      {/* Grid */}
+      {/* Table */}
       {filtered.length === 0 ? (
         <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] py-16 text-center shadow-sm">
           <AlertCircle className="mx-auto mb-3 h-10 w-10 text-[var(--border-1)]" />
@@ -121,54 +136,118 @@ export default function NewsGrid({ news }: NewsGridProps) {
           </p>
         </div>
       ) : (
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((article) => {
-            const priority = priorityConfig[article.priority];
-            const authorName = article.author
-              ? `${article.author.first_name} ${article.author.last_name}`
-              : "Rédaction";
+        <div className="overflow-hidden rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] shadow-sm">
+          {/* Table header */}
+          <div className="hidden border-b border-[var(--border-1)] bg-[var(--hover)] px-5 py-3 md:grid md:grid-cols-[1fr_100px_100px_80px_120px_24px] md:items-center md:gap-4">
+            <span className="text-[10.5px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+              Article
+            </span>
+            <span className="text-[10.5px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+              Catégorie
+            </span>
+            <span className="text-[10.5px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+              Auteur
+            </span>
+            <span className="text-[10.5px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+              Date
+            </span>
+            <span className="text-center text-[10.5px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+              Engagement
+            </span>
+            <span />
+          </div>
 
-            return (
-              <Link
-                key={article.id}
-                href={`/actualites/${article.id}`}
-                className={cn(
-                  "group flex flex-col overflow-hidden rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] shadow-xs transition-all duration-200 hover:shadow-md hover:-translate-y-0.5",
-                  priority.className
-                )}
-              >
-                {/* Image */}
-                <div className="relative aspect-[16/9] overflow-hidden bg-[var(--hover)]">
-                  {article.image_url ? (
-                    <Image
-                      src={article.image_url}
-                      alt={article.title}
-                      fill
-                      className="object-cover transition-transform duration-300 will-change-transform group-hover:scale-105"
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    />
-                  ) : (
-                    <div className="flex h-full items-center justify-center">
-                      <Tag className="h-8 w-8 text-[var(--border-1)]" />
-                    </div>
-                  )}
+          {/* Table rows */}
+          <div className="divide-y divide-[var(--border-1)]">
+            {filtered.map((article) => {
+              const priority = priorityConfig[article.priority];
+              const authorName = article.author
+                ? `${article.author.first_name} ${article.author.last_name}`
+                : "Rédaction";
 
-                  {/* Priority badge */}
-                  {article.priority !== "normal" && (
-                    <div
-                      className={cn(
-                        "absolute left-3 top-3 rounded-full px-2.5 py-0.5 text-[10px] font-bold text-white",
-                        article.priority === "urgent"
-                          ? "bg-red-500"
-                          : "bg-[var(--yellow)]"
+              return (
+                <div
+                  key={article.id}
+                  onClick={() => router.push(`/actualites/${article.id}`)}
+                  className="group cursor-pointer px-5 py-4 transition-colors hover:bg-[var(--hover)] md:grid md:grid-cols-[1fr_100px_100px_80px_120px_24px] md:items-center md:gap-4"
+                >
+                  {/* Article info */}
+                  <div className="flex items-center gap-3.5">
+                    {/* Thumbnail */}
+                    <div className="relative hidden h-12 w-18 shrink-0 overflow-hidden rounded-[var(--radius-xs)] bg-[var(--hover)] sm:block">
+                      {article.image_url ? (
+                        <Image
+                          src={article.image_url}
+                          alt=""
+                          fill
+                          className="object-cover"
+                          sizes="72px"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center">
+                          <Tag className="h-4 w-4 text-[var(--border-1)]" />
+                        </div>
                       )}
-                    >
-                      {priority.label}
                     </div>
-                  )}
 
-                  {/* Category */}
-                  <div className="absolute right-3 top-3">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        {article.priority !== "normal" && (
+                          <span
+                            className={cn(
+                              "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-bold",
+                              priority.className
+                            )}
+                          >
+                            <span
+                              className={cn(
+                                "h-1.5 w-1.5 rounded-full",
+                                priority.dot
+                              )}
+                            />
+                            {priority.label}
+                          </span>
+                        )}
+                        <h3 className="truncate text-[13px] font-semibold text-[var(--heading)] group-hover:text-[var(--yellow)]">
+                          {article.title}
+                        </h3>
+                      </div>
+                      <p className="mt-0.5 truncate text-[11.5px] text-[var(--text-secondary)]">
+                        {article.excerpt}
+                      </p>
+
+                      {/* Mobile meta */}
+                      <div className="mt-2 flex flex-wrap items-center gap-3 md:hidden">
+                        <span
+                          className={cn(
+                            "rounded-full px-2 py-0.5 text-[9px] font-medium",
+                            categoryColors[article.category]
+                          )}
+                        >
+                          {categoryLabels[article.category]}
+                        </span>
+                        <span className="text-[10px] text-[var(--text-muted)]">
+                          {authorName}
+                        </span>
+                        {article.published_at && (
+                          <span className="text-[10px] text-[var(--text-muted)]">
+                            {formatRelative(article.published_at)}
+                          </span>
+                        )}
+                        <span className="flex items-center gap-1 text-[10px] text-[var(--text-muted)]">
+                          <Eye className="h-3 w-3" />
+                          {article.views_count}
+                        </span>
+                        <span className="flex items-center gap-1 text-[10px] text-[var(--text-muted)]">
+                          <Heart className="h-3 w-3" />
+                          {article.likes_count ?? 0}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Category - desktop */}
+                  <div className="hidden md:block">
                     <span
                       className={cn(
                         "rounded-full px-2.5 py-0.5 text-[10px] font-medium",
@@ -178,54 +257,64 @@ export default function NewsGrid({ news }: NewsGridProps) {
                       {categoryLabels[article.category]}
                     </span>
                   </div>
-                </div>
 
-                {/* Content */}
-                <div className="flex flex-1 flex-col p-4">
-                  <h3 className="mb-1.5 text-[13.5px] font-semibold leading-snug text-[var(--heading)] line-clamp-2">
-                    {article.title}
-                  </h3>
-                  <p className="mb-3 flex-1 text-[12px] leading-relaxed text-[var(--text-secondary)] line-clamp-3">
-                    {article.excerpt}
-                  </p>
+                  {/* Author - desktop */}
+                  <div className="hidden md:block">
+                    <span className="text-[11.5px] text-[var(--text-secondary)]">
+                      {authorName}
+                    </span>
+                  </div>
 
-                  {/* Meta */}
-                  <div className="flex items-center justify-between border-t border-[var(--border-1)] pt-3">
-                    <div className="flex items-center gap-1.5">
-                      <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[var(--navy)] text-[7px] font-medium text-white">
-                        {authorName
-                          .split(" ")
-                          .map((n) => n[0])
-                          .join("")
-                          .slice(0, 2)
-                          .toUpperCase()}
-                      </div>
-                      <span className="text-[10.5px] text-[var(--text-muted)]">
-                        {authorName}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center gap-3">
+                  {/* Date - desktop */}
+                  <div className="hidden md:block">
+                    {article.published_at && (
                       <span className="flex items-center gap-1 text-[10.5px] text-[var(--text-muted)]">
-                        <Eye className="h-3 w-3" />
-                        {article.views_count}
+                        <Clock className="h-3 w-3" />
+                        {formatRelative(article.published_at)}
                       </span>
-                      <span className="flex items-center gap-1 text-[10.5px] text-[var(--text-muted)]">
-                        <MessageSquare className="h-3 w-3" />
-                        {article.comments_count}
-                      </span>
-                      {article.published_at && (
-                        <span className="flex items-center gap-1 text-[10.5px] text-[var(--text-muted)]">
-                          <Clock className="h-3 w-3" />
-                          {formatRelative(article.published_at)}
-                        </span>
-                      )}
-                    </div>
+                    )}
+                  </div>
+
+                  {/* Engagement - desktop */}
+                  <div className="hidden md:flex md:items-center md:justify-center md:gap-3">
+                    <span
+                      className="flex items-center gap-1 text-[10.5px] text-[var(--text-muted)]"
+                      title="Vues"
+                    >
+                      <Eye className="h-3 w-3" />
+                      {article.views_count}
+                    </span>
+                    <span
+                      className="flex items-center gap-1 text-[10.5px] text-[var(--text-muted)]"
+                      title="Likes"
+                    >
+                      <Heart className="h-3 w-3" />
+                      {article.likes_count ?? 0}
+                    </span>
+                    <span
+                      className="flex items-center gap-1 text-[10.5px] text-[var(--text-muted)]"
+                      title="Commentaires"
+                    >
+                      <MessageSquare className="h-3 w-3" />
+                      {article.comments_count}
+                    </span>
+                    <span
+                      className="flex items-center gap-1 text-[10.5px] text-[var(--text-muted)]"
+                      title="Partages"
+                    >
+                      <Share2 className="h-3 w-3" />
+                      {article.shares_count ?? 0}
+                    </span>
+                  </div>
+
+                  {/* Arrow */}
+                  <div className="hidden md:block">
+                    <ChevronRight className="h-4 w-4 text-[var(--text-muted)] transition-transform group-hover:translate-x-0.5 group-hover:text-[var(--yellow)]" />
                   </div>
                 </div>
-              </Link>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       )}
     </div>

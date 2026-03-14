@@ -10,6 +10,7 @@ const ROLE_CREDITS: Record<string, number> = {
   responsable_qse: 100,
   chef_chantier: 50,
   technicien: 30,
+  collaborateur: 30,
 };
 
 export async function POST(req: NextRequest) {
