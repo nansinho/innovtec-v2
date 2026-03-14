@@ -2,6 +2,7 @@ import Sidebar from "@/components/layout/sidebar";
 import Topbar from "@/components/layout/topbar";
 import MobileNav from "@/components/layout/mobile-nav";
 import BirthdayPopupWrapper from "@/components/birthday/birthday-popup-wrapper";
+import PasswordChangeAlert from "@/components/profil/password-change-alert";
 import { getProfile } from "@/actions/auth";
 import { getUnreadCount } from "@/actions/notifications";
 import { isMyBirthday, getMyBirthdayWishes } from "@/actions/birthday";
@@ -44,6 +45,7 @@ export default async function DashboardLayout({
         {children}
       </div>
       <MobileNav />
+      {profile?.must_change_password && <PasswordChangeAlert />}
       {isBirthday && (
         <BirthdayPopupWrapper wishes={wishes} userName={userName} />
       )}

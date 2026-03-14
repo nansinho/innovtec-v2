@@ -417,6 +417,14 @@ export async function updatePassword(data: {
   }
 
   console.log("[updatePassword] Success for user:", user.id);
+
+  // Clear must_change_password flag
+  await supabase
+    .from("profiles")
+    .update({ must_change_password: false })
+    .eq("id", user.id);
+
+  revalidatePath("/", "layout");
   return { success: true };
 }
 

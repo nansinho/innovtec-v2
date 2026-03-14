@@ -43,6 +43,9 @@ export async function signUp(formData: {
   password: string;
   firstName: string;
   lastName: string;
+  department?: string;
+  team?: string;
+  agency?: string;
 }): Promise<{ success: boolean; error?: string }> {
   const { email, password, firstName, lastName } = formData;
 
@@ -87,6 +90,9 @@ export async function signUp(formData: {
         email,
         first_name: firstName,
         last_name: lastName,
+        department: formData.department ?? "",
+        team: formData.team ?? "",
+        agency: formData.agency ?? "",
       }, { onConflict: "id" });
 
     if (profileError) {
