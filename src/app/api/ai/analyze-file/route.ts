@@ -104,7 +104,18 @@ export async function POST(req: NextRequest) {
 
     if (type === "politique") {
       systemPrompt +=
-        " Analyse ce document de politique QSE et retourne un JSON avec: title (titre du document), sections (tableau d'objets {title, content} représentant chaque section/chapitre du document). Extrais toutes les informations importantes: engagements, objectifs, mesures, responsabilités.";
+        ` Analyse ce document de politique QSE et retourne un JSON avec: title (titre du document), sections (tableau d'objets {title, content}).
+IMPORTANT: Structure les sections EXACTEMENT selon les 4 piliers QSE avec engagements ET objectifs séparés:
+- "Présentation générale" (le texte d'introduction du document)
+- "QUALITÉ - Nos engagements" (les engagements qualité, chaque point sur une nouvelle ligne)
+- "QUALITÉ - Nos objectifs" (les indicateurs/métriques qualité, chaque point sur une nouvelle ligne)
+- "SANTÉ - Nos engagements" (les engagements santé)
+- "SANTÉ - Nos objectifs" (les indicateurs/métriques santé)
+- "SÉCURITÉ - Nos engagements" (les engagements sécurité)
+- "SÉCURITÉ - Nos objectifs" (les indicateurs/métriques sécurité)
+- "ENVIRONNEMENT - Nos engagements" (les engagements environnement)
+- "ENVIRONNEMENT - Nos objectifs" (les indicateurs/métriques environnement)
+Chaque point doit être sur sa propre ligne dans le champ content. Extrais TOUTES les informations du document.`;
     } else {
       systemPrompt +=
         " Analyse ce document et retourne un JSON structuré avec les informations pertinentes extraites.";

@@ -1,12 +1,13 @@
-import { getQseContent } from "@/actions/qse";
+import { getQseContent, getAllQseContent } from "@/actions/qse";
 import { getProfile } from "@/actions/auth";
 import PolitiqueContent from "@/components/qse/politique-content";
 
 export const dynamic = "force-dynamic";
 
 export default async function PolitiqueQSEPage() {
-  const [content, profile] = await Promise.all([
+  const [content, allContent, profile] = await Promise.all([
     getQseContent("politique"),
+    getAllQseContent("politique"),
     getProfile(),
   ]);
 
@@ -21,11 +22,11 @@ export default async function PolitiqueQSEPage() {
           Politique QSE
         </h1>
         <p className="mt-1 text-sm text-[var(--text-secondary)]">
-          La politique Qualité, Sécurité et Environnement d&apos;INNOVTEC Réseaux.
+          La politique Qualit&eacute;, S&eacute;curit&eacute; et Environnement d&apos;INNOVTEC R&eacute;seaux.
         </p>
       </div>
 
-      <PolitiqueContent content={content} canEdit={canEdit} />
+      <PolitiqueContent content={content} allContent={allContent} canEdit={canEdit} />
     </div>
   );
 }

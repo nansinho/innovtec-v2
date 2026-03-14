@@ -1,35 +1,267 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Edit3, Save, Plus, Trash2, ChevronDown, ChevronRight, Sparkles } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
+import {
+  Edit3,
+  Save,
+  Plus,
+  Trash2,
+  Sparkles,
+  Download,
+  Award,
+  HeartPulse,
+  ShieldCheck,
+  Leaf,
+  FileText,
+  Calendar,
+  ChevronDown,
+  ChevronRight,
+  X,
+} from "lucide-react";
+import { cn, formatDate } from "@/lib/utils";
 import FileUploadAi from "@/components/ai/file-upload-ai";
 import { saveQseContent } from "@/actions/qse";
 import type { QseContent, QseContentSection } from "@/lib/types/database";
 
+// ==========================================
+// PILLAR CONFIG
+// ==========================================
+
+const PILLARS = [
+  {
+    key: "qualite",
+    label: "Qualite",
+    match: ["qualit"],
+    icon: Award,
+    color: "var(--yellow)",
+    surface: "var(--yellow-surface)",
+    border: "var(--yellow-border)",
+  },
+  {
+    key: "sante",
+    label: "Sante",
+    match: ["sant"],
+    icon: HeartPulse,
+    color: "var(--green)",
+    surface: "var(--green-surface)",
+    border: "rgba(22, 163, 74, 0.16)",
+  },
+  {
+    key: "securite",
+    label: "Securite",
+    match: ["s\u00e9curit", "securit"],
+    icon: ShieldCheck,
+    color: "var(--blue)",
+    surface: "var(--blue-surface)",
+    border: "rgba(37, 99, 235, 0.16)",
+  },
+  {
+    key: "environnement",
+    label: "Environnement",
+    match: ["environnement"],
+    icon: Leaf,
+    color: "var(--navy)",
+    surface: "rgba(26, 45, 78, 0.06)",
+    border: "rgba(26, 45, 78, 0.16)",
+  },
+] as const;
+
+interface Pillar {
+  key: string;
+  label: string;
+  icon: typeof Award;
+  color: string;
+  surface: string;
+  border: string;
+  engagements: string[];
+  objectifs: string[];
+}
+
+function parsePillars(sections: QseContentSection[]): {
+  pillars: Pillar[];
+  intro: string;
+} {
+  let intro = "";
+  const pillarMap: Record<string, { engagements: string[]; objectifs: string[] }> = {};
+
+  for (const p of PILLARS) {
+    pillarMap[p.key] = { engagements: [], objectifs: [] };
+  }
+
+  for (const section of sections) {
+    const titleLower = section.title.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+    // Check for intro/presentation
+    if (
+      titleLower.includes("presentation") ||
+      titleLower.includes("generale") ||
+      titleLower.includes("introduction")
+    ) {
+      intro = section.content;
+      continue;
+    }
+
+    // Match to pillar
+    let matched = false;
+    for (const p of PILLARS) {
+      const sectionTitleNorm = section.title.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      if (p.match.some((m) => sectionTitleNorm.includes(m.normalize("NFD").replace(/[\u0300-\u036f]/g, "")))) {
+        const isObjectif = titleLower.includes("objectif");
+        const lines = section.content
+          .split("\n")
+          .map((l) => l.replace(/^[\s\u2022\u2023\u25E6\u2043\u2219*\-]+/, "").trim())
+          .filter((l) => l.length > 0);
+
+        if (isObjectif) {
+          pillarMap[p.key].objectifs.push(...lines);
+        } else {
+          pillarMap[p.key].engagements.push(...lines);
+        }
+        matched = true;
+        break;
+      }
+    }
+
+    // Fallback: if not matched, try to add as intro
+    if (!matched && !intro) {
+      intro = section.content;
+    }
+  }
+
+  const pillars: Pillar[] = PILLARS.map((p) => ({
+    key: p.key,
+    label: p.label,
+    icon: p.icon,
+    color: p.color,
+    surface: p.surface,
+    border: p.border,
+    engagements: pillarMap[p.key].engagements,
+    objectifs: pillarMap[p.key].objectifs,
+  })).filter((p) => p.engagements.length > 0 || p.objectifs.length > 0);
+
+  return { pillars, intro };
+}
+
+// ==========================================
+// PILLAR CARD COMPONENT
+// ==========================================
+
+function PillarCard({ pillar }: { pillar: Pillar }) {
+  const Icon = pillar.icon;
+
+  return (
+    <div
+      className="overflow-hidden rounded-[var(--radius)] border bg-[var(--card)] shadow-sm"
+      style={{ borderColor: pillar.border }}
+    >
+      {/* Header */}
+      <div className="flex items-center gap-3 px-5 py-4">
+        <div
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--radius-sm)]"
+          style={{ background: pillar.surface }}
+        >
+          <Icon className="h-5 w-5" style={{ color: pillar.color }} />
+        </div>
+        <h3 className="text-[15px] font-bold uppercase tracking-wide text-[var(--heading)]">
+          {pillar.label}
+        </h3>
+      </div>
+
+      {/* Engagements */}
+      {pillar.engagements.length > 0 && (
+        <div className="border-t border-[var(--border-1)] px-5 py-4">
+          <div className="mb-2.5 flex items-center gap-2">
+            <div
+              className="h-1 w-5 rounded-full"
+              style={{ background: pillar.color }}
+            />
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
+              Nos engagements
+            </span>
+          </div>
+          <ul className="space-y-2">
+            {pillar.engagements.map((item, i) => (
+              <li key={i} className="flex gap-2 text-[12.5px] leading-relaxed text-[var(--text)]">
+                <span
+                  className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full"
+                  style={{ background: pillar.color }}
+                />
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Objectifs */}
+      {pillar.objectifs.length > 0 && (
+        <div className="mx-4 mb-4 rounded-[var(--radius-sm)] bg-[var(--navy)] px-4 py-3.5">
+          <div className="mb-2 flex items-center gap-2">
+            <div className="h-1 w-5 rounded-full bg-[var(--yellow)]" />
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-white/60">
+              Nos objectifs
+            </span>
+          </div>
+          <ul className="space-y-1.5">
+            {pillar.objectifs.map((item, i) => (
+              <li key={i} className="flex gap-2 text-[12.5px] leading-relaxed text-white/90">
+                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--yellow)]" />
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ==========================================
+// MAIN COMPONENT
+// ==========================================
+
 interface PolitiqueContentProps {
   content: QseContent | null;
+  allContent: QseContent[];
   canEdit: boolean;
 }
 
-export default function PolitiqueContent({ content, canEdit }: PolitiqueContentProps) {
+export default function PolitiqueContent({
+  content,
+  allContent,
+  canEdit,
+}: PolitiqueContentProps) {
+  const [selectedId, setSelectedId] = useState<string | null>(
+    content?.id ?? null
+  );
   const [editing, setEditing] = useState(false);
-  const [title, setTitle] = useState(content?.title ?? "Politique Qualité, Sécurité et Environnement");
+  const [title, setTitle] = useState(
+    content?.title ?? "Politique Qualite, Securite et Environnement"
+  );
   const [sections, setSections] = useState<QseContentSection[]>(
     content?.sections ?? []
   );
-  const [expandedSections, setExpandedSections] = useState<Set<number>>(
-    new Set(sections.map((_, i) => i))
-  );
   const [isPending, startTransition] = useTransition();
   const [showUpload, setShowUpload] = useState(false);
+  const [expandedEdit, setExpandedEdit] = useState<Set<number>>(
+    new Set(sections.map((_, i) => i))
+  );
+  const router = useRouter();
+
+  const selected = allContent.find((c) => c.id === selectedId) ?? content;
+  const { pillars, intro } = selected
+    ? parsePillars(selected.sections)
+    : { pillars: [], intro: "" };
 
   function handleAiResult(result: unknown) {
     const data = result as { title?: string; sections?: QseContentSection[] };
     if (data.title) setTitle(data.title);
     if (data.sections && Array.isArray(data.sections)) {
       setSections(data.sections);
-      setExpandedSections(new Set(data.sections.map((_: QseContentSection, i: number) => i)));
+      setExpandedEdit(
+        new Set(data.sections.map((_: QseContentSection, i: number) => i))
+      );
     }
     setEditing(true);
     setShowUpload(false);
@@ -38,21 +270,25 @@ export default function PolitiqueContent({ content, canEdit }: PolitiqueContentP
   function addSection() {
     const idx = sections.length;
     setSections([...sections, { title: "", content: "" }]);
-    setExpandedSections((prev) => new Set([...prev, idx]));
+    setExpandedEdit((prev) => new Set([...prev, idx]));
   }
 
   function removeSection(index: number) {
     setSections(sections.filter((_, i) => i !== index));
   }
 
-  function updateSection(index: number, field: keyof QseContentSection, value: string) {
+  function updateSection(
+    index: number,
+    field: keyof QseContentSection,
+    value: string
+  ) {
     setSections(
       sections.map((s, i) => (i === index ? { ...s, [field]: value } : s))
     );
   }
 
-  function toggleSection(index: number) {
-    setExpandedSections((prev) => {
+  function toggleEditSection(index: number) {
+    setExpandedEdit((prev) => {
       const next = new Set(prev);
       if (next.has(index)) next.delete(index);
       else next.add(index);
@@ -65,12 +301,218 @@ export default function PolitiqueContent({ content, canEdit }: PolitiqueContentP
       const result = await saveQseContent("politique", title, sections);
       if (result.success) {
         setEditing(false);
+        router.refresh();
       }
     });
   }
 
-  const isEmpty = sections.length === 0;
+  const isEmpty = !selected || selected.sections.length === 0;
+  const showDetail = selectedId && !isEmpty && !editing;
 
+  // ==========================================
+  // LIST VIEW (landing)
+  // ==========================================
+  if (!selectedId && allContent.length > 1 && !editing) {
+    return (
+      <div>
+        {canEdit && (
+          <div className="mb-5 flex flex-wrap items-center gap-2">
+            <button
+              onClick={() => {
+                setSelectedId(null);
+                setEditing(true);
+              }}
+              className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-4 py-2.5 text-sm font-medium text-white shadow-xs transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-sm"
+            >
+              <Edit3 className="h-4 w-4" />
+              Modifier manuellement
+            </button>
+            <button
+              onClick={() => setShowUpload(!showUpload)}
+              className="flex items-center gap-2 rounded-[var(--radius-sm)] border border-[var(--navy)] bg-transparent px-4 py-2.5 text-sm font-medium text-[var(--navy)] shadow-xs transition-all duration-200 hover:bg-[var(--navy)] hover:text-white hover:shadow-sm"
+            >
+              <Sparkles className="h-4 w-4 text-[var(--yellow)]" />
+              Importer un PDF / Image (IA)
+            </button>
+          </div>
+        )}
+
+        {showUpload && (
+          <div className="mb-6 rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--hover)] p-5 shadow-xs">
+            <h3 className="mb-3 text-sm font-semibold text-[var(--heading)]">
+              Import IA — Analysez un PDF ou une image
+            </h3>
+            <FileUploadAi
+              onAnalysisComplete={handleAiResult}
+              type="politique"
+              label="Importer votre politique QSE (PDF ou image)"
+            />
+          </div>
+        )}
+
+        <div className="space-y-3">
+          {allContent.map((doc) => {
+            const year = new Date(doc.updated_at).getFullYear();
+            return (
+              <button
+                key={doc.id}
+                onClick={() => setSelectedId(doc.id)}
+                className="flex w-full items-center gap-4 rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] px-5 py-4 text-left shadow-xs transition-all duration-200 hover:shadow-sm hover:border-[var(--yellow)]/40"
+              >
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--radius-sm)] bg-[var(--navy)]">
+                  <FileText className="h-5 w-5 text-[var(--yellow)]" />
+                </div>
+                <div className="flex-1">
+                  <div className="text-sm font-semibold text-[var(--heading)]">
+                    {doc.title}
+                  </div>
+                  <div className="mt-0.5 flex items-center gap-2 text-[11px] text-[var(--text-muted)]">
+                    <Calendar className="h-3 w-3" />
+                    Mise a jour le {formatDate(doc.updated_at)}
+                  </div>
+                </div>
+                <span className="rounded-full bg-[var(--navy)] px-3 py-1 text-[11px] font-bold text-white">
+                  {year}
+                </span>
+                <ChevronRight className="h-4 w-4 text-[var(--text-muted)]" />
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  // ==========================================
+  // DETAIL VIEW (with hero + pillars)
+  // ==========================================
+  if (showDetail && selected) {
+    const year = new Date(selected.updated_at).getFullYear();
+    const hasFile = selected.source_file_url && selected.source_file_url.length > 0;
+
+    return (
+      <div>
+        {/* Back button if multiple */}
+        {allContent.length > 1 && (
+          <button
+            onClick={() => setSelectedId(null)}
+            className="mb-4 flex items-center gap-1.5 text-[12px] font-medium text-[var(--text-secondary)] transition-colors hover:text-[var(--heading)]"
+          >
+            <ChevronRight className="h-3.5 w-3.5 rotate-180" />
+            Retour a la liste
+          </button>
+        )}
+
+        {/* Admin actions */}
+        {canEdit && (
+          <div className="mb-5 flex flex-wrap items-center gap-2">
+            <button
+              onClick={() => {
+                setTitle(selected.title);
+                setSections(selected.sections);
+                setExpandedEdit(new Set(selected.sections.map((_, i) => i)));
+                setEditing(true);
+              }}
+              className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-4 py-2.5 text-sm font-medium text-white shadow-xs transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-sm"
+            >
+              <Edit3 className="h-4 w-4" />
+              Modifier
+            </button>
+            <button
+              onClick={() => setShowUpload(!showUpload)}
+              className="flex items-center gap-2 rounded-[var(--radius-sm)] border border-[var(--navy)] bg-transparent px-4 py-2.5 text-sm font-medium text-[var(--navy)] shadow-xs transition-all duration-200 hover:bg-[var(--navy)] hover:text-white hover:shadow-sm"
+            >
+              <Sparkles className="h-4 w-4 text-[var(--yellow)]" />
+              Reimporter un PDF (IA)
+            </button>
+          </div>
+        )}
+
+        {showUpload && (
+          <div className="mb-6 rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--hover)] p-5 shadow-xs">
+            <FileUploadAi
+              onAnalysisComplete={handleAiResult}
+              type="politique"
+              label="Importer votre politique QSE (PDF ou image)"
+            />
+          </div>
+        )}
+
+        {/* Hero Banner */}
+        <div className="mb-6 overflow-hidden rounded-[var(--radius)] bg-gradient-to-br from-[var(--navy)] to-[#2a4a7a] px-8 py-8 shadow-md">
+          <div className="flex items-start justify-between">
+            <div>
+              <span className="mb-3 inline-block rounded-full bg-[var(--yellow)]/20 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--yellow)]">
+                Politique QSE {year}
+              </span>
+              <h2 className="mt-2 text-[22px] font-bold leading-tight text-white">
+                {selected.title}
+              </h2>
+              <div className="mt-2 flex items-center gap-2 text-[12px] text-white/50">
+                <Calendar className="h-3.5 w-3.5" />
+                Mise a jour le {formatDate(selected.updated_at)}
+              </div>
+            </div>
+            {hasFile && (
+              <a
+                href={selected.source_file_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-white/10 px-4 py-2.5 text-[12px] font-medium text-white backdrop-blur-sm transition-all hover:bg-white/20"
+              >
+                <Download className="h-4 w-4" />
+                Telecharger le PDF
+              </a>
+            )}
+          </div>
+        </div>
+
+        {/* Introduction */}
+        {intro && (
+          <div className="mb-6 rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] px-6 py-5 shadow-sm">
+            <p className="text-[13px] leading-relaxed text-[var(--text)]">
+              {intro}
+            </p>
+          </div>
+        )}
+
+        {/* Pillars Grid */}
+        {pillars.length > 0 ? (
+          <div className="grid gap-5 md:grid-cols-2">
+            {pillars.map((pillar) => (
+              <PillarCard key={pillar.key} pillar={pillar} />
+            ))}
+          </div>
+        ) : (
+          /* Fallback: raw sections if no pillars matched */
+          <div className="space-y-3">
+            {selected.sections.map((section, index) => (
+              <div
+                key={index}
+                className="rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] p-5 shadow-xs"
+              >
+                <h3 className="mb-2 text-[13px] font-semibold text-[var(--heading)]">
+                  {section.title}
+                </h3>
+                <p className="whitespace-pre-wrap text-[12.5px] leading-relaxed text-[var(--text)]">
+                  {section.content}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Signature line */}
+        <div className="mt-8 border-t border-[var(--border-1)] pt-4 text-center text-[11px] text-[var(--text-muted)]">
+          Document mis a jour le {formatDate(selected.updated_at, "d MMMM yyyy")}
+        </div>
+      </div>
+    );
+  }
+
+  // ==========================================
+  // EDIT MODE / EMPTY STATE
+  // ==========================================
   return (
     <div>
       {/* Actions bar */}
@@ -106,7 +548,10 @@ export default function PolitiqueContent({ content, canEdit }: PolitiqueContentP
               <button
                 onClick={() => {
                   setEditing(false);
-                  setTitle(content?.title ?? "Politique Qualité, Sécurité et Environnement");
+                  setTitle(
+                    content?.title ??
+                      "Politique Qualite, Securite et Environnement"
+                  );
                   setSections(content?.sections ?? []);
                 }}
                 className="rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] px-4 py-2.5 text-sm text-[var(--text-secondary)] shadow-xs transition-all duration-200 hover:bg-[var(--hover)]"
@@ -125,7 +570,8 @@ export default function PolitiqueContent({ content, canEdit }: PolitiqueContentP
             Import IA — Analysez un PDF ou une image
           </h3>
           <p className="mb-4 text-[12px] text-[var(--text-secondary)]">
-            L&apos;IA va analyser votre document et générer automatiquement le contenu structuré de la politique QSE.
+            L&apos;IA va analyser votre document et generer automatiquement le
+            contenu structure de la politique QSE.
           </p>
           <FileUploadAi
             onAnalysisComplete={handleAiResult}
@@ -135,10 +581,9 @@ export default function PolitiqueContent({ content, canEdit }: PolitiqueContentP
         </div>
       )}
 
-      {/* Content display/edit */}
+      {/* Edit mode */}
       {editing ? (
         <div className="space-y-4">
-          {/* Title */}
           <div>
             <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">
               Titre du document
@@ -150,36 +595,57 @@ export default function PolitiqueContent({ content, canEdit }: PolitiqueContentP
             />
           </div>
 
-          {/* Sections */}
           {sections.map((section, index) => (
             <div
               key={index}
-              className="rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] p-5 shadow-xs"
+              className="rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] shadow-xs"
             >
-              <div className="mb-3 flex items-center gap-2">
+              <button
+                onClick={() => toggleEditSection(index)}
+                className="flex w-full items-center gap-2 px-5 py-3.5 text-left"
+              >
                 <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--navy)] text-[9px] font-bold text-white">
                   {index + 1}
                 </span>
-                <input
-                  value={section.title}
-                  onChange={(e) => updateSection(index, "title", e.target.value)}
-                  placeholder="Titre de la section"
-                  className="flex-1 border-b border-[var(--border-1)] pb-1 text-sm font-semibold text-[var(--heading)] outline-none transition-colors focus:border-[var(--yellow)]"
-                />
+                <span className="flex-1 text-sm font-semibold text-[var(--heading)]">
+                  {section.title || "Section sans titre"}
+                </span>
                 <button
-                  onClick={() => removeSection(index)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    removeSection(index);
+                  }}
                   className="rounded-[var(--radius-xs)] p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--red-surface)] hover:text-[var(--red)]"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>
-              </div>
-              <textarea
-                value={section.content}
-                onChange={(e) => updateSection(index, "content", e.target.value)}
-                placeholder="Contenu de la section..."
-                rows={4}
-                className="w-full resize-none rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2.5 text-[12.5px] text-[var(--text)] outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
-              />
+                {expandedEdit.has(index) ? (
+                  <ChevronDown className="h-4 w-4 text-[var(--text-muted)]" />
+                ) : (
+                  <ChevronRight className="h-4 w-4 text-[var(--text-muted)]" />
+                )}
+              </button>
+              {expandedEdit.has(index) && (
+                <div className="space-y-3 border-t border-[var(--border-1)] px-5 py-4">
+                  <input
+                    value={section.title}
+                    onChange={(e) =>
+                      updateSection(index, "title", e.target.value)
+                    }
+                    placeholder="Titre de la section (ex: QUALITE - Nos engagements)"
+                    className="w-full border-b border-[var(--border-1)] pb-1 text-sm font-semibold text-[var(--heading)] outline-none transition-colors focus:border-[var(--yellow)]"
+                  />
+                  <textarea
+                    value={section.content}
+                    onChange={(e) =>
+                      updateSection(index, "content", e.target.value)
+                    }
+                    placeholder="Contenu de la section..."
+                    rows={4}
+                    className="w-full resize-none rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2.5 text-[12.5px] text-[var(--text)] outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                  />
+                </div>
+              )}
             </div>
           ))}
 
@@ -191,53 +657,21 @@ export default function PolitiqueContent({ content, canEdit }: PolitiqueContentP
             Ajouter une section
           </button>
         </div>
-      ) : isEmpty ? (
+      ) : (
+        /* Empty state */
         <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] py-16 text-center shadow-sm">
-          <p className="text-sm text-[var(--text-secondary)]">
-            Aucun contenu de politique QSE n&apos;a été défini.
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--navy)]/10">
+            <FileText className="h-8 w-8 text-[var(--navy)]" />
+          </div>
+          <p className="text-sm font-medium text-[var(--heading)]">
+            Aucune politique QSE definie
           </p>
           {canEdit && (
             <p className="mt-1 text-[12px] text-[var(--text-muted)]">
-              Utilisez les boutons ci-dessus pour ajouter du contenu manuellement ou via l&apos;IA.
+              Utilisez les boutons ci-dessus pour importer un PDF ou ajouter du
+              contenu manuellement.
             </p>
           )}
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {/* Title */}
-          <h2 className="mb-5 text-lg font-bold text-[var(--heading)]">{title}</h2>
-
-          {/* Sections */}
-          {sections.map((section, index) => (
-            <div
-              key={index}
-              className="overflow-hidden rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] shadow-xs transition-shadow duration-200 hover:shadow-sm"
-            >
-              <button
-                onClick={() => toggleSection(index)}
-                className="flex w-full items-center gap-3 px-5 py-4 text-left transition-colors hover:bg-[var(--hover)]"
-              >
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--navy)] text-[10px] font-bold text-white">
-                  {index + 1}
-                </span>
-                <span className="flex-1 text-[13px] font-semibold text-[var(--heading)]">
-                  {section.title}
-                </span>
-                {expandedSections.has(index) ? (
-                  <ChevronDown className="h-4 w-4 text-[var(--text-muted)]" />
-                ) : (
-                  <ChevronRight className="h-4 w-4 text-[var(--text-muted)]" />
-                )}
-              </button>
-              {expandedSections.has(index) && (
-                <div className="border-t border-[var(--border-1)] px-5 py-4">
-                  <p className="whitespace-pre-wrap text-[13px] leading-relaxed text-[var(--text)]">
-                    {section.content}
-                  </p>
-                </div>
-              )}
-            </div>
-          ))}
         </div>
       )}
     </div>

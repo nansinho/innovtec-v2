@@ -111,10 +111,10 @@ export default function FileUploadAi({
         className={cn(
           "flex cursor-pointer flex-col items-center gap-3 rounded-[var(--radius)] border-2 border-dashed p-8 text-center transition-all",
           isDragging
-            ? "border-purple-400 bg-purple-50"
+            ? "border-[var(--yellow)] bg-[var(--yellow-surface)]"
             : file
-              ? "border-green-300 bg-green-50"
-              : "border-[var(--border-1)] bg-gray-50/50 hover:border-purple-300 hover:bg-purple-50/30"
+              ? "border-[var(--green)]/30 bg-[var(--green-surface)]"
+              : "border-[var(--border-1)] bg-[var(--hover)] hover:border-[var(--yellow)]/50 hover:bg-[var(--yellow-surface)]"
         )}
       >
         <input
@@ -131,9 +131,9 @@ export default function FileUploadAi({
         {file ? (
           <>
             {isImage ? (
-              <Image className="h-8 w-8 text-green-500" />
+              <Image className="h-8 w-8 text-[var(--green)]" />
             ) : (
-              <FileText className="h-8 w-8 text-green-500" />
+              <FileText className="h-8 w-8 text-[var(--green)]" />
             )}
             <div>
               <p className="text-sm font-medium text-[var(--heading)]">
@@ -178,7 +178,7 @@ export default function FileUploadAi({
         <button
           onClick={handleAnalyze}
           disabled={loading}
-          className="flex w-full items-center justify-center gap-2 rounded-[var(--radius-sm)] bg-gradient-to-r from-purple-600 to-indigo-600 py-2.5 text-sm font-medium text-white transition-all hover:from-purple-700 hover:to-indigo-700 disabled:opacity-50"
+          className="flex w-full items-center justify-center gap-2 rounded-[var(--radius-sm)] bg-[var(--navy)] py-2.5 text-sm font-medium text-white transition-all hover:bg-[var(--navy)]/90 disabled:opacity-50"
         >
           {loading ? (
             <Loader2 className="h-4 w-4 animate-spin" />
