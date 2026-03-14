@@ -8,6 +8,15 @@ import type { DangerReport, Rex, QseContent, QseContentSection } from "@/lib/typ
 // POLITIQUE QSE
 // ==========================================
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function checkYearColumn(supabase: any): Promise<boolean> {
+  const { data } = await supabase
+    .from("qse_content")
+    .select("year")
+    .limit(0);
+  return data !== null;
+}
+
 export async function getQseContent(type: string): Promise<QseContent | null> {
   const supabase = await createClient();
   const { data } = await supabase
@@ -46,13 +55,16 @@ export async function saveQseContent(
   } = await supabase.auth.getUser();
   if (!user) return { success: false, error: "Non authentifié" };
 
+  // Check if year column exists by trying a small query
+  const hasYearColumn = await checkYearColumn(supabase);
+
   const updateData: Record<string, unknown> = {
     title,
     sections,
     updated_by: user.id,
   };
   if (sourceFileUrl !== undefined) updateData.source_file_url = sourceFileUrl;
-  if (year !== undefined) updateData.year = year;
+  if (hasYearColumn && year !== undefined) updateData.year = year;
 
   if (id) {
     const { error } = await supabase
@@ -62,12 +74,16 @@ export async function saveQseContent(
 
     if (error) return { success: false, error: error.message };
   } else {
-    const { error } = await supabase.from("qse_content").insert({
+    const insertData: Record<string, unknown> = {
       type,
-      ...updateData,
+      title,
+      sections,
       source_file_url: sourceFileUrl ?? "",
-      year: year ?? null,
-    });
+      updated_by: user.id,
+    };
+    if (hasYearColumn) insertData.year = year ?? null;
+
+    const { error } = await supabase.from("qse_content").insert(insertData);
 
     if (error) return { success: false, error: error.message };
   }
@@ -89,14 +105,18 @@ export async function createQseContent(
   } = await supabase.auth.getUser();
   if (!user) return { success: false, error: "Non authentifié" };
 
-  const { error } = await supabase.from("qse_content").insert({
+  const hasYearColumn = await checkYearColumn(supabase);
+
+  const insertData: Record<string, unknown> = {
     type,
     title,
     sections,
     source_file_url: sourceFileUrl ?? "",
-    year: year ?? null,
     updated_by: user.id,
-  });
+  };
+  if (hasYearColumn) insertData.year = year ?? null;
+
+  const { error } = await supabase.from("qse_content").insert(insertData);
 
   if (error) return { success: false, error: error.message };
 
