@@ -1,4 +1,4 @@
-import { getQseContent, getAllQseContent } from "@/actions/qse";
+import { getQseContent, getAllQseContent, getQseFileUrls } from "@/actions/qse";
 import { getProfile } from "@/actions/auth";
 import PolitiqueContent from "@/components/qse/politique-content";
 
@@ -10,6 +10,9 @@ export default async function PolitiqueQSEPage() {
     getAllQseContent("politique"),
     getProfile(),
   ]);
+
+  // Generate signed URLs for all documents that have source files
+  const fileUrls = await getQseFileUrls(allContent);
 
   const canEdit =
     profile !== null &&
@@ -26,7 +29,12 @@ export default async function PolitiqueQSEPage() {
         </p>
       </div>
 
-      <PolitiqueContent content={content} allContent={allContent} canEdit={canEdit} />
+      <PolitiqueContent
+        content={content}
+        allContent={allContent}
+        canEdit={canEdit}
+        fileUrls={fileUrls}
+      />
     </div>
   );
 }
