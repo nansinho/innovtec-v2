@@ -520,7 +520,9 @@ export default function PolitiqueContent({
   if (selectedId && selected) {
     const docYear = getDocYear(selected);
     const hasFile = selected.source_file_url && selected.source_file_url.length > 0;
-    const imageUrl = fileUrls[selected.id] || null;
+    const fileUrl = fileUrls[selected.id] || null;
+    const isImageFile = selected.source_file_url?.match(/\.(jpg|jpeg|png|gif|webp)$/i);
+    const imageUrl = fileUrl && isImageFile ? fileUrl : null;
 
     return (
       <div className="space-y-5">
@@ -599,6 +601,25 @@ export default function PolitiqueContent({
           </div>
         ) : (
           <>
+            {/* Download button for non-image files (PDF, etc.) */}
+            {hasFile && !isImageFile && (
+              <div className="flex items-center gap-3 rounded-[var(--radius)] border border-[var(--border-1)] bg-white p-4 shadow-xs">
+                <Download className="h-5 w-5 text-[var(--navy)]" />
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-[var(--heading)]">Document source disponible</p>
+                  <p className="text-xs text-[var(--text-muted)]">Mis a jour le {formatDate(selected.updated_at, "d MMMM yyyy")}</p>
+                </div>
+                <button
+                  onClick={() => handleDownloadFile(selected.source_file_url)}
+                  disabled={isDownloading}
+                  className="inline-flex items-center gap-2 rounded-[var(--radius)] bg-[var(--navy)] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[var(--navy-dark)] disabled:opacity-50"
+                >
+                  <Download className="h-4 w-4" />
+                  {isDownloading ? "Chargement..." : "Telecharger"}
+                </button>
+              </div>
+            )}
+
             {/* Hero Banner */}
             <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[var(--navy)] via-[#1e3a5f] to-[#2a4a7a] px-8 py-10 shadow-lg">
               {/* Decorative circles */}
@@ -742,7 +763,7 @@ export default function PolitiqueContent({
                       </span>
                     </td>
                     <td className="px-4 py-3">
-                      <span className="inline-flex items-center rounded-[var(--radius-xs)] bg-amber-50 px-2 py-0.5 text-xs font-semibold text-amber-700">
+                      <span className="inline-flex items-center rounded-[var(--radius-xs)] bg-amber-500/10 px-2 py-0.5 text-xs font-semibold text-amber-700">
                         {docYear}
                       </span>
                     </td>
