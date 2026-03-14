@@ -224,12 +224,14 @@ interface PolitiqueContentProps {
   content: QseContent | null;
   allContent: QseContent[];
   canEdit: boolean;
+  fileUrls?: Record<string, string>;
 }
 
 export default function PolitiqueContent({
   content,
   allContent,
   canEdit,
+  fileUrls = {},
 }: PolitiqueContentProps) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
@@ -534,6 +536,7 @@ export default function PolitiqueContent({
   if (selectedId && selected) {
     const docYear = getDocYear(selected);
     const hasFile = selected.source_file_url && selected.source_file_url.length > 0;
+    const imageUrl = fileUrls[selected.id] || null;
 
     return (
       <div>
@@ -587,75 +590,96 @@ export default function PolitiqueContent({
           </div>
         )}
 
-        {/* Hero Banner */}
-        <div className="mb-6 overflow-hidden rounded-[var(--radius)] bg-gradient-to-br from-[var(--navy)] to-[#2a4a7a] px-8 py-8 shadow-md">
-          <div className="flex items-start justify-between">
-            <div>
-              <span className="mb-3 inline-block rounded-full bg-[var(--yellow)]/20 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--yellow)]">
-                Politique QSE {docYear}
-              </span>
-              <h2 className="mt-2 text-[22px] font-bold leading-tight text-white">
-                {selected.title}
-              </h2>
-              <div className="mt-2 flex items-center gap-2 text-[12px] text-white/50">
-                <Calendar className="h-3.5 w-3.5" />
-                Mise a jour le {formatDate(selected.updated_at)}
+        {/* Original image display OR structured view */}
+        {imageUrl ? (
+          <>
+            {/* Original imported image */}
+            <div className="overflow-hidden rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] shadow-md">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={imageUrl}
+                alt={selected.title}
+                className="w-full h-auto"
+              />
+            </div>
+
+            {/* Download button */}
+            <div className="mt-5 flex items-center gap-3">
+              <button
+                onClick={() => handleDownloadFile(selected.source_file_url)}
+                disabled={isDownloading}
+                className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--navy)] px-4 py-2 text-sm font-medium text-white shadow-xs transition-all duration-200 hover:bg-[var(--navy)]/90 hover:shadow-sm disabled:opacity-50"
+              >
+                <Download className="h-4 w-4" />
+                {isDownloading ? "Chargement..." : "Telecharger le document original"}
+              </button>
+            </div>
+
+            {/* Signature line */}
+            <div className="mt-6 border-t border-[var(--border-1)] pt-4 text-center text-[11px] text-[var(--text-muted)]">
+              Document mis a jour le {formatDate(selected.updated_at, "d MMMM yyyy")}
+            </div>
+          </>
+        ) : (
+          <>
+            {/* Fallback: structured pillar view when no image */}
+            {/* Hero Banner */}
+            <div className="mb-6 overflow-hidden rounded-[var(--radius)] bg-gradient-to-br from-[var(--navy)] to-[#2a4a7a] px-8 py-8 shadow-md">
+              <div className="flex items-start justify-between">
+                <div>
+                  <span className="mb-3 inline-block rounded-full bg-[var(--yellow)]/20 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--yellow)]">
+                    Politique QSE {docYear}
+                  </span>
+                  <h2 className="mt-2 text-[22px] font-bold leading-tight text-white">
+                    {selected.title}
+                  </h2>
+                  <div className="mt-2 flex items-center gap-2 text-[12px] text-white/50">
+                    <Calendar className="h-3.5 w-3.5" />
+                    Mise a jour le {formatDate(selected.updated_at)}
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* Introduction */}
-        {intro && (
-          <div className="mb-6 rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] px-6 py-5 shadow-sm">
-            <p className="text-[13px] leading-relaxed text-[var(--text)]">
-              {intro}
-            </p>
-          </div>
-        )}
-
-        {/* Pillars Grid */}
-        {pillars.length > 0 ? (
-          <div className="grid gap-5 md:grid-cols-2">
-            {pillars.map((pillar) => (
-              <PillarCard key={pillar.key} pillar={pillar} />
-            ))}
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {selected.sections.map((section, index) => (
-              <div
-                key={index}
-                className="rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] p-5 shadow-xs"
-              >
-                <h3 className="mb-2 text-[13px] font-semibold text-[var(--heading)]">
-                  {section.title}
-                </h3>
-                <p className="whitespace-pre-wrap text-[12.5px] leading-relaxed text-[var(--text)]">
-                  {section.content}
+            {/* Introduction */}
+            {intro && (
+              <div className="mb-6 rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] px-6 py-5 shadow-sm">
+                <p className="text-[13px] leading-relaxed text-[var(--text)]">
+                  {intro}
                 </p>
               </div>
-            ))}
-          </div>
-        )}
+            )}
 
-        {/* Signature line */}
-        <div className="mt-8 border-t border-[var(--border-1)] pt-4 text-center text-[11px] text-[var(--text-muted)]">
-          Document mis a jour le {formatDate(selected.updated_at, "d MMMM yyyy")}
-        </div>
+            {/* Pillars Grid */}
+            {pillars.length > 0 ? (
+              <div className="grid gap-5 md:grid-cols-2">
+                {pillars.map((pillar) => (
+                  <PillarCard key={pillar.key} pillar={pillar} />
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {selected.sections.map((section, index) => (
+                  <div
+                    key={index}
+                    className="rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] p-5 shadow-xs"
+                  >
+                    <h3 className="mb-2 text-[13px] font-semibold text-[var(--heading)]">
+                      {section.title}
+                    </h3>
+                    <p className="whitespace-pre-wrap text-[12.5px] leading-relaxed text-[var(--text)]">
+                      {section.content}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
 
-        {/* Download original file */}
-        {hasFile && (
-          <div className="mt-6">
-            <button
-              onClick={() => handleDownloadFile(selected.source_file_url)}
-              disabled={isDownloading}
-              className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--navy)] px-4 py-2 text-sm font-medium text-white shadow-xs transition-all duration-200 hover:bg-[var(--navy)]/90 hover:shadow-sm disabled:opacity-50"
-            >
-              <Download className="h-4 w-4" />
-              {isDownloading ? "Chargement..." : "Telecharger le document original"}
-            </button>
-          </div>
+            {/* Signature line */}
+            <div className="mt-8 border-t border-[var(--border-1)] pt-4 text-center text-[11px] text-[var(--text-muted)]">
+              Document mis a jour le {formatDate(selected.updated_at, "d MMMM yyyy")}
+            </div>
+          </>
         )}
       </div>
     );
@@ -732,9 +756,20 @@ export default function PolitiqueContent({
                   onClick={() => setSelectedId(doc.id)}
                   className="flex flex-1 items-center gap-4 text-left min-w-0"
                 >
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--radius-sm)] bg-[var(--navy)]">
-                    <FileText className="h-5 w-5 text-[var(--yellow)]" />
-                  </div>
+                  {fileUrls[doc.id] ? (
+                    <div className="h-12 w-12 shrink-0 overflow-hidden rounded-[var(--radius-sm)] border border-[var(--border-1)]">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={fileUrls[doc.id]}
+                        alt={doc.title}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--radius-sm)] bg-[var(--navy)]">
+                      <FileText className="h-5 w-5 text-[var(--yellow)]" />
+                    </div>
+                  )}
                   <div className="flex-1 min-w-0">
                     <div className="text-sm font-semibold text-[var(--heading)] truncate">
                       {doc.title}

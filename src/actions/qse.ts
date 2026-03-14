@@ -161,6 +161,35 @@ export async function getQseFileDownloadUrl(
   return { url: data.signedUrl };
 }
 
+export async function getQseFileUrls(
+  contents: QseContent[]
+): Promise<Record<string, string>> {
+  const supabase = await createClient();
+  const urls: Record<string, string> = {};
+
+  const itemsWithFiles = contents.filter(
+    (c) => c.source_file_url && c.source_file_url.length > 0
+  );
+
+  if (itemsWithFiles.length === 0) return urls;
+
+  // Generate signed URLs (1 hour) for display
+  const results = await Promise.all(
+    itemsWithFiles.map(async (item) => {
+      const { data } = await supabase.storage
+        .from("documents")
+        .createSignedUrl(item.source_file_url, 60 * 60);
+      return { id: item.id, url: data?.signedUrl };
+    })
+  );
+
+  for (const r of results) {
+    if (r.url) urls[r.id] = r.url;
+  }
+
+  return urls;
+}
+
 // ==========================================
 // SITUATIONS DANGEREUSES
 // ==========================================
