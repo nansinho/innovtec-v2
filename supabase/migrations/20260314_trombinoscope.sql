@@ -56,7 +56,7 @@ BEGIN
   ) VALUES (
     new_id, p_email, p_first_name, p_last_name, p_job_title, p_phone,
     p_department, p_team, p_agency, true,
-    p_date_of_birth, 'technicien', true
+    p_date_of_birth, 'collaborateur', true
   ) ON CONFLICT (id) DO UPDATE SET
     first_name = EXCLUDED.first_name,
     last_name = EXCLUDED.last_name,

@@ -12,6 +12,7 @@ const roleLabels: Record<string, string> = {
   responsable_qse: "Responsable QSE",
   chef_chantier: "Chef de chantier",
   technicien: "Technicien",
+  collaborateur: "Collaborateur",
 };
 
 const jobTitles = [
