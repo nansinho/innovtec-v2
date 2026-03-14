@@ -187,7 +187,7 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-4 py-2.5 text-sm font-medium text-white shadow-xs transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-sm"
+          className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-3 py-1.5 text-sm font-medium text-white shadow-xs transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-sm active:scale-[0.97]"
         >
           {showForm ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
           {showForm ? "Annuler" : "Nouvelle actualité"}
@@ -230,7 +230,7 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
               <button
                 onClick={handleAiGenerate}
                 disabled={aiLoading || !aiPrompt.trim()}
-                className="flex items-center gap-2 rounded-[var(--radius-sm)] border border-[var(--navy)] bg-transparent px-4 py-2.5 text-sm font-medium text-[var(--navy)] shadow-xs transition-all duration-200 hover:bg-[var(--navy)] hover:text-white hover:shadow-sm disabled:opacity-50"
+                className="flex items-center gap-2 rounded-[var(--radius-sm)] border border-[var(--navy)] bg-transparent px-3 py-1.5 text-sm font-medium text-[var(--navy)] shadow-xs transition-all duration-200 hover:bg-[var(--navy)] hover:text-white hover:shadow-sm active:scale-[0.97] disabled:opacity-50"
               >
                 {aiLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -362,7 +362,7 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
               <button
                 onClick={handleSubmit}
                 disabled={isPending || !form.title.trim()}
-                className="rounded-[var(--radius-sm)] bg-[var(--yellow)] px-6 py-2.5 text-sm font-medium text-white shadow-xs transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-sm disabled:opacity-50"
+                className="rounded-[var(--radius-sm)] bg-[var(--yellow)] px-4 py-2 text-sm font-medium text-white shadow-xs transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-sm disabled:opacity-50"
               >
                 {isPending ? "Création..." : "Créer l'actualité"}
               </button>

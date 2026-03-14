@@ -126,7 +126,7 @@ export default function BirthdayPopup({ wishes, userName }: BirthdayPopupProps) 
 
           <button
             onClick={handleClose}
-            className="mt-6 w-full rounded-[var(--radius-sm)] bg-[var(--yellow)] py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[var(--yellow-hover)]"
+            className="mt-6 w-full rounded-[var(--radius-sm)] bg-[var(--yellow)] py-2 text-sm font-semibold text-white transition-all duration-200 hover:bg-[var(--yellow-hover)] active:scale-[0.97]"
           >
             Merci !
           </button>
