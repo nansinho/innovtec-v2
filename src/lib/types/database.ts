@@ -7,7 +7,8 @@ export type UserRole =
   | "rh"
   | "responsable_qse"
   | "chef_chantier"
-  | "technicien";
+  | "technicien"
+  | "collaborateur";
 
 export type NewsCategory =
   | "entreprise"

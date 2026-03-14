@@ -7,7 +7,7 @@ import type { Profile, UserRole } from "@/lib/types/database";
 
 /**
  * If no admin user exists, promote the current user to admin.
- * This solves the bootstrap problem where the first user is `technicien` by default.
+ * This solves the bootstrap problem where the first user is `collaborateur` by default.
  */
 export async function ensureAdminExists(): Promise<{
   promoted: boolean;
