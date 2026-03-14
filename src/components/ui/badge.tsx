@@ -8,14 +8,14 @@ export function Badge({ variant = "default", className, ...props }: BadgeProps) 
   return (
     <span
       className={cn(
-        "inline-block rounded-full px-2.5 py-0.5 text-[10px] font-medium",
+        "inline-flex items-center rounded-[var(--radius-xs)] px-2 py-0.5 text-[11px] font-medium",
         {
-          "bg-[var(--bg)] text-[var(--text-secondary)]": variant === "default",
-          "bg-[var(--yellow-surface)] text-[#b07800]": variant === "yellow",
-          "bg-[var(--blue-surface)] text-[var(--blue)]": variant === "blue",
-          "bg-[var(--green-surface)] text-[var(--green)]": variant === "green",
-          "bg-[var(--red-surface)] text-[var(--red)]": variant === "red",
-          "bg-[var(--purple-surface)] text-[var(--purple)]": variant === "purple",
+          "bg-zinc-100 text-zinc-600": variant === "default",
+          "bg-amber-50 text-amber-700": variant === "yellow",
+          "bg-blue-50 text-blue-700": variant === "blue",
+          "bg-emerald-50 text-emerald-700": variant === "green",
+          "bg-red-50 text-red-700": variant === "red",
+          "bg-purple-50 text-purple-700": variant === "purple",
         },
         className
       )}

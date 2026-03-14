@@ -10,9 +10,9 @@ interface AvatarProps {
 
 export function Avatar({ src, initials, size = "md", className }: AvatarProps) {
   const sizeClasses = {
-    sm: "h-6 w-6 text-[8px]",
-    md: "h-8 w-8 text-[11px]",
-    lg: "h-[34px] w-[34px] text-[11px]",
+    sm: "h-7 w-7 text-[9px]",
+    md: "h-9 w-9 text-[11px]",
+    lg: "h-10 w-10 text-xs",
   };
 
   if (src) {
@@ -32,7 +32,7 @@ export function Avatar({ src, initials, size = "md", className }: AvatarProps) {
   return (
     <div
       className={cn(
-        "flex shrink-0 items-center justify-center rounded-full bg-white/10 font-medium text-white/65",
+        "flex shrink-0 items-center justify-center rounded-full bg-[var(--navy)]/10 font-medium text-[var(--navy)]",
         sizeClasses[size],
         className
       )}

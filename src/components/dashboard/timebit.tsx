@@ -75,31 +75,31 @@ export default function Timebit() {
 
   return (
     <Card>
-      <div className="px-5 py-[18px]">
+      <div className="px-5 py-4">
         {/* Header */}
         <div className="mb-3 flex items-center justify-between">
-          <span className="text-sm font-medium text-[var(--heading)]">
+          <h3 className="text-sm font-semibold text-[var(--heading)]">
             Timebit
-          </span>
+          </h3>
           <Link
             href="#"
-            className="flex items-center gap-1 text-[10.5px] font-medium text-[var(--yellow)] opacity-85 transition-opacity hover:opacity-100"
+            className="flex items-center gap-1 text-xs font-medium text-[var(--yellow)] transition-opacity hover:opacity-80"
           >
             Voir logs <ChevronRight className="h-3.5 w-3.5" />
           </Link>
         </div>
 
         {/* Mode toggle */}
-        <div className="mb-3.5 flex gap-1.5">
+        <div className="mb-4 flex gap-1.5">
           <button
             onClick={() => !active && setMode("chantier")}
             disabled={!!active}
             className={cn(
-              "flex-1 rounded-[var(--radius-sm)] border py-[7px] text-center text-[11px] transition-colors",
+              "flex-1 rounded-[var(--radius)] border py-2 text-center text-xs font-medium transition-colors",
               mode === "chantier"
-                ? "border-[var(--yellow)] bg-[var(--yellow-surface)] font-medium text-[var(--yellow)]"
-                : "border-[var(--border-1)] bg-[var(--card)] text-[var(--text-secondary)]",
-              active && "opacity-50 cursor-not-allowed"
+                ? "border-[var(--yellow)] bg-amber-50 text-amber-700"
+                : "border-[var(--border-1)] bg-white text-[var(--text-secondary)]",
+              active && "cursor-not-allowed opacity-50"
             )}
           >
             Chantier
@@ -108,11 +108,11 @@ export default function Timebit() {
             onClick={() => !active && setMode("bureau")}
             disabled={!!active}
             className={cn(
-              "flex-1 rounded-[var(--radius-sm)] border py-[7px] text-center text-[11px] transition-colors",
+              "flex-1 rounded-[var(--radius)] border py-2 text-center text-xs font-medium transition-colors",
               mode === "bureau"
-                ? "border-[var(--yellow)] bg-[var(--yellow-surface)] font-medium text-[var(--yellow)]"
-                : "border-[var(--border-1)] bg-[var(--card)] text-[var(--text-secondary)]",
-              active && "opacity-50 cursor-not-allowed"
+                ? "border-[var(--yellow)] bg-amber-50 text-amber-700"
+                : "border-[var(--border-1)] bg-white text-[var(--text-secondary)]",
+              active && "cursor-not-allowed opacity-50"
             )}
           >
             Bureau
@@ -120,31 +120,31 @@ export default function Timebit() {
         </div>
 
         {/* Clock ring */}
-        <div className="mb-3.5 flex flex-col items-center">
+        <div className="mb-4 flex flex-col items-center">
           <div
-            className="mb-2 flex h-[120px] w-[120px] items-center justify-center rounded-full"
+            className="mb-2 flex h-[110px] w-[110px] items-center justify-center rounded-full"
             style={{
               background: active
-                ? `conic-gradient(var(--yellow) 0deg ${progress}deg, var(--border-1) ${progress}deg 360deg)`
-                : "conic-gradient(var(--border-1) 0deg 360deg)",
+                ? `conic-gradient(#F59E0B 0deg ${progress}deg, #e4e4e7 ${progress}deg 360deg)`
+                : "conic-gradient(#e4e4e7 0deg 360deg)",
             }}
           >
-            <div className="flex h-[100px] w-[100px] flex-col items-center justify-center rounded-full bg-[var(--card)]">
-              <div className="text-[7.5px] uppercase tracking-[1.5px] text-[var(--text-muted)]">
+            <div className="flex h-[90px] w-[90px] flex-col items-center justify-center rounded-full bg-white">
+              <div className="text-[8px] uppercase tracking-[1.5px] text-[var(--text-muted)]">
                 Temps travaill\u00e9
               </div>
-              <div className="font-mono text-xl text-[var(--heading)]">
+              <div className="font-mono text-xl font-medium text-[var(--heading)]">
                 {loading ? "--:--" : elapsed}
               </div>
             </div>
           </div>
-          <div className="flex gap-3 text-[9px] text-[var(--text-muted)]">
-            <div className="flex items-center gap-1">
-              <div className="h-1 w-1 rounded-full bg-[var(--yellow)]" />
+          <div className="flex gap-4 text-[10px] text-[var(--text-muted)]">
+            <div className="flex items-center gap-1.5">
+              <div className="h-1.5 w-1.5 rounded-full bg-[#F59E0B]" />
               temps normal
             </div>
-            <div className="flex items-center gap-1">
-              <div className="h-1 w-1 rounded-full bg-[var(--border-1)]" />
+            <div className="flex items-center gap-1.5">
+              <div className="h-1.5 w-1.5 rounded-full bg-zinc-300" />
               heures sup.
             </div>
           </div>
@@ -155,7 +155,7 @@ export default function Timebit() {
           <button
             onClick={handleStop}
             disabled={isPending}
-            className="mb-1.5 w-full rounded-[var(--radius-sm)] bg-[var(--yellow)] py-[9px] text-xs font-medium text-white transition-colors hover:bg-[var(--yellow-hover)] disabled:opacity-50"
+            className="mb-2 w-full rounded-[var(--radius)] bg-[var(--yellow)] py-2.5 text-sm font-medium text-white transition-colors hover:bg-[var(--yellow-hover)] disabled:opacity-50"
           >
             {isPending ? "..." : "Arr\u00eater le pointage"}
           </button>
@@ -163,13 +163,13 @@ export default function Timebit() {
           <button
             onClick={handleStart}
             disabled={isPending || loading}
-            className="mb-1.5 w-full rounded-[var(--radius-sm)] border border-[var(--yellow)] bg-[var(--yellow-surface)] py-[9px] text-xs font-medium text-[var(--yellow)] transition-colors hover:bg-[var(--yellow)] hover:text-white disabled:opacity-50"
+            className="mb-2 w-full rounded-[var(--radius)] border border-[var(--yellow)] bg-amber-50 py-2.5 text-sm font-medium text-amber-700 transition-colors hover:bg-[var(--yellow)] hover:text-white disabled:opacity-50"
           >
             {isPending ? "..." : "D\u00e9marrer le pointage"}
           </button>
         )}
         {startedLabel && (
-          <div className="text-center font-mono text-[9px] text-[var(--text-muted)]">
+          <div className="text-center font-mono text-[10px] text-[var(--text-muted)]">
             {startedLabel}
           </div>
         )}

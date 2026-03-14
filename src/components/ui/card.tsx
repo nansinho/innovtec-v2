@@ -8,7 +8,7 @@ export function Card({ className, children, ...props }: CardProps) {
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] shadow-sm transition-shadow duration-200",
+        "overflow-hidden rounded-[var(--radius)] border border-[var(--border-1)] bg-white shadow-xs",
         className
       )}
       {...props}
@@ -27,12 +27,12 @@ export function CardHeader({ title, action, className, ...props }: CardHeaderPro
   return (
     <div
       className={cn(
-        "flex items-center justify-between border-b border-[var(--border-1)] px-5 py-4",
+        "flex items-center justify-between border-b border-[var(--border-1)] px-5 py-3.5",
         className
       )}
       {...props}
     >
-      <span className="text-sm font-medium text-[var(--heading)]">{title}</span>
+      <h3 className="text-sm font-semibold text-[var(--heading)]">{title}</h3>
       {action}
     </div>
   );

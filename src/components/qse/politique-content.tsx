@@ -661,7 +661,7 @@ export default function PolitiqueContent({
   }
 
   // ==========================================
-  // LIST VIEW
+  // LIST VIEW (DataTable)
   // ==========================================
   return (
     <div className="space-y-5">
@@ -670,14 +670,14 @@ export default function PolitiqueContent({
         <div className="flex flex-wrap items-center gap-2.5">
           <button
             onClick={startNew}
-            className="inline-flex items-center gap-2 rounded-xl bg-[var(--yellow)] px-4 py-2.5 text-[13px] font-semibold text-white shadow-sm transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-md hover:-translate-y-0.5 active:scale-[0.97]"
+            className="inline-flex items-center gap-2 rounded-[var(--radius)] bg-[var(--yellow)] px-4 py-2.5 text-sm font-medium text-white shadow-xs transition-colors hover:bg-[var(--yellow-hover)]"
           >
             <Plus className="h-4 w-4" />
             Nouvelle politique QSE
           </button>
           <button
             onClick={() => { setShowUpload(!showUpload); setEditingId(null); }}
-            className="inline-flex items-center gap-2 rounded-xl border border-[var(--navy)]/20 bg-[var(--navy)]/5 px-4 py-2.5 text-[13px] font-medium text-[var(--navy)] transition-all duration-200 hover:bg-[var(--navy)] hover:text-white hover:shadow-md hover:-translate-y-0.5 active:scale-[0.97]"
+            className="inline-flex items-center gap-2 rounded-[var(--radius)] border border-[var(--border-1)] bg-white px-4 py-2.5 text-sm font-medium text-[var(--navy)] transition-colors hover:bg-zinc-50"
           >
             <Sparkles className="h-4 w-4 text-[var(--yellow)]" />
             Importer un PDF / Image (IA)
@@ -686,129 +686,114 @@ export default function PolitiqueContent({
       )}
 
       {showUpload && (
-        <div className="rounded-2xl border border-[var(--border-1)] bg-gradient-to-b from-[var(--card)] to-[var(--hover)] p-6 shadow-sm">
+        <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-white p-6 shadow-xs">
           <div className="mb-1 flex items-center gap-2">
             <Upload className="h-4 w-4 text-[var(--yellow)]" />
             <h3 className="text-sm font-semibold text-[var(--heading)]">Import IA</h3>
           </div>
-          <p className="mb-4 text-[12px] text-[var(--text-muted)]">
+          <p className="mb-4 text-xs text-[var(--text-muted)]">
             L&apos;IA va analyser votre document et generer automatiquement le contenu structure.
           </p>
           <FileUploadAi onAnalysisComplete={handleAiResult} type="politique" label="Importer votre politique QSE (PDF ou image)" />
         </div>
       )}
 
-      {/* Counter */}
-      {allContent.length > 0 && (
-        <div className="flex items-center gap-2 text-[12px] text-[var(--text-muted)]">
-          <FileText className="h-3.5 w-3.5" />
-          <span>{allContent.length} politique{allContent.length > 1 ? "s" : ""} QSE</span>
-        </div>
-      )}
-
-      {/* Empty state */}
+      {/* DataTable view */}
       {allContent.length === 0 ? (
-        <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] py-16 text-center shadow-sm">
-          <FileText className="mx-auto mb-3 h-10 w-10 text-[var(--border-1)]" />
-          <p className="text-sm text-[var(--text-secondary)]">
+        <div className="flex flex-col items-center rounded-[var(--radius)] border border-[var(--border-1)] bg-white py-16 text-center shadow-xs">
+          <FileText className="mb-3 h-12 w-12 text-zinc-300" />
+          <p className="text-sm font-medium text-[var(--heading)]">
             Aucune politique QSE
           </p>
           {canEdit && (
-            <p className="mx-auto mt-2 max-w-xs text-[12px] leading-relaxed text-[var(--text-muted)]">
+            <p className="mx-auto mt-1 max-w-xs text-sm text-[var(--text-muted)]">
               Creez une nouvelle politique ou importez un PDF/image pour commencer.
             </p>
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {allContent.map((doc) => {
-            const docYear = getDocYear(doc);
-            const hasThumb = !!fileUrls[doc.id];
-            const docPillars = parsePillars(doc.sections).pillars;
-
-            return (
-              <button
-                key={doc.id}
-                onClick={() => setSelectedId(doc.id)}
-                className="group relative flex flex-col items-center overflow-hidden rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] px-4 pb-5 pt-6 text-center shadow-xs transition-all duration-200 hover:scale-[1.02] hover:border-[var(--yellow)]/40 hover:shadow-md"
-              >
-                {/* Year badge - top right */}
-                <div className="absolute right-2.5 top-2.5">
-                  <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[var(--yellow)] to-[#ffb840] px-2.5 py-0.5 text-[10px] font-bold text-white shadow-sm">
-                    {docYear}
-                  </span>
-                </div>
-
-                {/* Admin actions - top left, visible on hover */}
+        <div className="overflow-hidden rounded-[var(--radius)] border border-[var(--border-1)] bg-white shadow-xs">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-[var(--border-1)] bg-zinc-50/80">
+                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">Titre</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "80px" }}>Année</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">Piliers</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "130px" }}>Date</th>
                 {canEdit && (
-                  <div className="absolute left-2 top-2 flex items-center gap-0.5 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                    <span
-                      onClick={(e) => { e.stopPropagation(); startEditing(doc); }}
-                      className="rounded-full bg-[var(--hover)] p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--yellow-surface)] hover:text-[var(--yellow)]"
-                    >
-                      <Edit3 className="h-3 w-3" />
-                    </span>
-                    <span
-                      onClick={(e) => { e.stopPropagation(); handleDelete(doc.id, doc.title); }}
-                      className="rounded-full bg-[var(--hover)] p-1.5 text-[var(--text-muted)] transition-colors hover:bg-red-50 hover:text-red-500"
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </span>
-                  </div>
+                  <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "100px" }}>Actions</th>
                 )}
+              </tr>
+            </thead>
+            <tbody>
+              {allContent.map((doc) => {
+                const docYear = getDocYear(doc);
+                const docPillars = parsePillars(doc.sections).pillars;
 
-                {/* Visual focal point: thumbnail or icon */}
-                {hasThumb ? (
-                  <div className="relative h-20 w-20 overflow-hidden rounded-2xl border-2 border-[var(--border-1)] shadow-sm">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={fileUrls[doc.id]} alt={doc.title} className="h-full w-full object-cover" />
-                  </div>
-                ) : (
-                  <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--navy)] to-[#2a4a7a] shadow-sm">
-                    <Award className="h-8 w-8 text-[var(--yellow)]" />
-                  </div>
-                )}
-
-                {/* Title */}
-                <p className="mt-3.5 text-[13px] font-semibold leading-tight text-[var(--heading)] line-clamp-2">
-                  {doc.title}
-                </p>
-
-                {/* Date */}
-                <p className="mt-1 flex items-center gap-1 text-[11px] text-[var(--text-muted)]">
-                  <Calendar className="h-3 w-3" />
-                  {formatDate(doc.updated_at)}
-                </p>
-
-                {/* Pillar mini-badges */}
-                {docPillars.length > 0 && (
-                  <div className="mt-3 flex flex-wrap justify-center gap-1.5">
-                    {docPillars.map((p) => {
-                      const Icon = p.icon;
-                      return (
-                        <span
-                          key={p.key}
-                          className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-medium"
-                          style={{ background: p.surface, color: p.color }}
-                        >
-                          <Icon className="h-2.5 w-2.5" />
-                          {p.label}
-                        </span>
-                      );
-                    })}
-                  </div>
-                )}
-
-                {/* "View" hint on hover */}
-                <div className="mt-3 flex items-center gap-1.5 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                  <span className="rounded-full bg-[var(--hover)] px-3 py-1 text-[10px] font-medium text-[var(--text-secondary)] transition-colors group-hover:bg-[var(--yellow-surface)] group-hover:text-[var(--yellow)]">
-                    <Eye className="mr-1 inline h-3 w-3" />
-                    Voir le detail
-                  </span>
-                </div>
-              </button>
-            );
-          })}
+                return (
+                  <tr
+                    key={doc.id}
+                    onClick={() => setSelectedId(doc.id)}
+                    className="cursor-pointer border-b border-[var(--border-1)] transition-colors last:border-0 hover:bg-zinc-50"
+                  >
+                    <td className="px-4 py-3">
+                      <span className="text-sm font-medium text-[var(--heading)]">
+                        {doc.title}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className="inline-flex items-center rounded-[var(--radius-xs)] bg-amber-50 px-2 py-0.5 text-xs font-semibold text-amber-700">
+                        {docYear}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex flex-wrap gap-1">
+                        {docPillars.map((p) => {
+                          const Icon = p.icon;
+                          return (
+                            <span
+                              key={p.key}
+                              className="inline-flex items-center gap-1 rounded-[var(--radius-xs)] px-2 py-0.5 text-[11px] font-medium"
+                              style={{ background: p.surface, color: p.color }}
+                            >
+                              <Icon className="h-3 w-3" />
+                              {p.label}
+                            </span>
+                          );
+                        })}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-sm text-[var(--text-muted)]">
+                      {formatDate(doc.updated_at)}
+                    </td>
+                    {canEdit && (
+                      <td className="px-4 py-3 text-right">
+                        <div className="flex items-center justify-end gap-1">
+                          <button
+                            onClick={(e) => { e.stopPropagation(); startEditing(doc); }}
+                            className="rounded-[var(--radius-xs)] p-1.5 text-[var(--text-muted)] transition-colors hover:bg-amber-50 hover:text-amber-600"
+                            title="Modifier"
+                          >
+                            <Edit3 className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); handleDelete(doc.id, doc.title); }}
+                            className="rounded-[var(--radius-xs)] p-1.5 text-[var(--text-muted)] transition-colors hover:bg-red-50 hover:text-red-500"
+                            title="Supprimer"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </td>
+                    )}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+          <div className="border-t border-[var(--border-1)] px-4 py-3 text-sm text-[var(--text-muted)]">
+            {allContent.length} politique{allContent.length > 1 ? "s" : ""} QSE
+          </div>
         </div>
       )}
     </div>

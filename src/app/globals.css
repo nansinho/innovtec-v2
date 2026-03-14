@@ -2,51 +2,52 @@
 
 :root {
   /* Brand */
-  --navy: #1a2d4e;
-  --yellow: #f5a623;
-  --yellow-hover: #ffb840;
-  --yellow-surface: rgba(245, 166, 35, 0.06);
-  --yellow-border: rgba(245, 166, 35, 0.16);
+  --navy: #1E3A5F;
+  --navy-dark: #0F2035;
+  --yellow: #F59E0B;
+  --yellow-hover: #D97706;
+  --yellow-surface: rgba(245, 158, 11, 0.08);
+  --yellow-border: rgba(245, 158, 11, 0.18);
 
   /* Backgrounds */
-  --bg: #f3f4f6;
+  --bg: #f4f4f5; /* zinc-100 */
   --card: #ffffff;
-  --hover: #f8f9fb;
+  --hover: #fafafa; /* zinc-50 */
 
   /* Borders */
-  --border-1: #e5e7eb;
-  --border-2: #d1d5db;
+  --border-1: #e4e4e7; /* zinc-200 */
+  --border-2: #d4d4d8; /* zinc-300 */
 
   /* Text */
-  --heading: #1f2937;
-  --text: #4b5563;
-  --text-secondary: #6b7280;
-  --text-muted: #9ca3af;
+  --heading: #18181b; /* zinc-900 */
+  --text: #3f3f46; /* zinc-700 */
+  --text-secondary: #52525b; /* zinc-600 */
+  --text-muted: #a1a1aa; /* zinc-400 */
 
   /* Status */
   --red: #dc2626;
-  --red-surface: rgba(220, 38, 38, 0.06);
+  --red-surface: rgba(220, 38, 38, 0.08);
   --green: #16a34a;
-  --green-surface: rgba(22, 163, 74, 0.06);
+  --green-surface: rgba(22, 163, 74, 0.08);
   --blue: #2563eb;
-  --blue-surface: rgba(37, 99, 235, 0.06);
+  --blue-surface: rgba(37, 99, 235, 0.08);
   --purple: #7c3aed;
-  --purple-surface: rgba(124, 58, 237, 0.06);
+  --purple-surface: rgba(124, 58, 237, 0.08);
 
   /* Radii */
-  --radius: 14px;
-  --radius-sm: 10px;
-  --radius-xs: 6px;
+  --radius: 8px;
+  --radius-sm: 6px;
+  --radius-xs: 4px;
 
   /* Shadows */
   --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06), 0 2px 4px rgba(0, 0, 0, 0.03);
-  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.07), 0 4px 10px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.03);
+  --shadow-lg: 0 8px 20px rgba(0, 0, 0, 0.06), 0 4px 8px rgba(0, 0, 0, 0.03);
 
   /* Layout */
-  --sidebar-width: 236px;
-  --right-width: 320px;
+  --sidebar-width: 240px;
+  --right-width: 340px;
 }
 
 @theme inline {
@@ -63,17 +64,23 @@
   --shadow-sm: var(--shadow-sm);
   --shadow-md: var(--shadow-md);
   --shadow-lg: var(--shadow-lg);
-  --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-display: "Sora", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
-  font-size: 13px;
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 14px;
   -webkit-font-smoothing: antialiased;
   font-weight: 400;
+  line-height: 1.5;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Sora", system-ui, sans-serif;
 }
 
 /* Scrollbar */

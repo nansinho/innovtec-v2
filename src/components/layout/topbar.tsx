@@ -1,12 +1,33 @@
 "use client";
 
 import { useState } from "react";
-import { Bell, MessageSquare, Settings } from "lucide-react";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
+import { usePathname } from "next/navigation";
+import { Bell, MessageSquare, Settings, ChevronRight } from "lucide-react";
+import Link from "next/link";
 import type { Profile } from "@/lib/types/database";
 import NotificationSidebar from "@/components/notifications/notification-sidebar";
 import SearchBar from "@/components/search/search-bar";
+
+/* Breadcrumb label mapping */
+const breadcrumbLabels: Record<string, string> = {
+  "": "Tableau de bord",
+  actualites: "Actualités",
+  qse: "QSE",
+  politique: "Politique QSE",
+  dangers: "Situations dangereuses",
+  rex: "REX",
+  equipe: "Équipe",
+  trombinoscope: "Trombinoscope",
+  planning: "Planning",
+  formations: "Formations",
+  documents: "Documents",
+  galerie: "Galerie",
+  admin: "Administration",
+  users: "Utilisateurs",
+  news: "Actualités",
+  settings: "Paramètres",
+  profil: "Profil",
+};
 
 interface TopbarProps {
   profile: Profile | null;
@@ -15,31 +36,57 @@ interface TopbarProps {
 
 export default function Topbar({ profile, unreadCount = 0 }: TopbarProps) {
   const [notifOpen, setNotifOpen] = useState(false);
+  const pathname = usePathname();
 
-  const today = new Date();
-  const dateStr = format(today, "EEEE d MMMM, yyyy", { locale: fr });
-  const dateFormatted = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
+  const segments = pathname.split("/").filter(Boolean);
 
-  const displayName = profile
-    ? `${profile.first_name} ${profile.last_name}`.trim() || profile.email
-    : "Utilisateur";
+  const breadcrumbs = segments.map((seg, i) => ({
+    label: breadcrumbLabels[seg] ?? seg,
+    href: "/" + segments.slice(0, i + 1).join("/"),
+    isLast: i === segments.length - 1,
+  }));
 
   return (
-    <div className="px-7 pt-6">
-      {/* Top row */}
-      <div className="mb-4 flex items-start justify-between">
-        <div>
-          <div className="text-xs text-[var(--text-secondary)]">
-            {dateFormatted}
-          </div>
-          <h1 className="text-2xl font-medium tracking-tight text-[var(--heading)]">
-            Bonjour, <span>{displayName}</span> !
-          </h1>
+    <>
+      <div className="sticky top-0 z-50 flex h-14 items-center gap-4 border-b border-[var(--border-1)] bg-white px-6">
+        {/* Breadcrumb */}
+        <nav className="flex items-center gap-1 text-sm" aria-label="Fil d'Ariane">
+          <Link
+            href="/"
+            className="text-[var(--text-muted)] transition-colors hover:text-[var(--heading)]"
+          >
+            Accueil
+          </Link>
+          {breadcrumbs.map((crumb) => (
+            <span key={crumb.href} className="flex items-center gap-1">
+              <ChevronRight className="h-3.5 w-3.5 text-[var(--text-muted)]" />
+              {crumb.isLast ? (
+                <span className="font-medium text-[var(--heading)]">
+                  {crumb.label}
+                </span>
+              ) : (
+                <Link
+                  href={crumb.href}
+                  className="text-[var(--text-muted)] transition-colors hover:text-[var(--heading)]"
+                >
+                  {crumb.label}
+                </Link>
+              )}
+            </span>
+          ))}
+        </nav>
+
+        {/* Search - centered */}
+        <div className="mx-auto w-full max-w-md">
+          <SearchBar />
         </div>
+
+        {/* Right actions */}
         <div className="flex items-center gap-1.5">
           <button
             onClick={() => setNotifOpen(true)}
-            className="relative flex h-[38px] w-[38px] items-center justify-center rounded-full border border-[var(--border-1)] bg-[var(--card)] text-[var(--text-secondary)] shadow-xs transition-all duration-200 hover:bg-[var(--hover)] hover:text-[var(--heading)] hover:shadow-sm"
+            className="relative flex h-9 w-9 items-center justify-center rounded-[var(--radius)] text-[var(--text-muted)] transition-colors hover:bg-zinc-100 hover:text-[var(--heading)]"
+            aria-label="Notifications"
           >
             <Bell className="h-[18px] w-[18px]" />
             {unreadCount > 0 && (
@@ -48,23 +95,26 @@ export default function Topbar({ profile, unreadCount = 0 }: TopbarProps) {
               </div>
             )}
           </button>
-          <button className="flex h-[38px] w-[38px] items-center justify-center rounded-full border border-[var(--border-1)] bg-[var(--card)] text-[var(--text-secondary)] shadow-xs transition-all duration-200 hover:bg-[var(--hover)] hover:text-[var(--heading)] hover:shadow-sm">
+          <button
+            className="flex h-9 w-9 items-center justify-center rounded-[var(--radius)] text-[var(--text-muted)] transition-colors hover:bg-zinc-100 hover:text-[var(--heading)]"
+            aria-label="Messages"
+          >
             <MessageSquare className="h-[18px] w-[18px]" />
           </button>
-          <button className="flex h-[38px] w-[38px] items-center justify-center rounded-full border border-[var(--border-1)] bg-[var(--card)] text-[var(--text-secondary)] shadow-xs transition-all duration-200 hover:bg-[var(--hover)] hover:text-[var(--heading)] hover:shadow-sm">
+          <button
+            className="flex h-9 w-9 items-center justify-center rounded-[var(--radius)] text-[var(--text-muted)] transition-colors hover:bg-zinc-100 hover:text-[var(--heading)]"
+            aria-label="Paramètres"
+          >
             <Settings className="h-[18px] w-[18px]" />
           </button>
         </div>
       </div>
-
-      {/* Search bar */}
-      <SearchBar />
 
       {/* Notification sidebar */}
       <NotificationSidebar
         isOpen={notifOpen}
         onClose={() => setNotifOpen(false)}
       />
-    </div>
+    </>
   );
 }
