@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { signUp, signIn } from "@/actions/auth";
-import { Zap } from "lucide-react";
+import { Zap, Mail, Lock, User } from "lucide-react";
 
 export default function SignupPage() {
   const [firstName, setFirstName] = useState("");
@@ -41,37 +41,36 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="w-full max-w-sm">
-      <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] p-8">
-        {/* Logo */}
-        <div className="mb-8 flex items-center justify-center gap-2.5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--yellow)]">
-            <Zap className="h-4 w-4 text-[var(--navy)]" />
-          </div>
-          <div className="text-sm font-semibold tracking-tight text-[var(--heading)]">
-            INNOVTEC{" "}
-            <span className="font-normal text-[var(--text-muted)]">
-              Réseaux
-            </span>
-          </div>
+    <div className="w-full max-w-md">
+      {/* Logo - visible only on mobile */}
+      <div className="mb-10 flex items-center justify-center gap-2.5 lg:hidden">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--yellow)]">
+          <Zap className="h-5 w-5 text-[var(--navy)]" />
         </div>
+        <div className="text-base font-bold tracking-tight text-[var(--heading)]">
+          INNOVTEC{" "}
+          <span className="font-normal text-[var(--text-muted)]">Réseaux</span>
+        </div>
+      </div>
 
-        <h1 className="mb-1 text-center text-lg font-semibold text-[var(--heading)]">
-          Créer un compte
-        </h1>
-        <p className="mb-6 text-center text-xs text-[var(--text-secondary)]">
-          Inscrivez-vous pour accéder à l&apos;intranet
-        </p>
+      <h1 className="mb-1.5 text-2xl font-bold text-[var(--heading)]">
+        Créer un compte
+      </h1>
+      <p className="mb-8 text-sm text-[var(--text-secondary)]">
+        Inscrivez-vous pour accéder à l&apos;intranet
+      </p>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label
-                htmlFor="firstName"
-                className="mb-1 block text-xs font-medium text-[var(--text-secondary)]"
-              >
-                Prénom
-              </label>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label
+              htmlFor="firstName"
+              className="mb-1.5 block text-sm font-medium text-[var(--heading)]"
+            >
+              Prénom
+            </label>
+            <div className="relative">
+              <User className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-muted)]" />
               <input
                 id="firstName"
                 type="text"
@@ -79,16 +78,19 @@ export default function SignupPage() {
                 onChange={(e) => setFirstName(e.target.value)}
                 placeholder="Jean"
                 required
-                className="w-full rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                className="w-full rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] py-3 pl-11 pr-4 text-sm text-[var(--heading)] outline-none transition-all placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
               />
             </div>
-            <div>
-              <label
-                htmlFor="lastName"
-                className="mb-1 block text-xs font-medium text-[var(--text-secondary)]"
-              >
-                Nom
-              </label>
+          </div>
+          <div>
+            <label
+              htmlFor="lastName"
+              className="mb-1.5 block text-sm font-medium text-[var(--heading)]"
+            >
+              Nom
+            </label>
+            <div className="relative">
+              <User className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-muted)]" />
               <input
                 id="lastName"
                 type="text"
@@ -96,18 +98,21 @@ export default function SignupPage() {
                 onChange={(e) => setLastName(e.target.value)}
                 placeholder="Dupont"
                 required
-                className="w-full rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                className="w-full rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] py-3 pl-11 pr-4 text-sm text-[var(--heading)] outline-none transition-all placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
               />
             </div>
           </div>
+        </div>
 
-          <div>
-            <label
-              htmlFor="email"
-              className="mb-1 block text-xs font-medium text-[var(--text-secondary)]"
-            >
-              Email
-            </label>
+        <div>
+          <label
+            htmlFor="email"
+            className="mb-1.5 block text-sm font-medium text-[var(--heading)]"
+          >
+            Email
+          </label>
+          <div className="relative">
+            <Mail className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-muted)]" />
             <input
               id="email"
               type="email"
@@ -115,17 +120,20 @@ export default function SignupPage() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="prenom@innovtec-reseaux.fr"
               required
-              className="w-full rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+              className="w-full rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] py-3 pl-11 pr-4 text-sm text-[var(--heading)] outline-none transition-all placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
             />
           </div>
+        </div>
 
-          <div>
-            <label
-              htmlFor="password"
-              className="mb-1 block text-xs font-medium text-[var(--text-secondary)]"
-            >
-              Mot de passe
-            </label>
+        <div>
+          <label
+            htmlFor="password"
+            className="mb-1.5 block text-sm font-medium text-[var(--heading)]"
+          >
+            Mot de passe
+          </label>
+          <div className="relative">
+            <Lock className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-muted)]" />
             <input
               id="password"
               type="password"
@@ -134,33 +142,35 @@ export default function SignupPage() {
               placeholder="••••••••"
               required
               minLength={6}
-              className="w-full rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+              className="w-full rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] py-3 pl-11 pr-4 text-sm text-[var(--heading)] outline-none transition-all placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
             />
           </div>
+        </div>
 
-          {error && (
-            <p className="text-xs text-[var(--red)]">{error}</p>
-          )}
+        {error && (
+          <div className="rounded-[var(--radius-xs)] bg-[var(--red-surface)] px-3.5 py-2.5 text-sm text-[var(--red)]">
+            {error}
+          </div>
+        )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-[var(--radius-sm)] bg-[var(--yellow)] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[var(--yellow-hover)] disabled:opacity-50"
-          >
-            {loading ? "Création..." : "Créer mon compte"}
-          </button>
-        </form>
+        <button
+          type="submit"
+          disabled={loading}
+          className="mt-1 w-full rounded-[var(--radius-sm)] bg-[var(--yellow)] py-3 text-base font-semibold text-white shadow-sm transition-all hover:bg-[var(--yellow-hover)] hover:shadow-md disabled:opacity-50"
+        >
+          {loading ? "Création..." : "Créer mon compte"}
+        </button>
+      </form>
 
-        <p className="mt-4 text-center text-xs text-[var(--text-secondary)]">
-          Déjà un compte ?{" "}
-          <Link
-            href="/login"
-            className="font-medium text-[var(--yellow)] hover:underline"
-          >
-            Se connecter
-          </Link>
-        </p>
-      </div>
+      <p className="mt-6 text-center text-sm text-[var(--text-secondary)]">
+        Déjà un compte ?{" "}
+        <Link
+          href="/login"
+          className="font-semibold text-[var(--navy)] hover:underline"
+        >
+          Se connecter
+        </Link>
+      </p>
     </div>
   );
 }
