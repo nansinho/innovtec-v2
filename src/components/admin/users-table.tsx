@@ -8,7 +8,7 @@ import {
   Shield,
 } from "lucide-react";
 import { toast } from "sonner";
-import { updateUserRole, toggleUserActive } from "@/actions/users";
+import { updateUserRole, toggleUserActive, updateUserInfo } from "@/actions/users";
 import type { Profile, UserRole } from "@/lib/types/database";
 
 const roleLabels: Record<string, string> = {
@@ -17,10 +17,12 @@ const roleLabels: Record<string, string> = {
   responsable_qse: "Responsable QSE",
   chef_chantier: "Chef de chantier",
   technicien: "Technicien",
+  collaborateur: "Collaborateur",
 };
 
 const roleOptions: { value: UserRole; label: string }[] = [
   { value: "admin", label: "Administrateur" },
+  { value: "collaborateur", label: "Collaborateur" },
   { value: "rh", label: "Ressources Humaines" },
   { value: "responsable_qse", label: "Responsable QSE" },
   { value: "chef_chantier", label: "Chef de chantier" },
@@ -33,6 +35,7 @@ const roleBadgeColors: Record<string, string> = {
   responsable_qse: "bg-[var(--blue-surface)] text-[var(--blue)]",
   chef_chantier: "bg-orange-50 text-orange-700",
   technicien: "bg-[var(--hover)] text-[var(--text-secondary)]",
+  collaborateur: "bg-[var(--green-surface)] text-[var(--green)]",
 };
 
 interface UsersTableProps {
@@ -43,6 +46,7 @@ interface UsersTableProps {
 export default function UsersTable({ users, currentUserId }: UsersTableProps) {
   const [search, setSearch] = useState("");
   const [editingRole, setEditingRole] = useState<string | null>(null);
+  const [editingField, setEditingField] = useState<{ userId: string; field: string } | null>(null);
   const [loading, setLoading] = useState<string | null>(null);
 
   const filtered = users.filter((u) => {
@@ -65,6 +69,18 @@ export default function UsersTable({ users, currentUserId }: UsersTableProps) {
       toast.error(result.error || "Erreur lors du changement de rôle");
     }
     setEditingRole(null);
+    setLoading(null);
+  }
+
+  async function handleInfoChange(userId: string, field: string, value: string) {
+    setLoading(userId);
+    const result = await updateUserInfo(userId, { [field]: value });
+    if (result.success) {
+      toast.success("Mis à jour");
+    } else {
+      toast.error(result.error || "Erreur");
+    }
+    setEditingField(null);
     setLoading(null);
   }
 
@@ -110,6 +126,9 @@ export default function UsersTable({ users, currentUserId }: UsersTableProps) {
               </th>
               <th className="px-4 py-3.5 text-xs font-medium text-[var(--text-secondary)]">
                 Poste
+              </th>
+              <th className="hidden px-4 py-3.5 text-xs font-medium text-[var(--text-secondary)] lg:table-cell">
+                Département
               </th>
               <th className="px-4 py-3.5 text-xs font-medium text-[var(--text-secondary)]">
                 Rôle
@@ -159,6 +178,29 @@ export default function UsersTable({ users, currentUserId }: UsersTableProps) {
 
                   <td className="px-4 py-3.5 text-xs text-[var(--text-secondary)]">
                     {user.job_title || "—"}
+                  </td>
+
+                  <td className="hidden px-4 py-3.5 lg:table-cell">
+                    {editingField?.userId === user.id && editingField?.field === "department" ? (
+                      <input
+                        defaultValue={user.department}
+                        onBlur={(e) => handleInfoChange(user.id, "department", e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") handleInfoChange(user.id, "department", (e.target as HTMLInputElement).value);
+                          if (e.key === "Escape") setEditingField(null);
+                        }}
+                        autoFocus
+                        className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-2 py-1 text-xs outline-none focus:border-[var(--yellow)]"
+                      />
+                    ) : (
+                      <button
+                        onClick={() => !isMe && setEditingField({ userId: user.id, field: "department" })}
+                        className="text-xs text-[var(--text-secondary)] hover:text-[var(--heading)] transition-colors"
+                        title="Cliquer pour modifier"
+                      >
+                        {user.department || "—"}
+                      </button>
+                    )}
                   </td>
 
                   <td className="px-4 py-3.5">

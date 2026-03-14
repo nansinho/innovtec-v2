@@ -7,7 +7,7 @@ import type { Profile, UserRole } from "@/lib/types/database";
 
 /**
  * If no admin user exists, promote the current user to admin.
- * This solves the bootstrap problem where the first user is `technicien` by default.
+ * This solves the bootstrap problem where the first user is `collaborateur` by default.
  */
 export async function ensureAdminExists(): Promise<{
   promoted: boolean;
@@ -173,5 +173,40 @@ export async function toggleUserActive(
 
   console.log("[toggleUserActive] Success: user", userId, "→ active:", isActive);
   revalidatePath("/admin/users");
+  revalidatePath("/equipe/trombinoscope");
+  return { success: true };
+}
+
+export async function updateUserInfo(
+  userId: string,
+  info: { department?: string; team?: string; agency?: string }
+): Promise<{ success: boolean; error?: string }> {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { success: false, error: "Non authentifié" };
+
+  const { data: callerProfile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
+  if (!callerProfile || !["admin", "rh"].includes(callerProfile.role)) {
+    return { success: false, error: "Accès refusé" };
+  }
+
+  const supabaseAdmin = createAdminClient();
+  const { error } = await supabaseAdmin
+    .from("profiles")
+    .update(info)
+    .eq("id", userId);
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath("/admin/users");
+  revalidatePath("/equipe/trombinoscope");
   return { success: true };
 }
