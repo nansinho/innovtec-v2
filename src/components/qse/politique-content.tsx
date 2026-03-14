@@ -698,13 +698,19 @@ export default function PolitiqueContent({
         </div>
       )}
 
+      {/* Counter */}
+      {allContent.length > 0 && (
+        <div className="flex items-center gap-2 text-[12px] text-[var(--text-muted)]">
+          <FileText className="h-3.5 w-3.5" />
+          <span>{allContent.length} politique{allContent.length > 1 ? "s" : ""} QSE</span>
+        </div>
+      )}
+
       {/* Empty state */}
       {allContent.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-[var(--border-1)] bg-gradient-to-b from-[var(--card)] to-[var(--bg)] py-20 text-center">
-          <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--navy)]/10 to-[var(--navy)]/5 shadow-inner">
-            <FileText className="h-9 w-9 text-[var(--navy)]/60" />
-          </div>
-          <p className="text-[15px] font-semibold text-[var(--heading)]">
+        <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] py-16 text-center shadow-sm">
+          <FileText className="mx-auto mb-3 h-10 w-10 text-[var(--border-1)]" />
+          <p className="text-sm text-[var(--text-secondary)]">
             Aucune politique QSE
           </p>
           {canEdit && (
@@ -714,85 +720,93 @@ export default function PolitiqueContent({
           )}
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {allContent.map((doc) => {
             const docYear = getDocYear(doc);
             const hasThumb = !!fileUrls[doc.id];
+            const docPillars = parsePillars(doc.sections).pillars;
 
             return (
-              <div
+              <button
                 key={doc.id}
-                className="group relative overflow-hidden rounded-2xl border border-[var(--border-1)] bg-[var(--card)] shadow-xs transition-all duration-300 hover:shadow-md hover:border-[var(--yellow)]/30 hover:-translate-y-0.5"
+                onClick={() => setSelectedId(doc.id)}
+                className="group relative flex flex-col items-center overflow-hidden rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] px-4 pb-5 pt-6 text-center shadow-xs transition-all duration-200 hover:scale-[1.02] hover:border-[var(--yellow)]/40 hover:shadow-md"
               >
-                <div className="flex items-center gap-4 p-4">
-                  {/* Thumbnail / icon */}
-                  <button
-                    onClick={() => setSelectedId(doc.id)}
-                    className="flex flex-1 items-center gap-4 text-left min-w-0"
-                  >
-                    {hasThumb ? (
-                      <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl border border-[var(--border-1)] shadow-xs transition-transform duration-300 group-hover:scale-105">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={fileUrls[doc.id]} alt={doc.title} className="h-full w-full object-cover" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
-                      </div>
-                    ) : (
-                      <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[var(--navy)] to-[#2a4a7a] shadow-sm transition-transform duration-300 group-hover:scale-105">
-                        <FileText className="h-6 w-6 text-[var(--yellow)]" />
-                      </div>
-                    )}
-
-                    {/* Content */}
-                    <div className="flex-1 min-w-0">
-                      <div className="text-[14px] font-semibold text-[var(--heading)] truncate transition-colors group-hover:text-[var(--navy)]">
-                        {doc.title}
-                      </div>
-                      <div className="mt-1 flex items-center gap-3 text-[11px] text-[var(--text-muted)]">
-                        <span className="flex items-center gap-1">
-                          <Calendar className="h-3 w-3" />
-                          {formatDate(doc.updated_at)}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Eye className="h-3 w-3" />
-                          Voir le detail
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Year badge */}
-                    <span className="rounded-full bg-gradient-to-r from-[var(--yellow)] to-[#ffb840] px-3.5 py-1 text-[11px] font-bold text-white shadow-sm transition-transform duration-200 group-hover:scale-105">
-                      {docYear}
-                    </span>
-
-                    {/* Arrow */}
-                    <ChevronRight className="h-5 w-5 text-[var(--text-muted)] transition-all duration-200 group-hover:translate-x-1 group-hover:text-[var(--yellow)]" />
-                  </button>
-
-                  {/* Admin actions */}
-                  {canEdit && (
-                    <div className="flex items-center gap-0.5 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                      <button
-                        onClick={(e) => { e.stopPropagation(); startEditing(doc); }}
-                        className="rounded-lg p-2 text-[var(--text-muted)] transition-all hover:bg-[var(--yellow-surface)] hover:text-[var(--yellow)] hover:scale-110"
-                        title="Modifier"
-                      >
-                        <Edit3 className="h-4 w-4" />
-                      </button>
-                      <button
-                        onClick={(e) => { e.stopPropagation(); handleDelete(doc.id, doc.title); }}
-                        disabled={isPending}
-                        className="rounded-lg p-2 text-[var(--text-muted)] transition-all hover:bg-red-50 hover:text-red-500 hover:scale-110 disabled:opacity-50"
-                        title="Supprimer"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </div>
-                  )}
+                {/* Year badge - top right */}
+                <div className="absolute right-2.5 top-2.5">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[var(--yellow)] to-[#ffb840] px-2.5 py-0.5 text-[10px] font-bold text-white shadow-sm">
+                    {docYear}
+                  </span>
                 </div>
 
-                {/* Accent line on hover */}
-                <div className="absolute bottom-0 left-0 h-[2px] w-0 bg-gradient-to-r from-[var(--yellow)] to-[#ffb840] transition-all duration-500 group-hover:w-full" />
-              </div>
+                {/* Admin actions - top left, visible on hover */}
+                {canEdit && (
+                  <div className="absolute left-2 top-2 flex items-center gap-0.5 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                    <span
+                      onClick={(e) => { e.stopPropagation(); startEditing(doc); }}
+                      className="rounded-full bg-[var(--hover)] p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--yellow-surface)] hover:text-[var(--yellow)]"
+                    >
+                      <Edit3 className="h-3 w-3" />
+                    </span>
+                    <span
+                      onClick={(e) => { e.stopPropagation(); handleDelete(doc.id, doc.title); }}
+                      className="rounded-full bg-[var(--hover)] p-1.5 text-[var(--text-muted)] transition-colors hover:bg-red-50 hover:text-red-500"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </span>
+                  </div>
+                )}
+
+                {/* Visual focal point: thumbnail or icon */}
+                {hasThumb ? (
+                  <div className="relative h-20 w-20 overflow-hidden rounded-2xl border-2 border-[var(--border-1)] shadow-sm">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={fileUrls[doc.id]} alt={doc.title} className="h-full w-full object-cover" />
+                  </div>
+                ) : (
+                  <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--navy)] to-[#2a4a7a] shadow-sm">
+                    <Award className="h-8 w-8 text-[var(--yellow)]" />
+                  </div>
+                )}
+
+                {/* Title */}
+                <p className="mt-3.5 text-[13px] font-semibold leading-tight text-[var(--heading)] line-clamp-2">
+                  {doc.title}
+                </p>
+
+                {/* Date */}
+                <p className="mt-1 flex items-center gap-1 text-[11px] text-[var(--text-muted)]">
+                  <Calendar className="h-3 w-3" />
+                  {formatDate(doc.updated_at)}
+                </p>
+
+                {/* Pillar mini-badges */}
+                {docPillars.length > 0 && (
+                  <div className="mt-3 flex flex-wrap justify-center gap-1.5">
+                    {docPillars.map((p) => {
+                      const Icon = p.icon;
+                      return (
+                        <span
+                          key={p.key}
+                          className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-medium"
+                          style={{ background: p.surface, color: p.color }}
+                        >
+                          <Icon className="h-2.5 w-2.5" />
+                          {p.label}
+                        </span>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* "View" hint on hover */}
+                <div className="mt-3 flex items-center gap-1.5 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                  <span className="rounded-full bg-[var(--hover)] px-3 py-1 text-[10px] font-medium text-[var(--text-secondary)] transition-colors group-hover:bg-[var(--yellow-surface)] group-hover:text-[var(--yellow)]">
+                    <Eye className="mr-1 inline h-3 w-3" />
+                    Voir le detail
+                  </span>
+                </div>
+              </button>
             );
           })}
         </div>
