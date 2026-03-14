@@ -19,7 +19,7 @@ export default async function PolitiqueQSEPage() {
     ["admin", "rh", "responsable_qse"].includes(profile.role);
 
   return (
-    <div className="px-7 py-6 pb-20 md:pb-7">
+    <div className="p-6 pb-20 md:pb-6">
       <div className="mb-6">
         <h1 className="text-xl font-semibold text-[var(--heading)]">
           Politique QSE

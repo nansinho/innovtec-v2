@@ -19,10 +19,13 @@ import {
   LogOut,
   Newspaper,
   UserCog,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { signOut } from "@/actions/auth";
 import type { Profile } from "@/lib/types/database";
+import { useState } from "react";
 
 const roleLabels: Record<string, string> = {
   admin: "Administrateur",
@@ -67,42 +70,55 @@ interface NavItemProps {
   icon: React.ComponentType<{ className?: string }>;
   badge?: string;
   isActive: boolean;
+  collapsed: boolean;
 }
 
-function NavItem({ href, label, icon: Icon, badge, isActive }: NavItemProps) {
+function NavItem({ href, label, icon: Icon, badge, isActive, collapsed }: NavItemProps) {
   return (
     <Link
       href={href}
+      title={collapsed ? label : undefined}
       className={cn(
-        "flex items-center gap-2.5 rounded-[var(--radius-sm)] px-3 py-2 text-[12.5px] transition-all",
+        "group flex items-center gap-2.5 rounded-[var(--radius)] px-3 py-2 text-[13px] transition-all duration-150",
+        collapsed && "justify-center px-0",
         isActive
-          ? "bg-[var(--yellow)] font-medium text-[var(--navy)]"
-          : "text-white/50 hover:bg-white/5 hover:text-white/75"
+          ? "bg-[#F59E0B] font-medium text-white shadow-sm"
+          : "text-white/55 hover:bg-white/10 hover:text-white/90"
       )}
     >
       <Icon
-        className={cn("h-[17px] w-[17px] shrink-0", isActive ? "opacity-100" : "opacity-50")}
+        className={cn(
+          "h-[18px] w-[18px] shrink-0",
+          isActive ? "text-white" : "text-white/50 group-hover:text-white/80"
+        )}
       />
-      {label}
-      {badge && (
-        <span
-          className={cn(
-            "ml-auto rounded-full px-[7px] py-0.5 text-[8px] font-medium",
-            isActive
-              ? "bg-[var(--navy)]/20 text-[var(--navy)]"
-              : "bg-[var(--yellow)]/20 text-[var(--yellow)]"
+      {!collapsed && (
+        <>
+          <span className="truncate">{label}</span>
+          {badge && (
+            <span
+              className={cn(
+                "ml-auto rounded-full px-[7px] py-0.5 text-[9px] font-semibold",
+                isActive
+                  ? "bg-white/20 text-white"
+                  : "bg-[#F59E0B]/20 text-[#F59E0B]"
+              )}
+            >
+              {badge}
+            </span>
           )}
-        >
-          {badge}
-        </span>
+        </>
       )}
     </Link>
   );
 }
 
-function SectionLabel({ label }: { label: string }) {
+function SectionLabel({ label, collapsed }: { label: string; collapsed: boolean }) {
+  if (collapsed) {
+    return <div className="my-2 border-t border-white/[0.08]" />;
+  }
   return (
-    <div className="px-2.5 pb-1.5 pt-4 text-[9px] font-medium uppercase tracking-[2px] text-white/20">
+    <div className="px-3 pb-1.5 pt-5 text-[10px] font-semibold uppercase tracking-[1.5px] text-white/25">
       {label}
     </div>
   );
@@ -114,6 +130,7 @@ interface SidebarProps {
 
 export default function Sidebar({ profile }: SidebarProps) {
   const pathname = usePathname();
+  const [collapsed, setCollapsed] = useState(false);
 
   const displayName = profile
     ? `${profile.first_name} ${profile.last_name}`.trim() || profile.email
@@ -127,25 +144,35 @@ export default function Sidebar({ profile }: SidebarProps) {
 
   const isAdmin = profile && ["admin", "rh"].includes(profile.role);
 
+  const sidebarWidth = collapsed ? "w-16" : "w-[var(--sidebar-width)]";
+
   return (
-    <aside className="fixed bottom-0 left-0 top-0 z-[100] hidden w-[var(--sidebar-width)] flex-col overflow-y-auto bg-[var(--navy)] text-white md:flex">
+    <aside
+      className={cn(
+        "fixed bottom-0 left-0 top-0 z-[100] hidden flex-col bg-[#0F2035] text-white transition-all duration-200 md:flex",
+        sidebarWidth
+      )}
+    >
       {/* Logo */}
-      <div className="flex items-center gap-2.5 border-b border-white/[0.07] px-[18px] py-5">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--yellow)]">
-          <Zap className="h-4 w-4 text-[var(--navy)]" />
+      <div className="flex items-center gap-2.5 border-b border-white/[0.08] px-4 py-4">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--radius)] bg-[#F59E0B]">
+          <Zap className="h-4 w-4 text-white" />
         </div>
-        <div className="text-sm font-semibold tracking-tight">
-          INNOVTEC{" "}
-          <span className="font-normal text-white/40">Réseaux</span>
-        </div>
+        {!collapsed && (
+          <div className="text-sm font-semibold tracking-tight">
+            INNOVTEC{" "}
+            <span className="font-normal text-white/40">Réseaux</span>
+          </div>
+        )}
       </div>
 
       {/* Navigation */}
-      <nav className="flex flex-1 flex-col gap-px px-2.5 py-3">
+      <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto px-2.5 py-3">
         {mainNav.map((item) => (
           <NavItem
             key={item.href}
             {...item}
+            collapsed={collapsed}
             isActive={
               item.href === "/"
                 ? pathname === "/"
@@ -154,41 +181,44 @@ export default function Sidebar({ profile }: SidebarProps) {
           />
         ))}
 
-        <SectionLabel label="QSE" />
+        <SectionLabel label="QSE" collapsed={collapsed} />
         {qseNav.map((item) => (
           <NavItem
             key={item.href}
             {...item}
+            collapsed={collapsed}
             isActive={pathname.startsWith(item.href)}
           />
         ))}
 
-        <SectionLabel label="Équipe" />
+        <SectionLabel label="Équipe" collapsed={collapsed} />
         {equipeNav.map((item) => (
           <NavItem
             key={item.href}
             {...item}
+            collapsed={collapsed}
             isActive={pathname.startsWith(item.href)}
           />
         ))}
 
-        <SectionLabel label="Ressources" />
+        <SectionLabel label="Ressources" collapsed={collapsed} />
         {ressourcesNav.map((item) => (
           <NavItem
             key={item.href}
             {...item}
+            collapsed={collapsed}
             isActive={pathname.startsWith(item.href)}
           />
         ))}
 
-        {/* Admin section - only visible for admin/rh */}
         {isAdmin && (
           <>
-            <SectionLabel label="Administration" />
+            <SectionLabel label="Administration" collapsed={collapsed} />
             {adminNav.map((item) => (
               <NavItem
                 key={item.href}
                 {...item}
+                collapsed={collapsed}
                 isActive={pathname.startsWith(item.href)}
               />
             ))}
@@ -196,39 +226,73 @@ export default function Sidebar({ profile }: SidebarProps) {
         )}
       </nav>
 
-      {/* Bottom */}
-      <div className="border-t border-white/[0.06] px-3.5 py-2.5">
+      {/* Collapse toggle */}
+      <div className="border-t border-white/[0.06] px-2.5 py-2">
+        <button
+          onClick={() => setCollapsed(!collapsed)}
+          className="flex w-full items-center justify-center gap-2 rounded-[var(--radius)] px-2 py-2 text-[11px] text-white/30 transition-all hover:bg-white/[0.06] hover:text-white/55"
+          aria-label={collapsed ? "Agrandir le menu" : "Réduire le menu"}
+        >
+          {collapsed ? (
+            <ChevronRight className="h-4 w-4" />
+          ) : (
+            <>
+              <ChevronLeft className="h-4 w-4" />
+              <span>Réduire</span>
+            </>
+          )}
+        </button>
+      </div>
+
+      {/* Support */}
+      <div className="border-t border-white/[0.06] px-2.5 py-1.5">
         <Link
           href="#"
-          className="flex items-center gap-2.5 rounded-[var(--radius-xs)] px-2 py-2 text-[11.5px] text-white/30 transition-all hover:bg-white/[0.04] hover:text-white/55"
+          title={collapsed ? "Support" : undefined}
+          className={cn(
+            "flex items-center gap-2.5 rounded-[var(--radius)] px-3 py-2 text-[12px] text-white/30 transition-all hover:bg-white/[0.06] hover:text-white/55",
+            collapsed && "justify-center px-0"
+          )}
         >
-          <HelpCircle className="h-[15px] w-[15px] opacity-35" />
-          Support
+          <HelpCircle className="h-4 w-4 shrink-0 opacity-50" />
+          {!collapsed && "Support"}
         </Link>
       </div>
 
       {/* User */}
-      <div className="flex items-center gap-2.5 border-t border-white/[0.06] px-3.5 py-3.5">
+      <div className={cn(
+        "flex items-center gap-2.5 border-t border-white/[0.06] px-3.5 py-3",
+        collapsed && "justify-center px-2"
+      )}>
         <Link
           href="/profil"
-          className="flex h-[34px] w-[34px] items-center justify-center rounded-full bg-white/10 text-[11px] font-medium text-white/65 transition-colors hover:bg-white/20"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/10 text-[11px] font-medium text-white/70 transition-colors hover:bg-white/20"
+          title={collapsed ? displayName : undefined}
         >
           {initials}
         </Link>
-        <div className="flex-1">
-          <Link
-            href="/profil"
-            className="block text-[12.5px] font-medium text-white/80 transition-colors hover:text-white"
-          >
-            {displayName}
-          </Link>
-          <div className="text-[10.5px] text-white/30">{roleLabel}</div>
-        </div>
-        <form action={signOut}>
-          <button type="submit" className="text-white/20 hover:text-white/50">
-            <LogOut className="h-[15px] w-[15px]" />
-          </button>
-        </form>
+        {!collapsed && (
+          <>
+            <div className="min-w-0 flex-1">
+              <Link
+                href="/profil"
+                className="block truncate text-[13px] font-medium text-white/85 transition-colors hover:text-white"
+              >
+                {displayName}
+              </Link>
+              <div className="truncate text-[11px] text-white/30">{roleLabel}</div>
+            </div>
+            <form action={signOut}>
+              <button
+                type="submit"
+                className="text-white/20 transition-colors hover:text-white/50"
+                aria-label="Se déconnecter"
+              >
+                <LogOut className="h-4 w-4" />
+              </button>
+            </form>
+          </>
+        )}
       </div>
     </aside>
   );

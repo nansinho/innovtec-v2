@@ -40,9 +40,9 @@ export default async function DashboardLayout({
   return (
     <>
       <Sidebar profile={profile} />
-      <div className="min-h-screen md:ml-[var(--sidebar-width)]">
+      <div className="min-h-screen transition-all duration-200 md:ml-[var(--sidebar-width)]">
         <Topbar profile={profile} unreadCount={unreadCount} />
-        {children}
+        <main>{children}</main>
       </div>
       <MobileNav />
       {profile?.must_change_password && <PasswordChangeAlert />}

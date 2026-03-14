@@ -1,7 +1,9 @@
 "use client";
 
-import { BookOpen, Clock, MapPin } from "lucide-react";
+import { BookOpen, Eye } from "lucide-react";
 import { formatRelative } from "@/lib/utils";
+import { DataTable, type ColumnDef } from "@/components/ui/data-table";
+import { Badge } from "@/components/ui/badge";
 
 interface RexItem {
   id: string;
@@ -18,69 +20,85 @@ interface RexListProps {
 }
 
 export default function RexList({ rexList }: RexListProps) {
-  if (rexList.length === 0) {
-    return (
-      <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] py-12 text-center shadow-sm">
-        <BookOpen className="mx-auto mb-3 h-10 w-10 text-[var(--border-1)]" />
-        <p className="text-sm text-[var(--text-secondary)]">
-          Aucun retour d&apos;expérience enregistré.
-        </p>
-      </div>
-    );
-  }
+  const columns: ColumnDef<RexItem>[] = [
+    {
+      key: "created_at",
+      header: "Date",
+      sortable: true,
+      width: "110px",
+      accessor: (r) => r.created_at,
+      render: (r) => (
+        <span className="text-[var(--text-secondary)]">
+          {new Date(r.created_at).toLocaleDateString("fr-FR")}
+        </span>
+      ),
+    },
+    {
+      key: "title",
+      header: "Titre",
+      sortable: true,
+      render: (r) => (
+        <div>
+          <div className="font-medium text-[var(--heading)]">{r.title}</div>
+          <div className="mt-0.5 line-clamp-1 text-xs text-[var(--text-muted)]">
+            {r.description}
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: "chantier",
+      header: "Chantier",
+      sortable: true,
+      render: (r) =>
+        r.chantier ? (
+          <Badge variant="blue">{r.chantier}</Badge>
+        ) : (
+          <span className="text-[var(--text-muted)]">—</span>
+        ),
+    },
+    {
+      key: "lessons_learned",
+      header: "Leçons tirées",
+      render: (r) => (
+        <span className="line-clamp-1 text-[var(--text-secondary)]">
+          {r.lessons_learned || "—"}
+        </span>
+      ),
+    },
+    {
+      key: "author",
+      header: "Auteur",
+      render: (r) => {
+        const author = r.author as unknown as { first_name: string; last_name: string } | null;
+        return (
+          <span className="text-[var(--text-secondary)]">
+            {author ? `${author.first_name} ${author.last_name}` : "—"}
+          </span>
+        );
+      },
+    },
+  ];
 
   return (
-    <div className="space-y-4">
-      {rexList.map((rex) => {
-        const author = rex.author as unknown as {
-          first_name: string;
-          last_name: string;
-        } | null;
-
-        return (
-          <div
-            key={rex.id}
-            className="rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] p-5 shadow-xs transition-shadow duration-200 hover:shadow-sm"
-          >
-            <div className="mb-2 flex flex-wrap items-center gap-2">
-              {rex.chantier && (
-                <span className="flex items-center gap-1 rounded-full bg-[var(--blue-surface)] px-2.5 py-0.5 text-[10px] font-medium text-[var(--blue)]">
-                  <MapPin className="h-3 w-3" />
-                  {rex.chantier}
-                </span>
-              )}
-              <span className="flex items-center gap-1 text-[10px] text-[var(--text-muted)]">
-                <Clock className="h-3 w-3" />
-                {formatRelative(rex.created_at)}
-              </span>
-              {author && (
-                <span className="text-[10px] text-[var(--text-muted)]">
-                  Par {author.first_name} {author.last_name}
-                </span>
-              )}
-            </div>
-
-            <h3 className="mb-2 text-[14px] font-semibold text-[var(--heading)]">
-              {rex.title}
-            </h3>
-
-            <p className="mb-3 text-[12.5px] leading-relaxed text-[var(--text-secondary)]">
-              {rex.description}
-            </p>
-
-            {rex.lessons_learned && (
-              <div className="rounded-[var(--radius-xs)] border-l-4 border-l-[var(--yellow)] bg-[var(--yellow-surface)] p-3">
-                <p className="mb-1 text-[10px] font-bold uppercase tracking-wider text-[var(--yellow)]">
-                  Leçons tirées
-                </p>
-                <p className="text-[12px] leading-relaxed text-[var(--text)]">
-                  {rex.lessons_learned}
-                </p>
-              </div>
-            )}
-          </div>
-        );
-      })}
-    </div>
+    <DataTable
+      data={rexList}
+      columns={columns}
+      keyField="id"
+      searchable
+      searchPlaceholder="Rechercher un REX..."
+      emptyState={{
+        icon: BookOpen,
+        title: "Aucun retour d'expérience",
+        description: "Aucun REX n'a été enregistré pour le moment.",
+      }}
+      actions={(r) => [
+        {
+          label: "Voir les détails",
+          icon: Eye,
+          onClick: () => {},
+        },
+      ]}
+    />
   );
 }

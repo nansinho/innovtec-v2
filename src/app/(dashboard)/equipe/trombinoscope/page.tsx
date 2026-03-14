@@ -1,7 +1,7 @@
 import { getTrombinoscopeUsers } from "@/actions/trombinoscope";
 import { getTodayBirthdays } from "@/actions/birthday";
 import { getProfile } from "@/actions/auth";
-import TrombinoscopeGrid from "@/components/equipe/trombinoscope-grid";
+import TrombinoscopeTable from "@/components/equipe/trombinoscope-table";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +15,7 @@ export default async function TrombinoscopePage() {
   const birthdayIds = new Set(birthdays.map((b) => b.id));
 
   return (
-    <div className="px-7 py-6 pb-20 md:pb-7">
+    <div className="p-6 pb-20 md:pb-6">
       <div className="mb-6">
         <h1 className="text-xl font-semibold text-[var(--heading)]">
           Trombinoscope
@@ -25,7 +25,7 @@ export default async function TrombinoscopePage() {
         </p>
       </div>
 
-      <TrombinoscopeGrid
+      <TrombinoscopeTable
         users={users}
         birthdayIds={Array.from(birthdayIds)}
         currentUserId={profile?.id ?? ""}

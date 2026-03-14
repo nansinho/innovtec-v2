@@ -1,4 +1,4 @@
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, CalendarDays } from "lucide-react";
 import Link from "next/link";
 import { Card, CardHeader } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -8,26 +8,11 @@ import { fr } from "date-fns/locale";
 import type { EventColor } from "@/lib/types/database";
 
 const colorMap: Record<string, { bg: string; bar: string }> = {
-  yellow: {
-    bg: "bg-[rgba(245,166,35,0.04)]",
-    bar: "bg-[var(--yellow)]",
-  },
-  blue: {
-    bg: "bg-[rgba(37,99,235,0.04)]",
-    bar: "bg-[var(--blue)]",
-  },
-  purple: {
-    bg: "bg-[rgba(124,58,237,0.04)]",
-    bar: "bg-[var(--purple)]",
-  },
-  green: {
-    bg: "bg-[rgba(22,163,74,0.04)]",
-    bar: "bg-[var(--green)]",
-  },
-  red: {
-    bg: "bg-[rgba(239,68,68,0.04)]",
-    bar: "bg-[var(--red)]",
-  },
+  yellow: { bg: "bg-amber-50/60", bar: "bg-amber-400" },
+  blue: { bg: "bg-blue-50/60", bar: "bg-blue-400" },
+  purple: { bg: "bg-purple-50/60", bar: "bg-purple-400" },
+  green: { bg: "bg-emerald-50/60", bar: "bg-emerald-400" },
+  red: { bg: "bg-red-50/60", bar: "bg-red-400" },
 };
 
 export default async function EventsList() {
@@ -40,16 +25,20 @@ export default async function EventsList() {
         action={
           <Link
             href="/equipe/planning"
-            className="flex items-center text-[var(--yellow)] opacity-85 transition-opacity hover:opacity-100"
+            className="flex items-center text-[var(--yellow)] transition-opacity hover:opacity-80"
+            aria-label="Voir tous les événements"
           >
-            <ChevronRight className="h-3.5 w-3.5" />
+            <ChevronRight className="h-4 w-4" />
           </Link>
         }
       />
-      <div className="space-y-2 px-4 py-2">
+      <div className="space-y-2 px-4 py-3">
         {events.length === 0 ? (
-          <div className="py-4 text-center text-[12px] text-[var(--text-muted)]">
-            Aucun événement à venir
+          <div className="flex flex-col items-center py-6 text-center">
+            <CalendarDays className="mb-2 h-8 w-8 text-zinc-300" />
+            <p className="text-sm text-[var(--text-muted)]">
+              Aucun événement à venir
+            </p>
           </div>
         ) : (
           events.slice(0, 5).map((event) => {
@@ -62,23 +51,20 @@ export default async function EventsList() {
               <div
                 key={event.id}
                 className={cn(
-                  "flex overflow-hidden rounded-[var(--radius-sm)] border border-[var(--border-1)]",
+                  "flex overflow-hidden rounded-[var(--radius)]",
                   colors.bg
                 )}
               >
-                <div className={cn("w-1 shrink-0", colors.bar)} />
+                <div className={cn("w-1 shrink-0 rounded-l-[var(--radius)]", colors.bar)} />
                 <div className="flex flex-1 items-center justify-between px-3 py-2.5">
                   <div>
-                    <div className="text-[12.5px] font-medium text-[var(--heading)]">
+                    <div className="text-sm font-medium text-[var(--heading)]">
                       {event.title}
                     </div>
-                    <div className="text-[10.5px] text-[var(--text-muted)]">
+                    <div className="mt-0.5 text-xs text-[var(--text-muted)]">
                       {dateStr}
                     </div>
                   </div>
-                  <button className="px-2 py-2.5 text-sm text-[var(--text-muted)]">
-                    ···
-                  </button>
                 </div>
               </div>
             );

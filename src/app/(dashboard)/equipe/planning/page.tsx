@@ -1,12 +1,23 @@
-export default function PlanningPage() {
+import { getUpcomingEvents } from "@/actions/events";
+import PlanningView from "@/components/equipe/planning-view";
+
+export const dynamic = "force-dynamic";
+
+export default async function PlanningPage() {
+  const events = await getUpcomingEvents();
+
   return (
-    <div className="px-7 py-6">
-      <h1 className="mb-4 text-xl font-semibold text-[var(--heading)]">
-        Planning
-      </h1>
-      <p className="text-sm text-[var(--text-secondary)]">
-        Le planning des équipes et des chantiers.
-      </p>
+    <div className="p-6 pb-20 md:pb-6">
+      <div className="mb-6">
+        <h1 className="text-xl font-semibold text-[var(--heading)]">
+          Planning
+        </h1>
+        <p className="mt-1 text-sm text-[var(--text-secondary)]">
+          Le planning des équipes et des chantiers.
+        </p>
+      </div>
+
+      <PlanningView events={events} />
     </div>
   );
 }
