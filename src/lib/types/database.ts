@@ -131,12 +131,14 @@ export interface FeedPost {
   author_id: string;
   content: string;
   image_url: string;
+  news_id: string | null;
   created_at: string;
   updated_at: string;
   // Joined fields
   author?: Profile;
   likes_count?: number;
   comments_count?: number;
+  news?: News;
 }
 
 export interface FeedLike {
@@ -284,6 +286,35 @@ export interface NewsComment {
   content: string;
   created_at: string;
   author?: Profile;
+}
+
+// ==========================================
+// NEWS LIKES, SHARES & ATTACHMENTS
+// ==========================================
+
+export interface NewsLike {
+  id: string;
+  news_id: string;
+  user_id: string;
+  created_at: string;
+}
+
+export interface NewsShare {
+  id: string;
+  news_id: string;
+  user_id: string;
+  created_at: string;
+}
+
+export interface NewsAttachment {
+  id: string;
+  news_id: string;
+  file_name: string;
+  file_url: string;
+  file_size: number | null;
+  file_type: string;
+  uploaded_by: string | null;
+  created_at: string;
 }
 
 // ==========================================

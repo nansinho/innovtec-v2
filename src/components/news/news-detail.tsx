@@ -8,13 +8,25 @@ import {
   Eye,
   MessageSquare,
   Clock,
-  Tag,
+  Heart,
+  Share2,
   Send,
   Trash2,
+  Pencil,
 } from "lucide-react";
 import { cn, formatDate, formatRelative } from "@/lib/utils";
-import { addNewsComment, deleteNewsComment } from "@/actions/news";
-import type { NewsComment, NewsCategory } from "@/lib/types/database";
+import {
+  addNewsComment,
+  deleteNewsComment,
+  toggleNewsLike,
+  shareNews,
+} from "@/actions/news";
+import { NewsAttachmentsDisplay } from "./news-attachments";
+import type {
+  NewsComment,
+  NewsCategory,
+  NewsAttachment,
+} from "@/lib/types/database";
 
 const categoryLabels: Record<NewsCategory, string> = {
   entreprise: "Entreprise",
@@ -44,22 +56,39 @@ interface NewsDetailProps {
     priority: string;
     image_url: string;
     published_at: string | null;
-    author?: { first_name: string; last_name: string; avatar_url?: string } | null;
+    author?: {
+      first_name: string;
+      last_name: string;
+      avatar_url?: string;
+    } | null;
   };
   viewsCount: number;
+  likesCount: number;
+  sharesCount: number;
+  userHasLiked: boolean;
   comments: NewsComment[];
+  attachments: NewsAttachment[];
   currentUserId: string | null;
+  canEdit: boolean;
 }
 
 export default function NewsDetail({
   article,
   viewsCount,
+  likesCount: initialLikesCount,
+  sharesCount: initialSharesCount,
+  userHasLiked: initialHasLiked,
   comments: initialComments,
+  attachments,
   currentUserId,
+  canEdit,
 }: NewsDetailProps) {
   const [comments, setComments] = useState(initialComments);
   const [newComment, setNewComment] = useState("");
   const [isPending, startTransition] = useTransition();
+  const [liked, setLiked] = useState(initialHasLiked);
+  const [likesCount, setLikesCount] = useState(initialLikesCount);
+  const [sharesCount, setSharesCount] = useState(initialSharesCount);
 
   const authorName = article.author
     ? `${article.author.first_name} ${article.author.last_name}`
@@ -72,7 +101,6 @@ export default function NewsDetail({
       const result = await addNewsComment(article.id, newComment);
       if (result.success) {
         setNewComment("");
-        // Reload comments
         const { getNewsComments } = await import("@/actions/news");
         const updated = await getNewsComments(article.id);
         setComments(updated);
@@ -88,18 +116,70 @@ export default function NewsDetail({
     });
   }
 
+  function handleLike() {
+    // Optimistic update
+    setLiked(!liked);
+    setLikesCount((prev) => (liked ? prev - 1 : prev + 1));
+
+    startTransition(async () => {
+      const result = await toggleNewsLike(article.id);
+      if (!result.success) {
+        // Revert on failure
+        setLiked(liked);
+        setLikesCount((prev) => (liked ? prev + 1 : prev - 1));
+      }
+    });
+  }
+
+  function handleShare() {
+    startTransition(async () => {
+      const result = await shareNews(article.id);
+      if (result.success) {
+        setSharesCount((prev) => prev + 1);
+      }
+    });
+  }
+
+  // Check if content contains HTML tags (from rich text editor)
+  const isHtml = /<[a-z][\s\S]*>/i.test(article.content);
+
   return (
     <div className="px-7 py-6 pb-20 md:pb-7">
-      {/* Back button */}
-      <Link
-        href="/actualites"
-        className="mb-5 inline-flex items-center gap-1.5 text-[12px] text-[var(--text-secondary)] transition-colors hover:text-[var(--heading)]"
-      >
-        <ArrowLeft className="h-3.5 w-3.5" />
-        Retour aux actualités
-      </Link>
+      {/* Back button & edit */}
+      <div className="mb-5 flex items-center justify-between">
+        <Link
+          href="/actualites"
+          className="inline-flex items-center gap-1.5 text-[12px] text-[var(--text-secondary)] transition-colors hover:text-[var(--heading)]"
+        >
+          <ArrowLeft className="h-3.5 w-3.5" />
+          Retour aux actualités
+        </Link>
+        {canEdit && (
+          <Link
+            href={`/actualites/${article.id}/modifier`}
+            className="inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] px-3 py-1.5 text-[11.5px] font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--hover)]"
+          >
+            <Pencil className="h-3 w-3" />
+            Modifier
+          </Link>
+        )}
+      </div>
 
       <div className="mx-auto max-w-3xl">
+        {/* Hero image */}
+        {article.image_url && (
+          <div className="relative -mx-7 mb-6 aspect-[16/7] overflow-hidden bg-[var(--hover)] md:mx-0 md:rounded-[var(--radius)]">
+            <Image
+              src={article.image_url}
+              alt={article.title}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 768px"
+              priority
+            />
+          </div>
+        )}
+
         {/* Header */}
         <div className="mb-6">
           <div className="mb-3 flex flex-wrap items-center gap-2">
@@ -135,7 +215,7 @@ export default function NewsDetail({
             </p>
           )}
 
-          {/* Meta */}
+          {/* Author & meta */}
           <div className="flex flex-wrap items-center gap-4 text-[11.5px] text-[var(--text-muted)]">
             <div className="flex items-center gap-1.5">
               <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--navy)] text-[8px] font-medium text-white">
@@ -158,35 +238,71 @@ export default function NewsDetail({
               <Eye className="h-3.5 w-3.5" />
               {viewsCount} vue{viewsCount > 1 ? "s" : ""}
             </span>
-            <span className="flex items-center gap-1">
-              <MessageSquare className="h-3.5 w-3.5" />
-              {comments.length} commentaire{comments.length > 1 ? "s" : ""}
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="mb-6 rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] p-6 shadow-sm">
+          {isHtml ? (
+            <div
+              className="prose-news text-[13.5px] leading-relaxed text-[var(--text)]"
+              dangerouslySetInnerHTML={{
+                __html: article.content,
+              }}
+            />
+          ) : (
+            <div className="whitespace-pre-wrap text-[13.5px] leading-relaxed text-[var(--text)]">
+              {article.content || article.excerpt}
+            </div>
+          )}
+        </div>
+
+        {/* Social actions bar */}
+        <div className="mb-6 flex items-center gap-1 rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] px-4 py-2.5 shadow-sm">
+          <button
+            onClick={handleLike}
+            disabled={!currentUserId}
+            className={cn(
+              "flex items-center gap-1.5 rounded-[var(--radius-sm)] px-3 py-2 text-[12px] font-medium transition-colors",
+              liked
+                ? "bg-[var(--red-surface)] text-[var(--red)]"
+                : "text-[var(--text-secondary)] hover:bg-[var(--hover)]"
+            )}
+          >
+            <Heart
+              className={cn("h-4 w-4", liked && "fill-current")}
+            />
+            {likesCount > 0 && likesCount}
+            <span className="hidden sm:inline">
+              {liked ? "Aimé" : "J'aime"}
+            </span>
+          </button>
+
+          <button
+            onClick={handleShare}
+            disabled={isPending || !currentUserId}
+            className="flex items-center gap-1.5 rounded-[var(--radius-sm)] px-3 py-2 text-[12px] font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--hover)]"
+          >
+            <Share2 className="h-4 w-4" />
+            {sharesCount > 0 && sharesCount}
+            <span className="hidden sm:inline">Partager</span>
+          </button>
+
+          <div className="flex items-center gap-1.5 px-3 py-2 text-[12px] text-[var(--text-muted)]">
+            <MessageSquare className="h-4 w-4" />
+            {comments.length}
+            <span className="hidden sm:inline">
+              commentaire{comments.length > 1 ? "s" : ""}
             </span>
           </div>
         </div>
 
-        {/* Image */}
-        {article.image_url && (
-          <div className="relative mb-6 aspect-[16/9] overflow-hidden rounded-[var(--radius)] bg-[var(--hover)]">
-            <Image
-              src={article.image_url}
-              alt={article.title}
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, 768px"
-              priority
-            />
+        {/* Attachments */}
+        {attachments.length > 0 && (
+          <div className="mb-6">
+            <NewsAttachmentsDisplay attachments={attachments} />
           </div>
         )}
-
-        {/* Content */}
-        <div className="prose-sm mb-8 rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] p-6 shadow-sm">
-          <div
-            className="whitespace-pre-wrap text-[13.5px] leading-relaxed text-[var(--text)]"
-          >
-            {article.content || article.excerpt}
-          </div>
-        </div>
 
         {/* Comments section */}
         <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] shadow-sm">
