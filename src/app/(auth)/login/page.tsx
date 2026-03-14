@@ -22,7 +22,9 @@ export default function LoginPage() {
         setError(result.error);
         setLoading(false);
       }
-    } catch {
+    } catch (err) {
+      // Next.js redirect() throws a special error — let it propagate
+      if (err instanceof Error && err.message.includes("NEXT_REDIRECT")) throw err;
       setError("Impossible de contacter le serveur. Vérifiez votre connexion.");
       setLoading(false);
     }

@@ -34,7 +34,9 @@ export default function SignupPage() {
         setError("Compte créé mais connexion échouée. Essayez de vous connecter.");
         setLoading(false);
       }
-    } catch {
+    } catch (err) {
+      // Next.js redirect() throws a special error — let it propagate
+      if (err instanceof Error && err.message.includes("NEXT_REDIRECT")) throw err;
       setError("Compte créé mais impossible de se connecter automatiquement. Essayez de vous connecter.");
       setLoading(false);
     }
