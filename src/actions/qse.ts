@@ -36,7 +36,8 @@ export async function saveQseContent(
   type: string,
   title: string,
   sections: QseContentSection[],
-  sourceFileUrl?: string
+  sourceFileUrl?: string,
+  id?: string
 ): Promise<{ success: boolean; error?: string }> {
   const supabase = await createClient();
   const {
@@ -44,15 +45,9 @@ export async function saveQseContent(
   } = await supabase.auth.getUser();
   if (!user) return { success: false, error: "Non authentifié" };
 
-  // Check if content exists for this type
-  const { data: existing } = await supabase
-    .from("qse_content")
-    .select("id")
-    .eq("type", type)
-    .limit(1)
-    .single();
+  const targetId = id;
 
-  if (existing) {
+  if (targetId) {
     const { error } = await supabase
       .from("qse_content")
       .update({
@@ -61,20 +56,68 @@ export async function saveQseContent(
         source_file_url: sourceFileUrl ?? "",
         updated_by: user.id,
       })
-      .eq("id", existing.id);
+      .eq("id", targetId);
 
     if (error) return { success: false, error: error.message };
   } else {
-    const { error } = await supabase.from("qse_content").insert({
-      type,
-      title,
-      sections,
-      source_file_url: sourceFileUrl ?? "",
-      updated_by: user.id,
-    });
+    // Fallback: check if content exists for this type (legacy behavior)
+    const { data: existing } = await supabase
+      .from("qse_content")
+      .select("id")
+      .eq("type", type)
+      .limit(1)
+      .single();
 
-    if (error) return { success: false, error: error.message };
+    if (existing) {
+      const { error } = await supabase
+        .from("qse_content")
+        .update({
+          title,
+          sections,
+          source_file_url: sourceFileUrl ?? "",
+          updated_by: user.id,
+        })
+        .eq("id", existing.id);
+
+      if (error) return { success: false, error: error.message };
+    } else {
+      const { error } = await supabase.from("qse_content").insert({
+        type,
+        title,
+        sections,
+        source_file_url: sourceFileUrl ?? "",
+        updated_by: user.id,
+      });
+
+      if (error) return { success: false, error: error.message };
+    }
   }
+
+  revalidatePath("/qse/politique");
+  return { success: true };
+}
+
+export async function createQseContent(
+  type: string,
+  title: string,
+  sections: QseContentSection[],
+  sourceFileUrl?: string
+): Promise<{ success: boolean; error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { success: false, error: "Non authentifié" };
+
+  const { error } = await supabase.from("qse_content").insert({
+    type,
+    title,
+    sections,
+    source_file_url: sourceFileUrl ?? "",
+    updated_by: user.id,
+  });
+
+  if (error) return { success: false, error: error.message };
 
   revalidatePath("/qse/politique");
   return { success: true };
