@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { randomUUID } from "crypto";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
 import { getAnthropicApiKey } from "@/actions/settings";
@@ -105,7 +106,7 @@ export async function POST(req: NextRequest) {
 
     if (type === "politique") {
       systemPrompt +=
-        ` Analyse ce document de politique QSE et retourne un JSON avec: title (titre du document), sections (tableau d'objets {title, content}).
+        ` Analyse ce document de politique QSE et retourne un JSON avec: title (titre du document), year (l'année du document en nombre entier, par exemple 2025 ou 2026 — cherche la date dans le document, souvent en bas comme "Fait à ... le JJ/MM/AAAA"), sections (tableau d'objets {title, content}).
 IMPORTANT: Structure les sections EXACTEMENT selon les 4 piliers QSE avec engagements ET objectifs séparés:
 - "Présentation générale" (le texte d'introduction du document)
 - "QUALITÉ - Nos engagements" (les engagements qualité, chaque point sur une nouvelle ligne)
@@ -176,8 +177,25 @@ Chaque point doit être sur sa propre ligne dans le champ content. Extrais TOUTE
       parsed = { raw: rawText };
     }
 
+    // Upload original file to Supabase storage
+    let fileUrl = "";
+    const fileExt = file.name.split(".").pop() || (isPdf ? "pdf" : "png");
+    const filePath = `qse/${type}/${Date.now()}-${randomUUID()}.${fileExt}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("documents")
+      .upload(filePath, Buffer.from(buffer), {
+        contentType: mimeType,
+        upsert: false,
+      });
+
+    if (!uploadError) {
+      fileUrl = filePath;
+    }
+
     return NextResponse.json({
       result: parsed,
+      fileUrl,
       credits_remaining: credit
         ? credit.credits_limit - credit.credits_used - 1
         : 0,

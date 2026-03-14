@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, useRef, useCallback } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
   Edit3,
@@ -18,11 +18,15 @@ import {
   ChevronDown,
   ChevronRight,
   X,
-  Image as ImageIcon,
 } from "lucide-react";
 import { cn, formatDate } from "@/lib/utils";
 import FileUploadAi from "@/components/ai/file-upload-ai";
-import { saveQseContent, createQseContent } from "@/actions/qse";
+import {
+  saveQseContent,
+  createQseContent,
+  deleteQseContent,
+  getQseFileDownloadUrl,
+} from "@/actions/qse";
 import type { QseContent, QseContentSection } from "@/lib/types/database";
 
 // ==========================================
@@ -236,6 +240,8 @@ export default function PolitiqueContent({
   const [sections, setSections] = useState<QseContentSection[]>(
     content?.sections ?? []
   );
+  const [sourceFileUrl, setSourceFileUrl] = useState("");
+  const [year, setYear] = useState<number | null>(null);
   const [isPending, startTransition] = useTransition();
   const [showUpload, setShowUpload] = useState(false);
   const [expandedEdit, setExpandedEdit] = useState<Set<number>>(
@@ -243,22 +249,27 @@ export default function PolitiqueContent({
   );
   const [isDownloading, setIsDownloading] = useState(false);
   const router = useRouter();
-  const detailRef = useRef<HTMLDivElement>(null);
 
   const selected = allContent.find((c) => c.id === selectedId) ?? null;
   const { pillars, intro } = selected
     ? parsePillars(selected.sections)
     : { pillars: [], intro: "" };
 
-  function handleAiResult(result: unknown) {
-    const data = result as { title?: string; sections?: QseContentSection[] };
+  function getDocYear(doc: QseContent): number {
+    return doc.year ?? new Date(doc.updated_at).getFullYear();
+  }
+
+  function handleAiResult(result: unknown, fileUrl?: string) {
+    const data = result as { title?: string; year?: number; sections?: QseContentSection[] };
     if (data.title) setTitle(data.title);
+    if (data.year) setYear(data.year);
     if (data.sections && Array.isArray(data.sections)) {
       setSections(data.sections);
       setExpandedEdit(
         new Set(data.sections.map((_: QseContentSection, i: number) => i))
       );
     }
+    if (fileUrl) setSourceFileUrl(fileUrl);
     setEditing(true);
     setShowUpload(false);
   }
@@ -296,15 +307,28 @@ export default function PolitiqueContent({
     startTransition(async () => {
       let result;
       if (editingId) {
-        // Update existing
-        result = await saveQseContent("politique", title, sections, undefined, editingId);
+        result = await saveQseContent(
+          "politique",
+          title,
+          sections,
+          sourceFileUrl || undefined,
+          editingId,
+          year
+        );
       } else {
-        // Create new
-        result = await createQseContent("politique", title, sections);
+        result = await createQseContent(
+          "politique",
+          title,
+          sections,
+          sourceFileUrl || undefined,
+          year
+        );
       }
       if (result.success) {
         setEditing(false);
         setEditingId(null);
+        setSourceFileUrl("");
+        setYear(null);
         router.refresh();
       }
     });
@@ -315,6 +339,8 @@ export default function PolitiqueContent({
     setSections(doc.sections);
     setExpandedEdit(new Set(doc.sections.map((_, i) => i)));
     setEditingId(doc.id);
+    setYear(doc.year ?? null);
+    setSourceFileUrl(doc.source_file_url ?? "");
     setEditing(true);
     setSelectedId(null);
   }
@@ -324,31 +350,36 @@ export default function PolitiqueContent({
     setSections([]);
     setExpandedEdit(new Set());
     setEditingId(null);
+    setYear(new Date().getFullYear());
+    setSourceFileUrl("");
     setEditing(true);
     setSelectedId(null);
   }
 
-  const handleDownloadImage = useCallback(async () => {
-    if (!detailRef.current) return;
+  function handleDelete(id: string, docTitle: string) {
+    if (!window.confirm(`Supprimer la politique "${docTitle}" ? Cette action est irreversible.`)) return;
+    startTransition(async () => {
+      const result = await deleteQseContent(id);
+      if (result.success) {
+        if (selectedId === id) setSelectedId(null);
+        router.refresh();
+      }
+    });
+  }
+
+  async function handleDownloadFile(filePath: string) {
     setIsDownloading(true);
     try {
-      const html2canvas = (await import("html2canvas-pro")).default;
-      const canvas = await html2canvas(detailRef.current, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: "#ffffff",
-      });
-      const link = document.createElement("a");
-      const year = selected ? new Date(selected.updated_at).getFullYear() : new Date().getFullYear();
-      link.download = `politique-qse-${year}.png`;
-      link.href = canvas.toDataURL("image/png");
-      link.click();
-    } catch {
-      // Silently fail
+      const { url, error } = await getQseFileDownloadUrl(filePath);
+      if (url) {
+        window.open(url, "_blank");
+      } else if (error) {
+        console.error("Download error:", error);
+      }
     } finally {
       setIsDownloading(false);
     }
-  }, [selected]);
+  }
 
   // ==========================================
   // EDIT MODE
@@ -404,15 +435,31 @@ export default function PolitiqueContent({
         )}
 
         <div className="space-y-4">
-          <div>
-            <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">
-              Titre du document
-            </label>
-            <input
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2.5 text-sm font-semibold text-[var(--heading)] outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
-            />
+          {/* Year + Title */}
+          <div className="flex gap-4">
+            <div className="w-32 shrink-0">
+              <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">
+                Annee
+              </label>
+              <input
+                type="number"
+                min={2000}
+                max={2100}
+                value={year ?? new Date().getFullYear()}
+                onChange={(e) => setYear(parseInt(e.target.value) || null)}
+                className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+              />
+            </div>
+            <div className="flex-1">
+              <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">
+                Titre du document
+              </label>
+              <input
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2.5 text-sm font-semibold text-[var(--heading)] outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+              />
+            </div>
           </div>
 
           {sections.map((section, index) => (
@@ -485,7 +532,7 @@ export default function PolitiqueContent({
   // DETAIL VIEW
   // ==========================================
   if (selectedId && selected) {
-    const year = new Date(selected.updated_at).getFullYear();
+    const docYear = getDocYear(selected);
     const hasFile = selected.source_file_url && selected.source_file_url.length > 0;
 
     return (
@@ -516,14 +563,22 @@ export default function PolitiqueContent({
               <Sparkles className="h-4 w-4 text-[var(--yellow)]" />
               Reimporter un PDF (IA)
             </button>
+            <button
+              onClick={() => handleDelete(selected.id, selected.title)}
+              disabled={isPending}
+              className="flex items-center gap-2 rounded-[var(--radius-sm)] border border-red-200 bg-transparent px-3 py-1.5 text-sm font-medium text-red-600 shadow-xs transition-all duration-200 hover:bg-red-50 hover:shadow-sm active:scale-[0.97] disabled:opacity-50"
+            >
+              <Trash2 className="h-4 w-4" />
+              Supprimer
+            </button>
           </div>
         )}
 
         {showUpload && (
           <div className="mb-6 rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--hover)] p-5 shadow-xs">
             <FileUploadAi
-              onAnalysisComplete={(result) => {
-                handleAiResult(result);
+              onAnalysisComplete={(result, fileUrl) => {
+                handleAiResult(result, fileUrl);
                 setEditingId(selected.id);
               }}
               type="politique"
@@ -532,88 +587,76 @@ export default function PolitiqueContent({
           </div>
         )}
 
-        {/* Downloadable content */}
-        <div ref={detailRef}>
-          {/* Hero Banner */}
-          <div className="mb-6 overflow-hidden rounded-[var(--radius)] bg-gradient-to-br from-[var(--navy)] to-[#2a4a7a] px-8 py-8 shadow-md">
-            <div className="flex items-start justify-between">
-              <div>
-                <span className="mb-3 inline-block rounded-full bg-[var(--yellow)]/20 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--yellow)]">
-                  Politique QSE {year}
-                </span>
-                <h2 className="mt-2 text-[22px] font-bold leading-tight text-white">
-                  {selected.title}
-                </h2>
-                <div className="mt-2 flex items-center gap-2 text-[12px] text-white/50">
-                  <Calendar className="h-3.5 w-3.5" />
-                  Mise a jour le {formatDate(selected.updated_at)}
-                </div>
+        {/* Hero Banner */}
+        <div className="mb-6 overflow-hidden rounded-[var(--radius)] bg-gradient-to-br from-[var(--navy)] to-[#2a4a7a] px-8 py-8 shadow-md">
+          <div className="flex items-start justify-between">
+            <div>
+              <span className="mb-3 inline-block rounded-full bg-[var(--yellow)]/20 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--yellow)]">
+                Politique QSE {docYear}
+              </span>
+              <h2 className="mt-2 text-[22px] font-bold leading-tight text-white">
+                {selected.title}
+              </h2>
+              <div className="mt-2 flex items-center gap-2 text-[12px] text-white/50">
+                <Calendar className="h-3.5 w-3.5" />
+                Mise a jour le {formatDate(selected.updated_at)}
               </div>
             </div>
           </div>
-
-          {/* Introduction */}
-          {intro && (
-            <div className="mb-6 rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] px-6 py-5 shadow-sm">
-              <p className="text-[13px] leading-relaxed text-[var(--text)]">
-                {intro}
-              </p>
-            </div>
-          )}
-
-          {/* Pillars Grid */}
-          {pillars.length > 0 ? (
-            <div className="grid gap-5 md:grid-cols-2">
-              {pillars.map((pillar) => (
-                <PillarCard key={pillar.key} pillar={pillar} />
-              ))}
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {selected.sections.map((section, index) => (
-                <div
-                  key={index}
-                  className="rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] p-5 shadow-xs"
-                >
-                  <h3 className="mb-2 text-[13px] font-semibold text-[var(--heading)]">
-                    {section.title}
-                  </h3>
-                  <p className="whitespace-pre-wrap text-[12.5px] leading-relaxed text-[var(--text)]">
-                    {section.content}
-                  </p>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Signature line */}
-          <div className="mt-8 border-t border-[var(--border-1)] pt-4 text-center text-[11px] text-[var(--text-muted)]">
-            Document mis a jour le {formatDate(selected.updated_at, "d MMMM yyyy")}
-          </div>
         </div>
 
-        {/* Download buttons */}
-        <div className="mt-6 flex flex-wrap items-center gap-3">
-          <button
-            onClick={handleDownloadImage}
-            disabled={isDownloading}
-            className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--navy)] px-4 py-2 text-sm font-medium text-white shadow-xs transition-all duration-200 hover:bg-[var(--navy)]/90 hover:shadow-sm disabled:opacity-50"
-          >
-            <ImageIcon className="h-4 w-4" />
-            {isDownloading ? "Generation en cours..." : "Telecharger l'image"}
-          </button>
-          {hasFile && (
-            <a
-              href={selected.source_file_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] px-4 py-2 text-sm font-medium text-[var(--heading)] shadow-xs transition-all hover:bg-[var(--hover)]"
+        {/* Introduction */}
+        {intro && (
+          <div className="mb-6 rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] px-6 py-5 shadow-sm">
+            <p className="text-[13px] leading-relaxed text-[var(--text)]">
+              {intro}
+            </p>
+          </div>
+        )}
+
+        {/* Pillars Grid */}
+        {pillars.length > 0 ? (
+          <div className="grid gap-5 md:grid-cols-2">
+            {pillars.map((pillar) => (
+              <PillarCard key={pillar.key} pillar={pillar} />
+            ))}
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {selected.sections.map((section, index) => (
+              <div
+                key={index}
+                className="rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] p-5 shadow-xs"
+              >
+                <h3 className="mb-2 text-[13px] font-semibold text-[var(--heading)]">
+                  {section.title}
+                </h3>
+                <p className="whitespace-pre-wrap text-[12.5px] leading-relaxed text-[var(--text)]">
+                  {section.content}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Signature line */}
+        <div className="mt-8 border-t border-[var(--border-1)] pt-4 text-center text-[11px] text-[var(--text-muted)]">
+          Document mis a jour le {formatDate(selected.updated_at, "d MMMM yyyy")}
+        </div>
+
+        {/* Download original file */}
+        {hasFile && (
+          <div className="mt-6">
+            <button
+              onClick={() => handleDownloadFile(selected.source_file_url)}
+              disabled={isDownloading}
+              className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--navy)] px-4 py-2 text-sm font-medium text-white shadow-xs transition-all duration-200 hover:bg-[var(--navy)]/90 hover:shadow-sm disabled:opacity-50"
             >
               <Download className="h-4 w-4" />
-              Telecharger le PDF source
-            </a>
-          )}
-        </div>
+              {isDownloading ? "Chargement..." : "Telecharger le document original"}
+            </button>
+          </div>
+        )}
       </div>
     );
   }
@@ -679,30 +722,60 @@ export default function PolitiqueContent({
       ) : (
         <div className="space-y-3">
           {allContent.map((doc) => {
-            const year = new Date(doc.updated_at).getFullYear();
+            const docYear = getDocYear(doc);
             return (
-              <button
+              <div
                 key={doc.id}
-                onClick={() => setSelectedId(doc.id)}
-                className="group flex w-full items-center gap-4 rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] px-5 py-4 text-left shadow-xs transition-all duration-200 hover:shadow-sm hover:border-[var(--yellow)]/40"
+                className="group flex w-full items-center gap-4 rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] px-5 py-4 shadow-xs transition-all duration-200 hover:shadow-sm hover:border-[var(--yellow)]/40"
               >
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--radius-sm)] bg-[var(--navy)]">
-                  <FileText className="h-5 w-5 text-[var(--yellow)]" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-semibold text-[var(--heading)] truncate">
-                    {doc.title}
+                <button
+                  onClick={() => setSelectedId(doc.id)}
+                  className="flex flex-1 items-center gap-4 text-left min-w-0"
+                >
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--radius-sm)] bg-[var(--navy)]">
+                    <FileText className="h-5 w-5 text-[var(--yellow)]" />
                   </div>
-                  <div className="mt-0.5 flex items-center gap-2 text-[11px] text-[var(--text-muted)]">
-                    <Calendar className="h-3 w-3" />
-                    Mise a jour le {formatDate(doc.updated_at)}
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-semibold text-[var(--heading)] truncate">
+                      {doc.title}
+                    </div>
+                    <div className="mt-0.5 flex items-center gap-2 text-[11px] text-[var(--text-muted)]">
+                      <Calendar className="h-3 w-3" />
+                      Mise a jour le {formatDate(doc.updated_at)}
+                    </div>
                   </div>
-                </div>
-                <span className="rounded-full bg-[var(--yellow)] px-3 py-1 text-[11px] font-bold text-white">
-                  {year}
-                </span>
-                <ChevronRight className="h-4 w-4 text-[var(--text-muted)] transition-transform group-hover:translate-x-0.5" />
-              </button>
+                  <span className="rounded-full bg-[var(--yellow)] px-3 py-1 text-[11px] font-bold text-white">
+                    {docYear}
+                  </span>
+                  <ChevronRight className="h-4 w-4 text-[var(--text-muted)] transition-transform group-hover:translate-x-0.5" />
+                </button>
+
+                {canEdit && (
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        startEditing(doc);
+                      }}
+                      className="rounded-[var(--radius-xs)] p-2 text-[var(--text-muted)] transition-colors hover:bg-[var(--yellow-surface)] hover:text-[var(--yellow)]"
+                      title="Modifier"
+                    >
+                      <Edit3 className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(doc.id, doc.title);
+                      }}
+                      disabled={isPending}
+                      className="rounded-[var(--radius-xs)] p-2 text-[var(--text-muted)] transition-colors hover:bg-[var(--red-surface)] hover:text-[var(--red)] disabled:opacity-50"
+                      title="Supprimer"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                )}
+              </div>
             );
           })}
         </div>

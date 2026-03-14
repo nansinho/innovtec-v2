@@ -5,7 +5,7 @@ import { Upload, FileText, Image, X, Sparkles, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface FileUploadAiProps {
-  onAnalysisComplete: (result: unknown) => void;
+  onAnalysisComplete: (result: unknown, fileUrl?: string) => void;
   type: string;
   acceptTypes?: string;
   label?: string;
@@ -90,7 +90,7 @@ export default function FileUploadAi({
         return;
       }
 
-      onAnalysisComplete(data.result);
+      onAnalysisComplete(data.result, data.fileUrl);
     } catch {
       setError("Erreur de connexion au serveur");
     } finally {
