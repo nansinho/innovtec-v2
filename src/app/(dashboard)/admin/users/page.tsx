@@ -1,5 +1,6 @@
 import { getProfile } from "@/actions/auth";
 import { getAllUsers, ensureAdminExists } from "@/actions/users";
+import { getJobTitles } from "@/actions/job-titles";
 import { redirect } from "next/navigation";
 import UsersTable from "@/components/admin/users-table";
 import AdminBootstrap from "@/components/admin/admin-bootstrap";
@@ -35,7 +36,7 @@ export default async function AdminUsersPage() {
     );
   }
 
-  const users = await getAllUsers();
+  const [users, jobTitles] = await Promise.all([getAllUsers(), getJobTitles()]);
 
   return (
     <div className="px-7 py-6 pb-20 md:pb-7">
@@ -53,6 +54,7 @@ export default async function AdminUsersPage() {
         users={users}
         currentUserId={profile.id}
         currentUserRole={profile.role}
+        jobTitles={jobTitles}
       />
     </div>
   );
