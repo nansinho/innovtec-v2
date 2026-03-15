@@ -2,28 +2,64 @@ import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
 
 export async function exportSsePdf(element: HTMLElement, filename: string) {
+  if (!element) {
+    throw new Error("Élément non trouvé pour l'export PDF");
+  }
+
   // Temporarily adjust element for capture
-  const originalWidth = element.style.width;
-  const originalMaxWidth = element.style.maxWidth;
-  const originalOverflow = element.style.overflow;
+  const originalStyles = {
+    width: element.style.width,
+    maxWidth: element.style.maxWidth,
+    overflow: element.style.overflow,
+    position: element.style.position,
+  };
 
   element.style.width = "1200px";
   element.style.maxWidth = "1200px";
   element.style.overflow = "visible";
 
-  const canvas = await html2canvas(element, {
-    scale: 2,
-    useCORS: true,
-    backgroundColor: "#ffffff",
-    logging: false,
-    width: 1200,
-    windowWidth: 1200,
-  });
+  // Wait for fonts and images to load
+  await document.fonts.ready;
 
-  // Restore original styles
-  element.style.width = originalWidth;
-  element.style.maxWidth = originalMaxWidth;
-  element.style.overflow = originalOverflow;
+  // Small delay to ensure styles are applied
+  await new Promise((resolve) => setTimeout(resolve, 100));
+
+  let canvas: HTMLCanvasElement;
+  try {
+    canvas = await html2canvas(element, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: "#ffffff",
+      logging: false,
+      width: 1200,
+      windowWidth: 1200,
+      onclone: (clonedDoc) => {
+        // Resolve CSS variables in cloned document
+        const clonedElement = clonedDoc.body.querySelector("[data-pdf-capture]") || clonedDoc.body.firstElementChild;
+        if (clonedElement) {
+          const computedStyle = getComputedStyle(document.documentElement);
+          const cssVars = [
+            "--navy", "--heading", "--text", "--text-secondary", "--text-muted",
+            "--yellow", "--border-1", "--border-2", "--hover", "--card",
+            "--radius", "--radius-sm", "--radius-xs",
+          ];
+          cssVars.forEach((v) => {
+            const value = computedStyle.getPropertyValue(v);
+            if (value) {
+              clonedDoc.documentElement.style.setProperty(v, value);
+            }
+          });
+        }
+      },
+    });
+  } finally {
+    // Restore original styles
+    element.style.width = originalStyles.width;
+    element.style.maxWidth = originalStyles.maxWidth;
+    element.style.overflow = originalStyles.overflow;
+    element.style.position = originalStyles.position;
+  }
 
   // A4 landscape dimensions in mm
   const pageWidth = 297;
@@ -78,5 +114,19 @@ export async function exportSsePdf(element: HTMLElement, filename: string) {
     }
   }
 
-  pdf.save(filename);
+  // Use blob-based download as fallback for better browser compatibility
+  try {
+    pdf.save(filename);
+  } catch {
+    // Fallback: create blob and trigger download manually
+    const blob = pdf.output("blob");
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
 }

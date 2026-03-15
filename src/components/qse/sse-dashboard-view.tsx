@@ -47,6 +47,10 @@ function meetsObjective(realise: number, objectiveStr: string): boolean | null {
   }
 }
 
+function formatFr(value: number): string {
+  return value.toString().replace(".", ",");
+}
+
 function getSstColorClass(rate: number): string {
   if (rate >= 80) return "text-emerald-600";
   if (rate >= 60) return "text-yellow-500";
@@ -56,7 +60,7 @@ function getSstColorClass(rate: number): string {
 
 function ValueCell({ value, objective, isPercentage = false, colorClass }: { value: number; objective: string; isPercentage?: boolean; colorClass?: string }) {
   const met = colorClass ? null : meetsObjective(value, objective);
-  const display = isPercentage ? `${value}%` : value;
+  const display = isPercentage ? `${formatFr(value)}%` : formatFr(value);
   const cls = colorClass ?? (met === false ? "text-red-600" : met === true ? "text-emerald-600" : "text-[var(--heading)]");
   return (
     <td className={`px-4 py-2.5 text-center text-sm font-semibold ${cls}`}>
@@ -138,12 +142,13 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
   }
 
   async function handleExportPdf() {
-    if (!selected) return;
+    if (!selected || !printRef.current) return;
     setExporting("pdf");
     try {
       const { exportSsePdf } = await import("@/lib/export/sse-pdf");
-      await exportSsePdf(printRef.current!, `Tableau_SSE_${MONTH_NAMES[selected.month - 1]}_${selected.year}.pdf`);
-    } catch {
+      await exportSsePdf(printRef.current, `Tableau_SSE_${MONTH_NAMES[selected.month - 1]}_${selected.year}.pdf`);
+    } catch (err) {
+      console.error("PDF export error:", err);
       toast.error("Erreur lors de l'export PDF");
     }
     setExporting(null);
@@ -287,10 +292,10 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
                   <tr><td className="px-4 py-2.5 text-sm text-[var(--heading)]">Nombre d&apos;accidents en service sans arrêt (ASSA)</td><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.accidents_without_leave_objective}</td><td className="px-4 py-2.5 text-center text-sm font-semibold text-[var(--heading)]">{d.accidents_without_leave}</td></tr>
                   <tr><td className="px-4 py-2.5 text-sm text-[var(--heading)]">Nombre de visites croisées</td><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.cross_visits_objective}</td><td className="px-4 py-2.5 text-center text-sm font-semibold text-[var(--heading)]">{d.cross_visits}</td></tr>
                   <tr><td className="px-4 py-2.5 text-sm text-[var(--heading)]">Nombre de visites managériales</td><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.managerial_visits_objective}</td><td className="px-4 py-2.5 text-center text-sm font-semibold text-[var(--heading)]">{d.managerial_visits}</td></tr>
-                  <tr><td className="px-4 py-2.5 text-sm text-[var(--heading)]">% de déclarants de SD (salariés)</td><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.sd_declarants_objective}</td><td className="px-4 py-2.5 text-center text-sm font-semibold text-[var(--heading)]">{d.sd_declarants_percentage}</td></tr>
+                  <tr><td className="px-4 py-2.5 text-sm text-[var(--heading)]">% de déclarants de SD (salariés)</td><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{formatFr(d.sd_declarants_objective)}</td><td className="px-4 py-2.5 text-center text-sm font-semibold text-[var(--heading)]">{formatFr(d.sd_declarants_percentage)}</td></tr>
                   <tr><td className="px-4 py-2.5 text-sm text-[var(--heading)]">Nombres de SD déclarés</td><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.sd_declared_objective}</td><td className="px-4 py-2.5 text-center text-sm font-semibold text-[var(--heading)]">{d.sd_declared_count}</td></tr>
                   <tr><td className="px-4 py-2.5 text-sm text-[var(--heading)]">Nombre de salariés sensibilisés au tri des déchets</td><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.waste_awareness_objective}</td><td className="px-4 py-2.5 text-center text-sm font-semibold text-[var(--heading)]">{d.waste_awareness_employees}</td></tr>
-                  <tr><td className="px-4 py-2.5 text-sm text-[var(--heading)]">Taux de suivi du plan de formation</td><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.training_plan_objective}</td><td className="px-4 py-2.5 text-center text-sm font-semibold text-emerald-600">{d.training_plan_follow_rate}%</td></tr>
+                  <tr><td className="px-4 py-2.5 text-sm text-[var(--heading)]">Taux de suivi du plan de formation</td><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.training_plan_objective}</td><td className="px-4 py-2.5 text-center text-sm font-semibold text-emerald-600">{formatFr(d.training_plan_follow_rate)}%</td></tr>
                 </tbody>
               </table>
             </div>
@@ -454,10 +459,10 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
                       {d.accidents_with_leave}
                     </td>
                     <td className={`px-4 py-3.5 text-center text-sm font-semibold ${getSstColorClass(d.sst_rate)}`}>
-                      {d.sst_rate}%
+                      {formatFr(d.sst_rate)}%
                     </td>
                     <td className={`px-4 py-3.5 text-center text-sm font-semibold ${complianceMet === false ? "text-red-600" : complianceMet === true ? "text-emerald-600" : "text-[var(--heading)]"}`}>
-                      {d.regulatory_compliance_rate}%
+                      {formatFr(d.regulatory_compliance_rate)}%
                     </td>
                     <td className="px-4 py-3.5 text-center text-sm font-semibold text-[var(--heading)]">
                       {d.field_visits_count}
