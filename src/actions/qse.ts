@@ -23,6 +23,7 @@ export async function getQseContent(type: string): Promise<QseContent | null> {
     .from("qse_content")
     .select("*")
     .eq("type", type)
+    .order("year", { ascending: false, nullsFirst: false })
     .order("updated_at", { ascending: false })
     .limit(1)
     .single();
@@ -36,6 +37,7 @@ export async function getAllQseContent(type: string): Promise<QseContent[]> {
     .from("qse_content")
     .select("*")
     .eq("type", type)
+    .order("year", { ascending: false, nullsFirst: false })
     .order("updated_at", { ascending: false });
 
   return (data as QseContent[]) ?? [];
