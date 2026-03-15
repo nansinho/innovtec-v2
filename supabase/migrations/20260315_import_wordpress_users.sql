@@ -3,6 +3,18 @@
 -- par les 85 comptes WordPress (emails personnels)
 -- ============================================================
 
+-- 0. Ajouter la valeur 'collaborateur' à l'enum user_role si elle n'existe pas
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_enum
+    WHERE enumlabel = 'collaborateur'
+      AND enumtypid = (SELECT oid FROM pg_type WHERE typname = 'user_role')
+  ) THEN
+    ALTER TYPE user_role ADD VALUE 'collaborateur';
+  END IF;
+END$$;
+
 -- 1. Supprimer les anciens comptes @innovtec-reseaux.fr
 -- SAUF contact@harua-ds.com (admin Nans HARUA)
 DELETE FROM profiles
