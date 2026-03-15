@@ -90,7 +90,8 @@ function drawSection(
   iconType: "faits" | "causes" | "actions" | "vigilance",
   photoData?: string | null,
   pageW = 210,
-  marginX = 12
+  marginX = 12,
+  badgeImage?: string | null
 ): number {
   if (!text && !photoData) return y;
 
@@ -102,13 +103,27 @@ function drawSection(
     y = 15;
   }
 
-  // Section header: icon + label
-  drawSectionIcon(pdf, marginX, y - 2, color, iconType);
-
-  pdf.setFont("helvetica", "bold");
-  pdf.setFontSize(10);
-  pdf.setTextColor(...color);
-  pdf.text(sanitize(label), marginX + 17, y + 5);
+  // Section header: badge image or fallback icon + text
+  if (badgeImage) {
+    try {
+      const badgeH = 10;
+      const badgeW = iconType === "faits" ? 42 : 48;
+      pdf.addImage(badgeImage, "PNG", marginX, y - 3, badgeW, badgeH);
+    } catch {
+      // Fallback to drawn icon + text
+      drawSectionIcon(pdf, marginX, y - 2, color, iconType);
+      pdf.setFont("helvetica", "bold");
+      pdf.setFontSize(10);
+      pdf.setTextColor(...color);
+      pdf.text(sanitize(label), marginX + 17, y + 5);
+    }
+  } else {
+    drawSectionIcon(pdf, marginX, y - 2, color, iconType);
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(10);
+    pdf.setTextColor(...color);
+    pdf.text(sanitize(label), marginX + 17, y + 5);
+  }
 
   y += 16;
 
@@ -184,6 +199,44 @@ async function fetchImageAsBase64(url: string): Promise<string | null> {
     return null;
   }
 }
+
+/**
+ * Convert an SVG URL to a PNG base64 data URL via canvas rendering.
+ */
+async function svgToPngBase64(svgUrl: string, width: number, height: number): Promise<string | null> {
+  try {
+    const response = await fetch(svgUrl);
+    const svgText = await response.text();
+    const blob = new Blob([svgText], { type: "image/svg+xml;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+
+    return await new Promise<string | null>((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = width * 2; // 2x for retina quality
+        canvas.height = height * 2;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) { resolve(null); return; }
+        ctx.scale(2, 2);
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL("image/png"));
+        URL.revokeObjectURL(url);
+      };
+      img.onerror = () => { resolve(null); URL.revokeObjectURL(url); };
+      img.src = url;
+    });
+  } catch {
+    return null;
+  }
+}
+
+const BADGE_SVGS: Record<string, string> = {
+  faits: "/rex-icons/faits-badge.svg",
+  causes: "/rex-icons/causes-badge.svg",
+  actions: "/rex-icons/actions-badge.svg",
+  vigilance: "/rex-icons/vigilance-badge.svg",
+};
 
 export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string | null) {
   const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
@@ -330,28 +383,44 @@ export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string 
     }
   }
 
+  // Preload badge SVGs as PNG for embedding
+  const badgeImages: Record<string, string | null> = {};
+  const badgeSizes: Record<string, [number, number]> = {
+    faits: [200, 44],
+    causes: [220, 48],
+    actions: [230, 48],
+    vigilance: [210, 48],
+  };
+
+  await Promise.all(
+    Object.entries(BADGE_SVGS).map(async ([key, svgPath]) => {
+      const [w, h] = badgeSizes[key];
+      badgeImages[key] = await svgToPngBase64(svgPath, w, h);
+    })
+  );
+
   // Section 1: Les Faits
   y = drawSection(
     pdf, y, "LES FAITS", rex.faits, GREEN, "faits",
-    photoDataMap.faits_photo_url, pageW, marginX
+    photoDataMap.faits_photo_url, pageW, marginX, badgeImages.faits
   );
 
   // Section 2: Les Causes
   y = drawSection(
     pdf, y, "LES CAUSES ET LES CIRCONSTANCES", rex.causes, ORANGE_SEC, "causes",
-    photoDataMap.causes_photo_url, pageW, marginX
+    photoDataMap.causes_photo_url, pageW, marginX, badgeImages.causes
   );
 
   // Section 3: Les Actions
   y = drawSection(
     pdf, y, "LA SYNTH\u00c8SE DES ACTIONS ENGAG\u00c9ES", rex.actions_engagees, TEAL, "actions",
-    photoDataMap.actions_photo_url, pageW, marginX
+    photoDataMap.actions_photo_url, pageW, marginX, badgeImages.actions
   );
 
   // Section 4: La Vigilance
   y = drawSection(
     pdf, y, "LE RAPPEL \u00c0 VIGILANCE", rex.vigilance, AMBER, "vigilance",
-    photoDataMap.vigilance_photo_url, pageW, marginX
+    photoDataMap.vigilance_photo_url, pageW, marginX, badgeImages.vigilance
   );
 
   // ==========================================

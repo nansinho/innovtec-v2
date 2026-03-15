@@ -1,8 +1,11 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import type { Rex } from "@/lib/types/database";
 import type { CompanyLogos } from "@/actions/settings";
 import RexDetail from "@/components/qse/rex-detail";
+import RexForm from "@/components/qse/rex-form";
 import { exportRexPdf } from "@/lib/export/rex-pdf";
 
 interface Props {
@@ -11,6 +14,9 @@ interface Props {
 }
 
 export default function RexDetailClient({ rex, companyLogo }: Props) {
+  const [editing, setEditing] = useState(false);
+  const router = useRouter();
+
   function handleExportPdf() {
     const rexNumber = rex.rex_number || "X";
     const rexYear = rex.rex_year || new Date().getFullYear();
@@ -19,5 +25,25 @@ export default function RexDetailClient({ rex, companyLogo }: Props) {
     exportRexPdf(rex, filename, logoUrl);
   }
 
-  return <RexDetail rex={rex} onExportPdf={handleExportPdf} companyLogo={companyLogo} />;
+  return (
+    <>
+      <RexDetail
+        rex={rex}
+        onExportPdf={handleExportPdf}
+        onEdit={() => setEditing(true)}
+        companyLogo={companyLogo}
+      />
+
+      {editing && (
+        <RexForm
+          initialData={rex}
+          onCreated={() => {
+            setEditing(false);
+            router.refresh();
+          }}
+          onClose={() => setEditing(false)}
+        />
+      )}
+    </>
+  );
 }
