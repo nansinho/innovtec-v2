@@ -21,6 +21,7 @@ import {
   UserCog,
   ChevronLeft,
   ChevronRight,
+  ClipboardList,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { signOut } from "@/actions/auth";
@@ -60,6 +61,7 @@ const ressourcesNav = [
 
 const adminNav = [
   { href: "/admin/users", label: "Utilisateurs", icon: UserCog },
+  { href: "/admin/logs", label: "Journal d'activité", icon: ClipboardList },
   { href: "/admin/news", label: "Actualités", icon: Newspaper },
   { href: "/admin/settings", label: "Paramètres", icon: Settings },
 ];
