@@ -4,8 +4,10 @@ import { useState } from "react";
 import Link from "next/link";
 import { signUp, signIn } from "@/actions/auth";
 import { Zap, Mail, Lock, User } from "lucide-react";
+import { useAuthLogo } from "@/components/auth/auth-logo-provider";
 
 export default function SignupPage() {
+  const logoUrl = useAuthLogo();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -46,13 +48,24 @@ export default function SignupPage() {
     <div className="w-full max-w-md">
       {/* Logo - visible only on mobile */}
       <div className="mb-10 flex items-center justify-center gap-2.5 lg:hidden">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--yellow)]">
-          <Zap className="h-5 w-5 text-[var(--navy)]" />
-        </div>
-        <div className="text-base font-bold tracking-tight text-[var(--heading)]">
-          INNOVTEC{" "}
-          <span className="font-normal text-[var(--text-muted)]">Réseaux</span>
-        </div>
+        {logoUrl ? (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img
+            src={logoUrl}
+            alt="Logo société"
+            className="h-10 max-w-[180px] object-contain"
+          />
+        ) : (
+          <>
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--yellow)]">
+              <Zap className="h-5 w-5 text-[var(--navy)]" />
+            </div>
+            <div className="text-base font-bold tracking-tight text-[var(--heading)]">
+              INNOVTEC{" "}
+              <span className="font-normal text-[var(--text-muted)]">Réseaux</span>
+            </div>
+          </>
+        )}
       </div>
 
       <h1 className="mb-1.5 text-2xl font-bold text-[var(--heading)]">
