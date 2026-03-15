@@ -72,7 +72,7 @@ export default function BirthdayBanner({
                 </div>
 
                 {hasSent ? (
-                  <span className="rounded-full bg-green-100 px-2.5 py-1 text-[10px] font-medium text-green-700">
+                  <span className="rounded-full bg-gradient-to-b from-emerald-500 to-emerald-600 px-2.5 py-1 text-[10px] font-semibold text-white shadow-sm">
                     Voeux envoyés
                   </span>
                 ) : (

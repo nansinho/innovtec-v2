@@ -42,13 +42,13 @@ const priorityConfig: Record<
   normal: { label: "", className: "", dot: "" },
   important: {
     label: "Important",
-    className: "bg-[var(--yellow-surface)] text-[var(--yellow)]",
-    dot: "bg-[var(--yellow)]",
+    className: "bg-gradient-to-b from-amber-400 to-amber-500 text-white shadow-sm",
+    dot: "bg-white/80",
   },
   urgent: {
     label: "Urgent",
-    className: "bg-[var(--red-surface)] text-[var(--red)]",
-    dot: "bg-[var(--red)]",
+    className: "bg-gradient-to-b from-red-500 to-red-600 text-white shadow-sm",
+    dot: "bg-white/80",
   },
 };
 
@@ -195,7 +195,7 @@ export default function NewsTable({ news }: NewsTableProps) {
                         {article.priority !== "normal" && (
                           <span
                             className={cn(
-                              "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-bold",
+                              "inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide",
                               priority.className
                             )}
                           >
@@ -220,7 +220,7 @@ export default function NewsTable({ news }: NewsTableProps) {
                       <div className="mt-2 flex flex-wrap items-center gap-3 md:hidden">
                         <span
                           className={cn(
-                            "rounded-full px-2 py-0.5 text-[9px] font-medium",
+                            "rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide",
                             categoryColors[article.category]
                           )}
                         >
@@ -250,7 +250,7 @@ export default function NewsTable({ news }: NewsTableProps) {
                   <div className="hidden md:block">
                     <span
                       className={cn(
-                        "rounded-full px-2.5 py-0.5 text-[10px] font-medium",
+                        "rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide",
                         categoryColors[article.category]
                       )}
                     >
