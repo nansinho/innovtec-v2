@@ -9,7 +9,7 @@ import {
   RexActionsBadge,
   RexVigilanceBadge,
 } from "@/components/icons/rex-section-icons";
-import { ArrowLeft, Download, Trash2 } from "lucide-react";
+import { ArrowLeft, Download, Pencil, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { deleteRex } from "@/actions/qse";
@@ -53,10 +53,11 @@ const SECTIONS = [
 interface RexDetailProps {
   rex: Rex;
   onExportPdf?: () => void;
+  onEdit?: () => void;
   companyLogo?: CompanyLogos | null;
 }
 
-export default function RexDetail({ rex, onExportPdf, companyLogo }: RexDetailProps) {
+export default function RexDetail({ rex, onExportPdf, onEdit, companyLogo }: RexDetailProps) {
   const router = useRouter();
   const [deleting, setDeleting] = useState(false);
 
@@ -94,6 +95,15 @@ export default function RexDetail({ rex, onExportPdf, companyLogo }: RexDetailPr
           Retour aux REX
         </Link>
         <div className="flex gap-2">
+          {onEdit && (
+            <button
+              onClick={onEdit}
+              className="flex items-center gap-1.5 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[var(--yellow-hover)]"
+            >
+              <Pencil className="h-4 w-4" />
+              Modifier
+            </button>
+          )}
           {onExportPdf && (
             <button
               onClick={onExportPdf}

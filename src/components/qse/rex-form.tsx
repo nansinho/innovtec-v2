@@ -12,7 +12,8 @@ import {
   Camera,
   BookOpen,
 } from "lucide-react";
-import { createRex, uploadRexPhoto } from "@/actions/qse";
+import { createRex, updateRex, uploadRexPhoto } from "@/actions/qse";
+import type { Rex } from "@/lib/types/database";
 import { toast } from "sonner";
 import AiGenerateButton from "@/components/ai/ai-generate-button";
 import FileUploadAi from "@/components/ai/file-upload-ai";
@@ -88,14 +89,43 @@ const emptyForm: RexFormData = {
 interface RexFormProps {
   onCreated: (id?: string) => void;
   onClose: () => void;
+  initialData?: Rex;
 }
 
-export default function RexForm({ onCreated, onClose }: RexFormProps) {
-  const [mode, setMode] = useState<Mode>("import");
+function rexToFormData(rex: Rex): RexFormData {
+  return {
+    title: rex.title || "",
+    description: rex.description || "",
+    lessons_learned: rex.lessons_learned || "",
+    chantier: rex.chantier || "",
+    rex_number: rex.rex_number || "",
+    rex_year: rex.rex_year ? String(rex.rex_year) : "",
+    lieu: rex.lieu || "",
+    date_evenement: rex.date_evenement || "",
+    horaire: rex.horaire || "",
+    faits: rex.faits || "",
+    faits_photo_url: rex.faits_photo_url || "",
+    causes: rex.causes || "",
+    causes_photo_url: rex.causes_photo_url || "",
+    actions_engagees: rex.actions_engagees || "",
+    actions_photo_url: rex.actions_photo_url || "",
+    vigilance: rex.vigilance || "",
+    vigilance_photo_url: rex.vigilance_photo_url || "",
+    deja_arrive: rex.deja_arrive || [],
+    type_evenement: rex.type_evenement || "",
+    source_file_url: rex.source_file_url || "",
+  };
+}
+
+export default function RexForm({ onCreated, onClose, initialData }: RexFormProps) {
+  const isEdit = !!initialData;
+  const [mode, setMode] = useState<Mode>(isEdit ? "manual" : "import");
   const [aiPrompt, setAiPrompt] = useState("");
   const [aiLoading, setAiLoading] = useState(false);
   const [isPending, startTransition] = useTransition();
-  const [form, setForm] = useState<RexFormData>(emptyForm);
+  const [form, setForm] = useState<RexFormData>(
+    initialData ? rexToFormData(initialData) : emptyForm
+  );
   const [dejaArriveInput, setDejaArriveInput] = useState("");
   const [uploadingSection, setUploadingSection] = useState<string | null>(null);
   const photoInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
@@ -200,17 +230,29 @@ export default function RexForm({ onCreated, onClose }: RexFormProps) {
     }
 
     startTransition(async () => {
-      const result = await createRex({
+      const payload = {
         ...form,
         description: form.description || form.faits,
         rex_year: form.rex_year ? parseInt(form.rex_year) : null,
         date_evenement: form.date_evenement || null,
-      });
-      if (result.success) {
-        toast.success("Fiche REX enregistrée");
-        onCreated(result.id);
+      };
+
+      if (isEdit && initialData) {
+        const result = await updateRex(initialData.id, payload);
+        if (result.success) {
+          toast.success("Fiche REX mise à jour");
+          onCreated(initialData.id);
+        } else {
+          toast.error(result.error || "Erreur lors de la mise à jour");
+        }
       } else {
-        toast.error(result.error || "Erreur lors de l'enregistrement");
+        const result = await createRex(payload);
+        if (result.success) {
+          toast.success("Fiche REX enregistrée");
+          onCreated(result.id);
+        } else {
+          toast.error(result.error || "Erreur lors de l'enregistrement");
+        }
       }
     });
   }
@@ -245,7 +287,7 @@ export default function RexForm({ onCreated, onClose }: RexFormProps) {
           <div className="flex items-center gap-2">
             <BookOpen className="h-5 w-5 text-[var(--yellow)]" />
             <h2 className="text-lg font-semibold text-[var(--heading)]">
-              Nouvelle fiche REX
+              {isEdit ? "Modifier la fiche REX" : "Nouvelle fiche REX"}
             </h2>
           </div>
           <div className="flex items-center gap-3">
@@ -572,7 +614,11 @@ export default function RexForm({ onCreated, onClose }: RexFormProps) {
             ) : (
               <Send className="h-4 w-4" />
             )}
-            {isPending ? "Enregistrement..." : "Enregistrer la fiche REX"}
+            {isPending
+              ? "Enregistrement..."
+              : isEdit
+                ? "Mettre à jour"
+                : "Enregistrer la fiche REX"}
           </button>
         </div>
       </div>

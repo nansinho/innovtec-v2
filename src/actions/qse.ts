@@ -407,6 +407,51 @@ export async function createRex(
   return { success: true, id: data?.id };
 }
 
+export async function updateRex(
+  id: string,
+  rex: Partial<CreateRexInput>
+): Promise<{ success: boolean; error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { success: false, error: "Non authentifié" };
+
+  const updateData: Record<string, unknown> = {};
+
+  if (rex.title !== undefined) updateData.title = rex.title;
+  if (rex.description !== undefined) updateData.description = rex.description;
+  if (rex.lessons_learned !== undefined) updateData.lessons_learned = rex.lessons_learned;
+  if (rex.chantier !== undefined) updateData.chantier = rex.chantier;
+  if (rex.rex_number !== undefined) updateData.rex_number = rex.rex_number;
+  if (rex.rex_year !== undefined) updateData.rex_year = rex.rex_year;
+  if (rex.lieu !== undefined) updateData.lieu = rex.lieu;
+  if (rex.date_evenement !== undefined) updateData.date_evenement = rex.date_evenement;
+  if (rex.horaire !== undefined) updateData.horaire = rex.horaire;
+  if (rex.faits !== undefined) updateData.faits = rex.faits;
+  if (rex.faits_photo_url !== undefined) updateData.faits_photo_url = rex.faits_photo_url;
+  if (rex.causes !== undefined) updateData.causes = rex.causes;
+  if (rex.causes_photo_url !== undefined) updateData.causes_photo_url = rex.causes_photo_url;
+  if (rex.actions_engagees !== undefined) updateData.actions_engagees = rex.actions_engagees;
+  if (rex.actions_photo_url !== undefined) updateData.actions_photo_url = rex.actions_photo_url;
+  if (rex.vigilance !== undefined) updateData.vigilance = rex.vigilance;
+  if (rex.vigilance_photo_url !== undefined) updateData.vigilance_photo_url = rex.vigilance_photo_url;
+  if (rex.deja_arrive !== undefined) updateData.deja_arrive = rex.deja_arrive;
+  if (rex.type_evenement !== undefined) updateData.type_evenement = rex.type_evenement;
+  if (rex.source_file_url !== undefined) updateData.source_file_url = rex.source_file_url;
+
+  const { error } = await supabase
+    .from("rex")
+    .update(updateData)
+    .eq("id", id);
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath("/qse/rex");
+  revalidatePath(`/qse/rex/${id}`);
+  return { success: true };
+}
+
 export async function deleteRex(
   id: string
 ): Promise<{ success: boolean; error?: string }> {
