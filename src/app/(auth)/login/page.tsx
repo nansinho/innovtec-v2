@@ -4,10 +4,10 @@ import { useState } from "react";
 import Link from "next/link";
 import { signIn } from "@/actions/auth";
 import { Zap, Mail, Lock } from "lucide-react";
-import { useAuthLogo } from "@/components/auth/auth-logo-provider";
+import { useAuthLogos } from "@/components/auth/auth-logo-provider";
 
 export default function LoginPage() {
-  const logoUrl = useAuthLogo();
+  const logos = useAuthLogos();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -36,10 +36,10 @@ export default function LoginPage() {
     <div className="w-full max-w-md">
       {/* Logo - visible only on mobile */}
       <div className="mb-10 flex items-center justify-center gap-2.5 lg:hidden">
-        {logoUrl ? (
+        {(logos.light || logos.dark) ? (
           /* eslint-disable-next-line @next/next/no-img-element */
           <img
-            src={logoUrl}
+            src={(logos.light || logos.dark)!}
             alt="Logo société"
             className="h-10 max-w-[180px] object-contain"
           />

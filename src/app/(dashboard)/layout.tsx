@@ -28,7 +28,7 @@ export default async function DashboardLayout({
     }
   }
 
-  const [unreadCount, isBirthday, logoUrl] = await Promise.all([
+  const [unreadCount, isBirthday, logos] = await Promise.all([
     getUnreadCount(),
     isMyBirthday(),
     getCompanyLogo(),
@@ -41,7 +41,7 @@ export default async function DashboardLayout({
 
   return (
     <>
-      <Sidebar profile={profile} logoUrl={logoUrl} />
+      <Sidebar profile={profile} logos={logos} />
       <div className="min-h-screen transition-all duration-300 ease-out md:ml-[var(--sidebar-width)]">
         <Topbar profile={profile} unreadCount={unreadCount} />
         <main>{children}</main>

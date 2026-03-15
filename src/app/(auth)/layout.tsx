@@ -9,7 +9,7 @@ export default async function AuthLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const logoUrl = await getCompanyLogo();
+  const logos = await getCompanyLogo();
 
   return (
     <div className="flex min-h-screen">
@@ -37,10 +37,10 @@ export default async function AuthLayout({
         <div className="relative z-10">
           {/* Logo */}
           <div className="mb-16 flex items-center gap-3">
-            {logoUrl ? (
+            {(logos.dark || logos.light) ? (
               /* eslint-disable-next-line @next/next/no-img-element */
               <img
-                src={logoUrl}
+                src={(logos.dark || logos.light)!}
                 alt="Logo société"
                 className="h-12 max-w-[200px] object-contain"
               />
@@ -105,7 +105,7 @@ export default async function AuthLayout({
 
       {/* Right form panel */}
       <div className="flex flex-1 items-center justify-center bg-[var(--card)] p-6 sm:p-8">
-        <AuthLogoProvider logoUrl={logoUrl}>
+        <AuthLogoProvider logos={logos}>
           {children}
         </AuthLogoProvider>
       </div>

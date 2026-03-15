@@ -1,23 +1,24 @@
 "use client";
 
 import { createContext, useContext } from "react";
+import type { CompanyLogos } from "@/actions/settings";
 
-const AuthLogoContext = createContext<string | null>(null);
+const AuthLogoContext = createContext<CompanyLogos>({ light: null, dark: null });
 
 export function AuthLogoProvider({
-  logoUrl,
+  logos,
   children,
 }: {
-  logoUrl: string | null;
+  logos: CompanyLogos;
   children: React.ReactNode;
 }) {
   return (
-    <AuthLogoContext.Provider value={logoUrl}>
+    <AuthLogoContext.Provider value={logos}>
       {children}
     </AuthLogoContext.Provider>
   );
 }
 
-export function useAuthLogo() {
+export function useAuthLogos(): CompanyLogos {
   return useContext(AuthLogoContext);
 }

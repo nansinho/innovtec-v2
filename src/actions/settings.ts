@@ -137,25 +137,33 @@ function maskApiKey(key: string): string {
   return key.slice(0, 7) + "••••••••" + key.slice(-4);
 }
 
-// ── Company Logo ──
+// ── Company Logo (light / dark variants) ──
 
-export async function getCompanyLogo(): Promise<string | null> {
+export type CompanyLogos = { light: string | null; dark: string | null };
+
+export async function getCompanyLogo(): Promise<CompanyLogos> {
   try {
     const admin = createAdminClient();
     const { data } = await admin
       .from("app_settings")
-      .select("value")
-      .eq("key", "company_logo_url")
-      .single();
+      .select("key, value")
+      .in("key", ["company_logo_light", "company_logo_dark"]);
 
-    return data?.value || null;
+    const map: Record<string, string> = {};
+    for (const row of data || []) map[row.key] = row.value;
+
+    return {
+      light: map["company_logo_light"] || null,
+      dark: map["company_logo_dark"] || null,
+    };
   } catch {
-    return null;
+    return { light: null, dark: null };
   }
 }
 
 export async function saveCompanyLogo(
-  url: string
+  url: string,
+  variant: "light" | "dark"
 ): Promise<{ success: boolean; error?: string }> {
   const supabase = await createClient();
   const {
@@ -179,10 +187,11 @@ export async function saveCompanyLogo(
   }
 
   const admin = createAdminClient();
+  const key = variant === "dark" ? "company_logo_dark" : "company_logo_light";
 
   const { error } = await admin.from("app_settings").upsert(
     {
-      key: "company_logo_url",
+      key,
       value: url.trim(),
       updated_by: user.id,
       updated_at: new Date().toISOString(),
@@ -199,10 +208,9 @@ export async function saveCompanyLogo(
   return { success: true };
 }
 
-export async function deleteCompanyLogo(): Promise<{
-  success: boolean;
-  error?: string;
-}> {
+export async function deleteCompanyLogo(
+  variant: "light" | "dark"
+): Promise<{ success: boolean; error?: string }> {
   const supabase = await createClient();
   const {
     data: { user },
@@ -221,19 +229,19 @@ export async function deleteCompanyLogo(): Promise<{
   }
 
   const admin = createAdminClient();
+  const key = variant === "dark" ? "company_logo_dark" : "company_logo_light";
 
   // Get current logo URL to delete from storage
   const { data: current } = await admin
     .from("app_settings")
     .select("value")
-    .eq("key", "company_logo_url")
+    .eq("key", key)
     .single();
 
   if (current?.value) {
-    // Try to extract file path from URL and delete from storage
     try {
-      const url = new URL(current.value);
-      const pathMatch = url.pathname.match(/\/company-logos\/(.+)$/);
+      const fileUrl = new URL(current.value);
+      const pathMatch = fileUrl.pathname.match(/\/company-logos\/(.+)$/);
       if (pathMatch) {
         await admin.storage.from("company-logos").remove([pathMatch[1]]);
       }
@@ -245,7 +253,7 @@ export async function deleteCompanyLogo(): Promise<{
   const { error } = await admin
     .from("app_settings")
     .delete()
-    .eq("key", "company_logo_url");
+    .eq("key", key);
 
   if (error) {
     console.error("Error deleting company logo:", error);

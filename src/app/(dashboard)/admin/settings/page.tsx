@@ -14,7 +14,7 @@ export default async function AdminSettingsPage() {
     redirect("/");
   }
 
-  const [apiSettings, logoUrl] = await Promise.all([
+  const [apiSettings, logos] = await Promise.all([
     getApiSettings(),
     getCompanyLogo(),
   ]);
@@ -29,7 +29,7 @@ export default async function AdminSettingsPage() {
       </p>
 
       <div className="max-w-2xl space-y-6">
-        <LogoSettings logoUrl={logoUrl} />
+        <LogoSettings logos={logos} />
         <ThemeSettings />
         <ApiKeySettings
           hasKey={apiSettings?.hasKey ?? false}
