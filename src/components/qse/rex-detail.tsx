@@ -1,7 +1,8 @@
 "use client";
 
 import type { Rex } from "@/lib/types/database";
-import { InnovtecLogo } from "@/components/icons/innovtec-logo";
+import type { CompanyLogos } from "@/actions/settings";
+import { CompanyLogo } from "@/components/ui/company-logo";
 import {
   RexFaitsBadge,
   RexCausesBadge,
@@ -52,9 +53,10 @@ const SECTIONS = [
 interface RexDetailProps {
   rex: Rex;
   onExportPdf?: () => void;
+  companyLogo?: CompanyLogos | null;
 }
 
-export default function RexDetail({ rex, onExportPdf }: RexDetailProps) {
+export default function RexDetail({ rex, onExportPdf, companyLogo }: RexDetailProps) {
   const router = useRouter();
   const [deleting, setDeleting] = useState(false);
 
@@ -154,7 +156,7 @@ export default function RexDetail({ rex, onExportPdf }: RexDetailProps) {
               </div>
             </div>
             {/* Right: Logo */}
-            <InnovtecLogo width={120} height={40} />
+            <CompanyLogo logoUrl={companyLogo} variant="light" width={120} height={40} />
           </div>
         </div>
 
