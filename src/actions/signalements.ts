@@ -421,3 +421,46 @@ export async function uploadSignalementPhoto(
 
   return { success: true, url: filePath };
 }
+
+export async function deleteSignalement(
+  id: string
+): Promise<{ success: boolean; error?: string }> {
+  const profile = await getAuthProfile();
+  if (!profile || !isQseManager(profile.role)) {
+    return { success: false, error: "Non autorisé" };
+  }
+
+  const supabase = await createClient();
+
+  // Fetch the report to get photo paths
+  const { data: report } = await supabase
+    .from("danger_reports")
+    .select("photo_urls")
+    .eq("id", id)
+    .single();
+
+  if (!report) {
+    return { success: false, error: "Signalement introuvable" };
+  }
+
+  // Delete photos from storage
+  const photoPaths = (report.photo_urls ?? []).filter(
+    (p: string) => p && !p.startsWith("http")
+  );
+  if (photoPaths.length > 0) {
+    await supabase.storage.from("documents").remove(photoPaths);
+  }
+
+  // Delete the report
+  const { error } = await supabase
+    .from("danger_reports")
+    .delete()
+    .eq("id", id);
+
+  if (error) {
+    return { success: false, error: error.message };
+  }
+
+  revalidateAll();
+  return { success: true };
+}
