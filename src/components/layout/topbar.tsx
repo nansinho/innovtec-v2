@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import { usePathname } from "next/navigation";
-import { Bell, MessageSquare, Settings, ChevronRight } from "lucide-react";
+import { Bell, MessageSquare, Settings, ChevronRight, LogOut } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
+import { signOut } from "@/actions/auth";
 import type { Profile } from "@/lib/types/database";
 import NotificationSidebar from "@/components/notifications/notification-sidebar";
 import SearchBar from "@/components/search/search-bar";
@@ -40,6 +42,14 @@ interface TopbarProps {
 export default function Topbar({ profile, unreadCount = 0 }: TopbarProps) {
   const [notifOpen, setNotifOpen] = useState(false);
   const pathname = usePathname();
+
+  const displayName = profile
+    ? `${profile.first_name} ${profile.last_name}`.trim() || profile.email
+    : "Utilisateur";
+
+  const initials = profile
+    ? `${profile.first_name?.[0] ?? ""}${profile.last_name?.[0] ?? ""}`.toUpperCase() || "?"
+    : "?";
 
   const segments = pathname.split("/").filter(Boolean);
 
@@ -110,6 +120,35 @@ export default function Topbar({ profile, unreadCount = 0 }: TopbarProps) {
           >
             <Settings className="h-[18px] w-[18px]" />
           </button>
+
+          {/* Separator + User profile */}
+          <div className="h-6 w-px bg-[var(--border-1)]" />
+          <Link
+            href="/profil"
+            className="flex items-center gap-2.5 rounded-full py-1 pl-1 pr-3 transition-colors hover:bg-black/[0.04]"
+          >
+            {profile?.avatar_url ? (
+              <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full">
+                <Image src={profile.avatar_url} alt="" fill className="object-cover" />
+              </div>
+            ) : (
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--navy)]/10 text-[11px] font-medium text-[var(--navy)]">
+                {initials}
+              </div>
+            )}
+            <span className="hidden text-sm font-medium text-[var(--heading)] sm:inline">
+              {displayName}
+            </span>
+          </Link>
+          <form action={signOut}>
+            <button
+              type="submit"
+              className="flex h-8 w-8 items-center justify-center rounded-full text-[var(--text-muted)] transition-all duration-200 hover:bg-black/[0.04] hover:text-[var(--heading)]"
+              aria-label="Se déconnecter"
+            >
+              <LogOut className="h-4 w-4" />
+            </button>
+          </form>
         </div>
       </div>
 

@@ -16,7 +16,6 @@ import {
   Image,
   HelpCircle,
   Settings,
-  LogOut,
   Newspaper,
   UserCog,
   ChevronLeft,
@@ -25,7 +24,6 @@ import {
   BarChart3,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { signOut } from "@/actions/auth";
 import type { Profile } from "@/lib/types/database";
 import { useState, useEffect } from "react";
 
@@ -144,16 +142,6 @@ export default function Sidebar({ profile }: SidebarProps) {
     const width = collapsed ? "72px" : "260px";
     document.documentElement.style.setProperty("--sidebar-width", width);
   }, [collapsed]);
-
-  const displayName = profile
-    ? `${profile.first_name} ${profile.last_name}`.trim() || profile.email
-    : "Utilisateur";
-
-  const initials = profile
-    ? `${profile.first_name?.[0] ?? ""}${profile.last_name?.[0] ?? ""}`.toUpperCase() || "?"
-    : "?";
-
-  const roleLabel = profile ? (roleLabels[profile.role] ?? profile.role) : "";
 
   const isAdmin = profile && ["admin", "rh"].includes(profile.role);
 
@@ -276,41 +264,6 @@ export default function Sidebar({ profile }: SidebarProps) {
         </Link>
       </div>
 
-      {/* User */}
-      <div className={cn(
-        "flex items-center gap-2.5 border-t border-white/[0.06] px-3.5 py-3",
-        collapsed && "justify-center px-2"
-      )}>
-        <Link
-          href="/profil"
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/10 text-[11px] font-medium text-white/70 transition-all duration-200 hover:bg-white/20 hover:scale-105"
-          title={collapsed ? displayName : undefined}
-        >
-          {initials}
-        </Link>
-        {!collapsed && (
-          <>
-            <div className="min-w-0 flex-1">
-              <Link
-                href="/profil"
-                className="block truncate text-[13px] font-medium text-white/85 transition-colors hover:text-white"
-              >
-                {displayName}
-              </Link>
-              <div className="truncate text-[11px] text-white/30">{roleLabel}</div>
-            </div>
-            <form action={signOut}>
-              <button
-                type="submit"
-                className="rounded-lg p-1.5 text-white/20 transition-all duration-200 hover:bg-white/[0.08] hover:text-white/50"
-                aria-label="Se déconnecter"
-              >
-                <LogOut className="h-4 w-4" />
-              </button>
-            </form>
-          </>
-        )}
-      </div>
     </aside>
   );
 }
