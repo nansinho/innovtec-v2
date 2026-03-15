@@ -1,8 +1,9 @@
 import { getProfile } from "@/actions/auth";
-import { getApiSettings } from "@/actions/settings";
+import { getApiSettings, getCompanyLogo } from "@/actions/settings";
 import { redirect } from "next/navigation";
 import ApiKeySettings from "@/components/admin/api-key-settings";
 import ThemeSettings from "@/components/admin/theme-settings";
+import LogoSettings from "@/components/admin/logo-settings";
 
 export const dynamic = "force-dynamic";
 
@@ -13,7 +14,10 @@ export default async function AdminSettingsPage() {
     redirect("/");
   }
 
-  const apiSettings = await getApiSettings();
+  const [apiSettings, logoUrl] = await Promise.all([
+    getApiSettings(),
+    getCompanyLogo(),
+  ]);
 
   return (
     <div className="px-7 py-6">
@@ -25,6 +29,7 @@ export default async function AdminSettingsPage() {
       </p>
 
       <div className="max-w-2xl space-y-6">
+        <LogoSettings logoUrl={logoUrl} />
         <ThemeSettings />
         <ApiKeySettings
           hasKey={apiSettings?.hasKey ?? false}

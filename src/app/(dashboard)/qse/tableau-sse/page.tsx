@@ -1,14 +1,16 @@
 import { getProfile } from "@/actions/auth";
 import { getSseDashboards, getLatestSseDashboard } from "@/actions/sse-dashboard";
+import { getCompanyLogo } from "@/actions/settings";
 import { SseDashboardView } from "@/components/qse/sse-dashboard-view";
 
 export const dynamic = "force-dynamic";
 
 export default async function TableauSsePage() {
-  const [dashboards, latest, profile] = await Promise.all([
+  const [dashboards, latest, profile, logoUrl] = await Promise.all([
     getSseDashboards(),
     getLatestSseDashboard(),
     getProfile(),
+    getCompanyLogo(),
   ]);
 
   const canManage = profile && ["admin", "responsable_qse"].includes(profile.role);
@@ -28,6 +30,7 @@ export default async function TableauSsePage() {
         dashboards={dashboards}
         initialDashboard={latest}
         canManage={!!canManage}
+        logoUrl={logoUrl}
       />
     </div>
   );

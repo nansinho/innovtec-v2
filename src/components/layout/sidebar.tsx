@@ -131,9 +131,10 @@ function SectionLabel({ label, collapsed }: { label: string; collapsed: boolean 
 
 interface SidebarProps {
   profile: Profile | null;
+  logoUrl?: string | null;
 }
 
-export default function Sidebar({ profile }: SidebarProps) {
+export default function Sidebar({ profile, logoUrl }: SidebarProps) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
 
@@ -154,14 +155,30 @@ export default function Sidebar({ profile }: SidebarProps) {
     >
       {/* Logo */}
       <div className="flex items-center gap-2.5 border-b border-white/[0.06] px-4 py-4">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-b from-[var(--yellow)] to-[var(--yellow-hover)] shadow-sm shadow-amber-600/20">
-          <Zap className="h-4 w-4 text-white" />
-        </div>
-        {!collapsed && (
-          <div className="text-sm font-semibold tracking-tight">
-            INNOVTEC{" "}
-            <span className="font-normal text-white/40">Réseaux</span>
-          </div>
+        {logoUrl ? (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={logoUrl}
+              alt="Logo société"
+              className={cn(
+                "object-contain transition-all duration-300",
+                collapsed ? "h-9 w-9" : "h-9 max-w-[180px]"
+              )}
+            />
+          </>
+        ) : (
+          <>
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-b from-[var(--yellow)] to-[var(--yellow-hover)] shadow-sm shadow-amber-600/20">
+              <Zap className="h-4 w-4 text-white" />
+            </div>
+            {!collapsed && (
+              <div className="text-sm font-semibold tracking-tight">
+                INNOVTEC{" "}
+                <span className="font-normal text-white/40">Réseaux</span>
+              </div>
+            )}
+          </>
         )}
       </div>
 

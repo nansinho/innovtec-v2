@@ -136,3 +136,122 @@ function maskApiKey(key: string): string {
   if (key.length <= 12) return "••••••••";
   return key.slice(0, 7) + "••••••••" + key.slice(-4);
 }
+
+// ── Company Logo ──
+
+export async function getCompanyLogo(): Promise<string | null> {
+  try {
+    const admin = createAdminClient();
+    const { data } = await admin
+      .from("app_settings")
+      .select("value")
+      .eq("key", "company_logo_url")
+      .single();
+
+    return data?.value || null;
+  } catch {
+    return null;
+  }
+}
+
+export async function saveCompanyLogo(
+  url: string
+): Promise<{ success: boolean; error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { success: false, error: "Non authentifié" };
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
+  if (!profile || !["admin", "rh"].includes(profile.role)) {
+    return { success: false, error: "Accès non autorisé" };
+  }
+
+  if (!url.trim()) {
+    return { success: false, error: "L'URL du logo est requise" };
+  }
+
+  const admin = createAdminClient();
+
+  const { error } = await admin.from("app_settings").upsert(
+    {
+      key: "company_logo_url",
+      value: url.trim(),
+      updated_by: user.id,
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: "key" }
+  );
+
+  if (error) {
+    console.error("Error saving company logo:", error);
+    return { success: false, error: "Erreur lors de la sauvegarde" };
+  }
+
+  revalidatePath("/", "layout");
+  return { success: true };
+}
+
+export async function deleteCompanyLogo(): Promise<{
+  success: boolean;
+  error?: string;
+}> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { success: false, error: "Non authentifié" };
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
+  if (!profile || !["admin", "rh"].includes(profile.role)) {
+    return { success: false, error: "Accès non autorisé" };
+  }
+
+  const admin = createAdminClient();
+
+  // Get current logo URL to delete from storage
+  const { data: current } = await admin
+    .from("app_settings")
+    .select("value")
+    .eq("key", "company_logo_url")
+    .single();
+
+  if (current?.value) {
+    // Try to extract file path from URL and delete from storage
+    try {
+      const url = new URL(current.value);
+      const pathMatch = url.pathname.match(/\/company-logos\/(.+)$/);
+      if (pathMatch) {
+        await admin.storage.from("company-logos").remove([pathMatch[1]]);
+      }
+    } catch {
+      // Ignore storage deletion errors
+    }
+  }
+
+  const { error } = await admin
+    .from("app_settings")
+    .delete()
+    .eq("key", "company_logo_url");
+
+  if (error) {
+    console.error("Error deleting company logo:", error);
+    return { success: false, error: "Erreur lors de la suppression" };
+  }
+
+  revalidatePath("/", "layout");
+  return { success: true };
+}

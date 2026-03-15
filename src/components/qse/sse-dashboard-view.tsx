@@ -2,7 +2,7 @@
 
 import { useState, useRef, useTransition } from "react";
 import type { SseDashboard } from "@/lib/types/database";
-import { InnovtecLogo } from "@/components/icons/innovtec-logo";
+import { CompanyLogo } from "@/components/ui/company-logo";
 import { SseDashboardForm } from "@/components/admin/sse-dashboard-form";
 import { deleteSseDashboard } from "@/actions/sse-dashboard";
 import ConfirmDialog from "@/components/ui/confirm-dialog";
@@ -108,9 +108,10 @@ interface SseDashboardViewProps {
   dashboards: SseDashboard[];
   initialDashboard: SseDashboard | null;
   canManage?: boolean;
+  logoUrl?: string | null;
 }
 
-export function SseDashboardView({ dashboards: initialDashboards, initialDashboard, canManage = false }: SseDashboardViewProps) {
+export function SseDashboardView({ dashboards: initialDashboards, initialDashboard, canManage = false, logoUrl }: SseDashboardViewProps) {
   const [dashboards, setDashboards] = useState(initialDashboards);
   const [selected, setSelected] = useState<SseDashboard | null>(null);
   const [mode, setMode] = useState<"list" | "detail" | "create" | "edit">("list");
@@ -271,7 +272,7 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
           {/* Header */}
           <div className="flex items-start justify-between border-b border-[var(--border-1)] bg-white px-8 py-6">
             <div className="flex items-center gap-6">
-              <InnovtecLogo width={140} height={44} />
+              <CompanyLogo logoUrl={logoUrl} width={140} height={44} />
               <div>
                 <p className="text-lg font-bold text-[var(--navy)]">INNOVTEC</p>
                 <p className="text-sm font-semibold text-[var(--navy)]">{monthLabel} {d.year}</p>

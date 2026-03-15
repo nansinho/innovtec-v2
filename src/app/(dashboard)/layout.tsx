@@ -7,6 +7,7 @@ import { getProfile } from "@/actions/auth";
 import { getUnreadCount } from "@/actions/notifications";
 import { isMyBirthday, getMyBirthdayWishes } from "@/actions/birthday";
 import { ensureAdminExists } from "@/actions/users";
+import { getCompanyLogo } from "@/actions/settings";
 import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
@@ -27,9 +28,10 @@ export default async function DashboardLayout({
     }
   }
 
-  const [unreadCount, isBirthday] = await Promise.all([
+  const [unreadCount, isBirthday, logoUrl] = await Promise.all([
     getUnreadCount(),
     isMyBirthday(),
+    getCompanyLogo(),
   ]);
   const wishes = isBirthday ? await getMyBirthdayWishes() : [];
 
@@ -39,7 +41,7 @@ export default async function DashboardLayout({
 
   return (
     <>
-      <Sidebar profile={profile} />
+      <Sidebar profile={profile} logoUrl={logoUrl} />
       <div className="min-h-screen transition-all duration-300 ease-out md:ml-[var(--sidebar-width)]">
         <Topbar profile={profile} unreadCount={unreadCount} />
         <main>{children}</main>

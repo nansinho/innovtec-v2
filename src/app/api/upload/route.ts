@@ -11,6 +11,7 @@ const ALLOWED_TYPES: Record<string, string[]> = {
     "application/msword",
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
   ],
+  "company-logos": ["image/jpeg", "image/png", "image/webp", "image/svg+xml"],
 };
 
 const MAX_SIZE = 10 * 1024 * 1024; // 10MB

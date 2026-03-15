@@ -1,12 +1,16 @@
 export const dynamic = "force-dynamic";
 
 import { Zap, Shield, Users, Newspaper } from "lucide-react";
+import { getCompanyLogo } from "@/actions/settings";
+import { AuthLogoProvider } from "@/components/auth/auth-logo-provider";
 
-export default function AuthLayout({
+export default async function AuthLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const logoUrl = await getCompanyLogo();
+
   return (
     <div className="flex min-h-screen">
       {/* Left branding panel - hidden on mobile */}
@@ -33,13 +37,24 @@ export default function AuthLayout({
         <div className="relative z-10">
           {/* Logo */}
           <div className="mb-16 flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--yellow)]">
-              <Zap className="h-5 w-5 text-[var(--navy)]" />
-            </div>
-            <div className="text-lg font-bold tracking-tight text-white">
-              INNOVTEC{" "}
-              <span className="font-normal text-white/50">Réseaux</span>
-            </div>
+            {logoUrl ? (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img
+                src={logoUrl}
+                alt="Logo société"
+                className="h-12 max-w-[200px] object-contain"
+              />
+            ) : (
+              <>
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--yellow)]">
+                  <Zap className="h-5 w-5 text-[var(--navy)]" />
+                </div>
+                <div className="text-lg font-bold tracking-tight text-white">
+                  INNOVTEC{" "}
+                  <span className="font-normal text-white/50">Réseaux</span>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Welcome message */}
@@ -90,7 +105,9 @@ export default function AuthLayout({
 
       {/* Right form panel */}
       <div className="flex flex-1 items-center justify-center bg-[var(--card)] p-6 sm:p-8">
-        {children}
+        <AuthLogoProvider logoUrl={logoUrl}>
+          {children}
+        </AuthLogoProvider>
       </div>
     </div>
   );
