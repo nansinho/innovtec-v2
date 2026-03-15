@@ -377,10 +377,21 @@ export default function PolitiqueContent({
   }
 
   function handleAiResult(result: unknown, fileUrl?: string) {
-    const data = result as { title?: string; year?: number; date_signature?: string; sections?: QseContentSection[] };
+    const data = result as {
+      title?: string;
+      year?: number;
+      date_signature?: string;
+      engagement_text?: string;
+      engagement_lieu?: string;
+      signataires?: string[];
+      sections?: QseContentSection[];
+    };
     if (data.title) setTitle(data.title);
     if (data.year) setYear(data.year);
     if (data.date_signature) setDateSignature(data.date_signature);
+    if (data.engagement_text) setEngagementText(data.engagement_text);
+    if (data.engagement_lieu) setEngagementLieu(data.engagement_lieu);
+    if (data.signataires && Array.isArray(data.signataires)) setSignataires(data.signataires);
     if (data.sections && Array.isArray(data.sections)) {
       setSections(data.sections);
       const state = sectionsToEditState(data.sections);
