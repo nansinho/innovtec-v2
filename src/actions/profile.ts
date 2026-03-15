@@ -36,11 +36,35 @@ async function resolveUserId(targetUserId?: string): Promise<{ userId: string; i
 // PROFIL
 // ==========================================
 
+export async function updateAvatar(
+  avatarUrl: string
+): Promise<{ success: boolean; error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { success: false, error: "Non authentifié" };
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({ avatar_url: avatarUrl })
+    .eq("id", user.id);
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath("/profil");
+  revalidatePath("/equipe/trombinoscope");
+  revalidatePath("/", "layout");
+  return { success: true };
+}
+
 export async function updateProfile(data: {
   first_name: string;
   last_name: string;
   job_title: string;
   phone: string;
+  gender: "" | "M" | "F";
   date_of_birth: string | null;
   hire_date: string | null;
 }): Promise<{ success: boolean; error?: string }> {
@@ -70,6 +94,7 @@ export async function updateProfile(data: {
       last_name: data.last_name,
       job_title: data.job_title,
       phone: data.phone,
+      gender: data.gender || "",
       date_of_birth: data.date_of_birth || null,
       hire_date: data.hire_date || null,
     })
