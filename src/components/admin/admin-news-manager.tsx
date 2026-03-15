@@ -183,7 +183,7 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
             placeholder="Rechercher une actualité..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-[var(--radius-sm)] border border-[var(--border-1)] py-2.5 pl-10 pr-4 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+            className="w-full rounded-xl border border-[var(--border-1)] py-2.5 pl-10 pr-4 text-sm text-[var(--heading)] outline-none transition-all placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)] focus:shadow-sm"
           />
         </div>
         <button
@@ -394,7 +394,7 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[var(--border-1)] bg-[var(--card)]">
+          <tbody className="divide-y divide-[var(--border-1)]">
             {filtered.map((article) => {
               const authorName = article.author
                 ? `${article.author.first_name} ${article.author.last_name}`
@@ -403,7 +403,7 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
               return (
                 <tr
                   key={article.id}
-                  className="transition-colors hover:bg-[var(--hover)]"
+                  className="transition-colors duration-200 hover:bg-[var(--hover)]"
                 >
                   <td className="px-4 py-3.5">
                     <div>

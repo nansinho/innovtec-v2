@@ -199,7 +199,7 @@ export default function SignalementList({ signalements: initial, categories, can
               }}
               onClick={(e) => e.stopPropagation()}
               disabled={isPending}
-              className="rounded-[var(--radius-xs)] border border-[var(--border-1)] bg-white px-2 py-1 text-xs outline-none focus:border-[var(--yellow)]"
+              className="rounded-lg border border-[var(--border-1)] bg-white px-2 py-1 text-xs outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
             >
               <option value="signale">Signalé</option>
               <option value="en_cours">En cours</option>

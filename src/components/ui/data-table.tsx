@@ -207,7 +207,7 @@ export function DataTable<T>({
                 setPage(0);
               }}
               placeholder={searchPlaceholder}
-              className="h-9 w-64 rounded-lg border border-[var(--border-1)] bg-white pl-9 pr-8 text-sm outline-none transition-all placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)] focus:shadow-sm"
+              className="h-9 w-64 rounded-xl border border-[var(--border-1)] bg-white pl-9 pr-8 text-sm outline-none transition-all placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)] focus:shadow-sm"
             />
             {search && (
               <button
@@ -233,7 +233,7 @@ export function DataTable<T>({
                   }));
                   setPage(0);
                 }}
-                className="h-9 rounded-lg border border-[var(--border-1)] bg-white px-3 text-sm text-[var(--text)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)] focus:shadow-sm"
+                className="h-9 rounded-xl border border-[var(--border-1)] bg-white px-3 text-sm text-[var(--text)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)] focus:shadow-sm"
               >
                 <option value="">{f.placeholder ?? f.label}</option>
                 {f.options.map((opt) => (
@@ -254,7 +254,7 @@ export function DataTable<T>({
                   setPage(0);
                 }}
                 placeholder={f.placeholder ?? f.label}
-                className="h-9 rounded-lg border border-[var(--border-1)] bg-white px-3 text-sm outline-none transition-all placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)] focus:shadow-sm"
+                className="h-9 rounded-xl border border-[var(--border-1)] bg-white px-3 text-sm outline-none transition-all placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)] focus:shadow-sm"
               />
             )}
             {f.type === "date" && (
@@ -268,7 +268,7 @@ export function DataTable<T>({
                   }));
                   setPage(0);
                 }}
-                className="h-9 rounded-lg border border-[var(--border-1)] bg-white px-3 text-sm outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)] focus:shadow-sm"
+                className="h-9 rounded-xl border border-[var(--border-1)] bg-white px-3 text-sm outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)] focus:shadow-sm"
               />
             )}
           </div>

@@ -179,7 +179,7 @@ export default function ActivityLogsTable() {
               return (
                 <div
                   key={log.id}
-                  className="flex items-start gap-3 px-5 py-4 transition-colors hover:bg-[var(--hover)]"
+                  className="flex items-start gap-3 px-5 py-4 transition-colors duration-200 hover:bg-[var(--hover)]"
                 >
                   <div
                     className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${config.color}`}
