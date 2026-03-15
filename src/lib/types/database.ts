@@ -272,6 +272,54 @@ export interface SseIndicator {
   updated_at: string;
 }
 
+export interface SseDashboard {
+  id: string;
+  month: number;
+  year: number;
+  // Indicateurs principaux
+  accidents_with_leave: number;
+  accidents_with_leave_objective: string;
+  regulatory_training_completion: number;
+  regulatory_training_objective: string;
+  regulatory_compliance_rate: number;
+  regulatory_compliance_objective: string;
+  periodic_verification_rate: number;
+  periodic_verification_objective: string;
+  waste_monitoring: number;
+  waste_monitoring_objective: string;
+  sst_rate: number;
+  sst_rate_objective: string;
+  downgraded_bins: number;
+  downgraded_bins_objective: number;
+  // Indicateurs de suivi
+  accidents_without_leave: number;
+  accidents_without_leave_objective: number;
+  cross_visits: number;
+  cross_visits_objective: string;
+  managerial_visits: number;
+  managerial_visits_objective: number;
+  sd_declarants_percentage: number;
+  sd_declarants_objective: number;
+  sd_declared_count: number;
+  sd_declared_objective: number;
+  waste_awareness_employees: number;
+  waste_awareness_objective: string;
+  training_plan_follow_rate: number;
+  training_plan_objective: string;
+  // Sections textuelles
+  field_visits_count: number;
+  monthly_report: string;
+  action_priorities: string[];
+  vigilance_points: string[];
+  focus_event_title: string;
+  focus_event_content: string[];
+  quote: string;
+  // Meta
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 // RH
 
 export interface Formation {
