@@ -30,8 +30,11 @@ import {
   createQseContent,
   deleteQseContent,
   getQseFileDownloadUrl,
+  uploadQseDocumentFile,
+  deleteQseDocumentFile,
 } from "@/actions/qse";
-import type { QseContent, QseContentSection } from "@/lib/types/database";
+import { createClient } from "@/lib/supabase/client";
+import type { QseContent, QseContentSection, QseDocument } from "@/lib/types/database";
 
 // ==========================================
 // PILLAR CONFIG
@@ -315,6 +318,11 @@ export default function PolitiqueContent({
   );
   const [isDownloading, setIsDownloading] = useState(false);
   const [showPillarMenu, setShowPillarMenu] = useState(false);
+  const [documents, setDocuments] = useState<QseDocument[]>([]);
+  const [engagementText, setEngagementText] = useState("");
+  const [engagementLieu, setEngagementLieu] = useState("");
+  const [signataires, setSignataires] = useState<string[]>([]);
+  const [uploadingDocIndex, setUploadingDocIndex] = useState<number | null>(null);
   const router = useRouter();
 
   const selected = allContent.find((c) => c.id === selectedId) ?? null;
@@ -382,9 +390,9 @@ export default function PolitiqueContent({
     startTransition(async () => {
       let result;
       if (editingId) {
-        result = await saveQseContent("politique", title, sections, sourceFileUrl || undefined, editingId, year, dateSignature);
+        result = await saveQseContent("politique", title, sections, sourceFileUrl || undefined, editingId, year, dateSignature, documents, engagementText, engagementLieu, signataires);
       } else {
-        result = await createQseContent("politique", title, sections, sourceFileUrl || undefined, year, dateSignature);
+        result = await createQseContent("politique", title, sections, sourceFileUrl || undefined, year, dateSignature, documents, engagementText, engagementLieu, signataires);
       }
       if (result.success) {
         setEditing(false);
@@ -392,6 +400,10 @@ export default function PolitiqueContent({
         setSourceFileUrl("");
         setYear(null);
         setDateSignature(null);
+        setDocuments([]);
+        setEngagementText("");
+        setEngagementLieu("");
+        setSignataires([]);
         router.refresh();
       }
     });
@@ -405,6 +417,10 @@ export default function PolitiqueContent({
     setYear(doc.year ?? null);
     setDateSignature(doc.date_signature ?? null);
     setSourceFileUrl(doc.source_file_url ?? "");
+    setDocuments(doc.documents ?? []);
+    setEngagementText(doc.engagement_text ?? "");
+    setEngagementLieu(doc.engagement_lieu ?? "");
+    setSignataires(doc.signataires ?? []);
     setEditing(true);
     setSelectedId(null);
   }
@@ -417,6 +433,10 @@ export default function PolitiqueContent({
     setYear(new Date().getFullYear());
     setDateSignature(null);
     setSourceFileUrl("");
+    setDocuments([]);
+    setEngagementText("");
+    setEngagementLieu("");
+    setSignataires([]);
     setEditing(true);
     setSelectedId(null);
   }
@@ -429,6 +449,10 @@ export default function PolitiqueContent({
     setYear(new Date().getFullYear());
     setDateSignature(null);
     setSourceFileUrl("");
+    setDocuments([...(doc.documents ?? [])]);
+    setEngagementText(doc.engagement_text ?? "");
+    setEngagementLieu(doc.engagement_lieu ?? "");
+    setSignataires([...(doc.signataires ?? [])]);
     setEditing(true);
     setSelectedId(null);
   }
@@ -622,6 +646,173 @@ export default function PolitiqueContent({
             </button>
           </div>
         </div>
+
+        {/* Documents Obligatoires */}
+        <div className="rounded-2xl border border-[var(--border-1)] bg-[var(--card)] shadow-sm">
+          <div className="flex items-center gap-3 border-b border-[var(--border-1)] px-5 py-4">
+            <FileText className="h-5 w-5 text-[var(--yellow)]" />
+            <h3 className="text-[14px] font-semibold text-[var(--heading)]">Documents obligatoires</h3>
+          </div>
+          <div className="divide-y divide-[var(--border-1)]">
+            {documents.map((doc, index) => (
+              <div key={index} className="flex items-center gap-3 px-5 py-3">
+                <div className="min-w-0 flex-1">
+                  <input
+                    value={doc.title}
+                    onChange={(e) => {
+                      const updated = [...documents];
+                      updated[index] = { ...updated[index], title: e.target.value };
+                      setDocuments(updated);
+                    }}
+                    placeholder="Titre du document"
+                    className="w-full rounded-lg border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--heading)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                  />
+                </div>
+                <div className="flex shrink-0 items-center gap-2">
+                  {doc.file_url ? (
+                    <span className="rounded-lg bg-green-50 px-2.5 py-1.5 text-[11px] font-medium text-green-600">
+                      Fichier joint
+                    </span>
+                  ) : (
+                    <label className={cn(
+                      "inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-[var(--border-1)] px-3 py-1.5 text-[12px] font-medium text-[var(--text-secondary)] transition-all hover:bg-[var(--hover)]",
+                      uploadingDocIndex === index && "pointer-events-none opacity-50"
+                    )}>
+                      <Upload className="h-3.5 w-3.5" />
+                      {uploadingDocIndex === index ? "Upload..." : "Fichier"}
+                      <input
+                        type="file"
+                        className="hidden"
+                        accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.webp"
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          setUploadingDocIndex(index);
+                          try {
+                            const formData = new FormData();
+                            formData.append("file", file);
+                            const result = await uploadQseDocumentFile(formData);
+                            if (result.filePath) {
+                              const updated = [...documents];
+                              updated[index] = { ...updated[index], file_url: result.filePath };
+                              setDocuments(updated);
+                            }
+                          } finally {
+                            setUploadingDocIndex(null);
+                          }
+                        }}
+                      />
+                    </label>
+                  )}
+                  {doc.file_url && (
+                    <button
+                      onClick={async () => {
+                        await deleteQseDocumentFile(doc.file_url);
+                        const updated = [...documents];
+                        updated[index] = { ...updated[index], file_url: "" };
+                        setDocuments(updated);
+                      }}
+                      className="rounded-lg p-1.5 text-[var(--text-muted)] transition-all hover:bg-orange-50 hover:text-orange-500"
+                      title="Retirer le fichier"
+                    >
+                      <Upload className="h-3.5 w-3.5" />
+                    </button>
+                  )}
+                  <button
+                    onClick={() => {
+                      if (doc.file_url) deleteQseDocumentFile(doc.file_url);
+                      setDocuments(documents.filter((_, i) => i !== index));
+                    }}
+                    className="rounded-lg p-1.5 text-[var(--text-muted)] transition-all hover:bg-red-50 hover:text-red-500"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="p-4">
+            <button
+              onClick={() => setDocuments([...documents, { title: "", file_url: "" }])}
+              className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-[var(--border-1)] py-3 text-[13px] font-medium text-[var(--text-muted)] transition-all duration-200 hover:border-[var(--yellow)] hover:bg-[var(--yellow-surface)] hover:text-[var(--yellow)]"
+            >
+              <Plus className="h-4 w-4" />
+              Ajouter un document
+            </button>
+          </div>
+        </div>
+
+        {/* Engagement de la direction */}
+        <div className="rounded-2xl border border-[var(--border-1)] bg-[var(--card)] shadow-sm">
+          <div className="flex items-center gap-3 border-b border-[var(--border-1)] px-5 py-4">
+            <Award className="h-5 w-5 text-[var(--green)]" />
+            <h3 className="text-[14px] font-semibold text-[var(--heading)]">Engagement de la direction</h3>
+          </div>
+          <div className="space-y-4 p-5">
+            <div>
+              <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Texte d&apos;engagement</label>
+              <textarea
+                value={engagementText}
+                onChange={(e) => setEngagementText(e.target.value)}
+                placeholder="La direction s'engage à mettre en œuvre les moyens nécessaires..."
+                rows={4}
+                className="w-full resize-none rounded-lg border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-[12.5px] leading-relaxed text-[var(--text)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+              />
+            </div>
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Lieu</label>
+                <input
+                  value={engagementLieu}
+                  onChange={(e) => setEngagementLieu(e.target.value)}
+                  placeholder="Gardanne"
+                  className="w-full rounded-lg border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--heading)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                />
+              </div>
+              <div className="w-40">
+                <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Date signature</label>
+                <input
+                  type="date"
+                  value={dateSignature ?? ""}
+                  onChange={(e) => setDateSignature(e.target.value || null)}
+                  className="w-full rounded-lg border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--heading)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Signataires</label>
+              <div className="space-y-2">
+                {signataires.map((name, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <input
+                      value={name}
+                      onChange={(e) => {
+                        const updated = [...signataires];
+                        updated[index] = e.target.value;
+                        setSignataires(updated);
+                      }}
+                      placeholder="Nom du signataire"
+                      className="flex-1 rounded-lg border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--heading)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                    />
+                    <button
+                      onClick={() => setSignataires(signataires.filter((_, i) => i !== index))}
+                      className="rounded-lg p-1.5 text-[var(--text-muted)] transition-all hover:bg-red-50 hover:text-red-500"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                ))}
+                <button
+                  onClick={() => setSignataires([...signataires, ""])}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-dashed border-[var(--border-1)] px-3 py-1.5 text-[12px] font-medium text-[var(--text-muted)] transition-all hover:border-[var(--yellow)] hover:text-[var(--yellow)]"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  Ajouter un signataire
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -801,6 +992,75 @@ export default function PolitiqueContent({
                     <p className="whitespace-pre-wrap text-[12.5px] leading-relaxed text-[var(--text)]">{section.content}</p>
                   </div>
                 ))}
+              </div>
+            )}
+
+            {/* Documents Obligatoires */}
+            {selected.documents && selected.documents.length > 0 && (
+              <div className="overflow-hidden rounded-2xl border border-[var(--border-1)] bg-gradient-to-br from-[var(--navy)] via-[#1e3a5f] to-[#2a4a7a] shadow-lg">
+                <div className="flex items-center gap-3 border-b border-white/10 px-6 py-4">
+                  <FileText className="h-5 w-5 text-[var(--yellow)]" />
+                  <h3 className="text-[15px] font-bold text-white">Documents Obligatoires</h3>
+                </div>
+                <div className="divide-y divide-white/10">
+                  {selected.documents.map((doc, index) => (
+                    <div key={index} className="flex items-center gap-4 px-6 py-4">
+                      <div className="flex-1">
+                        <p className="text-[13px] font-medium text-white">{doc.title || "Document sans titre"}</p>
+                        {doc.file_url ? (
+                          <p className="mt-0.5 text-[11px] text-[var(--yellow)]">Télécharger le document</p>
+                        ) : (
+                          <p className="mt-0.5 text-[11px] text-[var(--yellow)]">Aucun document</p>
+                        )}
+                      </div>
+                      {doc.file_url && (
+                        <button
+                          onClick={() => handleDownloadFile(doc.file_url)}
+                          disabled={isDownloading}
+                          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[var(--yellow)]/20 text-[var(--yellow)] transition-all hover:bg-[var(--yellow)]/30 disabled:opacity-50"
+                        >
+                          <Download className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Engagement de la direction */}
+            {selected.engagement_text && (
+              <div className="overflow-hidden rounded-2xl border-2 border-[var(--green)] bg-gradient-to-br from-[var(--navy)] via-[#1e3a5f] to-[#2a4a7a] shadow-lg">
+                <div className="px-8 py-8">
+                  <p className="mb-2 text-center text-[12px] font-bold uppercase tracking-[0.15em] text-[var(--green)]">
+                    Notre engagement
+                  </p>
+                  <h3 className="mb-6 text-center text-xl font-bold text-white">
+                    Engagement de la direction
+                  </h3>
+                  <p className="text-[13px] leading-[1.8] text-white/80">
+                    {selected.engagement_text}
+                  </p>
+                  <div className="mt-6 text-right">
+                    {(selected.engagement_lieu || selected.date_signature) && (
+                      <p className="text-[13px] italic text-white/60">
+                        {selected.engagement_lieu && `Fait à ${selected.engagement_lieu}`}
+                        {selected.engagement_lieu && selected.date_signature && " le "}
+                        {!selected.engagement_lieu && selected.date_signature && "Le "}
+                        {selected.date_signature && formatDate(selected.date_signature, "dd/MM/yyyy")}
+                      </p>
+                    )}
+                    {selected.signataires && selected.signataires.length > 0 && (
+                      <div className="mt-2 space-y-0.5">
+                        {selected.signataires.map((name, i) => (
+                          <p key={i} className="text-[13px] font-semibold text-white">
+                            {name}
+                          </p>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             )}
 
