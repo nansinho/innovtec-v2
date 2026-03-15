@@ -594,8 +594,8 @@ export default function PolitiqueContent({
             </div>
           </div>
 
-          {/* Pillar cards - 2 column grid */}
-          <div className="grid gap-5 md:grid-cols-2">
+          {/* Pillar cards - full width, one per row */}
+          <div className="space-y-5">
             {PILLARS.map((p) => {
               const Icon = p.icon;
               const data = pillarData[p.key] ?? { engagements: "", objectifs: "" };
@@ -607,23 +607,23 @@ export default function PolitiqueContent({
                 >
                   {/* Pillar header */}
                   <div
-                    className={cn("flex items-center gap-3 px-5 py-3.5 bg-gradient-to-r", p.gradient)}
+                    className={cn("flex items-center gap-3 px-6 py-4 bg-gradient-to-r", p.gradient)}
                   >
                     <div
-                      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
+                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
                       style={{ background: p.surface }}
                     >
-                      <Icon className="h-4.5 w-4.5" style={{ color: p.color }} />
+                      <Icon className="h-5 w-5" style={{ color: p.color }} />
                     </div>
-                    <h3 className="text-[14px] font-bold uppercase tracking-wide" style={{ color: p.color }}>
+                    <h3 className="text-[15px] font-bold uppercase tracking-wide" style={{ color: p.color }}>
                       {p.label}
                     </h3>
                   </div>
 
                   {/* Two columns: Engagements | Objectifs */}
                   <div className="grid grid-cols-2 divide-x divide-[var(--border-1)]">
-                    <div className="p-4">
-                      <label className="mb-2 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                    <div className="p-5">
+                      <label className="mb-2.5 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
                         <div className="h-1 w-4 rounded-full" style={{ background: p.color }} />
                         Engagements
                       </label>
@@ -631,13 +631,12 @@ export default function PolitiqueContent({
                         value={data.engagements}
                         onChange={(e) => updatePillar(p.key, "engagements", e.target.value)}
                         placeholder={"Un engagement par ligne..."}
-                        rows={5}
-                        className="w-full resize-none rounded-lg border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2 text-[12px] leading-relaxed text-[var(--text)] outline-none transition-all focus:ring-2 focus:ring-opacity-30"
-                        style={{ "--tw-ring-color": p.color } as React.CSSProperties}
+                        rows={6}
+                        className="w-full resize-none rounded-lg border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-[12.5px] leading-relaxed text-[var(--text)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
                       />
                     </div>
-                    <div className="p-4">
-                      <label className="mb-2 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                    <div className="p-5">
+                      <label className="mb-2.5 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
                         <div className="h-1 w-4 rounded-full bg-[var(--navy)]" />
                         Objectifs
                       </label>
@@ -645,9 +644,8 @@ export default function PolitiqueContent({
                         value={data.objectifs}
                         onChange={(e) => updatePillar(p.key, "objectifs", e.target.value)}
                         placeholder={"Un objectif par ligne..."}
-                        rows={5}
-                        className="w-full resize-none rounded-lg border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2 text-[12px] leading-relaxed text-[var(--text)] outline-none transition-all focus:ring-2 focus:ring-opacity-30"
-                        style={{ "--tw-ring-color": p.color } as React.CSSProperties}
+                        rows={6}
+                        className="w-full resize-none rounded-lg border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-[12.5px] leading-relaxed text-[var(--text)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
                       />
                     </div>
                   </div>
