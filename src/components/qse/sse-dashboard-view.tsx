@@ -1,9 +1,13 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useTransition } from "react";
 import type { SseDashboard } from "@/lib/types/database";
 import { InnovtecLogo } from "@/components/icons/innovtec-logo";
-import { ChevronLeft, ChevronRight, Download, FileSpreadsheet } from "lucide-react";
+import { SseDashboardForm } from "@/components/admin/sse-dashboard-form";
+import { deleteSseDashboard, getSseDashboard } from "@/actions/sse-dashboard";
+import ConfirmDialog from "@/components/ui/confirm-dialog";
+import { toast } from "sonner";
+import { ChevronLeft, ChevronRight, Download, FileSpreadsheet, Plus, Pencil, Trash2 } from "lucide-react";
 
 const MONTH_NAMES = [
   "Janvier", "Fevrier", "Mars", "Avril", "Mai", "Juin",
@@ -52,39 +56,72 @@ function ValueCell({ value, objective, isPercentage = false }: { value: number; 
 interface SseDashboardViewProps {
   dashboards: SseDashboard[];
   initialDashboard: SseDashboard | null;
+  canManage?: boolean;
 }
 
-export function SseDashboardView({ dashboards, initialDashboard }: SseDashboardViewProps) {
+export function SseDashboardView({ dashboards: initialDashboards, initialDashboard, canManage = false }: SseDashboardViewProps) {
+  const [dashboards, setDashboards] = useState(initialDashboards);
   const [currentIndex, setCurrentIndex] = useState(
-    initialDashboard ? dashboards.findIndex((d) => d.id === initialDashboard.id) : 0
+    initialDashboard ? initialDashboards.findIndex((d) => d.id === initialDashboard.id) : 0
   );
   const printRef = useRef<HTMLDivElement>(null);
   const [exporting, setExporting] = useState<"pdf" | "excel" | null>(null);
 
+  // Admin state
+  const [mode, setMode] = useState<"view" | "create" | "edit">("view");
+  const [deleteTarget, setDeleteTarget] = useState<SseDashboard | null>(null);
+  const [isDeleting, startDeleteTransition] = useTransition();
+
   const dashboard = dashboards[currentIndex] ?? null;
 
-  if (!dashboard) {
-    return (
-      <div className="flex flex-col items-center rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] py-16 text-center shadow-xs">
-        <p className="text-sm font-medium text-[var(--heading)]">Aucun tableau SSE disponible</p>
-        <p className="mx-auto mt-1 max-w-xs text-[13px] text-[var(--text-muted)]">
-          Les tableaux de bord SSE seront disponibles une fois crees par l&apos;administration.
-        </p>
-      </div>
-    );
+  function sortDashboards(list: SseDashboard[]) {
+    return [...list].sort((a, b) => {
+      if (a.year !== b.year) return b.year - a.year;
+      return b.month - a.month;
+    });
+  }
+
+  function handleCreated(newDashboard: SseDashboard) {
+    const updated = sortDashboards([...dashboards, newDashboard]);
+    setDashboards(updated);
+    setCurrentIndex(updated.findIndex((d) => d.id === newDashboard.id));
+    setMode("view");
+    toast.success("Tableau SSE cree avec succes");
+  }
+
+  function handleUpdated(updatedDashboard: SseDashboard) {
+    const updated = dashboards.map((d) => (d.id === updatedDashboard.id ? updatedDashboard : d));
+    setDashboards(updated);
+    setMode("view");
+    toast.success("Tableau SSE mis a jour");
+  }
+
+  function handleDelete() {
+    if (!deleteTarget) return;
+    startDeleteTransition(async () => {
+      const result = await deleteSseDashboard(deleteTarget.id);
+      if (result.success) {
+        const updated = dashboards.filter((d) => d.id !== deleteTarget.id);
+        setDashboards(updated);
+        if (currentIndex >= updated.length) setCurrentIndex(Math.max(0, updated.length - 1));
+        toast.success("Tableau SSE supprime");
+      } else {
+        toast.error(result.error || "Erreur lors de la suppression");
+      }
+      setDeleteTarget(null);
+    });
   }
 
   const canPrev = currentIndex < dashboards.length - 1;
   const canNext = currentIndex > 0;
-  const monthLabel = MONTH_NAMES[dashboard.month - 1];
+  const monthLabel = dashboard ? MONTH_NAMES[dashboard.month - 1] : "";
 
   async function handleExportPdf() {
     setExporting("pdf");
     try {
       const { exportSsePdf } = await import("@/lib/export/sse-pdf");
-      await exportSsePdf(printRef.current!, `Tableau_SSE_${monthLabel}_${dashboard.year}.pdf`);
+      await exportSsePdf(printRef.current!, `Tableau_SSE_${monthLabel}_${dashboard!.year}.pdf`);
     } catch {
-      const { toast } = await import("sonner");
       toast.error("Erreur lors de l'export PDF");
     }
     setExporting(null);
@@ -94,18 +131,60 @@ export function SseDashboardView({ dashboards, initialDashboard }: SseDashboardV
     setExporting("excel");
     try {
       const { exportSseExcel } = await import("@/lib/export/sse-excel");
-      exportSseExcel(dashboard, `Tableau_SSE_${monthLabel}_${dashboard.year}.xlsx`);
+      exportSseExcel(dashboard!, `Tableau_SSE_${monthLabel}_${dashboard!.year}.xlsx`);
     } catch {
-      const { toast } = await import("sonner");
       toast.error("Erreur lors de l'export Excel");
     }
     setExporting(null);
   }
 
+  // Show form for create/edit
+  if (mode === "create") {
+    return (
+      <SseDashboardForm
+        onSave={handleCreated}
+        onCancel={() => setMode("view")}
+      />
+    );
+  }
+
+  if (mode === "edit" && dashboard) {
+    return (
+      <SseDashboardForm
+        dashboard={dashboard}
+        onSave={handleUpdated}
+        onCancel={() => setMode("view")}
+      />
+    );
+  }
+
+  // Empty state
+  if (!dashboard) {
+    return (
+      <div>
+        <div className="flex flex-col items-center rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] py-16 text-center shadow-xs">
+          <p className="text-sm font-medium text-[var(--heading)]">Aucun tableau SSE disponible</p>
+          <p className="mx-auto mt-1 max-w-xs text-[13px] text-[var(--text-muted)]">
+            Les tableaux de bord SSE seront disponibles une fois crees.
+          </p>
+          {canManage && (
+            <button
+              onClick={() => setMode("create")}
+              className="mt-4 flex items-center gap-1.5 rounded-[var(--radius-xs)] bg-[var(--yellow)] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[var(--yellow-hover)]"
+            >
+              <Plus className="h-4 w-4" />
+              Creer un tableau
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
       {/* Controls bar */}
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <button
             onClick={() => setCurrentIndex((i) => i + 1)}
@@ -126,6 +205,31 @@ export function SseDashboardView({ dashboards, initialDashboard }: SseDashboardV
           </button>
         </div>
         <div className="flex items-center gap-2">
+          {canManage && (
+            <>
+              <button
+                onClick={() => setMode("create")}
+                className="flex items-center gap-1.5 rounded-[var(--radius-xs)] bg-[var(--yellow)] px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-[var(--yellow-hover)]"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                Nouveau
+              </button>
+              <button
+                onClick={() => setMode("edit")}
+                className="flex items-center gap-1.5 rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-3 py-1.5 text-xs font-medium text-[var(--heading)] transition-colors hover:bg-[var(--hover)]"
+              >
+                <Pencil className="h-3.5 w-3.5" />
+                Modifier
+              </button>
+              <button
+                onClick={() => setDeleteTarget(dashboard)}
+                className="flex items-center gap-1.5 rounded-[var(--radius-xs)] border border-red-200 bg-white px-3 py-1.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-50"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                Supprimer
+              </button>
+            </>
+          )}
           <button
             onClick={handleExportPdf}
             disabled={exporting !== null}
@@ -363,6 +467,18 @@ export function SseDashboardView({ dashboards, initialDashboard }: SseDashboardV
           <span className="text-xs text-[var(--text-muted)]">1</span>
         </div>
       </div>
+
+      {/* Delete confirmation */}
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="Supprimer ce tableau SSE ?"
+        message={`Le tableau de ${deleteTarget ? MONTH_NAMES[deleteTarget.month - 1] + " " + deleteTarget.year : ""} sera definitivement supprime.`}
+        confirmLabel="Supprimer"
+        variant="danger"
+        loading={isDeleting}
+        onConfirm={handleDelete}
+        onClose={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }

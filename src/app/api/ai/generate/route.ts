@@ -102,6 +102,52 @@ export async function POST(req: NextRequest) {
     } else if (type === "politique") {
       systemPrompt +=
         " Tu génères du contenu structuré pour la politique QSE (Qualité, Sécurité, Environnement). Retourne un JSON avec les champs: title, sections (tableau d'objets {title, content} représentant les sections du document).";
+    } else if (type === "sse_dashboard") {
+      systemPrompt = `Tu es un assistant IA specialise dans les tableaux de bord SSE (Sante-Securite-Environnement) pour INNOVTEC Reseaux.
+A partir du texte fourni par l'utilisateur (qui peut etre un copier-coller de donnees, un rapport, ou une description), tu dois extraire et mapper les donnees vers le format JSON suivant.
+
+Retourne UNIQUEMENT un JSON valide avec ces champs (utilise 0 si la donnee n'est pas trouvee) :
+{
+  "month": <numero du mois 1-12>,
+  "year": <annee>,
+  "accidents_with_leave": <nombre d'accidents avec arret>,
+  "accidents_with_leave_objective": "<objectif ex: ≤2>",
+  "regulatory_training_completion": <suivi formations reglementaires, nombre ou pourcentage>,
+  "regulatory_training_objective": "<objectif ex: > 95%>",
+  "regulatory_compliance_rate": <taux de conformite reglementaire>,
+  "regulatory_compliance_objective": "<objectif ex: > 80 %>",
+  "periodic_verification_rate": <taux de realisation verification periodique>,
+  "periodic_verification_objective": "<objectif ex: > 95%>",
+  "waste_monitoring": <suivi des dechets en pourcentage>,
+  "waste_monitoring_objective": "<objectif ex: > 95%>",
+  "sst_rate": <taux de SST en pourcentage>,
+  "sst_rate_objective": "<objectif ex: > 40 %>",
+  "downgraded_bins": <nombre de bennes declassees>,
+  "downgraded_bins_objective": <objectif nombre>,
+  "accidents_without_leave": <nombre d'accidents sans arret>,
+  "accidents_without_leave_objective": <objectif nombre>,
+  "cross_visits": <nombre de visites croisees>,
+  "cross_visits_objective": "<objectif ou -->",
+  "managerial_visits": <nombre de visites manageriales>,
+  "managerial_visits_objective": <objectif nombre>,
+  "sd_declarants_percentage": <pourcentage de declarants SD>,
+  "sd_declarants_objective": <objectif decimal>,
+  "sd_declared_count": <nombre de SD declares>,
+  "sd_declared_objective": <objectif nombre>,
+  "waste_awareness_employees": <nombre de salaries sensibilises tri dechets>,
+  "waste_awareness_objective": "<objectif ou -->",
+  "training_plan_follow_rate": <taux de suivi plan de formation>,
+  "training_plan_objective": "<objectif ex: 100%>",
+  "field_visits_count": <nombre de visites terrain>,
+  "monthly_report": "<texte du bilan mensuel>",
+  "action_priorities": ["priorite 1", "priorite 2"],
+  "vigilance_points": ["point 1", "point 2"],
+  "focus_event_title": "<titre du focus evenement>",
+  "focus_event_content": ["fait 1", "fait 2"],
+  "quote": "Aucune urgence, aucune importance sont prioritaires sur la securite"
+}
+
+Retourne UNIQUEMENT du JSON valide, sans markdown, sans backticks.`;
     }
 
     systemPrompt += " Retourne UNIQUEMENT du JSON valide, sans markdown, sans backticks, sans texte avant ou après.";

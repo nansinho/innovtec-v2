@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import type { SseDashboard } from "@/lib/types/database";
 import { createSseDashboard, updateSseDashboard, getSseDashboard } from "@/actions/sse-dashboard";
 import { toast } from "sonner";
-import { ArrowLeft, Plus, X, Save } from "lucide-react";
+import { ArrowLeft, Plus, X, Save, Sparkles } from "lucide-react";
 
 const MONTH_NAMES = [
   "Janvier", "Fevrier", "Mars", "Avril", "Mai", "Juin",
@@ -73,6 +73,87 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
   });
   const [isPending, startTransition] = useTransition();
 
+  // AI import state
+  const [showAiImport, setShowAiImport] = useState(false);
+  const [aiText, setAiText] = useState("");
+  const [aiLoading, setAiLoading] = useState(false);
+
+  async function handleAiImport() {
+    if (!aiText.trim()) {
+      toast.error("Collez du texte a analyser");
+      return;
+    }
+    setAiLoading(true);
+    try {
+      const res = await fetch("/api/ai/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          prompt: aiText,
+          type: "sse_dashboard",
+        }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        toast.error(err.error || "Erreur IA");
+        setAiLoading(false);
+        return;
+      }
+
+      const { result } = await res.json();
+
+      // Map AI result to form fields
+      setForm((prev) => ({
+        ...prev,
+        month: result.month ?? prev.month,
+        year: result.year ?? prev.year,
+        accidents_with_leave: Number(result.accidents_with_leave) || prev.accidents_with_leave,
+        accidents_with_leave_objective: result.accidents_with_leave_objective ?? prev.accidents_with_leave_objective,
+        regulatory_training_completion: Number(result.regulatory_training_completion) || prev.regulatory_training_completion,
+        regulatory_training_objective: result.regulatory_training_objective ?? prev.regulatory_training_objective,
+        regulatory_compliance_rate: Number(result.regulatory_compliance_rate) || prev.regulatory_compliance_rate,
+        regulatory_compliance_objective: result.regulatory_compliance_objective ?? prev.regulatory_compliance_objective,
+        periodic_verification_rate: Number(result.periodic_verification_rate) || prev.periodic_verification_rate,
+        periodic_verification_objective: result.periodic_verification_objective ?? prev.periodic_verification_objective,
+        waste_monitoring: Number(result.waste_monitoring) || prev.waste_monitoring,
+        waste_monitoring_objective: result.waste_monitoring_objective ?? prev.waste_monitoring_objective,
+        sst_rate: Number(result.sst_rate) || prev.sst_rate,
+        sst_rate_objective: result.sst_rate_objective ?? prev.sst_rate_objective,
+        downgraded_bins: Number(result.downgraded_bins) || prev.downgraded_bins,
+        downgraded_bins_objective: Number(result.downgraded_bins_objective) || prev.downgraded_bins_objective,
+        accidents_without_leave: Number(result.accidents_without_leave) || prev.accidents_without_leave,
+        accidents_without_leave_objective: Number(result.accidents_without_leave_objective) || prev.accidents_without_leave_objective,
+        cross_visits: Number(result.cross_visits) || prev.cross_visits,
+        cross_visits_objective: result.cross_visits_objective ?? prev.cross_visits_objective,
+        managerial_visits: Number(result.managerial_visits) || prev.managerial_visits,
+        managerial_visits_objective: Number(result.managerial_visits_objective) || prev.managerial_visits_objective,
+        sd_declarants_percentage: Number(result.sd_declarants_percentage) || prev.sd_declarants_percentage,
+        sd_declarants_objective: Number(result.sd_declarants_objective) || prev.sd_declarants_objective,
+        sd_declared_count: Number(result.sd_declared_count) || prev.sd_declared_count,
+        sd_declared_objective: Number(result.sd_declared_objective) || prev.sd_declared_objective,
+        waste_awareness_employees: Number(result.waste_awareness_employees) || prev.waste_awareness_employees,
+        waste_awareness_objective: result.waste_awareness_objective ?? prev.waste_awareness_objective,
+        training_plan_follow_rate: Number(result.training_plan_follow_rate) || prev.training_plan_follow_rate,
+        training_plan_objective: result.training_plan_objective ?? prev.training_plan_objective,
+        field_visits_count: Number(result.field_visits_count) || prev.field_visits_count,
+        monthly_report: result.monthly_report ?? prev.monthly_report,
+        action_priorities: Array.isArray(result.action_priorities) ? result.action_priorities : prev.action_priorities,
+        vigilance_points: Array.isArray(result.vigilance_points) ? result.vigilance_points : prev.vigilance_points,
+        focus_event_title: result.focus_event_title ?? prev.focus_event_title,
+        focus_event_content: Array.isArray(result.focus_event_content) ? result.focus_event_content : prev.focus_event_content,
+        quote: result.quote ?? prev.quote,
+      }));
+
+      toast.success("Donnees importees par l'IA -- verifiez et ajustez si necessaire");
+      setShowAiImport(false);
+      setAiText("");
+    } catch {
+      toast.error("Erreur lors de l'import IA");
+    }
+    setAiLoading(false);
+  }
+
   function set<K extends keyof typeof form>(key: K, value: (typeof form)[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
@@ -120,13 +201,68 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
 
   return (
     <div>
-      <button
-        onClick={onCancel}
-        className="mb-4 flex items-center gap-1.5 text-sm text-[var(--text-secondary)] transition-colors hover:text-[var(--heading)]"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Retour a la liste
-      </button>
+      <div className="mb-4 flex items-center justify-between">
+        <button
+          onClick={onCancel}
+          className="flex items-center gap-1.5 text-sm text-[var(--text-secondary)] transition-colors hover:text-[var(--heading)]"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Retour
+        </button>
+        <button
+          onClick={() => setShowAiImport(true)}
+          className="flex items-center gap-1.5 rounded-[var(--radius-xs)] bg-gradient-to-r from-purple-600 to-blue-600 px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90"
+        >
+          <Sparkles className="h-4 w-4" />
+          Import IA
+        </button>
+      </div>
+
+      {/* AI Import Modal */}
+      {showAiImport && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => !aiLoading && setShowAiImport(false)}>
+          <div className="mx-4 w-full max-w-2xl rounded-[var(--radius)] border border-[var(--border-1)] bg-white p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
+            <div className="mb-4 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-purple-600" />
+                <h3 className="text-base font-semibold text-[var(--heading)]">Import via IA</h3>
+              </div>
+              <button onClick={() => setShowAiImport(false)} disabled={aiLoading} className="rounded-[var(--radius-xs)] p-1 text-[var(--text-muted)] hover:bg-[var(--hover)]">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <p className="mb-3 text-sm text-[var(--text-secondary)]">
+              Collez le contenu de votre tableau SSE (texte, donnees copiees depuis un fichier Excel, Word ou PDF).
+              L&apos;IA analysera le contenu et pre-remplira automatiquement tous les champs du formulaire.
+            </p>
+            <textarea
+              value={aiText}
+              onChange={(e) => setAiText(e.target.value)}
+              rows={12}
+              disabled={aiLoading}
+              placeholder={"Collez ici le contenu de votre tableau SSE...\n\nExemple :\nJanvier 2026\nASAA : 1 (objectif <=2)\nFormations reglementaires : 100 (objectif > 95%)\nTaux de conformite : 91.3 (objectif > 80%)\n..."}
+              className="w-full rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-3 py-2 text-sm text-[var(--heading)] outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 disabled:opacity-50"
+            />
+            <div className="mt-4 flex items-center justify-end gap-3">
+              <button
+                onClick={() => setShowAiImport(false)}
+                disabled={aiLoading}
+                className="rounded-[var(--radius-xs)] border border-[var(--border-2)] px-4 py-2 text-sm font-medium text-[var(--heading)] hover:bg-[var(--hover)] disabled:opacity-50"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={handleAiImport}
+                disabled={aiLoading || !aiText.trim()}
+                className="flex items-center gap-1.5 rounded-[var(--radius-xs)] bg-gradient-to-r from-purple-600 to-blue-600 px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+              >
+                <Sparkles className="h-4 w-4" />
+                {aiLoading ? "Analyse en cours..." : "Analyser et importer"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="space-y-6">
         {/* Periode */}
