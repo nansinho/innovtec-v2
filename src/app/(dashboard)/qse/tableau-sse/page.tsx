@@ -1,13 +1,17 @@
+import { getProfile } from "@/actions/auth";
 import { getSseDashboards, getLatestSseDashboard } from "@/actions/sse-dashboard";
 import { SseDashboardView } from "@/components/qse/sse-dashboard-view";
 
 export const dynamic = "force-dynamic";
 
 export default async function TableauSsePage() {
-  const [dashboards, latest] = await Promise.all([
+  const [dashboards, latest, profile] = await Promise.all([
     getSseDashboards(),
     getLatestSseDashboard(),
+    getProfile(),
   ]);
+
+  const canManage = profile && ["admin", "responsable_qse"].includes(profile.role);
 
   return (
     <div className="p-6 pb-20 md:pb-6">
@@ -20,7 +24,11 @@ export default async function TableauSsePage() {
         </p>
       </div>
 
-      <SseDashboardView dashboards={dashboards} initialDashboard={latest} />
+      <SseDashboardView
+        dashboards={dashboards}
+        initialDashboard={latest}
+        canManage={!!canManage}
+      />
     </div>
   );
 }

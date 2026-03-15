@@ -66,7 +66,6 @@ const adminNav = [
   { href: "/admin/users", label: "Utilisateurs", icon: UserCog },
   { href: "/admin/logs", label: "Journal d'activité", icon: ClipboardList },
   { href: "/admin/news", label: "Actualités", icon: Newspaper },
-  { href: "/admin/tableau-sse", label: "Tableau SSE", icon: BarChart3 },
   { href: "/admin/settings", label: "Paramètres", icon: Settings },
 ];
 
