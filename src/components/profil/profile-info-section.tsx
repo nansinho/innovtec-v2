@@ -59,6 +59,7 @@ export default function ProfileInfoSection({
     last_name: profile.last_name,
     job_title: profile.job_title || "",
     phone: profile.phone || "",
+    gender: profile.gender || ("" as "" | "M" | "F"),
     date_of_birth: profile.date_of_birth || "",
     hire_date: profile.hire_date || "",
   });
@@ -198,6 +199,25 @@ export default function ProfileInfoSection({
               placeholder="06 12 34 56 78"
               className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
             />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">
+              Genre
+            </label>
+            <select
+              value={form.gender}
+              onChange={(e) =>
+                setForm({ ...form, gender: e.target.value as "" | "M" | "F" })
+              }
+              className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+            >
+              <option value="">-- Non renseigné --</option>
+              <option value="M">Homme</option>
+              <option value="F">Femme</option>
+            </select>
           </div>
         </div>
 

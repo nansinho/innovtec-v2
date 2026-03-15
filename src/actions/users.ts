@@ -159,6 +159,7 @@ export async function createUser(formData: {
   role: UserRole;
   job_title?: string;
   phone?: string;
+  gender?: string;
   department?: string;
   team?: string;
   agency?: string;
@@ -178,6 +179,7 @@ export async function createUser(formData: {
     role,
     job_title,
     phone,
+    gender,
     department,
     team,
     agency,
@@ -229,6 +231,7 @@ export async function createUser(formData: {
           role,
           job_title: job_title ?? "",
           phone: phone ?? "",
+          gender: gender ?? "",
           department: department ?? "",
           team: team ?? "",
           agency: agency ?? "Siège",
@@ -271,6 +274,7 @@ export async function updateUser(
     role?: UserRole;
     job_title?: string;
     phone?: string;
+    gender?: string;
     department?: string;
     team?: string;
     agency?: string;

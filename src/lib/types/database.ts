@@ -56,6 +56,7 @@ export interface Profile {
   job_title: string;
   phone: string;
   avatar_url: string;
+  gender: "" | "M" | "F";
   date_of_birth: string | null;
   hire_date: string | null;
   department: string;

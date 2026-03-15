@@ -165,7 +165,11 @@ export default function TrombinoscopeGrid({
                       "flex h-16 w-16 items-center justify-center rounded-full text-xl font-bold text-white",
                       hasBirthday
                         ? "bg-gradient-to-br from-pink-500 to-orange-400"
-                        : "bg-[var(--navy)]"
+                        : user.gender === "F"
+                          ? "bg-gradient-to-br from-pink-400 to-pink-500"
+                          : user.gender === "M"
+                            ? "bg-gradient-to-br from-blue-400 to-blue-500"
+                            : "bg-[var(--navy)]"
                     )}
                   >
                     {initials}

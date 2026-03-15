@@ -6,6 +6,7 @@ import {
   getUserDocuments,
 } from "@/actions/profile";
 import ProfileTabs from "@/components/profil/profile-tabs";
+import ProfileAvatarSection from "@/components/profil/profile-avatar-section";
 
 export const dynamic = "force-dynamic";
 
@@ -39,6 +40,8 @@ export default async function ProfilPage() {
           Gérez vos informations personnelles et vos documents
         </p>
       </div>
+
+      <ProfileAvatarSection profile={profile} />
 
       <ProfileTabs
         profile={profile}

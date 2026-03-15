@@ -13,6 +13,7 @@ const ALLOWED_TYPES: Record<string, string[]> = {
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
   ],
   "company-logos": ["image/jpeg", "image/png", "image/webp", "image/svg+xml"],
+  "avatars": ["image/jpeg", "image/png", "image/webp"],
 };
 
 const MAX_SIZE = 10 * 1024 * 1024; // 10MB
