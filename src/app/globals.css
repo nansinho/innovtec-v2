@@ -69,7 +69,7 @@
   --shadow-md: var(--shadow-md);
   --shadow-lg: var(--shadow-lg);
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
-  --font-display: "Sora", system-ui, -apple-system, sans-serif;
+  --font-display: "Inter", system-ui, -apple-system, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
@@ -86,7 +86,8 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: "Sora", system-ui, -apple-system, sans-serif;
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  font-weight: 700;
   letter-spacing: -0.025em;
 }
 

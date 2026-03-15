@@ -278,7 +278,7 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
                 <p className="text-sm font-semibold text-[var(--navy)]">{monthLabel} {d.year}</p>
               </div>
             </div>
-            <h1 className="text-right text-xl font-bold text-[var(--navy)]" style={{ fontFamily: "var(--font-display, Sora, sans-serif)" }}>
+            <h1 className="text-right text-xl font-bold text-[var(--navy)]">
               Tableau de bord santé-sécurité-environnement
             </h1>
           </div>
