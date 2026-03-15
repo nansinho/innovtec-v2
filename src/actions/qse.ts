@@ -2,7 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
-import type { DangerReport, Rex, QseContent, QseContentSection } from "@/lib/types/database";
+import type { DangerReport, Rex, QseContent, QseContentSection, QseDocument } from "@/lib/types/database";
 
 // ==========================================
 // POLITIQUE QSE
@@ -41,7 +41,11 @@ export async function saveQseContent(
   sourceFileUrl?: string,
   id?: string,
   year?: number | null,
-  dateSignature?: string | null
+  dateSignature?: string | null,
+  documents?: QseDocument[],
+  engagementText?: string,
+  engagementLieu?: string,
+  signataires?: string[]
 ): Promise<{ success: boolean; error?: string }> {
   const supabase = await createClient();
   const {
@@ -57,6 +61,10 @@ export async function saveQseContent(
   if (sourceFileUrl !== undefined) updateData.source_file_url = sourceFileUrl;
   if (year !== undefined) updateData.year = year;
   if (dateSignature !== undefined) updateData.date_signature = dateSignature;
+  if (documents !== undefined) updateData.documents = documents;
+  if (engagementText !== undefined) updateData.engagement_text = engagementText;
+  if (engagementLieu !== undefined) updateData.engagement_lieu = engagementLieu;
+  if (signataires !== undefined) updateData.signataires = signataires;
 
   if (id) {
     const { error } = await supabase
@@ -74,6 +82,10 @@ export async function saveQseContent(
       updated_by: user.id,
       year: year ?? null,
       date_signature: dateSignature ?? null,
+      documents: documents ?? [],
+      engagement_text: engagementText ?? "",
+      engagement_lieu: engagementLieu ?? "",
+      signataires: signataires ?? [],
     };
 
     const { error } = await supabase.from("qse_content").insert(insertData);
@@ -92,7 +104,11 @@ export async function createQseContent(
   sections: QseContentSection[],
   sourceFileUrl?: string,
   year?: number | null,
-  dateSignature?: string | null
+  dateSignature?: string | null,
+  documents?: QseDocument[],
+  engagementText?: string,
+  engagementLieu?: string,
+  signataires?: string[]
 ): Promise<{ success: boolean; error?: string }> {
   const supabase = await createClient();
   const {
@@ -108,6 +124,10 @@ export async function createQseContent(
     updated_by: user.id,
     year: year ?? null,
     date_signature: dateSignature ?? null,
+    documents: documents ?? [],
+    engagement_text: engagementText ?? "",
+    engagement_lieu: engagementLieu ?? "",
+    signataires: signataires ?? [],
   };
 
   const { error } = await supabase.from("qse_content").insert(insertData);
@@ -183,6 +203,50 @@ export async function getQseFileUrls(
   }
 
   return urls;
+}
+
+// ==========================================
+// QSE DOCUMENT FILES (Documents Obligatoires)
+// ==========================================
+
+export async function uploadQseDocumentFile(
+  formData: FormData
+): Promise<{ filePath?: string; error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Non authentifié" };
+
+  const file = formData.get("file") as File | null;
+  if (!file) return { error: "Aucun fichier fourni" };
+
+  const ext = file.name.split(".").pop()?.toLowerCase() || "pdf";
+  const filePath = `qse/documents-obligatoires/${Date.now()}-${crypto.randomUUID()}.${ext}`;
+
+  const { error } = await supabase.storage
+    .from("documents")
+    .upload(filePath, file);
+
+  if (error) return { error: error.message };
+  return { filePath };
+}
+
+export async function deleteQseDocumentFile(
+  filePath: string
+): Promise<{ success: boolean; error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { success: false, error: "Non authentifié" };
+
+  const { error } = await supabase.storage
+    .from("documents")
+    .remove([filePath]);
+
+  if (error) return { success: false, error: error.message };
+  return { success: true };
 }
 
 // ==========================================

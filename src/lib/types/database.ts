@@ -433,6 +433,11 @@ export interface QseContentSection {
   content: string;
 }
 
+export interface QseDocument {
+  title: string;
+  file_url: string;
+}
+
 export interface QseContent {
   id: string;
   type: string;
@@ -441,6 +446,10 @@ export interface QseContent {
   source_file_url: string;
   year: number | null;
   date_signature: string | null;
+  documents: QseDocument[];
+  engagement_text: string;
+  engagement_lieu: string;
+  signataires: string[];
   updated_by: string | null;
   created_at: string;
   updated_at: string;
