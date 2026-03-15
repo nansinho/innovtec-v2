@@ -7,8 +7,8 @@ import { toast } from "sonner";
 import { ArrowLeft, Plus, X, Save, Sparkles, Upload } from "lucide-react";
 
 const MONTH_NAMES = [
-  "Janvier", "Fevrier", "Mars", "Avril", "Mai", "Juin",
-  "Juillet", "Aout", "Septembre", "Octobre", "Novembre", "Decembre",
+  "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
+  "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre",
 ];
 
 const currentMonth = new Date().getMonth() + 1;
@@ -50,9 +50,9 @@ function getDefaults(): Omit<SseDashboard, "id" | "created_by" | "created_at" | 
     monthly_report: "",
     action_priorities: [],
     vigilance_points: [],
-    focus_event_title: "Accident avec arret",
+    focus_event_title: "Accident avec arrêt",
     focus_event_content: [],
-    quote: "Aucune urgence, aucune importance sont prioritaires sur la securite",
+    quote: "Aucune urgence, aucune importance sont prioritaires sur la sécurité",
   };
 }
 
@@ -80,7 +80,7 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
 
   async function handleAiImport() {
     if (!aiFile) {
-      toast.error("Selectionnez un fichier a analyser");
+      toast.error("Sélectionnez un fichier à analyser");
       return;
     }
     setAiLoading(true);
@@ -88,7 +88,7 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
       const formData = new FormData();
       formData.append("file", aiFile);
       formData.append("type", "sse_dashboard");
-      formData.append("prompt", "Analyse ce document SSE et extrais toutes les donnees vers le format JSON demande.");
+      formData.append("prompt", "Analyse ce document SSE et extrais toutes les données vers le format JSON demandé.");
 
       const res = await fetch("/api/ai/analyze-file", {
         method: "POST",
@@ -146,7 +146,7 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
         quote: result.quote ?? prev.quote,
       }));
 
-      toast.success("Donnees importees par l'IA -- verifiez et ajustez si necessaire");
+      toast.success("Données importées par l'IA -- vérifiez et ajustez si nécessaire");
       setShowAiImport(false);
       setAiFile(null);
     } catch {
@@ -186,7 +186,7 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
           const updated = await getSseDashboard(dashboard.id);
           if (updated) onSave(updated);
         } else {
-          toast.error(result.error || "Erreur lors de la mise a jour");
+          toast.error(result.error || "Erreur lors de la mise à jour");
         }
       } else {
         const result = await createSseDashboard(form);
@@ -194,7 +194,7 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
           const created = await getSseDashboard(result.id);
           if (created) onSave(created);
         } else {
-          toast.error(result.error || "Erreur lors de la creation");
+          toast.error(result.error || "Erreur lors de la création");
         }
       }
     });
@@ -234,7 +234,7 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
             </div>
             <p className="mb-3 text-sm text-[var(--text-secondary)]">
               Importez une image (PNG, JPG) ou un PDF de votre tableau de bord SSE.
-              L&apos;IA analysera le document et pre-remplira automatiquement tous les champs du formulaire.
+              L&apos;IA analysera le document et pré-remplira automatiquement tous les champs du formulaire.
             </p>
             <label
               className={`flex cursor-pointer flex-col items-center justify-center rounded-[var(--radius-xs)] border-2 border-dashed px-6 py-10 transition-colors ${
@@ -261,7 +261,7 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
               ) : (
                 <div className="text-center">
                   <p className="text-sm font-medium text-[var(--heading)]">
-                    Cliquez pour selectionner un fichier
+                    Cliquez pour sélectionner un fichier
                   </p>
                   <p className="mt-1 text-xs text-[var(--text-muted)]">
                     PNG, JPG ou PDF
@@ -303,7 +303,7 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
 
       <div className="space-y-6">
         {/* Periode */}
-        <Section title="Periode">
+        <Section title="Période">
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">Mois</label>
@@ -318,7 +318,7 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
               </select>
             </div>
             <div>
-              <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">Annee</label>
+              <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">Année</label>
               <input
                 type="number"
                 value={form.year}
@@ -336,13 +336,13 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
               <thead className="bg-[var(--hover)]">
                 <tr>
                   <th className="px-3 py-2 text-left text-xs font-medium text-[var(--text-secondary)]">Indicateur</th>
-                  <th className="px-3 py-2 text-center text-xs font-medium text-[var(--text-secondary)]">Realise</th>
+                  <th className="px-3 py-2 text-center text-xs font-medium text-[var(--text-secondary)]">Réalisé</th>
                   <th className="px-3 py-2 text-center text-xs font-medium text-[var(--text-secondary)]">Objectif</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--border-1)]">
                 <IndicatorRow
-                  label="Nombre d'Accidents en Service Avec Arrets (ASAA)"
+                  label="Nombre d'Accidents en Service Avec Arrêts (ASAA)"
                   value={form.accidents_with_leave}
                   onValueChange={(v) => set("accidents_with_leave", v)}
                   objective={form.accidents_with_leave_objective}
@@ -350,7 +350,7 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
                   type="number"
                 />
                 <IndicatorRow
-                  label="Suivi des formations reglementaires"
+                  label="Suivi des formations réglementaires"
                   value={form.regulatory_training_completion}
                   onValueChange={(v) => set("regulatory_training_completion", v)}
                   objective={form.regulatory_training_objective}
@@ -358,7 +358,7 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
                   type="decimal"
                 />
                 <IndicatorRow
-                  label="Taux de conformite reglementaire"
+                  label="Taux de conformité réglementaire"
                   value={form.regulatory_compliance_rate}
                   onValueChange={(v) => set("regulatory_compliance_rate", v)}
                   objective={form.regulatory_compliance_objective}
@@ -366,7 +366,7 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
                   type="decimal"
                 />
                 <IndicatorRow
-                  label="Taux de realisation de la verification periodique"
+                  label="Taux de réalisation de la vérification périodique"
                   value={form.periodic_verification_rate}
                   onValueChange={(v) => set("periodic_verification_rate", v)}
                   objective={form.periodic_verification_objective}
@@ -375,7 +375,7 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
                   suffix="%"
                 />
                 <IndicatorRow
-                  label="Suivi des dechets"
+                  label="Suivi des déchets"
                   value={form.waste_monitoring}
                   onValueChange={(v) => set("waste_monitoring", v)}
                   objective={form.waste_monitoring_objective}
@@ -393,7 +393,7 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
                   suffix="%"
                 />
                 <tr>
-                  <td className="px-3 py-2 text-sm text-[var(--heading)]">Bennes declassees</td>
+                  <td className="px-3 py-2 text-sm text-[var(--heading)]">Bennes déclassées</td>
                   <td className="px-3 py-2">
                     <input
                       type="number"
@@ -424,12 +424,12 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
                 <tr>
                   <th className="px-3 py-2 text-left text-xs font-medium text-[var(--text-secondary)]">Indicateur</th>
                   <th className="px-3 py-2 text-center text-xs font-medium text-[var(--text-secondary)]">Objectif</th>
-                  <th className="px-3 py-2 text-center text-xs font-medium text-[var(--text-secondary)]">Realise</th>
+                  <th className="px-3 py-2 text-center text-xs font-medium text-[var(--text-secondary)]">Réalisé</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--border-1)]">
                 <tr>
-                  <td className="px-3 py-2 text-sm text-[var(--heading)]">Nombre d&apos;accidents en service sans arret (ASSA)</td>
+                  <td className="px-3 py-2 text-sm text-[var(--heading)]">Nombre d&apos;accidents en service sans arrêt (ASSA)</td>
                   <td className="px-3 py-2">
                     <input type="number" value={form.accidents_without_leave_objective} onChange={(e) => set("accidents_without_leave_objective", parseInt(e.target.value) || 0)}
                       className="w-full rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-2 py-1 text-center text-sm outline-none focus:border-[var(--yellow)]" />
@@ -440,7 +440,7 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
                   </td>
                 </tr>
                 <tr>
-                  <td className="px-3 py-2 text-sm text-[var(--heading)]">Nombre de visites croisees</td>
+                  <td className="px-3 py-2 text-sm text-[var(--heading)]">Nombre de visites croisées</td>
                   <td className="px-3 py-2">
                     <input type="text" value={form.cross_visits_objective} onChange={(e) => set("cross_visits_objective", e.target.value)}
                       className="w-full rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-2 py-1 text-center text-sm outline-none focus:border-[var(--yellow)]" />
@@ -451,7 +451,7 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
                   </td>
                 </tr>
                 <tr>
-                  <td className="px-3 py-2 text-sm text-[var(--heading)]">Nombre de visites manageriales</td>
+                  <td className="px-3 py-2 text-sm text-[var(--heading)]">Nombre de visites managériales</td>
                   <td className="px-3 py-2">
                     <input type="number" value={form.managerial_visits_objective} onChange={(e) => set("managerial_visits_objective", parseInt(e.target.value) || 0)}
                       className="w-full rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-2 py-1 text-center text-sm outline-none focus:border-[var(--yellow)]" />
@@ -462,7 +462,7 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
                   </td>
                 </tr>
                 <tr>
-                  <td className="px-3 py-2 text-sm text-[var(--heading)]">% de declarants de SD (salaries)</td>
+                  <td className="px-3 py-2 text-sm text-[var(--heading)]">% de déclarants de SD (salariés)</td>
                   <td className="px-3 py-2">
                     <input type="number" step="0.01" value={form.sd_declarants_objective} onChange={(e) => set("sd_declarants_objective", parseFloat(e.target.value) || 0)}
                       className="w-full rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-2 py-1 text-center text-sm outline-none focus:border-[var(--yellow)]" />
@@ -473,7 +473,7 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
                   </td>
                 </tr>
                 <tr>
-                  <td className="px-3 py-2 text-sm text-[var(--heading)]">Nombres de SD declares</td>
+                  <td className="px-3 py-2 text-sm text-[var(--heading)]">Nombres de SD déclarés</td>
                   <td className="px-3 py-2">
                     <input type="number" value={form.sd_declared_objective} onChange={(e) => set("sd_declared_objective", parseInt(e.target.value) || 0)}
                       className="w-full rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-2 py-1 text-center text-sm outline-none focus:border-[var(--yellow)]" />
@@ -484,7 +484,7 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
                   </td>
                 </tr>
                 <tr>
-                  <td className="px-3 py-2 text-sm text-[var(--heading)]">Nombre de salaries sensibilises au tri des dechets</td>
+                  <td className="px-3 py-2 text-sm text-[var(--heading)]">Nombre de salariés sensibilisés au tri des déchets</td>
                   <td className="px-3 py-2">
                     <input type="text" value={form.waste_awareness_objective} onChange={(e) => set("waste_awareness_objective", e.target.value)}
                       className="w-full rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-2 py-1 text-center text-sm outline-none focus:border-[var(--yellow)]" />
@@ -529,19 +529,19 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
             value={form.monthly_report}
             onChange={(e) => set("monthly_report", e.target.value)}
             rows={6}
-            placeholder="Redigez le bilan mensuel..."
+            placeholder="Rédigez le bilan mensuel..."
             className="w-full rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-3 py-2 text-sm text-[var(--heading)] outline-none focus:border-[var(--yellow)] focus:ring-1 focus:ring-[var(--yellow)]"
           />
         </Section>
 
         {/* Priorites d'action */}
-        <Section title="Priorites d'action">
+        <Section title="Priorités d'action">
           <DynamicList
             items={form.action_priorities}
             onAdd={() => addToArray("action_priorities")}
             onUpdate={(i, v) => updateArrayItem("action_priorities", i, v)}
             onRemove={(i) => removeArrayItem("action_priorities", i)}
-            placeholder="Nouvelle priorite..."
+            placeholder="Nouvelle priorité..."
           />
         </Section>
 
@@ -557,9 +557,9 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
         </Section>
 
         {/* Focus evenement */}
-        <Section title="Focus evenement">
+        <Section title="Focus événement">
           <div className="mb-4">
-            <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">Titre de l&apos;evenement</label>
+            <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">Titre de l&apos;événement</label>
             <input
               type="text"
               value={form.focus_event_title}
@@ -600,7 +600,7 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
             className="flex items-center gap-1.5 rounded-[var(--radius-xs)] bg-[var(--yellow)] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[var(--yellow-hover)] disabled:opacity-50"
           >
             <Save className="h-4 w-4" />
-            {isPending ? "Enregistrement..." : isEditing ? "Mettre a jour" : "Creer le tableau"}
+            {isPending ? "Enregistrement..." : isEditing ? "Mettre à jour" : "Créer le tableau"}
           </button>
         </div>
       </div>

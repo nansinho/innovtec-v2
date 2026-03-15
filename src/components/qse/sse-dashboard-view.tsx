@@ -14,8 +14,8 @@ import {
 } from "lucide-react";
 
 const MONTH_NAMES = [
-  "Janvier", "Fevrier", "Mars", "Avril", "Mai", "Juin",
-  "Juillet", "Aout", "Septembre", "Octobre", "Novembre", "Decembre",
+  "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
+  "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre",
 ];
 
 function getNextMonthLabel(month: number, year: number): string {
@@ -47,11 +47,19 @@ function meetsObjective(realise: number, objectiveStr: string): boolean | null {
   }
 }
 
-function ValueCell({ value, objective, isPercentage = false }: { value: number; objective: string; isPercentage?: boolean }) {
-  const met = meetsObjective(value, objective);
+function getSstColorClass(rate: number): string {
+  if (rate >= 80) return "text-emerald-600";
+  if (rate >= 60) return "text-yellow-500";
+  if (rate >= 40) return "text-orange-500";
+  return "text-red-600";
+}
+
+function ValueCell({ value, objective, isPercentage = false, colorClass }: { value: number; objective: string; isPercentage?: boolean; colorClass?: string }) {
+  const met = colorClass ? null : meetsObjective(value, objective);
   const display = isPercentage ? `${value}%` : value;
+  const cls = colorClass ?? (met === false ? "text-red-600" : met === true ? "text-emerald-600" : "text-[var(--heading)]");
   return (
-    <td className={`px-4 py-2.5 text-center text-sm font-semibold ${met === false ? "text-red-600" : met === true ? "text-emerald-600" : "text-[var(--heading)]"}`}>
+    <td className={`px-4 py-2.5 text-center text-sm font-semibold ${cls}`}>
       {display}
     </td>
   );
@@ -101,14 +109,14 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
     setDashboards(sortDashboards([...dashboards, newDashboard]));
     setSelected(newDashboard);
     setMode("detail");
-    toast.success("Tableau SSE cree avec succes");
+    toast.success("Tableau SSE créé avec succès");
   }
 
   function handleUpdated(updatedDashboard: SseDashboard) {
     setDashboards(dashboards.map((d) => (d.id === updatedDashboard.id ? updatedDashboard : d)));
     setSelected(updatedDashboard);
     setMode("detail");
-    toast.success("Tableau SSE mis a jour");
+    toast.success("Tableau SSE mis à jour");
   }
 
   function handleDelete() {
@@ -121,7 +129,7 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
           setSelected(null);
           setMode("list");
         }
-        toast.success("Tableau SSE supprime");
+        toast.success("Tableau SSE supprimé");
       } else {
         toast.error(result.error || "Erreur lors de la suppression");
       }
@@ -230,7 +238,7 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
               </div>
             </div>
             <h1 className="text-right text-xl font-bold text-[var(--navy)]" style={{ fontFamily: "var(--font-display, Sora, sans-serif)" }}>
-              Tableau de bord sante-securite-environnement
+              Tableau de bord santé-sécurité-environnement
             </h1>
           </div>
 
@@ -249,18 +257,18 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
                 <thead>
                   <tr className="bg-[var(--navy)]">
                     <th className="px-4 py-2.5 text-xs font-semibold text-white">Indicateurs</th>
-                    <th className="px-4 py-2.5 text-center text-xs font-semibold text-white">Realise</th>
+                    <th className="px-4 py-2.5 text-center text-xs font-semibold text-white">Réalisé</th>
                     <th className="px-4 py-2.5 text-center text-xs font-semibold text-white">Objectif {d.year}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[var(--border-1)]">
-                  <tr><td className="px-4 py-2.5 text-sm text-[var(--heading)]">Nombre d&apos;Accidents en Service Avec Arrets (ASAA)</td><ValueCell value={d.accidents_with_leave} objective={d.accidents_with_leave_objective} /><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.accidents_with_leave_objective}</td></tr>
-                  <tr><td className="px-4 py-2.5 text-sm text-[var(--heading)]">Suivi des formations reglementaires</td><ValueCell value={d.regulatory_training_completion} objective={d.regulatory_training_objective} /><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.regulatory_training_objective}</td></tr>
-                  <tr><td className="px-4 py-2.5 text-sm text-[var(--heading)]">Taux de conformite reglementaire</td><ValueCell value={d.regulatory_compliance_rate} objective={d.regulatory_compliance_objective} /><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.regulatory_compliance_objective}</td></tr>
-                  <tr><td className="px-4 py-2.5 text-sm text-[var(--heading)]">Taux de realisation de la verification periodique</td><ValueCell value={d.periodic_verification_rate} objective={d.periodic_verification_objective} isPercentage /><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.periodic_verification_objective}</td></tr>
-                  <tr><td className="px-4 py-2.5 text-sm font-medium text-emerald-600">Suivi des dechets</td><ValueCell value={d.waste_monitoring} objective={d.waste_monitoring_objective} isPercentage /><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.waste_monitoring_objective}</td></tr>
-                  <tr><td className="px-4 py-2.5 text-sm font-medium text-red-600">Taux de SST</td><ValueCell value={d.sst_rate} objective={d.sst_rate_objective} isPercentage /><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.sst_rate_objective}</td></tr>
-                  <tr><td className="px-4 py-2.5 text-sm text-[var(--heading)]">{d.downgraded_bins} Bennes declassees</td><td className="px-4 py-2.5 text-center text-sm text-[var(--heading)]">{d.downgraded_bins}</td><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.downgraded_bins_objective}</td></tr>
+                  <tr><td className="px-4 py-2.5 text-sm text-[var(--heading)]">Nombre d&apos;Accidents en Service Avec Arrêts (ASAA)</td><ValueCell value={d.accidents_with_leave} objective={d.accidents_with_leave_objective} /><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.accidents_with_leave_objective}</td></tr>
+                  <tr><td className="px-4 py-2.5 text-sm text-[var(--heading)]">Suivi des formations réglementaires</td><ValueCell value={d.regulatory_training_completion} objective={d.regulatory_training_objective} /><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.regulatory_training_objective}</td></tr>
+                  <tr><td className="px-4 py-2.5 text-sm text-[var(--heading)]">Taux de conformité réglementaire</td><ValueCell value={d.regulatory_compliance_rate} objective={d.regulatory_compliance_objective} /><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.regulatory_compliance_objective}</td></tr>
+                  <tr><td className="px-4 py-2.5 text-sm text-[var(--heading)]">Taux de réalisation de la vérification périodique</td><ValueCell value={d.periodic_verification_rate} objective={d.periodic_verification_objective} isPercentage /><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.periodic_verification_objective}</td></tr>
+                  <tr><td className="px-4 py-2.5 text-sm font-medium text-emerald-600">Suivi des déchets</td><ValueCell value={d.waste_monitoring} objective={d.waste_monitoring_objective} isPercentage /><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.waste_monitoring_objective}</td></tr>
+                  <tr><td className={`px-4 py-2.5 text-sm font-medium ${getSstColorClass(d.sst_rate)}`}>Taux de SST</td><ValueCell value={d.sst_rate} objective={d.sst_rate_objective} isPercentage colorClass={getSstColorClass(d.sst_rate)} /><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.sst_rate_objective}</td></tr>
+                  <tr><td className="px-4 py-2.5 text-sm text-[var(--heading)]">{d.downgraded_bins} Bennes déclassées</td><td className="px-4 py-2.5 text-center text-sm text-[var(--heading)]">{d.downgraded_bins}</td><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.downgraded_bins_objective}</td></tr>
                 </tbody>
               </table>
             </div>
@@ -272,16 +280,16 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
                   <tr className="bg-[var(--navy)]">
                     <th className="px-4 py-2.5 text-xs font-semibold text-white">Indicateurs de suivi</th>
                     <th className="px-4 py-2.5 text-center text-xs font-semibold text-white">Objectif</th>
-                    <th className="px-4 py-2.5 text-center text-xs font-semibold text-white">Realise</th>
+                    <th className="px-4 py-2.5 text-center text-xs font-semibold text-white">Réalisé</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[var(--border-1)]">
-                  <tr><td className="px-4 py-2.5 text-sm text-[var(--heading)]">Nombre d&apos;accidents en service sans arret (ASSA)</td><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.accidents_without_leave_objective}</td><td className="px-4 py-2.5 text-center text-sm font-semibold text-[var(--heading)]">{d.accidents_without_leave}</td></tr>
-                  <tr><td className="px-4 py-2.5 text-sm text-[var(--heading)]">Nombre de visites croisees</td><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.cross_visits_objective}</td><td className="px-4 py-2.5 text-center text-sm font-semibold text-[var(--heading)]">{d.cross_visits}</td></tr>
-                  <tr><td className="px-4 py-2.5 text-sm text-[var(--heading)]">Nombre de visites manageriales</td><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.managerial_visits_objective}</td><td className="px-4 py-2.5 text-center text-sm font-semibold text-[var(--heading)]">{d.managerial_visits}</td></tr>
-                  <tr><td className="px-4 py-2.5 text-sm text-[var(--heading)]">% de declarants de SD (salaries)</td><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.sd_declarants_objective}</td><td className="px-4 py-2.5 text-center text-sm font-semibold text-[var(--heading)]">{d.sd_declarants_percentage}</td></tr>
-                  <tr><td className="px-4 py-2.5 text-sm text-[var(--heading)]">Nombres de SD declares</td><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.sd_declared_objective}</td><td className="px-4 py-2.5 text-center text-sm font-semibold text-[var(--heading)]">{d.sd_declared_count}</td></tr>
-                  <tr><td className="px-4 py-2.5 text-sm text-[var(--heading)]">Nombre de salaries sensibilises au tri des dechets</td><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.waste_awareness_objective}</td><td className="px-4 py-2.5 text-center text-sm font-semibold text-[var(--heading)]">{d.waste_awareness_employees}</td></tr>
+                  <tr><td className="px-4 py-2.5 text-sm text-[var(--heading)]">Nombre d&apos;accidents en service sans arrêt (ASSA)</td><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.accidents_without_leave_objective}</td><td className="px-4 py-2.5 text-center text-sm font-semibold text-[var(--heading)]">{d.accidents_without_leave}</td></tr>
+                  <tr><td className="px-4 py-2.5 text-sm text-[var(--heading)]">Nombre de visites croisées</td><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.cross_visits_objective}</td><td className="px-4 py-2.5 text-center text-sm font-semibold text-[var(--heading)]">{d.cross_visits}</td></tr>
+                  <tr><td className="px-4 py-2.5 text-sm text-[var(--heading)]">Nombre de visites managériales</td><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.managerial_visits_objective}</td><td className="px-4 py-2.5 text-center text-sm font-semibold text-[var(--heading)]">{d.managerial_visits}</td></tr>
+                  <tr><td className="px-4 py-2.5 text-sm text-[var(--heading)]">% de déclarants de SD (salariés)</td><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.sd_declarants_objective}</td><td className="px-4 py-2.5 text-center text-sm font-semibold text-[var(--heading)]">{d.sd_declarants_percentage}</td></tr>
+                  <tr><td className="px-4 py-2.5 text-sm text-[var(--heading)]">Nombres de SD déclarés</td><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.sd_declared_objective}</td><td className="px-4 py-2.5 text-center text-sm font-semibold text-[var(--heading)]">{d.sd_declared_count}</td></tr>
+                  <tr><td className="px-4 py-2.5 text-sm text-[var(--heading)]">Nombre de salariés sensibilisés au tri des déchets</td><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.waste_awareness_objective}</td><td className="px-4 py-2.5 text-center text-sm font-semibold text-[var(--heading)]">{d.waste_awareness_employees}</td></tr>
                   <tr><td className="px-4 py-2.5 text-sm text-[var(--heading)]">Taux de suivi du plan de formation</td><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.training_plan_objective}</td><td className="px-4 py-2.5 text-center text-sm font-semibold text-emerald-600">{d.training_plan_follow_rate}%</td></tr>
                 </tbody>
               </table>
@@ -295,7 +303,7 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
                 <h3 className="text-xs font-semibold text-white">Bilan mensuel</h3>
               </div>
               <div className="text-sm leading-relaxed text-[var(--text)]" style={{ whiteSpace: "pre-line" }}>
-                {d.monthly_report || "Aucun bilan renseigne."}
+                {d.monthly_report || "Aucun bilan renseigné."}
               </div>
             </div>
             <div className="flex flex-col items-center justify-center">
@@ -308,11 +316,11 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
             </div>
             <div>
               <div className="mb-3 inline-block rounded-[var(--radius-xs)] bg-[var(--navy)] px-4 py-1.5">
-                <h3 className="text-xs font-semibold text-white">Priorites d&apos;action pour {getNextMonthLabel(d.month, d.year)}</h3>
+                <h3 className="text-xs font-semibold text-white">Priorités d&apos;action pour {getNextMonthLabel(d.month, d.year)}</h3>
               </div>
               {d.action_priorities.length > 0 ? (
                 <ul className="space-y-1.5">{d.action_priorities.map((p, i) => (<li key={i} className="flex items-start gap-2 text-sm text-[var(--text)]"><span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--navy)]" />{p}</li>))}</ul>
-              ) : (<p className="text-sm text-[var(--text-muted)]">Aucune priorite renseignee.</p>)}
+              ) : (<p className="text-sm text-[var(--text-muted)]">Aucune priorité renseignée.</p>)}
             </div>
           </div>
 
@@ -328,11 +336,11 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
             </div>
             <div>
               <div className="mb-3 inline-block rounded-[var(--radius-xs)] border-2 border-[var(--navy)] px-4 py-1.5">
-                <h3 className="text-xs font-semibold text-[var(--navy)]">Focus evenement -- {d.focus_event_title}</h3>
+                <h3 className="text-xs font-semibold text-[var(--navy)]">Focus événement -- {d.focus_event_title}</h3>
               </div>
               {d.focus_event_content.length > 0 ? (
                 <ul className="space-y-1.5">{d.focus_event_content.map((p, i) => (<li key={i} className="flex items-start gap-2 text-sm text-[var(--text)]"><span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--navy)]" />{p}</li>))}</ul>
-              ) : (<p className="text-sm text-[var(--text-muted)]">Aucun evenement a signaler.</p>)}
+              ) : (<p className="text-sm text-[var(--text-muted)]">Aucun événement à signaler.</p>)}
             </div>
           </div>
 
@@ -344,7 +352,7 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
         <ConfirmDialog
           open={!!deleteTarget}
           title="Supprimer ce tableau SSE ?"
-          message={`Le tableau de ${deleteTarget ? MONTH_NAMES[deleteTarget.month - 1] + " " + deleteTarget.year : ""} sera definitivement supprime.`}
+          message={`Le tableau de ${deleteTarget ? MONTH_NAMES[deleteTarget.month - 1] + " " + deleteTarget.year : ""} sera définitivement supprimé.`}
           confirmLabel="Supprimer"
           variant="danger"
           loading={isDeleting}
@@ -383,7 +391,7 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
             Aucun tableau SSE
           </p>
           <p className="mx-auto mt-1 max-w-xs text-sm text-[var(--text-muted)]">
-            Les tableaux de bord Sante-Securite-Environnement apparaitront ici une fois crees.
+            Les tableaux de bord Santé-Sécurité-Environnement apparaîtront ici une fois créés.
           </p>
           {canManage && (
             <button
@@ -391,7 +399,7 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
               className="mt-5 flex items-center gap-1.5 rounded-[var(--radius-xs)] bg-[var(--yellow)] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[var(--yellow-hover)]"
             >
               <Plus className="h-4 w-4" />
-              Creer le premier tableau
+              Créer le premier tableau
             </button>
           )}
         </div>
@@ -401,10 +409,10 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
             <thead>
               <tr className="border-b border-[var(--border-1)] bg-[var(--hover)]">
                 <th className="px-4 py-3.5 text-left text-xs font-medium text-[var(--text-secondary)]">Mois</th>
-                <th className="px-4 py-3.5 text-left text-xs font-medium text-[var(--text-secondary)]" style={{ width: "80px" }}>Annee</th>
+                <th className="px-4 py-3.5 text-left text-xs font-medium text-[var(--text-secondary)]" style={{ width: "80px" }}>Année</th>
                 <th className="px-4 py-3.5 text-center text-xs font-medium text-[var(--text-secondary)]" style={{ width: "80px" }}>ASAA</th>
                 <th className="px-4 py-3.5 text-center text-xs font-medium text-[var(--text-secondary)]" style={{ width: "80px" }}>SST</th>
-                <th className="px-4 py-3.5 text-center text-xs font-medium text-[var(--text-secondary)]" style={{ width: "100px" }}>Conformite</th>
+                <th className="px-4 py-3.5 text-center text-xs font-medium text-[var(--text-secondary)]" style={{ width: "100px" }}>Conformité</th>
                 <th className="px-4 py-3.5 text-center text-xs font-medium text-[var(--text-secondary)]" style={{ width: "80px" }}>Visites</th>
                 <th className="px-4 py-3.5 text-center text-xs font-medium text-[var(--text-secondary)]" style={{ width: "80px" }}>Statut</th>
                 <th className="px-4 py-3.5 text-left text-xs font-medium text-[var(--text-secondary)]" style={{ width: "130px" }}>Date</th>
@@ -445,7 +453,7 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
                     <td className="px-4 py-3.5 text-center text-sm font-semibold text-[var(--heading)]">
                       {d.accidents_with_leave}
                     </td>
-                    <td className={`px-4 py-3.5 text-center text-sm font-semibold ${sstMet === false ? "text-red-600" : sstMet === true ? "text-emerald-600" : "text-[var(--heading)]"}`}>
+                    <td className={`px-4 py-3.5 text-center text-sm font-semibold ${getSstColorClass(d.sst_rate)}`}>
                       {d.sst_rate}%
                     </td>
                     <td className={`px-4 py-3.5 text-center text-sm font-semibold ${complianceMet === false ? "text-red-600" : complianceMet === true ? "text-emerald-600" : "text-[var(--heading)]"}`}>

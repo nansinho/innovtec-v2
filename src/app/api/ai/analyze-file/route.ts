@@ -105,49 +105,54 @@ export async function POST(req: NextRequest) {
       "Tu es un assistant IA pour l'intranet d'INNOVTEC Réseaux. Tu analyses des documents et images pour en extraire du contenu structuré. Réponds toujours en français.";
 
     if (type === "sse_dashboard") {
-      systemPrompt = `Tu es un assistant IA specialise dans les tableaux de bord SSE (Sante-Securite-Environnement) pour INNOVTEC Reseaux.
-Analyse ce document (image ou PDF) d'un tableau de bord SSE et extrais TOUTES les donnees vers le format JSON suivant.
-Utilise 0 si une donnee n'est pas visible ou lisible.
+      systemPrompt = `Tu es un assistant IA spécialisé dans les tableaux de bord SSE (Santé-Sécurité-Environnement) pour INNOVTEC Réseaux.
+Analyse ce document (image ou PDF) d'un tableau de bord SSE et extrais TOUTES les données vers le format JSON suivant.
+Utilise 0 si une donnée n'est pas visible ou lisible.
+
+IMPORTANT: Le document contient deux tableaux :
+- Tableau de gauche "Indicateurs" avec les colonnes : Indicateur | Réalisé | Objectif
+- Tableau de droite "Indicateurs de suivi" avec les colonnes : Indicateur | Objectif | Réalisé
+Ne confonds pas les colonnes Objectif et Réalisé.
 
 Retourne UNIQUEMENT un JSON valide avec ces champs :
 {
-  "month": <numero du mois 1-12>,
-  "year": <annee>,
-  "accidents_with_leave": <nombre d'accidents avec arret>,
-  "accidents_with_leave_objective": "<objectif ex: ≤2>",
-  "regulatory_training_completion": <suivi formations reglementaires>,
-  "regulatory_training_objective": "<objectif ex: > 95%>",
-  "regulatory_compliance_rate": <taux de conformite reglementaire>,
-  "regulatory_compliance_objective": "<objectif ex: > 80 %>",
-  "periodic_verification_rate": <taux realisation verification periodique>,
-  "periodic_verification_objective": "<objectif ex: > 95%>",
-  "waste_monitoring": <suivi des dechets en pourcentage>,
-  "waste_monitoring_objective": "<objectif ex: > 95%>",
-  "sst_rate": <taux de SST en pourcentage>,
-  "sst_rate_objective": "<objectif ex: > 40 %>",
-  "downgraded_bins": <nombre de bennes declassees>,
-  "downgraded_bins_objective": <objectif nombre>,
-  "accidents_without_leave": <nombre d'accidents sans arret>,
-  "accidents_without_leave_objective": <objectif nombre>,
-  "cross_visits": <nombre de visites croisees>,
-  "cross_visits_objective": "<objectif ou -->",
-  "managerial_visits": <nombre de visites manageriales>,
-  "managerial_visits_objective": <objectif nombre>,
-  "sd_declarants_percentage": <pourcentage de declarants SD>,
-  "sd_declarants_objective": <objectif decimal>,
-  "sd_declared_count": <nombre de SD declares>,
-  "sd_declared_objective": <objectif nombre>,
-  "waste_awareness_employees": <nombre salaries sensibilises tri dechets>,
-  "waste_awareness_objective": "<objectif ou -->",
-  "training_plan_follow_rate": <taux suivi plan de formation>,
-  "training_plan_objective": "<objectif ex: 100%>",
+  "month": <numéro du mois 1-12>,
+  "year": <année>,
+  "accidents_with_leave": <nombre d'accidents avec arrêt (colonne Réalisé du tableau Indicateurs)>,
+  "accidents_with_leave_objective": "<objectif ex: ≤2 (colonne Objectif du tableau Indicateurs)>",
+  "regulatory_training_completion": <suivi formations réglementaires (colonne Réalisé du tableau Indicateurs)>,
+  "regulatory_training_objective": "<objectif ex: > 95% (colonne Objectif du tableau Indicateurs)>",
+  "regulatory_compliance_rate": <taux de conformité réglementaire (colonne Réalisé du tableau Indicateurs)>,
+  "regulatory_compliance_objective": "<objectif ex: > 80 % (colonne Objectif du tableau Indicateurs)>",
+  "periodic_verification_rate": <taux réalisation vérification périodique (colonne Réalisé du tableau Indicateurs)>,
+  "periodic_verification_objective": "<objectif ex: > 95% (colonne Objectif du tableau Indicateurs)>",
+  "waste_monitoring": <suivi des déchets en pourcentage (colonne Réalisé du tableau Indicateurs)>,
+  "waste_monitoring_objective": "<objectif ex: > 95% (colonne Objectif du tableau Indicateurs)>",
+  "sst_rate": <taux de SST (colonne Réalisé du tableau Indicateurs, nombre sans le symbole %)>,
+  "sst_rate_objective": "<objectif ex: > 40 % (colonne Objectif du tableau Indicateurs)>",
+  "downgraded_bins": <nombre de bennes déclassées (colonne Réalisé du tableau Indicateurs)>,
+  "downgraded_bins_objective": <objectif nombre (colonne Objectif du tableau Indicateurs)>,
+  "accidents_without_leave_objective": <objectif nombre (colonne Objectif du tableau Indicateurs de suivi)>,
+  "accidents_without_leave": <nombre d'accidents sans arrêt (colonne Réalisé du tableau Indicateurs de suivi)>,
+  "cross_visits_objective": "<objectif ou -- (colonne Objectif du tableau Indicateurs de suivi)>",
+  "cross_visits": <nombre de visites croisées (colonne Réalisé du tableau Indicateurs de suivi)>,
+  "managerial_visits_objective": <objectif nombre (colonne Objectif du tableau Indicateurs de suivi)>,
+  "managerial_visits": <nombre de visites managériales (colonne Réalisé du tableau Indicateurs de suivi)>,
+  "sd_declarants_objective": <objectif décimal (colonne Objectif du tableau Indicateurs de suivi)>,
+  "sd_declarants_percentage": <pourcentage de déclarants SD (colonne Réalisé du tableau Indicateurs de suivi)>,
+  "sd_declared_objective": <objectif nombre (colonne Objectif du tableau Indicateurs de suivi)>,
+  "sd_declared_count": <nombre de SD déclarés (colonne Réalisé du tableau Indicateurs de suivi)>,
+  "waste_awareness_objective": "<objectif ou -- (colonne Objectif du tableau Indicateurs de suivi)>",
+  "waste_awareness_employees": <nombre salariés sensibilisés tri déchets (colonne Réalisé du tableau Indicateurs de suivi)>,
+  "training_plan_objective": "<objectif ex: 100% (colonne Objectif du tableau Indicateurs de suivi)>",
+  "training_plan_follow_rate": <taux suivi plan de formation (colonne Réalisé du tableau Indicateurs de suivi)>,
   "field_visits_count": <nombre de visites terrain>,
   "monthly_report": "<texte du bilan mensuel>",
-  "action_priorities": ["priorite 1", "priorite 2"],
+  "action_priorities": ["priorité 1", "priorité 2"],
   "vigilance_points": ["point 1", "point 2"],
-  "focus_event_title": "<titre du focus evenement>",
+  "focus_event_title": "<titre du focus événement>",
   "focus_event_content": ["fait 1", "fait 2"],
-  "quote": "Aucune urgence, aucune importance sont prioritaires sur la securite"
+  "quote": "Aucune urgence, aucune importance sont prioritaires sur la sécurité"
 }
 
 Retourne UNIQUEMENT du JSON valide, sans markdown, sans backticks.`;
