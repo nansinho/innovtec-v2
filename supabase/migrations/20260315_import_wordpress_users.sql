@@ -1,9 +1,19 @@
 -- ============================================================
--- Migration: Import des 86 comptes WordPress
--- Emails personnels avec prénoms/noms quand disponibles
+-- Migration: Remplacement des comptes @innovtec-reseaux.fr
+-- par les 85 comptes WordPress (emails personnels)
 -- ============================================================
 
--- 1. Recréer la fonction helper
+-- 1. Supprimer les anciens comptes @innovtec-reseaux.fr
+-- SAUF contact@harua-ds.com (admin Nans HARUA)
+DELETE FROM profiles
+WHERE email LIKE '%@innovtec-reseaux.fr'
+  AND email != 'contact@harua-ds.com';
+
+DELETE FROM auth.users
+WHERE email LIKE '%@innovtec-reseaux.fr'
+  AND email != 'contact@harua-ds.com';
+
+-- 2. Recréer la fonction helper
 CREATE OR REPLACE FUNCTION create_innovtec_user(
   p_email TEXT,
   p_first_name TEXT,
@@ -18,7 +28,6 @@ CREATE OR REPLACE FUNCTION create_innovtec_user(
 DECLARE
   new_id UUID;
 BEGIN
-  -- Skip if user already exists
   SELECT id INTO new_id FROM auth.users WHERE email = p_email;
 
   IF new_id IS NULL THEN
@@ -61,7 +70,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- 2. Import des 86 comptes WordPress (emails personnels)
+-- 3. Import des 85 comptes WordPress (emails personnels)
 -- Comptes avec noms identifiés
 SELECT create_innovtec_user('aguiar.innovtec@gmail.com', 'Nuno', 'Aguiar');
 SELECT create_innovtec_user('audib.beni@gmail.com', 'Benjamin', 'Audibert');
@@ -73,12 +82,10 @@ SELECT create_innovtec_user('celestinoisabel16@gmail.com', 'Celestino', 'Do Esca
 SELECT create_innovtec_user('cfanara.innovtec@gmail.com', 'Christophe', 'Fanara');
 SELECT create_innovtec_user('chretien.innovtec@gmail.com', 'Priscillia', 'Chretien');
 SELECT create_innovtec_user('christophe.cayrol@yahoo.fr', 'Christophe', 'Cayrol');
-SELECT create_innovtec_user('contact@harua-ds.com', 'Nans', 'Harua');
 SELECT create_innovtec_user('daevyrenault@gmail.com', 'Daevy', 'Renault');
 SELECT create_innovtec_user('djgregpino@gmail.com', 'Gregory', 'Pino');
 SELECT create_innovtec_user('fragosojoaquim71@gmail.com', 'Joaquim', 'Joadas Fragoso');
 SELECT create_innovtec_user('gastcrew287@gmail.com', 'Nicolas', 'Gastaud');
-SELECT create_innovtec_user('giovan.licata@innovtec-reseaux.fr', 'Giovan', 'Licata');
 SELECT create_innovtec_user('goncalves.innovtec@gmail.com', 'Helena', 'Goncalves');
 SELECT create_innovtec_user('guedesrui2010@hotmail.com', 'Rui', 'Guedes');
 SELECT create_innovtec_user('higon.innovtec@gmail.com', 'Adeline', 'Higon');
@@ -86,7 +93,6 @@ SELECT create_innovtec_user('hilairematthieu38@gmail.com', 'Mathieu', 'Hilaire')
 SELECT create_innovtec_user('hstepan434@gmail.com', 'Stepan', 'Komyn');
 SELECT create_innovtec_user('carrichon.jeremy@gmail.com', 'Jeremy', 'Carrichon');
 SELECT create_innovtec_user('jose.m.a.g@live.com.pt', 'José Miguel', 'Graca');
-SELECT create_innovtec_user('julie.escudie@innovtec-reseaux.fr', 'Julie', 'Escudie');
 SELECT create_innovtec_user('lilianagraca83@gmail.com', 'Rui', 'Serigado');
 SELECT create_innovtec_user('lmr94140@gmail.com', 'Liyam', 'Mokhfi Rabhi');
 SELECT create_innovtec_user('lopesantonionunes@gmail.com', 'Antonio', 'Lopes');
@@ -108,7 +114,6 @@ SELECT create_innovtec_user('nuno.victorio.innovtec@gmail.com', 'Nuno', 'Vitorio
 SELECT create_innovtec_user('odindeligny@gmail.com', 'Odin', 'Deligny');
 SELECT create_innovtec_user('paul.salvado@sfr.fr', 'Paul', 'Salvado');
 SELECT create_innovtec_user('pedrocootrim2009@hotmail.com', 'Pedro', 'Cotrim');
-SELECT create_innovtec_user('philippe.martins@innovtec-reseaux.fr', 'Philippe', 'Martins');
 SELECT create_innovtec_user('ricardbernardino@gmail.com', 'Ricardo', 'Bernardino');
 SELECT create_innovtec_user('salve13013@gmail.com', 'Rachid', 'Bouselham');
 SELECT create_innovtec_user('sanoh.innovtec@gmail.com', 'Ousmane', 'Sanoh');
@@ -151,5 +156,5 @@ SELECT create_innovtec_user('ruivicente2017@gmail.com', '', '');
 SELECT create_innovtec_user('scaramozzino.francois@gmail.com', '', '');
 SELECT create_innovtec_user('vaninho313@gmail.com', '', '');
 
--- 3. Cleanup
+-- 4. Cleanup
 DROP FUNCTION IF EXISTS create_innovtec_user;
