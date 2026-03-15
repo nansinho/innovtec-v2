@@ -19,10 +19,10 @@ import { toast } from "sonner";
 import AiGenerateButton from "@/components/ai/ai-generate-button";
 import FileUploadAi from "@/components/ai/file-upload-ai";
 import {
-  RexFaitsIcon,
-  RexCausesIcon,
-  RexActionsIcon,
-  RexVigilanceIcon,
+  RexFaitsBadge,
+  RexCausesBadge,
+  RexActionsBadge,
+  RexVigilanceBadge,
 } from "@/components/icons/rex-section-icons";
 
 type Mode = "import" | "ai" | "manual";
@@ -35,10 +35,10 @@ const EVENT_TYPES = [
 ];
 
 const SECTIONS = [
-  { key: "faits", label: "LES FAITS", photoKey: "faits_photo_url", color: "#4CAF50", bgClass: "border-l-green-500 bg-green-50/30", Icon: RexFaitsIcon },
-  { key: "causes", label: "LES CAUSES ET LES CIRCONSTANCES", photoKey: "causes_photo_url", color: "#FF9800", bgClass: "border-l-orange-500 bg-orange-50/30", Icon: RexCausesIcon },
-  { key: "actions_engagees", label: "LA SYNTHÈSE DES ACTIONS ENGAGÉES", photoKey: "actions_photo_url", color: "#00897B", bgClass: "border-l-teal-500 bg-teal-50/30", Icon: RexActionsIcon },
-  { key: "vigilance", label: "LE RAPPEL À VIGILANCE", photoKey: "vigilance_photo_url", color: "#FFC107", bgClass: "border-l-yellow-500 bg-yellow-50/30", Icon: RexVigilanceIcon },
+  { key: "faits", label: "LES FAITS", photoKey: "faits_photo_url", bgClass: "border-l-[#1E3A5F] bg-blue-50/30", Badge: RexFaitsBadge },
+  { key: "causes", label: "LES CAUSES ET LES CIRCONSTANCES", photoKey: "causes_photo_url", bgClass: "border-l-[#6B8E23] bg-green-50/30", Badge: RexCausesBadge },
+  { key: "actions_engagees", label: "LA SYNTHÈSE DES ACTIONS ENGAGÉES", photoKey: "actions_photo_url", bgClass: "border-l-[#E67E22] bg-orange-50/30", Badge: RexActionsBadge },
+  { key: "vigilance", label: "LE RAPPEL À VIGILANCE", photoKey: "vigilance_photo_url", bgClass: "border-l-[#F1C40F] bg-yellow-50/30", Badge: RexVigilanceBadge },
 ] as const;
 
 interface RexFormData {
@@ -400,7 +400,7 @@ export default function RexForm() {
             </div>
 
             {/* 4 Sections */}
-            {SECTIONS.map(({ key, label, photoKey, bgClass, Icon }) => {
+            {SECTIONS.map(({ key, label, photoKey, bgClass, Badge }) => {
               const textValue = form[key as keyof RexFormData] as string;
               const actualPhotoKey = key === "actions_engagees" ? "actions_photo_url" : photoKey;
               const photoValue = form[actualPhotoKey as keyof RexFormData] as string;
@@ -410,11 +410,8 @@ export default function RexForm() {
                   key={key}
                   className={`rounded-[var(--radius)] border-l-4 p-4 ${bgClass}`}
                 >
-                  <div className="mb-3 flex items-center gap-2">
-                    <Icon size={28} />
-                    <h3 className="text-sm font-bold uppercase tracking-wide text-[var(--heading)]">
-                      {label}
-                    </h3>
+                  <div className="mb-3">
+                    <Badge />
                   </div>
                   <div className="grid grid-cols-3 gap-3">
                     <div className="col-span-2">

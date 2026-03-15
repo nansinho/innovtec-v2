@@ -3,10 +3,10 @@
 import type { Rex } from "@/lib/types/database";
 import { InnovtecLogo } from "@/components/icons/innovtec-logo";
 import {
-  RexFaitsIcon,
-  RexCausesIcon,
-  RexActionsIcon,
-  RexVigilanceIcon,
+  RexFaitsBadge,
+  RexCausesBadge,
+  RexActionsBadge,
+  RexVigilanceBadge,
 } from "@/components/icons/rex-section-icons";
 import { ArrowLeft, Download, Trash2 } from "lucide-react";
 import Link from "next/link";
@@ -25,35 +25,27 @@ const EVENT_TYPES = [
 const SECTIONS = [
   {
     key: "faits",
-    label: "LES FAITS",
     photoKey: "faits_photo_url",
-    borderColor: "border-l-[#4CAF50]",
-    labelColor: "text-[#4CAF50]",
-    Icon: RexFaitsIcon,
+    borderColor: "border-l-[#1E3A5F]",
+    Badge: RexFaitsBadge,
   },
   {
     key: "causes",
-    label: "LES CAUSES ET LES CIRCONSTANCES",
     photoKey: "causes_photo_url",
-    borderColor: "border-l-[#FF9800]",
-    labelColor: "text-[#FF9800]",
-    Icon: RexCausesIcon,
+    borderColor: "border-l-[#6B8E23]",
+    Badge: RexCausesBadge,
   },
   {
     key: "actions_engagees",
-    label: "LA SYNTHÈSE DES ACTIONS ENGAGÉES",
     photoKey: "actions_photo_url",
-    borderColor: "border-l-[#00897B]",
-    labelColor: "text-[#00897B]",
-    Icon: RexActionsIcon,
+    borderColor: "border-l-[#E67E22]",
+    Badge: RexActionsBadge,
   },
   {
     key: "vigilance",
-    label: "LE RAPPEL À VIGILANCE",
     photoKey: "vigilance_photo_url",
-    borderColor: "border-l-[#FFC107]",
-    labelColor: "text-[#FFC107]",
-    Icon: RexVigilanceIcon,
+    borderColor: "border-l-[#F1C40F]",
+    Badge: RexVigilanceBadge,
   },
 ] as const;
 
@@ -171,7 +163,7 @@ export default function RexDetail({ rex, onExportPdf }: RexDetailProps) {
 
         {/* Sections */}
         <div className="space-y-6 p-6">
-          {SECTIONS.map(({ key, label, photoKey, borderColor, labelColor, Icon }) => {
+          {SECTIONS.map(({ key, photoKey, borderColor, Badge }) => {
             const text = rex[key as keyof Rex] as string;
             const photo = rex[photoKey as keyof Rex] as string;
 
@@ -179,12 +171,9 @@ export default function RexDetail({ rex, onExportPdf }: RexDetailProps) {
 
             return (
               <div key={key}>
-                {/* Section header */}
-                <div className="mb-3 flex items-center gap-2">
-                  <Icon size={36} />
-                  <h2 className={`text-sm font-extrabold uppercase tracking-wide ${labelColor}`}>
-                    {label}
-                  </h2>
+                {/* Section header with badge */}
+                <div className="mb-3">
+                  <Badge />
                 </div>
 
                 {/* Content: 2/3 text + 1/3 photo */}
@@ -199,7 +188,7 @@ export default function RexDetail({ rex, onExportPdf }: RexDetailProps) {
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={photo}
-                        alt={label}
+                        alt={key}
                         className="w-full rounded-[var(--radius)] border border-[var(--border-1)] object-cover shadow-sm"
                       />
                     </div>
