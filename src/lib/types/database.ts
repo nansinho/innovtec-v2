@@ -55,6 +55,9 @@ export interface Profile {
   department: string;
   team: string;
   agency: string;
+  emergency_contact_name: string;
+  emergency_contact_phone: string;
+  emergency_contact_relation: string;
   must_change_password: boolean;
   is_active: boolean;
   created_at: string;
