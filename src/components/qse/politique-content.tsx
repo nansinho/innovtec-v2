@@ -1137,10 +1137,11 @@ export default function PolitiqueContent({
           )}
         </div>
       ) : (
+        <div className="overflow-hidden rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-[var(--border-2)]">
+              <tr className="border-b border-[var(--border-2)] bg-[var(--hover)]">
                 <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Titre</th>
                 <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "80px" }}>Année</th>
                 <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "130px" }}>Signature</th>
@@ -1217,6 +1218,7 @@ export default function PolitiqueContent({
           <div className="border-t border-[var(--border-1)] px-4 py-3 text-xs text-[var(--text-muted)]">
             {allContent.length} politique{allContent.length > 1 ? "s" : ""} QSE
           </div>
+        </div>
         </div>
       )}
     </div>

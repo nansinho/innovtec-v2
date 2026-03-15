@@ -438,10 +438,11 @@ export function DataTable<T>({
       )}
 
       {/* ============ TABLE ============ */}
+      <div className="overflow-hidden rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] shadow-sm">
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-[var(--border-2)]">
+            <tr className="border-b border-[var(--border-2)] bg-[var(--hover)]">
               {selectable && (
                 <th className="w-10 px-4 py-3">
                   <input
@@ -603,6 +604,7 @@ export function DataTable<T>({
           )}
         </div>
       )}
+      </div>{/* end card wrapper */}
     </div>
   );
 }
