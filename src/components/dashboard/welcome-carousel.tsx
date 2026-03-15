@@ -76,7 +76,7 @@ export default function WelcomeCarousel() {
   }, [next]);
 
   return (
-    <div className="relative h-[200px] overflow-hidden rounded-2xl shadow-lg ring-1 ring-black/5">
+    <div className="relative h-[220px] overflow-hidden rounded-2xl shadow-lg ring-1 ring-black/5">
       <div
         className="flex h-full transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] will-change-transform"
         style={{ transform: `translateX(-${current * 100}%)` }}
@@ -87,16 +87,16 @@ export default function WelcomeCarousel() {
             className={`flex min-w-full bg-gradient-to-br ${slide.gradient}`}
           >
             <div className="z-[2] flex flex-1 flex-col justify-center px-8 py-6">
-              <span className="mb-2.5 inline-block w-fit rounded-full bg-white/15 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white/90 backdrop-blur-sm">
+              <span className="mb-3 inline-block w-fit rounded-full bg-white/15 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-white/90 backdrop-blur-sm">
                 {slide.badge}
               </span>
-              <h2 className="mb-2 text-lg font-bold leading-snug tracking-tight text-white">
+              <h2 className="mb-1.5 text-xl font-bold leading-snug tracking-tight text-white">
                 {slide.title}
               </h2>
-              <p className="max-w-[360px] text-[13px] leading-relaxed text-white/60">
+              <p className="max-w-[360px] text-sm leading-relaxed text-white/75">
                 {slide.description}
               </p>
-              <button className="mt-3 inline-flex w-fit items-center gap-1.5 rounded-lg bg-gradient-to-b from-amber-500 to-amber-600 px-4 py-2 text-sm font-medium text-white shadow-sm shadow-amber-700/20 transition-all duration-200 hover:from-amber-600 hover:to-amber-700 hover:shadow-md active:scale-[0.97]">
+              <button className="mt-auto inline-flex w-fit items-center gap-1.5 rounded-lg bg-gradient-to-b from-amber-500 to-amber-600 px-4 py-2 text-sm font-medium text-white shadow-sm shadow-amber-700/20 transition-all duration-200 hover:from-amber-600 hover:to-amber-700 hover:shadow-md active:scale-[0.97]">
                 {slide.cta}
                 <ChevronRight className="h-3.5 w-3.5" />
               </button>
@@ -110,7 +110,7 @@ export default function WelcomeCarousel() {
                 sizes="(max-width: 768px) 0vw, 38vw"
                 className="object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/10 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-l from-transparent via-black/5 to-black/50" />
             </div>
           </div>
         ))}
