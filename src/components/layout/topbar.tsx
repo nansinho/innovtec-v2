@@ -48,9 +48,9 @@ export default function Topbar({ profile, unreadCount = 0 }: TopbarProps) {
 
   return (
     <>
-      <div className="sticky top-0 z-50 flex h-14 items-center gap-4 border-b border-[var(--border-1)] bg-white px-6">
+      <div className="sticky top-0 z-50 flex h-[56px] items-center gap-4 border-b border-[var(--border-1)] bg-white/80 px-6 backdrop-blur-xl">
         {/* Breadcrumb */}
-        <nav className="flex items-center gap-1 text-sm" aria-label="Fil d'Ariane">
+        <nav className="hidden items-center gap-1 text-sm sm:flex" aria-label="Fil d'Ariane">
           <Link
             href="/"
             className="text-[var(--text-muted)] transition-colors hover:text-[var(--heading)]"
@@ -77,32 +77,32 @@ export default function Topbar({ profile, unreadCount = 0 }: TopbarProps) {
         </nav>
 
         {/* Search - centered */}
-        <div className="mx-auto w-full max-w-md">
+        <div className="mx-auto w-full max-w-lg">
           <SearchBar />
         </div>
 
         {/* Right actions */}
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1">
           <button
             onClick={() => setNotifOpen(true)}
-            className="relative flex h-9 w-9 items-center justify-center rounded-[var(--radius)] text-[var(--text-muted)] transition-colors hover:bg-zinc-100 hover:text-[var(--heading)]"
+            className="relative flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-all duration-200 hover:bg-black/[0.04] hover:text-[var(--heading)]"
             aria-label="Notifications"
           >
             <Bell className="h-[18px] w-[18px]" />
             {unreadCount > 0 && (
-              <div className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-[var(--yellow)] text-[8px] font-bold text-white">
+              <div className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-[var(--yellow)] text-[8px] font-bold text-white shadow-sm">
                 {unreadCount > 9 ? "9+" : unreadCount}
               </div>
             )}
           </button>
           <button
-            className="flex h-9 w-9 items-center justify-center rounded-[var(--radius)] text-[var(--text-muted)] transition-colors hover:bg-zinc-100 hover:text-[var(--heading)]"
+            className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-all duration-200 hover:bg-black/[0.04] hover:text-[var(--heading)]"
             aria-label="Messages"
           >
             <MessageSquare className="h-[18px] w-[18px]" />
           </button>
           <button
-            className="flex h-9 w-9 items-center justify-center rounded-[var(--radius)] text-[var(--text-muted)] transition-colors hover:bg-zinc-100 hover:text-[var(--heading)]"
+            className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-all duration-200 hover:bg-black/[0.04] hover:text-[var(--heading)]"
             aria-label="Paramètres"
           >
             <Settings className="h-[18px] w-[18px]" />

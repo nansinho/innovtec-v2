@@ -25,7 +25,7 @@ export default async function PolitiqueQSEPage() {
           Politique QSE
         </h1>
         <p className="mt-1 text-sm text-[var(--text-secondary)]">
-          La politique Qualit&eacute;, S&eacute;curit&eacute; et Environnement d&apos;INNOVTEC R&eacute;seaux.
+          La politique Qualité, Sécurité et Environnement d&apos;INNOVTEC Réseaux.
         </p>
       </div>
 

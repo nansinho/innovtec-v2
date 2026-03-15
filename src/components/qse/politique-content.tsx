@@ -59,7 +59,7 @@ const PILLARS = [
   {
     key: "securite",
     label: "Securite",
-    match: ["s\u00e9curit", "securit"],
+    match: ["sécurit", "securit"],
     icon: ShieldCheck,
     color: "var(--blue)",
     surface: "var(--blue-surface)",

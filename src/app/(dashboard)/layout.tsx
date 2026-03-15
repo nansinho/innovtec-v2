@@ -40,7 +40,7 @@ export default async function DashboardLayout({
   return (
     <>
       <Sidebar profile={profile} />
-      <div className="min-h-screen transition-all duration-200 md:ml-[var(--sidebar-width)]">
+      <div className="min-h-screen transition-all duration-300 ease-out md:ml-[var(--sidebar-width)]">
         <Topbar profile={profile} unreadCount={unreadCount} />
         <main>{children}</main>
       </div>

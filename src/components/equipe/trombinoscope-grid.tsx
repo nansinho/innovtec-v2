@@ -128,7 +128,7 @@ export default function TrombinoscopeGrid({
         <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] py-16 text-center shadow-sm">
           <Users className="mx-auto mb-3 h-10 w-10 text-[var(--border-1)]" />
           <p className="text-sm text-[var(--text-secondary)]">
-            Aucun collaborateur trouv&eacute;
+            Aucun collaborateur trouvé
           </p>
         </div>
       ) : (

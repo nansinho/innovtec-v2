@@ -9,7 +9,7 @@ export default async function Meetings() {
 
   return (
     <Card>
-      <CardHeader title="R\u00e9unions du jour" icon={Video} />
+      <CardHeader title="Réunions du jour" icon={Video} />
       <div className="space-y-1.5 px-3 py-3">
         {events.length === 0 ? (
           <div className="flex flex-col items-center py-8 text-center">
@@ -17,7 +17,7 @@ export default async function Meetings() {
               <CalendarX className="h-6 w-6 text-zinc-400" />
             </div>
             <p className="text-sm font-medium text-[var(--text-muted)]">
-              Aucune r\u00e9union aujourd&apos;hui
+              Aucune réunion aujourd&apos;hui
             </p>
           </div>
         ) : (
@@ -26,7 +26,7 @@ export default async function Meetings() {
             const endTime = event.end_at
               ? format(new Date(event.end_at), "HH:mm", { locale: fr })
               : null;
-            const timeLabel = endTime ? `${startTime} \u2014 ${endTime}` : startTime;
+            const timeLabel = endTime ? `${startTime} — ${endTime}` : startTime;
 
             return (
               <div

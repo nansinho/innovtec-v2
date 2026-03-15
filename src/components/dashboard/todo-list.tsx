@@ -75,9 +75,9 @@ export default function TodoList() {
                 <ListTodo className="h-6 w-6 text-zinc-400" />
               </div>
               <p className="text-sm font-medium text-[var(--text-muted)]">
-                Aucune t&acirc;che pour le moment
+                Aucune tâche pour le moment
               </p>
-              <p className="mt-0.5 text-xs text-zinc-400">Ajoutez votre premi&egrave;re t&acirc;che ci-dessous</p>
+              <p className="mt-0.5 text-xs text-zinc-400">Ajoutez votre première tâche ci-dessous</p>
             </div>
           )}
 
@@ -128,7 +128,7 @@ export default function TodoList() {
               value={newLabel}
               onChange={(e) => setNewLabel(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleAdd()}
-              placeholder="Ajouter une t&acirc;che..."
+              placeholder="Ajouter une tâche..."
               className="flex-1 bg-transparent text-sm outline-none placeholder:text-zinc-400"
             />
           </div>

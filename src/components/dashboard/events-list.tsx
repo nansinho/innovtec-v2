@@ -21,13 +21,13 @@ export default async function EventsList() {
   return (
     <Card>
       <CardHeader
-        title="\u00c9v\u00e9nements \u00e0 venir"
+        title="Événements à venir"
         icon={CalendarDays}
         action={
           <Link
             href="/equipe/planning"
             className="flex h-7 w-7 items-center justify-center rounded-lg text-[var(--text-muted)] transition-colors hover:bg-zinc-100 hover:text-[var(--heading)]"
-            aria-label="Voir tous les \u00e9v\u00e9nements"
+            aria-label="Voir tous les événements"
           >
             <ChevronRight className="h-4 w-4" />
           </Link>
@@ -40,7 +40,7 @@ export default async function EventsList() {
               <CalendarDays className="h-6 w-6 text-zinc-400" />
             </div>
             <p className="text-sm font-medium text-[var(--text-muted)]">
-              Aucun \u00e9v\u00e9nement \u00e0 venir
+              Aucun événement à venir
             </p>
           </div>
         ) : (
