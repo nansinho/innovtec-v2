@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { randomUUID } from "crypto";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
 import { getAnthropicApiKey } from "@/actions/settings";
@@ -179,7 +180,7 @@ Chaque point doit être sur sa propre ligne dans le champ content. Extrais TOUTE
     // Upload original file to Supabase storage
     let fileUrl = "";
     const fileExt = file.name.split(".").pop() || (isPdf ? "pdf" : "png");
-    const filePath = `qse/${type}/${Date.now()}-${crypto.randomUUID()}.${fileExt}`;
+    const filePath = `qse/${type}/${Date.now()}-${randomUUID()}.${fileExt}`;
 
     const { error: uploadError } = await supabase.storage
       .from("documents")

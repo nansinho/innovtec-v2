@@ -433,19 +433,29 @@ export async function deleteUser(
     .eq("id", userId)
     .single();
 
-  // Delete auth user (CASCADE will delete profile)
+  if (!targetProfile) {
+    return { success: false, error: "Utilisateur introuvable" };
+  }
+
+  // Try to delete auth user (CASCADE will delete profile)
   const { error } = await supabaseAdmin.auth.admin.deleteUser(userId);
 
   if (error) {
-    return { success: false, error: error.message };
+    // If auth user not found, delete profile directly
+    const { error: profileDeleteError } = await supabaseAdmin
+      .from("profiles")
+      .delete()
+      .eq("id", userId);
+
+    if (profileDeleteError) {
+      return { success: false, error: `Impossible de supprimer l'utilisateur : ${profileDeleteError.message}` };
+    }
   }
 
   await logActivity(caller.authId, "delete_user", "user", userId, {
-    deleted_user: targetProfile
-      ? `${targetProfile.first_name} ${targetProfile.last_name}`
-      : "Inconnu",
-    email: targetProfile?.email,
-    role: targetProfile?.role,
+    deleted_user: `${targetProfile.first_name} ${targetProfile.last_name}`,
+    email: targetProfile.email,
+    role: targetProfile.role,
   });
 
   revalidateAll();
