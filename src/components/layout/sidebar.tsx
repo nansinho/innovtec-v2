@@ -44,7 +44,7 @@ const mainNav = [
 const qseNav = [
   { href: "/qse", label: "Vue d'ensemble", icon: LayoutGrid, exact: true },
   { href: "/qse/politique", label: "Politique QSE", icon: Shield },
-  { href: "/qse/dangers", label: "Situations dangereuses", icon: AlertCircle },
+  { href: "/qse/signalements", label: "Signalements", icon: AlertCircle },
   { href: "/qse/plans", label: "Plans d'actions", icon: ClipboardList },
   { href: "/qse/rex", label: "REX", icon: Eye },
   { href: "/qse/bonnes-pratiques", label: "Bonnes pratiques", icon: BookOpen },

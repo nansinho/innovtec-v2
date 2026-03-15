@@ -12,6 +12,7 @@ import {
   AlertTriangle,
   GraduationCap,
   Settings,
+  ClipboardList,
   Check,
   CheckCheck,
   Trash2,
@@ -35,6 +36,7 @@ const typeConfig: Record<
   comment: { icon: MessageSquare, color: "text-green-600", bg: "bg-green-50" },
   conge: { icon: Briefcase, color: "text-orange-600", bg: "bg-orange-50" },
   danger: { icon: AlertTriangle, color: "text-red-600", bg: "bg-red-50" },
+  action_plan: { icon: ClipboardList, color: "text-cyan-600", bg: "bg-cyan-50" },
   formation: { icon: GraduationCap, color: "text-indigo-600", bg: "bg-indigo-50" },
   system: { icon: Settings, color: "text-gray-600", bg: "bg-gray-50" },
 };

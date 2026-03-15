@@ -28,6 +28,12 @@ export type TimebitMode = "chantier" | "bureau";
 
 export type DangerStatus = "signale" | "en_cours" | "resolu" | "cloture";
 
+export type SignalementPriority = "faible" | "moyenne" | "haute" | "critique";
+
+export type ActionPlanStatus = "a_faire" | "en_cours" | "termine" | "annule";
+
+export type ActionPlanType = "corrective" | "preventive";
+
 export type CongeStatus = "en_attente" | "approuve" | "refuse";
 
 export type CongeType =
@@ -176,19 +182,70 @@ export interface GalleryPhoto {
 
 // QSE
 
+export interface SignalementCategory {
+  id: string;
+  name: string;
+  color: string;
+  is_active: boolean;
+  position: number;
+  created_at: string;
+}
+
 export interface DangerReport {
   id: string;
   title: string;
   description: string;
   location: string;
   photo_url: string;
+  photo_urls: string[];
   status: DangerStatus;
   severity: number;
+  priority: SignalementPriority;
+  is_anonymous: boolean;
+  category_id: string | null;
+  incident_date: string | null;
+  incident_time: string | null;
+  chantier: string;
   reported_by: string;
   assigned_to: string | null;
+  action_plan_id: string | null;
   resolved_at: string | null;
   created_at: string;
   updated_at: string;
+  // Joined fields
+  reporter?: { first_name: string; last_name: string } | null;
+  assignee?: { first_name: string; last_name: string } | null;
+  category?: SignalementCategory | null;
+  action_plan?: ActionPlan | null;
+}
+
+export interface ActionPlan {
+  id: string;
+  title: string;
+  description: string;
+  type: ActionPlanType;
+  priority: SignalementPriority;
+  status: ActionPlanStatus;
+  responsible_id: string | null;
+  due_date: string | null;
+  completed_at: string | null;
+  created_by: string;
+  created_at: string;
+  updated_at: string;
+  // Joined fields
+  responsible?: { first_name: string; last_name: string } | null;
+  creator?: { first_name: string; last_name: string } | null;
+  tasks?: ActionPlanTask[];
+  signalements?: DangerReport[];
+}
+
+export interface ActionPlanTask {
+  id: string;
+  action_plan_id: string;
+  label: string;
+  is_done: boolean;
+  position: number;
+  created_at: string;
 }
 
 export interface Rex {
@@ -261,6 +318,7 @@ export type NotificationType =
   | "comment"
   | "conge"
   | "danger"
+  | "action_plan"
   | "formation"
   | "system";
 
