@@ -35,8 +35,10 @@ const emptyForm: ExperienceForm = {
 
 export default function ExperiencesSection({
   experiences,
+  userId,
 }: {
   experiences: UserExperience[];
+  userId?: string;
 }) {
   const [editing, setEditing] = useState<ExperienceForm | null>(null);
   const [saving, setSaving] = useState(false);
@@ -49,7 +51,7 @@ export default function ExperiencesSection({
     const result = await upsertExperience({
       ...editing,
       date_end: editing.date_end || null,
-    });
+    }, userId);
 
     if (result.success) {
       toast.success(editing.id ? "Expérience mise à jour" : "Expérience ajoutée");
@@ -62,7 +64,7 @@ export default function ExperiencesSection({
 
   async function handleDelete(id: string) {
     if (!confirm("Supprimer cette expérience ?")) return;
-    const result = await deleteExperience(id);
+    const result = await deleteExperience(id, userId);
     if (result.success) {
       toast.success("Expérience supprimée");
     } else {

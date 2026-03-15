@@ -28,8 +28,10 @@ const emptyForm: FormationForm = {
 
 export default function FormationsSection({
   formations,
+  userId,
 }: {
   formations: UserFormation[];
+  userId?: string;
 }) {
   const [editing, setEditing] = useState<FormationForm | null>(null);
   const [saving, setSaving] = useState(false);
@@ -43,7 +45,7 @@ export default function FormationsSection({
       ...editing,
       date_obtained: editing.date_obtained || null,
       expiry_date: editing.expiry_date || null,
-    });
+    }, userId);
 
     if (result.success) {
       toast.success(editing.id ? "Formation mise à jour" : "Formation ajoutée");
@@ -56,7 +58,7 @@ export default function FormationsSection({
 
   async function handleDelete(id: string) {
     if (!confirm("Supprimer cette formation ?")) return;
-    const result = await deleteUserFormation(id);
+    const result = await deleteUserFormation(id, userId);
     if (result.success) {
       toast.success("Formation supprimée");
     } else {

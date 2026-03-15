@@ -1,12 +1,36 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
 import type {
   UserExperience,
   UserDiploma,
   UserFormation,
 } from "@/lib/types/database";
+
+async function resolveUserId(targetUserId?: string): Promise<{ userId: string; isAdmin: boolean } | null> {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  if (!targetUserId || targetUserId === user.id) {
+    return { userId: user.id, isAdmin: false };
+  }
+
+  // Check caller is admin/rh
+  const { data: callerProfile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
+  if (!callerProfile || !["admin", "rh"].includes(callerProfile.role)) {
+    return null;
+  }
+
+  return { userId: targetUserId, isAdmin: true };
+}
 
 // ==========================================
 // PROFIL
@@ -66,18 +90,15 @@ export async function updateProfile(data: {
 // EXPÉRIENCES
 // ==========================================
 
-export async function getExperiences(): Promise<UserExperience[]> {
+export async function getExperiences(targetUserId?: string): Promise<UserExperience[]> {
+  const resolved = await resolveUserId(targetUserId);
+  if (!resolved) return [];
+
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) return [];
-
   const { data, error } = await supabase
     .from("user_experiences")
     .select("*")
-    .eq("user_id", user.id)
+    .eq("user_id", resolved.userId)
     .order("date_start", { ascending: false });
 
   if (error) {
@@ -96,72 +117,49 @@ export async function upsertExperience(data: {
   date_start: string;
   date_end: string | null;
   description: string;
-}): Promise<{ success: boolean; error?: string }> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+}, targetUserId?: string): Promise<{ success: boolean; error?: string }> {
+  const resolved = await resolveUserId(targetUserId);
+  if (!resolved) return { success: false, error: "Non authentifié" };
 
-  if (!user) {
-    console.error("[upsertExperience] Non authentifié");
-    return { success: false, error: "Non authentifié" };
-  }
+  const supabase = resolved.isAdmin ? createAdminClient() : await createClient();
 
-  // Destructure id out to avoid inserting id: undefined
   const { id, ...rest } = data;
-  const record = { ...rest, user_id: user.id };
-
-  console.log("[upsertExperience] userId:", user.id, id ? `update id=${id}` : "insert", {
-    company: rest.company,
-    job_title: rest.job_title,
-  });
+  const record = { ...rest, user_id: resolved.userId };
 
   const { error } = id
     ? await supabase
         .from("user_experiences")
         .update(record)
         .eq("id", id)
-        .eq("user_id", user.id)
+        .eq("user_id", resolved.userId)
     : await supabase.from("user_experiences").insert(record);
 
-  if (error) {
-    console.error("[upsertExperience] Error:", error.message);
-    return { success: false, error: error.message };
-  }
+  if (error) return { success: false, error: error.message };
 
-  console.log("[upsertExperience] Success");
   revalidatePath("/profil");
+  revalidatePath(`/admin/users/${resolved.userId}`);
   return { success: true };
 }
 
 export async function deleteExperience(
-  id: string
+  id: string,
+  targetUserId?: string
 ): Promise<{ success: boolean; error?: string }> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const resolved = await resolveUserId(targetUserId);
+  if (!resolved) return { success: false, error: "Non authentifié" };
 
-  if (!user) {
-    console.error("[deleteExperience] Non authentifié");
-    return { success: false, error: "Non authentifié" };
-  }
-
-  console.log("[deleteExperience] userId:", user.id, "id:", id);
+  const supabase = resolved.isAdmin ? createAdminClient() : await createClient();
 
   const { error } = await supabase
     .from("user_experiences")
     .delete()
     .eq("id", id)
-    .eq("user_id", user.id);
+    .eq("user_id", resolved.userId);
 
-  if (error) {
-    console.error("[deleteExperience] Error:", error.message);
-    return { success: false, error: error.message };
-  }
+  if (error) return { success: false, error: error.message };
 
-  console.log("[deleteExperience] Success");
   revalidatePath("/profil");
+  revalidatePath(`/admin/users/${resolved.userId}`);
   return { success: true };
 }
 
@@ -169,24 +167,18 @@ export async function deleteExperience(
 // DIPLÔMES
 // ==========================================
 
-export async function getDiplomas(): Promise<UserDiploma[]> {
+export async function getDiplomas(targetUserId?: string): Promise<UserDiploma[]> {
+  const resolved = await resolveUserId(targetUserId);
+  if (!resolved) return [];
+
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) return [];
-
   const { data, error } = await supabase
     .from("user_diplomas")
     .select("*")
-    .eq("user_id", user.id)
+    .eq("user_id", resolved.userId)
     .order("year_obtained", { ascending: false });
 
-  if (error) {
-    console.error("[getDiplomas] Error:", error.message);
-    return [];
-  }
+  if (error) return [];
 
   return (data as UserDiploma[]) ?? [];
 }
@@ -197,72 +189,45 @@ export async function upsertDiploma(data: {
   school: string;
   year_obtained: number | null;
   description: string;
-}): Promise<{ success: boolean; error?: string }> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+}, targetUserId?: string): Promise<{ success: boolean; error?: string }> {
+  const resolved = await resolveUserId(targetUserId);
+  if (!resolved) return { success: false, error: "Non authentifié" };
 
-  if (!user) {
-    console.error("[upsertDiploma] Non authentifié");
-    return { success: false, error: "Non authentifié" };
-  }
+  const supabase = resolved.isAdmin ? createAdminClient() : await createClient();
 
-  // Destructure id out to avoid inserting id: undefined
   const { id, ...rest } = data;
-  const record = { ...rest, user_id: user.id };
-
-  console.log("[upsertDiploma] userId:", user.id, id ? `update id=${id}` : "insert", {
-    title: rest.title,
-    school: rest.school,
-  });
+  const record = { ...rest, user_id: resolved.userId };
 
   const { error } = id
-    ? await supabase
-        .from("user_diplomas")
-        .update(record)
-        .eq("id", id)
-        .eq("user_id", user.id)
+    ? await supabase.from("user_diplomas").update(record).eq("id", id).eq("user_id", resolved.userId)
     : await supabase.from("user_diplomas").insert(record);
 
-  if (error) {
-    console.error("[upsertDiploma] Error:", error.message);
-    return { success: false, error: error.message };
-  }
+  if (error) return { success: false, error: error.message };
 
-  console.log("[upsertDiploma] Success");
   revalidatePath("/profil");
+  revalidatePath(`/admin/users/${resolved.userId}`);
   return { success: true };
 }
 
 export async function deleteDiploma(
-  id: string
+  id: string,
+  targetUserId?: string
 ): Promise<{ success: boolean; error?: string }> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const resolved = await resolveUserId(targetUserId);
+  if (!resolved) return { success: false, error: "Non authentifié" };
 
-  if (!user) {
-    console.error("[deleteDiploma] Non authentifié");
-    return { success: false, error: "Non authentifié" };
-  }
-
-  console.log("[deleteDiploma] userId:", user.id, "id:", id);
+  const supabase = resolved.isAdmin ? createAdminClient() : await createClient();
 
   const { error } = await supabase
     .from("user_diplomas")
     .delete()
     .eq("id", id)
-    .eq("user_id", user.id);
+    .eq("user_id", resolved.userId);
 
-  if (error) {
-    console.error("[deleteDiploma] Error:", error.message);
-    return { success: false, error: error.message };
-  }
+  if (error) return { success: false, error: error.message };
 
-  console.log("[deleteDiploma] Success");
   revalidatePath("/profil");
+  revalidatePath(`/admin/users/${resolved.userId}`);
   return { success: true };
 }
 
@@ -270,24 +235,18 @@ export async function deleteDiploma(
 // FORMATIONS PERSONNELLES
 // ==========================================
 
-export async function getUserFormations(): Promise<UserFormation[]> {
+export async function getUserFormations(targetUserId?: string): Promise<UserFormation[]> {
+  const resolved = await resolveUserId(targetUserId);
+  if (!resolved) return [];
+
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) return [];
-
   const { data, error } = await supabase
     .from("user_formations")
     .select("*")
-    .eq("user_id", user.id)
+    .eq("user_id", resolved.userId)
     .order("date_obtained", { ascending: false });
 
-  if (error) {
-    console.error("[getUserFormations] Error:", error.message);
-    return [];
-  }
+  if (error) return [];
 
   return (data as UserFormation[]) ?? [];
 }
@@ -299,72 +258,45 @@ export async function upsertUserFormation(data: {
   date_obtained: string | null;
   expiry_date: string | null;
   description: string;
-}): Promise<{ success: boolean; error?: string }> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+}, targetUserId?: string): Promise<{ success: boolean; error?: string }> {
+  const resolved = await resolveUserId(targetUserId);
+  if (!resolved) return { success: false, error: "Non authentifié" };
 
-  if (!user) {
-    console.error("[upsertUserFormation] Non authentifié");
-    return { success: false, error: "Non authentifié" };
-  }
+  const supabase = resolved.isAdmin ? createAdminClient() : await createClient();
 
-  // Destructure id out to avoid inserting id: undefined
   const { id, ...rest } = data;
-  const record = { ...rest, user_id: user.id };
-
-  console.log("[upsertUserFormation] userId:", user.id, id ? `update id=${id}` : "insert", {
-    title: rest.title,
-    organisme: rest.organisme,
-  });
+  const record = { ...rest, user_id: resolved.userId };
 
   const { error } = id
-    ? await supabase
-        .from("user_formations")
-        .update(record)
-        .eq("id", id)
-        .eq("user_id", user.id)
+    ? await supabase.from("user_formations").update(record).eq("id", id).eq("user_id", resolved.userId)
     : await supabase.from("user_formations").insert(record);
 
-  if (error) {
-    console.error("[upsertUserFormation] Error:", error.message);
-    return { success: false, error: error.message };
-  }
+  if (error) return { success: false, error: error.message };
 
-  console.log("[upsertUserFormation] Success");
   revalidatePath("/profil");
+  revalidatePath(`/admin/users/${resolved.userId}`);
   return { success: true };
 }
 
 export async function deleteUserFormation(
-  id: string
+  id: string,
+  targetUserId?: string
 ): Promise<{ success: boolean; error?: string }> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const resolved = await resolveUserId(targetUserId);
+  if (!resolved) return { success: false, error: "Non authentifié" };
 
-  if (!user) {
-    console.error("[deleteUserFormation] Non authentifié");
-    return { success: false, error: "Non authentifié" };
-  }
-
-  console.log("[deleteUserFormation] userId:", user.id, "id:", id);
+  const supabase = resolved.isAdmin ? createAdminClient() : await createClient();
 
   const { error } = await supabase
     .from("user_formations")
     .delete()
     .eq("id", id)
-    .eq("user_id", user.id);
+    .eq("user_id", resolved.userId);
 
-  if (error) {
-    console.error("[deleteUserFormation] Error:", error.message);
-    return { success: false, error: error.message };
-  }
+  if (error) return { success: false, error: error.message };
 
-  console.log("[deleteUserFormation] Success");
   revalidatePath("/profil");
+  revalidatePath(`/admin/users/${resolved.userId}`);
   return { success: true };
 }
 
@@ -432,24 +364,47 @@ export async function updatePassword(data: {
 // DOCUMENTS UTILISATEUR
 // ==========================================
 
-export async function getUserDocuments() {
+export async function getUserDocuments(targetUserId?: string) {
+  const resolved = await resolveUserId(targetUserId);
+  if (!resolved) return [];
+
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) return [];
-
   const { data, error } = await supabase
     .from("documents")
     .select("*")
-    .eq("uploaded_by", user.id)
+    .eq("uploaded_by", resolved.userId)
     .order("created_at", { ascending: false });
 
-  if (error) {
-    console.error("[getUserDocuments] Error:", error.message);
-    return [];
-  }
+  if (error) return [];
 
   return data ?? [];
+}
+
+// ==========================================
+// CONTACT D'URGENCE
+// ==========================================
+
+export async function updateEmergencyContact(
+  data: {
+    emergency_contact_name: string;
+    emergency_contact_phone: string;
+    emergency_contact_relation: string;
+  },
+  targetUserId?: string
+): Promise<{ success: boolean; error?: string }> {
+  const resolved = await resolveUserId(targetUserId);
+  if (!resolved) return { success: false, error: "Non authentifié" };
+
+  const supabase = resolved.isAdmin ? createAdminClient() : await createClient();
+
+  const { error } = await supabase
+    .from("profiles")
+    .update(data)
+    .eq("id", resolved.userId);
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath("/profil");
+  revalidatePath(`/admin/users/${resolved.userId}`);
+  return { success: true };
 }

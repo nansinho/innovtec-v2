@@ -23,8 +23,10 @@ const emptyForm: DiplomaForm = {
 
 export default function DiplomasSection({
   diplomas,
+  userId,
 }: {
   diplomas: UserDiploma[];
+  userId?: string;
 }) {
   const [editing, setEditing] = useState<DiplomaForm | null>(null);
   const [saving, setSaving] = useState(false);
@@ -39,7 +41,7 @@ export default function DiplomasSection({
       year_obtained: editing.year_obtained
         ? parseInt(editing.year_obtained)
         : null,
-    });
+    }, userId);
 
     if (result.success) {
       toast.success(editing.id ? "Diplôme mis à jour" : "Diplôme ajouté");
@@ -52,7 +54,7 @@ export default function DiplomasSection({
 
   async function handleDelete(id: string) {
     if (!confirm("Supprimer ce diplôme ?")) return;
-    const result = await deleteDiploma(id);
+    const result = await deleteDiploma(id, userId);
     if (result.success) {
       toast.success("Diplôme supprimé");
     } else {
