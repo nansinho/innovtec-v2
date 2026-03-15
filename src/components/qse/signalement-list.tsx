@@ -2,8 +2,10 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { AlertTriangle, Eye, Download } from "lucide-react";
-import { updateSignalementStatus } from "@/actions/signalements";
+import { AlertTriangle, Eye, Download, Trash2 } from "lucide-react";
+import { updateSignalementStatus, deleteSignalement } from "@/actions/signalements";
+import ConfirmDialog from "@/components/ui/confirm-dialog";
+import { toast } from "sonner";
 import { DataTable, type ColumnDef, type FilterDef } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
 import type { DangerReport, SignalementCategory } from "@/lib/types/database";
@@ -63,7 +65,23 @@ function exportCsv(signalements: DangerReport[]) {
 export default function SignalementList({ signalements: initial, categories, canManage }: SignalementListProps) {
   const [signalements, setSignalements] = useState(initial);
   const [isPending, startTransition] = useTransition();
+  const [deleteId, setDeleteId] = useState<string | null>(null);
   const router = useRouter();
+
+  function handleDelete() {
+    if (!deleteId) return;
+    const id = deleteId;
+    setDeleteId(null);
+    startTransition(async () => {
+      const result = await deleteSignalement(id);
+      if (result.success) {
+        setSignalements((prev) => prev.filter((d) => d.id !== id));
+        toast.success("Signalement supprimé");
+      } else {
+        toast.error(result.error || "Erreur lors de la suppression");
+      }
+    });
+  }
 
   function handleStatusChange(id: string, newStatus: string) {
     startTransition(async () => {
@@ -224,6 +242,7 @@ export default function SignalementList({ signalements: initial, categories, can
   ];
 
   return (
+    <>
     <DataTable
       data={signalements}
       columns={columns}
@@ -252,7 +271,28 @@ export default function SignalementList({ signalements: initial, categories, can
           icon: Eye,
           onClick: () => router.push(`/qse/signalements/${d.id}`),
         },
+        ...(canManage
+          ? [
+              {
+                label: "Supprimer",
+                icon: Trash2,
+                variant: "danger" as const,
+                onClick: () => setDeleteId(d.id),
+              },
+            ]
+          : []),
       ]}
     />
+
+    <ConfirmDialog
+      open={!!deleteId}
+      onClose={() => setDeleteId(null)}
+      onConfirm={handleDelete}
+      title="Supprimer le signalement"
+      message="Êtes-vous sûr de vouloir supprimer ce signalement ? Cette action est irréversible."
+      confirmLabel="Supprimer"
+      variant="danger"
+    />
+    </>
   );
 }
