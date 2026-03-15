@@ -6,7 +6,7 @@ export interface SearchResult {
   id: string;
   title: string;
   description: string;
-  category: "actualite" | "document" | "collaborateur" | "formation" | "evenement";
+  category: "actualite" | "document" | "collaborateur" | "formation" | "evenement" | "qse" | "danger" | "rex";
   link: string;
   image_url?: string;
 }
@@ -115,6 +115,63 @@ export async function globalSearch(query: string): Promise<SearchResult[]> {
         description: e.description || "",
         category: "evenement" as const,
         link: "/equipe/planning",
+      }))
+    );
+  }
+
+  // Search QSE content (policies)
+  const { data: qseContent } = await supabase
+    .from("qse_content")
+    .select("id, title, type, year")
+    .or(`title.ilike.%${q}%`)
+    .limit(5);
+
+  if (qseContent) {
+    results.push(
+      ...qseContent.map((c) => ({
+        id: c.id,
+        title: c.title,
+        description: c.year ? `${c.type} — ${c.year}` : c.type,
+        category: "qse" as const,
+        link: `/qse/${c.type}`,
+      }))
+    );
+  }
+
+  // Search danger reports
+  const { data: dangers } = await supabase
+    .from("danger_reports")
+    .select("id, title, description, location, status")
+    .or(`title.ilike.%${q}%,description.ilike.%${q}%,location.ilike.%${q}%`)
+    .limit(5);
+
+  if (dangers) {
+    results.push(
+      ...dangers.map((d) => ({
+        id: d.id,
+        title: d.title,
+        description: `${d.location}${d.status ? ` — ${d.status}` : ""}`,
+        category: "danger" as const,
+        link: "/qse/dangers",
+      }))
+    );
+  }
+
+  // Search REX
+  const { data: rexList } = await supabase
+    .from("rex")
+    .select("id, title, description, chantier")
+    .or(`title.ilike.%${q}%,description.ilike.%${q}%,lessons_learned.ilike.%${q}%,chantier.ilike.%${q}%`)
+    .limit(5);
+
+  if (rexList) {
+    results.push(
+      ...rexList.map((r) => ({
+        id: r.id,
+        title: r.title,
+        description: r.chantier || r.description || "",
+        category: "rex" as const,
+        link: "/qse/rex",
       }))
     );
   }
