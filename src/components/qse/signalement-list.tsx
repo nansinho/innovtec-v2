@@ -28,6 +28,7 @@ interface SignalementListProps {
   signalements: DangerReport[];
   categories: SignalementCategory[];
   canManage: boolean;
+  onAdd?: () => void;
 }
 
 function exportCsv(signalements: DangerReport[]) {
@@ -62,7 +63,7 @@ function exportCsv(signalements: DangerReport[]) {
   URL.revokeObjectURL(url);
 }
 
-export default function SignalementList({ signalements: initial, categories, canManage }: SignalementListProps) {
+export default function SignalementList({ signalements: initial, categories, canManage, onAdd }: SignalementListProps) {
   const [signalements, setSignalements] = useState(initial);
   const [isPending, startTransition] = useTransition();
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -247,10 +248,14 @@ export default function SignalementList({ signalements: initial, categories, can
       data={signalements}
       columns={columns}
       keyField="id"
+      title="Signalements"
+      description="Signalez et suivez les situations dangereuses identifiées."
       selectable
       searchable
       searchPlaceholder="Rechercher un signalement..."
       filters={filters}
+      onAdd={onAdd}
+      addLabel="Nouveau signalement"
       onRowClick={(d) => router.push(`/qse/signalements/${d.id}`)}
       emptyState={{
         icon: AlertTriangle,

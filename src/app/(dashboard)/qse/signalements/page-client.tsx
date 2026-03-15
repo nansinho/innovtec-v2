@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, AlertTriangle, List, User } from "lucide-react";
+import { List, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import SignalementForm from "@/components/qse/signalement-form";
 import SignalementList from "@/components/qse/signalement-list";
@@ -28,25 +28,6 @@ export default function SignalementPageClient({
 
   return (
     <div className="p-6 pb-20 md:pb-6">
-      {/* Header */}
-      <div className="mb-6 flex items-start justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-[var(--heading)]">
-            Signalements
-          </h1>
-          <p className="mt-1 text-sm text-[var(--text-secondary)]">
-            Signalez et suivez les situations dangereuses identifiées.
-          </p>
-        </div>
-        <button
-          onClick={() => setShowForm(true)}
-          className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-3 py-1.5 text-sm font-medium text-white transition-all duration-200 hover:bg-[var(--yellow-hover)] active:scale-[0.97]"
-        >
-          <Plus className="h-4 w-4" />
-          Nouveau signalement
-        </button>
-      </div>
-
       {/* Tabs */}
       <div className="mb-6 flex gap-0 border-b border-[var(--border-1)]">
         {canManage && (
@@ -105,6 +86,7 @@ export default function SignalementPageClient({
           signalements={signalements}
           categories={categories}
           canManage={canManage}
+          onAdd={() => setShowForm(true)}
         />
       ) : (
         <MesSignalements signalements={mySignalements} />

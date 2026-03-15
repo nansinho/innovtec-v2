@@ -1085,14 +1085,14 @@ export default function PolitiqueContent({
         <div className="flex flex-wrap items-center gap-2.5">
           <button
             onClick={startNew}
-            className="inline-flex items-center gap-2 rounded-[var(--radius)] bg-[var(--yellow)] px-4 py-2.5 text-sm font-medium text-white shadow-xs transition-colors hover:bg-[var(--yellow-hover)]"
+            className="inline-flex h-9 items-center gap-2 rounded-xl bg-gradient-to-b from-amber-500 to-amber-600 px-4 text-sm font-medium text-white shadow-sm shadow-amber-600/20 transition-all hover:from-amber-600 hover:to-amber-700 hover:shadow-md hover:shadow-amber-600/25 active:scale-[0.97]"
           >
             <Plus className="h-4 w-4" />
             Nouvelle politique QSE
           </button>
           <button
             onClick={() => { setShowUpload(!showUpload); setEditingId(null); }}
-            className="inline-flex items-center gap-2 rounded-[var(--radius)] border border-[var(--border-1)] bg-white px-4 py-2.5 text-sm font-medium text-[var(--navy)] transition-colors hover:bg-zinc-50"
+            className="inline-flex h-9 items-center gap-2 rounded-xl border border-[var(--border-1)] bg-white px-4 text-sm font-medium text-[var(--navy)] shadow-xs transition-all hover:bg-zinc-50 hover:border-zinc-300 active:scale-[0.97]"
           >
             <Sparkles className="h-4 w-4 text-[var(--yellow)]" />
             Importer un PDF / Image (IA)
@@ -1115,9 +1115,11 @@ export default function PolitiqueContent({
 
       {/* DataTable view */}
       {allContent.length === 0 ? (
-        <div className="flex flex-col items-center rounded-2xl border border-[var(--border-1)] bg-white py-16 text-center shadow-sm ring-1 ring-black/[0.03]">
-          <FileText className="mb-3 h-12 w-12 text-zinc-300" />
-          <p className="text-sm font-medium text-[var(--heading)]">
+        <div className="flex flex-col items-center rounded-2xl border border-[var(--border-1)] bg-white py-20 text-center shadow-sm ring-1 ring-black/[0.03]">
+          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-zinc-100 ring-1 ring-zinc-200/60">
+            <FileText className="h-7 w-7 text-zinc-400" />
+          </div>
+          <p className="text-sm font-semibold text-[var(--heading)]">
             Aucune politique QSE
           </p>
           {canEdit && (
@@ -1130,14 +1132,14 @@ export default function PolitiqueContent({
         <div className="overflow-hidden rounded-2xl border border-[var(--border-1)] bg-white shadow-sm ring-1 ring-black/[0.03]">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-[var(--border-1)] bg-[var(--hover)]">
-                <th className="px-4 py-3.5 text-left text-xs font-medium text-[var(--text-secondary)]">Titre</th>
-                <th className="px-4 py-3.5 text-left text-xs font-medium text-[var(--text-secondary)]" style={{ width: "80px" }}>Année</th>
-                <th className="px-4 py-3.5 text-left text-xs font-medium text-[var(--text-secondary)]" style={{ width: "130px" }}>Signature</th>
-                <th className="px-4 py-3.5 text-left text-xs font-medium text-[var(--text-secondary)]">Piliers</th>
-                <th className="px-4 py-3.5 text-left text-xs font-medium text-[var(--text-secondary)]" style={{ width: "130px" }}>Date</th>
+              <tr className="border-b border-[var(--border-2)] bg-zinc-50/80">
+                <th className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Titre</th>
+                <th className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "80px" }}>Année</th>
+                <th className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "130px" }}>Signature</th>
+                <th className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Piliers</th>
+                <th className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "130px" }}>Date</th>
                 {canEdit && (
-                  <th className="px-4 py-3.5 text-right text-xs font-medium text-[var(--text-secondary)]" style={{ width: "120px" }}>Actions</th>
+                  <th className="px-4 py-3 text-right text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "120px" }}>Actions</th>
                 )}
               </tr>
             </thead>
@@ -1150,7 +1152,7 @@ export default function PolitiqueContent({
                   <tr
                     key={doc.id}
                     onClick={() => setSelectedId(doc.id)}
-                    className="cursor-pointer transition-colors duration-200 hover:bg-[var(--hover)]"
+                    className="cursor-pointer border-l-2 border-l-transparent transition-all duration-150 hover:border-l-[var(--yellow)] hover:bg-[var(--hover)]"
                   >
                     <td className="px-4 py-3.5">
                       <span className="text-sm font-medium text-[var(--heading)]">
@@ -1158,7 +1160,8 @@ export default function PolitiqueContent({
                       </span>
                     </td>
                     <td className="px-4 py-3.5">
-                      <span className="inline-flex items-center rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-600 ring-1 ring-amber-200/60">
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-[11px] font-semibold text-amber-700 ring-1 ring-amber-300/50">
+                        <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
                         {docYear}
                       </span>
                     </td>
@@ -1168,14 +1171,14 @@ export default function PolitiqueContent({
                         : <span className="text-[var(--text-muted)]/50">—</span>}
                     </td>
                     <td className="px-4 py-3.5">
-                      <div className="flex flex-wrap gap-1">
+                      <div className="flex flex-wrap gap-1.5">
                         {docPillars.map((p) => {
                           const Icon = p.icon;
                           return (
                             <span
                               key={p.key}
-                              className="inline-flex items-center gap-1 rounded-[var(--radius-xs)] px-2 py-0.5 text-[11px] font-medium"
-                              style={{ background: p.surface, color: p.color }}
+                              className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide"
+                              style={{ background: p.surface, color: p.color, boxShadow: `inset 0 0 0 1px ${p.border}` }}
                             >
                               <Icon className="h-3 w-3" />
                               {p.label}
@@ -1203,7 +1206,7 @@ export default function PolitiqueContent({
               })}
             </tbody>
           </table>
-          <div className="border-t border-[var(--border-1)] px-4 py-3 text-sm text-[var(--text-muted)]">
+          <div className="border-t border-[var(--border-1)] bg-[var(--hover)]/30 px-5 py-3 text-xs text-[var(--text-muted)]">
             {allContent.length} politique{allContent.length > 1 ? "s" : ""} QSE
           </div>
         </div>
