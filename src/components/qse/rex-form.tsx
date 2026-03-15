@@ -78,7 +78,7 @@ export default function RexForm() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl">
+    <div>
       <Link
         href="/qse/rex"
         className="mb-6 inline-flex items-center gap-1.5 text-sm text-[var(--text-secondary)] transition-colors hover:text-[var(--heading)]"
