@@ -33,12 +33,12 @@ const categoryLabels: Record<NewsCategory, string> = {
 };
 
 const categoryColors: Record<NewsCategory, string> = {
-  entreprise: "bg-[var(--blue-surface)] text-[var(--blue)]",
-  securite: "bg-[var(--red-surface)] text-[var(--red)]",
-  formation: "bg-[var(--green-surface)] text-[var(--green)]",
-  chantier: "bg-orange-50 text-orange-700",
-  social: "bg-[var(--purple-surface)] text-[var(--purple)]",
-  rh: "bg-indigo-50 text-indigo-700",
+  entreprise: "bg-gradient-to-b from-blue-500 to-blue-600 text-white shadow-sm",
+  securite: "bg-gradient-to-b from-red-500 to-red-600 text-white shadow-sm",
+  formation: "bg-gradient-to-b from-emerald-500 to-emerald-600 text-white shadow-sm",
+  chantier: "bg-gradient-to-b from-amber-400 to-amber-500 text-white shadow-sm",
+  social: "bg-gradient-to-b from-purple-500 to-purple-600 text-white shadow-sm",
+  rh: "bg-gradient-to-b from-indigo-500 to-indigo-600 text-white shadow-sm",
 };
 
 type NewsItem = News & {
@@ -389,7 +389,7 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
               <th className="px-4 py-3.5 text-xs font-medium text-[var(--text-secondary)]">
                 Date
               </th>
-              <th className="px-4 py-3.5 text-xs font-medium text-[var(--text-secondary)]">
+              <th className="px-4 py-3.5 text-right text-xs font-medium text-[var(--text-secondary)]">
                 Actions
               </th>
             </tr>
@@ -418,7 +418,7 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
                   <td className="px-4 py-3.5">
                     <span
                       className={cn(
-                        "rounded-full px-2.5 py-0.5 text-[10px] font-medium",
+                        "rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide",
                         categoryColors[article.category]
                       )}
                     >
@@ -428,10 +428,10 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
                   <td className="px-4 py-3.5">
                     <span
                       className={cn(
-                        "inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-medium",
+                        "inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide shadow-sm",
                         article.is_published
-                          ? "bg-[var(--green-surface)] text-[var(--green)]"
-                          : "bg-[var(--hover)] text-[var(--text-secondary)]"
+                          ? "bg-gradient-to-b from-emerald-500 to-emerald-600 text-white"
+                          : "bg-zinc-100 text-zinc-500 ring-1 ring-zinc-200/60"
                       )}
                     >
                       {article.is_published ? "Publié" : "Brouillon"}
@@ -442,7 +442,7 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
                       ? formatDate(article.published_at)
                       : formatDate(article.created_at)}
                   </td>
-                  <td className="px-4 py-3.5">
+                  <td className="px-4 py-3.5 text-right">
                     <DropdownMenu
                       items={[
                         {

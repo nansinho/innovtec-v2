@@ -48,38 +48,54 @@ export default function SignalementPageClient({
       </div>
 
       {/* Tabs */}
-      <div className="mb-4 flex gap-1 rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--hover)] p-1">
+      <div className="mb-6 flex gap-0 border-b border-[var(--border-1)]">
         {canManage && (
           <button
             onClick={() => setTab("all")}
             className={cn(
-              "flex items-center gap-2 rounded-[var(--radius-xs)] px-4 py-2 text-sm font-medium transition-all",
+              "relative flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors",
               tab === "all"
-                ? "bg-[var(--card)] text-[var(--heading)] shadow-sm"
-                : "text-[var(--text-muted)] hover:text-[var(--heading)]"
+                ? "text-[var(--heading)]"
+                : "text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
             )}
           >
             <List className="h-4 w-4" />
             Tous les signalements
-            <span className="ml-1 rounded-full bg-[var(--yellow-surface)] px-2 py-0.5 text-[11px] font-semibold text-[var(--yellow)]">
+            <span className={cn(
+              "rounded-full px-2 py-0.5 text-[11px] font-semibold",
+              tab === "all"
+                ? "bg-gradient-to-b from-amber-400 to-amber-500 text-white shadow-sm"
+                : "bg-zinc-100 text-zinc-500"
+            )}>
               {signalements.length}
             </span>
+            {tab === "all" && (
+              <span className="absolute bottom-0 left-0 right-0 h-[2px] rounded-full bg-[var(--yellow)]" />
+            )}
           </button>
         )}
         <button
           onClick={() => setTab("mine")}
           className={cn(
-            "flex items-center gap-2 rounded-[var(--radius-xs)] px-4 py-2 text-sm font-medium transition-all",
+            "relative flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors",
             tab === "mine"
-              ? "bg-[var(--card)] text-[var(--heading)] shadow-sm"
-              : "text-[var(--text-muted)] hover:text-[var(--heading)]"
+              ? "text-[var(--heading)]"
+              : "text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
           )}
         >
           <User className="h-4 w-4" />
           Mes signalements
-          <span className="ml-1 rounded-full bg-[var(--blue-surface)] px-2 py-0.5 text-[11px] font-semibold text-[var(--blue)]">
+          <span className={cn(
+            "rounded-full px-2 py-0.5 text-[11px] font-semibold",
+            tab === "mine"
+              ? "bg-gradient-to-b from-blue-500 to-blue-600 text-white shadow-sm"
+              : "bg-zinc-100 text-zinc-500"
+          )}>
             {mySignalements.length}
           </span>
+          {tab === "mine" && (
+            <span className="absolute bottom-0 left-0 right-0 h-[2px] rounded-full bg-[var(--yellow)]" />
+          )}
         </button>
       </div>
 

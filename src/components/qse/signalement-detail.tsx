@@ -121,10 +121,10 @@ export default function SignalementDetail({
               <Badge variant={pri.variant}>{pri.label}</Badge>
               {cat && (
                 <span
-                  className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-medium"
-                  style={{ backgroundColor: `${cat.color}15`, color: cat.color }}
+                  className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide text-white shadow-sm"
+                  style={{ background: `linear-gradient(to bottom, ${cat.color}, ${cat.color}dd)` }}
                 >
-                  <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: cat.color }} />
+                  <span className="h-1.5 w-1.5 rounded-full bg-white/80" />
                   {cat.name}
                 </span>
               )}

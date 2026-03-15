@@ -38,12 +38,12 @@ const categoryLabels: Record<NewsCategory, string> = {
 };
 
 const categoryColors: Record<NewsCategory, string> = {
-  entreprise: "bg-[var(--blue-surface)] text-[var(--blue)]",
-  securite: "bg-[var(--red-surface)] text-[var(--red)]",
-  formation: "bg-[var(--green-surface)] text-[var(--green)]",
-  chantier: "bg-orange-50 text-orange-700",
-  social: "bg-[var(--purple-surface)] text-[var(--purple)]",
-  rh: "bg-indigo-50 text-indigo-700",
+  entreprise: "bg-gradient-to-b from-blue-500 to-blue-600 text-white shadow-sm",
+  securite: "bg-gradient-to-b from-red-500 to-red-600 text-white shadow-sm",
+  formation: "bg-gradient-to-b from-emerald-500 to-emerald-600 text-white shadow-sm",
+  chantier: "bg-gradient-to-b from-amber-400 to-amber-500 text-white shadow-sm",
+  social: "bg-gradient-to-b from-purple-500 to-purple-600 text-white shadow-sm",
+  rh: "bg-gradient-to-b from-indigo-500 to-indigo-600 text-white shadow-sm",
 };
 
 interface NewsDetailProps {
@@ -185,7 +185,7 @@ export default function NewsDetail({
           <div className="mb-3 flex flex-wrap items-center gap-2">
             <span
               className={cn(
-                "rounded-full px-2.5 py-0.5 text-[10px] font-medium",
+                "rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide",
                 categoryColors[article.category]
               )}
             >
@@ -194,10 +194,10 @@ export default function NewsDetail({
             {article.priority !== "normal" && (
               <span
                 className={cn(
-                  "rounded-full px-2.5 py-0.5 text-[10px] font-bold text-white",
+                  "rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide text-white shadow-sm",
                   article.priority === "urgent"
-                    ? "bg-red-500"
-                    : "bg-[var(--yellow)]"
+                    ? "bg-gradient-to-b from-red-500 to-red-600"
+                    : "bg-gradient-to-b from-amber-400 to-amber-500"
                 )}
               >
                 {article.priority === "urgent" ? "Urgent" : "Important"}

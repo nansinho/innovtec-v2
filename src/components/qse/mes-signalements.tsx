@@ -89,8 +89,8 @@ export default function MesSignalements({ signalements }: MesSignalementsProps) 
               <Badge variant={pri.variant}>{pri.label}</Badge>
               {cat && (
                 <span
-                  className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium"
-                  style={{ backgroundColor: `${cat.color}15`, color: cat.color }}
+                  className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-wide text-white shadow-sm"
+                  style={{ background: `linear-gradient(to bottom, ${cat.color}, ${cat.color}dd)` }}
                 >
                   {cat.name}
                 </span>

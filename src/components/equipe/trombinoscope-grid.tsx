@@ -13,11 +13,11 @@ interface TrombinoscopeGridProps {
 }
 
 const DEPT_COLORS: Record<string, { bg: string; text: string }> = {
-  "Travaux": { bg: "bg-orange-50", text: "text-orange-700" },
-  "Ingénierie": { bg: "bg-[var(--blue-surface)]", text: "text-[var(--blue)]" },
-  "Administration": { bg: "bg-[var(--purple-surface)]", text: "text-[var(--purple)]" },
-  "Ressources Humaines": { bg: "bg-pink-50", text: "text-pink-700" },
-  "Direction": { bg: "bg-[var(--red-surface)]", text: "text-[var(--red)]" },
+  "Travaux": { bg: "bg-gradient-to-b from-amber-400 to-amber-500 shadow-sm", text: "text-white" },
+  "Ingénierie": { bg: "bg-gradient-to-b from-blue-500 to-blue-600 shadow-sm", text: "text-white" },
+  "Administration": { bg: "bg-gradient-to-b from-purple-500 to-purple-600 shadow-sm", text: "text-white" },
+  "Ressources Humaines": { bg: "bg-gradient-to-b from-pink-500 to-pink-600 shadow-sm", text: "text-white" },
+  "Direction": { bg: "bg-gradient-to-b from-red-500 to-red-600 shadow-sm", text: "text-white" },
 };
 
 function getDeptColor(dept: string) {
