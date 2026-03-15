@@ -5,6 +5,7 @@ import {
   X,
   Send,
   Camera,
+  Eye,
   EyeOff,
   Trash2,
   Loader2,
@@ -41,7 +42,8 @@ export default function SignalementForm({ categories, onCreated, onClose }: Sign
     incident_date: new Date().toISOString().split("T")[0],
     incident_time: "",
     chantier: "",
-    is_anonymous: false,
+    is_anonymous: true,
+    certified: false,
   });
   const [photoUrls, setPhotoUrls] = useState<string[]>([]);
   const [error, setError] = useState("");
@@ -95,11 +97,16 @@ export default function SignalementForm({ categories, onCreated, onClose }: Sign
       setError("La date de l'incident est obligatoire");
       return;
     }
+    if (!form.certified) {
+      setError("Vous devez certifier l'exactitude des faits");
+      return;
+    }
 
     setError("");
     startTransition(async () => {
+      const { certified: _, ...formData } = form;
       const result = await createSignalement({
-        ...form,
+        ...formData,
         photo_urls: photoUrls,
       });
 
@@ -116,7 +123,7 @@ export default function SignalementForm({ categories, onCreated, onClose }: Sign
     "w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]";
 
   return (
-    <div className="fixed inset-0 z-[200] flex flex-col md:left-[var(--sidebar-width)]">
+    <div className="fixed inset-0 z-[200] flex flex-col bg-[var(--card)] md:left-[var(--sidebar-width)]">
       <div className="relative flex h-full w-full flex-col bg-[var(--card)]">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[var(--border-1)] px-6 py-4">
@@ -325,6 +332,30 @@ export default function SignalementForm({ categories, onCreated, onClose }: Sign
             )}
           </div>
 
+          {/* Certification */}
+          <label
+            onClick={() => setForm({ ...form, certified: !form.certified })}
+            className="flex cursor-pointer items-start gap-3 rounded-[var(--radius-sm)] border border-[var(--border-1)] p-3 transition-colors hover:bg-[var(--hover)]"
+          >
+            <div
+              className={cn(
+                "mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-colors",
+                form.certified
+                  ? "border-[var(--yellow)] bg-[var(--yellow)] text-white"
+                  : "border-zinc-300"
+              )}
+            >
+              {form.certified && (
+                <svg className="h-3 w-3" viewBox="0 0 12 12" fill="none">
+                  <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              )}
+            </div>
+            <span className="text-sm text-[var(--text-secondary)]">
+              Je certifie sur l&apos;honneur l&apos;exactitude des faits décrits dans ce signalement.
+            </span>
+          </label>
+
           {/* Error */}
           {error && (
             <p className="text-[12px] text-[var(--red)]">{error}</p>
@@ -332,7 +363,21 @@ export default function SignalementForm({ categories, onCreated, onClose }: Sign
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 border-t border-[var(--border-1)] px-6 py-4">
+        <div className="flex items-center gap-3 border-t border-[var(--border-1)] px-6 py-4">
+          {/* Rappel mode anonyme/public */}
+          <div className="mr-auto flex items-center gap-2 text-sm text-[var(--text-muted)]">
+            {form.is_anonymous ? (
+              <>
+                <EyeOff className="h-4 w-4" />
+                <span>Signalement anonyme</span>
+              </>
+            ) : (
+              <>
+                <Eye className="h-4 w-4" />
+                <span>Votre identité sera visible</span>
+              </>
+            )}
+          </div>
           <button
             onClick={onClose}
             className="rounded-[var(--radius-sm)] px-4 py-2 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--hover)]"
