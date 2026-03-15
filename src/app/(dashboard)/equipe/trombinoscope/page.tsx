@@ -16,15 +16,6 @@ export default async function TrombinoscopePage() {
 
   return (
     <div className="p-6 pb-20 md:pb-6">
-      <div className="mb-6">
-        <h1 className="text-xl font-semibold text-[var(--heading)]">
-          Trombinoscope
-        </h1>
-        <p className="mt-1 text-sm text-[var(--text-secondary)]">
-          L&apos;annuaire de tous les collaborateurs INNOVTEC Réseaux.
-        </p>
-      </div>
-
       <TrombinoscopeTable
         users={users}
         birthdayIds={Array.from(birthdayIds)}

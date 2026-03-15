@@ -5,6 +5,7 @@ import { Users, Mail, Phone, Eye, Cake } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DataTable, type ColumnDef, type FilterDef } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
+import { getStandardToolbarActions } from "@/lib/table-toolbar-actions";
 import ProfileDrawer from "./profile-drawer";
 import type { Profile } from "@/lib/types/database";
 
@@ -184,6 +185,9 @@ export default function TrombinoscopeTable({
         data={users}
         columns={columns}
         keyField="id"
+        title="Trombinoscope"
+        description="L'annuaire de tous les collaborateurs INNOVTEC Réseaux."
+        toolbarActions={getStandardToolbarActions()}
         selectable
         searchable
         searchPlaceholder="Rechercher un collaborateur..."

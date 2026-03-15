@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { AlertTriangle, Eye, Download } from "lucide-react";
+import { AlertTriangle, Eye } from "lucide-react";
 import { cn, formatRelative } from "@/lib/utils";
 import { updateDangerStatus } from "@/actions/qse";
 import { DataTable, type ColumnDef, type FilterDef } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
+import { getStandardToolbarActions } from "@/lib/table-toolbar-actions";
 
 const statusConfig: Record<string, { label: string; variant: "red" | "yellow" | "green" | "default" }> = {
   signale: { label: "Signalé", variant: "red" },
@@ -200,6 +201,9 @@ export default function DangerList({ dangers: initialDangers, canManage }: Dange
       data={dangers}
       columns={columns}
       keyField="id"
+      title="Situations dangereuses"
+      description="Suivez les situations dangereuses identifiées."
+      toolbarActions={getStandardToolbarActions({ onExport: () => exportCsv(dangers) })}
       selectable
       searchable
       searchPlaceholder="Rechercher une situation..."
@@ -209,15 +213,6 @@ export default function DangerList({ dangers: initialDangers, canManage }: Dange
         title: "Aucune situation dangereuse",
         description: "Aucune situation n'a été signalée pour le moment.",
       }}
-      headerAction={
-        <button
-          onClick={() => exportCsv(dangers)}
-          className="inline-flex h-9 items-center gap-2 rounded-[var(--radius)] border border-[var(--border-1)] bg-white px-3 text-sm text-[var(--text-secondary)] transition-colors hover:bg-zinc-50"
-        >
-          <Download className="h-4 w-4" />
-          Export CSV
-        </button>
-      }
       actions={(d) => [
         {
           label: "Voir les détails",

@@ -2,12 +2,13 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { AlertTriangle, Eye, Download, Trash2 } from "lucide-react";
+import { AlertTriangle, Eye, Trash2 } from "lucide-react";
 import { updateSignalementStatus, deleteSignalement } from "@/actions/signalements";
 import ConfirmDialog from "@/components/ui/confirm-dialog";
 import { toast } from "sonner";
 import { DataTable, type ColumnDef, type FilterDef } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
+import { getStandardToolbarActions } from "@/lib/table-toolbar-actions";
 import type { DangerReport, SignalementCategory } from "@/lib/types/database";
 
 const statusConfig: Record<string, { label: string; variant: "red" | "yellow" | "green" | "default" }> = {
@@ -250,6 +251,7 @@ export default function SignalementList({ signalements: initial, categories, can
       keyField="id"
       title="Signalements"
       description="Signalez et suivez les situations dangereuses identifiées."
+      toolbarActions={getStandardToolbarActions({ onExport: () => exportCsv(signalements) })}
       selectable
       searchable
       searchPlaceholder="Rechercher un signalement..."
@@ -262,15 +264,6 @@ export default function SignalementList({ signalements: initial, categories, can
         title: "Aucun signalement",
         description: "Aucune situation dangereuse n'a été signalée pour le moment.",
       }}
-      headerAction={
-        <button
-          onClick={() => exportCsv(signalements)}
-          className="inline-flex h-9 items-center gap-2 rounded-[var(--radius)] border border-[var(--border-1)] bg-white px-3 text-sm text-[var(--text-secondary)] transition-colors hover:bg-zinc-50"
-        >
-          <Download className="h-4 w-4" />
-          Export CSV
-        </button>
-      }
       actions={(d) => [
         {
           label: "Voir les détails",

@@ -1079,29 +1079,37 @@ export default function PolitiqueContent({
   // LIST VIEW (DataTable)
   // ==========================================
   return (
-    <div className="space-y-5">
-      {/* Actions */}
-      {canEdit && (
-        <div className="flex flex-wrap items-center gap-2.5">
-          <button
-            onClick={startNew}
-            className="inline-flex h-9 items-center gap-2 rounded-xl bg-gradient-to-b from-amber-500 to-amber-600 px-4 text-sm font-medium text-white shadow-sm shadow-amber-600/20 transition-all hover:from-amber-600 hover:to-amber-700 hover:shadow-md hover:shadow-amber-600/25 active:scale-[0.97]"
-          >
-            <Plus className="h-4 w-4" />
-            Nouvelle politique QSE
-          </button>
-          <button
-            onClick={() => { setShowUpload(!showUpload); setEditingId(null); }}
-            className="inline-flex h-9 items-center gap-2 rounded-xl border border-[var(--border-1)] bg-white px-4 text-sm font-medium text-[var(--navy)] shadow-xs transition-all hover:bg-zinc-50 hover:border-zinc-300 active:scale-[0.97]"
-          >
-            <Sparkles className="h-4 w-4 text-[var(--yellow)]" />
-            Importer un PDF / Image (IA)
-          </button>
+    <div>
+      {/* Header — style C&CO */}
+      <div className="mb-5 flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="font-display text-xl font-bold text-[var(--heading)]">Politique QSE</h1>
+          <p className="mt-1 text-sm text-[var(--text-secondary)]">
+            La politique Qualité, Sécurité et Environnement d&apos;INNOVTEC Réseaux.
+          </p>
         </div>
-      )}
+        {canEdit && (
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => { setShowUpload(!showUpload); setEditingId(null); }}
+              className="inline-flex h-9 items-center gap-2 rounded-lg border border-[var(--border-1)] bg-white px-3 text-sm font-medium text-[var(--text-secondary)] shadow-xs transition-all hover:bg-zinc-50 hover:text-[var(--heading)] hover:border-zinc-300 active:scale-[0.97]"
+            >
+              <Sparkles className="h-4 w-4" />
+              <span className="hidden sm:inline">Importer (IA)</span>
+            </button>
+            <button
+              onClick={startNew}
+              className="inline-flex h-9 items-center gap-2 rounded-lg bg-gradient-to-b from-amber-500 to-amber-600 px-4 text-sm font-medium text-white shadow-sm shadow-amber-600/20 transition-all hover:from-amber-600 hover:to-amber-700 hover:shadow-md hover:shadow-amber-600/25 active:scale-[0.97]"
+            >
+              <Plus className="h-4 w-4" />
+              Nouvelle politique QSE
+            </button>
+          </div>
+        )}
+      </div>
 
       {showUpload && (
-        <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-white p-6 shadow-xs">
+        <div className="mb-5 rounded-lg border border-[var(--border-1)] bg-white p-6 shadow-xs">
           <div className="mb-1 flex items-center gap-2">
             <Upload className="h-4 w-4 text-[var(--yellow)]" />
             <h3 className="text-sm font-semibold text-[var(--heading)]">Import IA</h3>
@@ -1113,9 +1121,9 @@ export default function PolitiqueContent({
         </div>
       )}
 
-      {/* DataTable view */}
+      {/* Table view */}
       {allContent.length === 0 ? (
-        <div className="flex flex-col items-center rounded-2xl border border-[var(--border-1)] bg-white py-20 text-center shadow-sm ring-1 ring-black/[0.03]">
+        <div className="flex flex-col items-center py-20 text-center">
           <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-zinc-100 ring-1 ring-zinc-200/60">
             <FileText className="h-7 w-7 text-zinc-400" />
           </div>
@@ -1129,17 +1137,17 @@ export default function PolitiqueContent({
           )}
         </div>
       ) : (
-        <div className="overflow-hidden rounded-2xl border border-[var(--border-1)] bg-white shadow-sm ring-1 ring-black/[0.03]">
+        <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-[var(--border-2)] bg-zinc-50/80">
-                <th className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Titre</th>
-                <th className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "80px" }}>Année</th>
-                <th className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "130px" }}>Signature</th>
-                <th className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Piliers</th>
-                <th className="px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "130px" }}>Date</th>
+              <tr className="border-b border-[var(--border-2)]">
+                <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Titre</th>
+                <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "80px" }}>Année</th>
+                <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "130px" }}>Signature</th>
+                <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Piliers</th>
+                <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "130px" }}>Date</th>
                 {canEdit && (
-                  <th className="px-4 py-3 text-right text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "120px" }}>Actions</th>
+                  <th className="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "120px" }}>Actions</th>
                 )}
               </tr>
             </thead>
@@ -1152,7 +1160,7 @@ export default function PolitiqueContent({
                   <tr
                     key={doc.id}
                     onClick={() => setSelectedId(doc.id)}
-                    className="cursor-pointer border-l-2 border-l-transparent transition-all duration-150 hover:border-l-[var(--yellow)] hover:bg-[var(--hover)]"
+                    className="cursor-pointer transition-colors duration-150 hover:bg-[var(--hover)]"
                   >
                     <td className="px-4 py-3.5">
                       <span className="text-sm font-medium text-[var(--heading)]">
@@ -1206,7 +1214,7 @@ export default function PolitiqueContent({
               })}
             </tbody>
           </table>
-          <div className="border-t border-[var(--border-1)] bg-[var(--hover)]/30 px-5 py-3 text-xs text-[var(--text-muted)]">
+          <div className="border-t border-[var(--border-1)] px-4 py-3 text-xs text-[var(--text-muted)]">
             {allContent.length} politique{allContent.length > 1 ? "s" : ""} QSE
           </div>
         </div>
