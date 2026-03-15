@@ -20,6 +20,7 @@ import {
   Copy,
 } from "lucide-react";
 import { cn, formatDate } from "@/lib/utils";
+import { toast } from "sonner";
 import { DropdownMenu } from "@/components/ui/dropdown-menu";
 import FileUploadAi from "@/components/ai/file-upload-ai";
 import {
@@ -30,7 +31,6 @@ import {
   uploadQseDocumentFile,
   deleteQseDocumentFile,
 } from "@/actions/qse";
-import { createClient } from "@/lib/supabase/client";
 import type { QseContent, QseContentSection, QseDocument } from "@/lib/types/database";
 
 // ==========================================
@@ -394,26 +394,34 @@ export default function PolitiqueContent({
 
   function handleSave() {
     startTransition(async () => {
-      const finalSections = editStateToSections();
-      let result;
-      if (editingId) {
-        result = await saveQseContent("politique", title, finalSections, sourceFileUrl || undefined, editingId, year, dateSignature, documents, engagementText, engagementLieu, signataires);
-      } else {
-        result = await createQseContent("politique", title, finalSections, sourceFileUrl || undefined, year, dateSignature, documents, engagementText, engagementLieu, signataires);
-      }
-      if (result.success) {
-        setEditing(false);
-        setEditingId(null);
-        setSourceFileUrl("");
-        setYear(null);
-        setDateSignature(null);
-        setDocuments([]);
-        setEngagementText("");
-        setEngagementLieu("");
-        setSignataires([]);
-        setIntroText("");
-        setPillarData({});
-        router.refresh();
+      try {
+        const finalSections = editStateToSections();
+        let result;
+        if (editingId) {
+          result = await saveQseContent("politique", title, finalSections, sourceFileUrl || undefined, editingId, year, dateSignature, documents, engagementText, engagementLieu, signataires);
+        } else {
+          result = await createQseContent("politique", title, finalSections, sourceFileUrl || undefined, year, dateSignature, documents, engagementText, engagementLieu, signataires);
+        }
+        if (result.success) {
+          toast.success("Politique QSE enregistrée avec succès");
+          setEditing(false);
+          setEditingId(null);
+          setSourceFileUrl("");
+          setYear(null);
+          setDateSignature(null);
+          setDocuments([]);
+          setEngagementText("");
+          setEngagementLieu("");
+          setSignataires([]);
+          setIntroText("");
+          setPillarData({});
+          router.refresh();
+        } else {
+          toast.error(result.error || "Erreur lors de l'enregistrement");
+        }
+      } catch (err) {
+        toast.error("Erreur lors de l'enregistrement");
+        console.error("Save error:", err);
       }
     });
   }
@@ -477,8 +485,11 @@ export default function PolitiqueContent({
     startTransition(async () => {
       const result = await deleteQseContent(id);
       if (result.success) {
+        toast.success("Politique supprimée");
         if (selectedId === id) setSelectedId(null);
         router.refresh();
+      } else {
+        toast.error(result.error || "Erreur lors de la suppression");
       }
     });
   }
@@ -704,6 +715,8 @@ export default function PolitiqueContent({
                               const updated = [...documents];
                               updated[index] = { ...updated[index], file_url: result.filePath };
                               setDocuments(updated);
+                            } else if (result.error) {
+                              toast.error(result.error);
                             }
                           } finally {
                             setUploadingDocIndex(null);
