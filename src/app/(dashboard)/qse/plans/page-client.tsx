@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus } from "lucide-react";
 import ActionPlanList from "@/components/qse/action-plan-list";
 import ActionPlanForm from "@/components/qse/action-plan-form";
 import type { ActionPlan, DangerReport, Profile, SignalementPriority } from "@/lib/types/database";
@@ -27,30 +26,11 @@ export default function PlansPageClient({
 
   return (
     <div className="p-6 pb-20 md:pb-6">
-      <div className="mb-6 flex items-start justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-[var(--heading)]">
-            Plans d&apos;actions
-          </h1>
-          <p className="mt-1 text-sm text-[var(--text-secondary)]">
-            Gérez les plans d&apos;actions correctives et préventives.
-          </p>
-        </div>
-        {canManage && (
-          <button
-            onClick={() => setFormModal({ open: true })}
-            className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-3 py-1.5 text-sm font-medium text-white transition-all duration-200 hover:bg-[var(--yellow-hover)] active:scale-[0.97]"
-          >
-            <Plus className="h-4 w-4" />
-            Nouveau plan
-          </button>
-        )}
-      </div>
-
       <ActionPlanList
         plans={plans}
         canManage={canManage}
         onEdit={(plan) => setFormModal({ open: true, plan })}
+        onAdd={canManage ? () => setFormModal({ open: true }) : undefined}
       />
 
       {formModal.open && (

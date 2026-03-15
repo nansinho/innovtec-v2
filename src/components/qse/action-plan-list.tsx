@@ -33,9 +33,10 @@ interface ActionPlanListProps {
   plans: ActionPlan[];
   canManage: boolean;
   onEdit: (plan: ActionPlan) => void;
+  onAdd?: () => void;
 }
 
-export default function ActionPlanList({ plans: initial, canManage, onEdit }: ActionPlanListProps) {
+export default function ActionPlanList({ plans: initial, canManage, onEdit, onAdd }: ActionPlanListProps) {
   const [plans, setPlans] = useState(initial);
   const [isPending, startTransition] = useTransition();
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -184,10 +185,14 @@ export default function ActionPlanList({ plans: initial, canManage, onEdit }: Ac
         data={plans}
         columns={columns}
         keyField="id"
+        title="Plans d'actions"
+        description="Gérez les plans d'actions correctives et préventives."
         selectable
         searchable
         searchPlaceholder="Rechercher un plan d'action..."
         filters={filters}
+        onAdd={onAdd}
+        addLabel="Nouveau plan"
         onRowClick={(p) => router.push(`/qse/plans/${p.id}`)}
         emptyState={{
           icon: ClipboardList,
