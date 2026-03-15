@@ -131,10 +131,10 @@ function SectionLabel({ label, collapsed }: { label: string; collapsed: boolean 
 
 interface SidebarProps {
   profile: Profile | null;
-  logoUrl?: string | null;
+  logos?: { light: string | null; dark: string | null } | null;
 }
 
-export default function Sidebar({ profile, logoUrl }: SidebarProps) {
+export default function Sidebar({ profile, logos }: SidebarProps) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
 
@@ -155,18 +155,16 @@ export default function Sidebar({ profile, logoUrl }: SidebarProps) {
     >
       {/* Logo */}
       <div className="flex items-center gap-2.5 border-b border-white/[0.06] px-4 py-4">
-        {logoUrl ? (
-          <>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={logoUrl}
-              alt="Logo société"
-              className={cn(
-                "object-contain transition-all duration-300",
-                collapsed ? "h-9 w-9" : "h-9 max-w-[180px]"
-              )}
-            />
-          </>
+        {(logos?.dark || logos?.light) ? (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img
+            src={(logos.dark || logos.light)!}
+            alt="Logo société"
+            className={cn(
+              "object-contain transition-all duration-300",
+              collapsed ? "h-9 w-9" : "h-9 max-w-[180px]"
+            )}
+          />
         ) : (
           <>
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-b from-[var(--yellow)] to-[var(--yellow-hover)] shadow-sm shadow-amber-600/20">

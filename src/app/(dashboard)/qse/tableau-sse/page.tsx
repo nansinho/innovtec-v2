@@ -6,7 +6,7 @@ import { SseDashboardView } from "@/components/qse/sse-dashboard-view";
 export const dynamic = "force-dynamic";
 
 export default async function TableauSsePage() {
-  const [dashboards, latest, profile, logoUrl] = await Promise.all([
+  const [dashboards, latest, profile, logos] = await Promise.all([
     getSseDashboards(),
     getLatestSseDashboard(),
     getProfile(),
@@ -30,7 +30,7 @@ export default async function TableauSsePage() {
         dashboards={dashboards}
         initialDashboard={latest}
         canManage={!!canManage}
-        logoUrl={logoUrl}
+        logos={logos}
       />
     </div>
   );

@@ -1,7 +1,9 @@
 import { InnovtecLogo } from "@/components/icons/innovtec-logo";
+import type { CompanyLogos } from "@/actions/settings";
 
 interface CompanyLogoProps {
-  logoUrl?: string | null;
+  logoUrl?: CompanyLogos | null;
+  variant?: "light" | "dark";
   width?: number;
   height?: number;
   className?: string;
@@ -9,15 +11,20 @@ interface CompanyLogoProps {
 
 export function CompanyLogo({
   logoUrl,
+  variant = "light",
   width = 160,
   height = 50,
   className,
 }: CompanyLogoProps) {
-  if (logoUrl) {
+  // Pick the right variant, fallback to the other if only one is set
+  const url =
+    logoUrl?.[variant] || logoUrl?.[variant === "light" ? "dark" : "light"];
+
+  if (url) {
     return (
       // eslint-disable-next-line @next/next/no-img-element
       <img
-        src={logoUrl}
+        src={url}
         alt="Logo société"
         width={width}
         height={height}

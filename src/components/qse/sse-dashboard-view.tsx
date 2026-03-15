@@ -108,10 +108,10 @@ interface SseDashboardViewProps {
   dashboards: SseDashboard[];
   initialDashboard: SseDashboard | null;
   canManage?: boolean;
-  logoUrl?: string | null;
+  logos?: { light: string | null; dark: string | null } | null;
 }
 
-export function SseDashboardView({ dashboards: initialDashboards, initialDashboard, canManage = false, logoUrl }: SseDashboardViewProps) {
+export function SseDashboardView({ dashboards: initialDashboards, initialDashboard, canManage = false, logos }: SseDashboardViewProps) {
   const [dashboards, setDashboards] = useState(initialDashboards);
   const [selected, setSelected] = useState<SseDashboard | null>(null);
   const [mode, setMode] = useState<"list" | "detail" | "create" | "edit">("list");
@@ -272,7 +272,7 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
           {/* Header */}
           <div className="flex items-start justify-between border-b border-[var(--border-1)] bg-white px-8 py-6">
             <div className="flex items-center gap-6">
-              <CompanyLogo logoUrl={logoUrl} width={140} height={44} />
+              <CompanyLogo logoUrl={logos} variant="light" width={140} height={44} />
               <div>
                 <p className="text-lg font-bold text-[var(--navy)]">INNOVTEC</p>
                 <p className="text-sm font-semibold text-[var(--navy)]">{monthLabel} {d.year}</p>
