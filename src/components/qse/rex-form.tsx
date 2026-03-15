@@ -1,51 +1,157 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Send, ToggleLeft, ToggleRight } from "lucide-react";
+import {
+  ArrowLeft,
+  Send,
+  Upload,
+  Sparkles,
+  PenLine,
+  X,
+  Plus,
+  Loader2,
+  Camera,
+} from "lucide-react";
 import Link from "next/link";
-import { createRex } from "@/actions/qse";
+import { createRex, uploadRexPhoto } from "@/actions/qse";
 import { toast } from "sonner";
 import AiGenerateButton from "@/components/ai/ai-generate-button";
+import FileUploadAi from "@/components/ai/file-upload-ai";
+import {
+  RexFaitsIcon,
+  RexCausesIcon,
+  RexActionsIcon,
+  RexVigilanceIcon,
+} from "@/components/icons/rex-section-icons";
+
+type Mode = "import" | "ai" | "manual";
+
+const EVENT_TYPES = [
+  { value: "sd", label: "SD", full: "Situation Dangereuse", color: "text-orange-600 bg-orange-50 border-orange-200" },
+  { value: "presquaccident", label: "PRESQU'ACCIDENT", full: "Presqu'accident", color: "text-yellow-700 bg-yellow-50 border-yellow-200" },
+  { value: "accident", label: "ACCIDENT", full: "Accident", color: "text-red-600 bg-red-50 border-red-200" },
+  { value: "hpe", label: "HPE", full: "High Potential Events", color: "text-purple-600 bg-purple-50 border-purple-200" },
+];
+
+const SECTIONS = [
+  { key: "faits", label: "LES FAITS", photoKey: "faits_photo_url", color: "#4CAF50", bgClass: "border-l-green-500 bg-green-50/30", Icon: RexFaitsIcon },
+  { key: "causes", label: "LES CAUSES ET LES CIRCONSTANCES", photoKey: "causes_photo_url", color: "#FF9800", bgClass: "border-l-orange-500 bg-orange-50/30", Icon: RexCausesIcon },
+  { key: "actions_engagees", label: "LA SYNTHÈSE DES ACTIONS ENGAGÉES", photoKey: "actions_photo_url", color: "#00897B", bgClass: "border-l-teal-500 bg-teal-50/30", Icon: RexActionsIcon },
+  { key: "vigilance", label: "LE RAPPEL À VIGILANCE", photoKey: "vigilance_photo_url", color: "#FFC107", bgClass: "border-l-yellow-500 bg-yellow-50/30", Icon: RexVigilanceIcon },
+] as const;
+
+interface RexFormData {
+  title: string;
+  description: string;
+  lessons_learned: string;
+  chantier: string;
+  rex_number: string;
+  rex_year: string;
+  lieu: string;
+  date_evenement: string;
+  horaire: string;
+  faits: string;
+  faits_photo_url: string;
+  causes: string;
+  causes_photo_url: string;
+  actions_engagees: string;
+  actions_photo_url: string;
+  vigilance: string;
+  vigilance_photo_url: string;
+  deja_arrive: string[];
+  type_evenement: string;
+  source_file_url: string;
+}
+
+const emptyForm: RexFormData = {
+  title: "",
+  description: "",
+  lessons_learned: "",
+  chantier: "",
+  rex_number: "",
+  rex_year: "",
+  lieu: "",
+  date_evenement: "",
+  horaire: "",
+  faits: "",
+  faits_photo_url: "",
+  causes: "",
+  causes_photo_url: "",
+  actions_engagees: "",
+  actions_photo_url: "",
+  vigilance: "",
+  vigilance_photo_url: "",
+  deja_arrive: [],
+  type_evenement: "",
+  source_file_url: "",
+};
 
 export default function RexForm() {
   const router = useRouter();
-  const [mode, setMode] = useState<"ai" | "manual">("manual");
+  const [mode, setMode] = useState<Mode>("import");
   const [aiPrompt, setAiPrompt] = useState("");
   const [aiLoading, setAiLoading] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const [form, setForm] = useState<RexFormData>(emptyForm);
+  const [dejaArriveInput, setDejaArriveInput] = useState("");
+  const [uploadingSection, setUploadingSection] = useState<string | null>(null);
+  const photoInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
-  const [form, setForm] = useState({
-    title: "",
-    description: "",
-    lessons_learned: "",
-    chantier: "",
-  });
+  function handleAiImportComplete(result: unknown, fileUrl?: string) {
+    const r = result as Record<string, unknown>;
+    setForm({
+      title: (r.title as string) || "",
+      description: (r.description as string) || "",
+      lessons_learned: (r.lessons_learned as string) || "",
+      chantier: (r.chantier as string) || "",
+      rex_number: String(r.rex_number || ""),
+      rex_year: String(r.rex_year || ""),
+      lieu: (r.lieu as string) || "",
+      date_evenement: (r.date_evenement as string) || "",
+      horaire: (r.horaire as string) || "",
+      faits: (r.faits as string) || "",
+      faits_photo_url: "",
+      causes: (r.causes as string) || "",
+      causes_photo_url: "",
+      actions_engagees: (r.actions_engagees as string) || "",
+      actions_photo_url: "",
+      vigilance: (r.vigilance as string) || "",
+      vigilance_photo_url: "",
+      deja_arrive: Array.isArray(r.deja_arrive) ? (r.deja_arrive as string[]) : [],
+      type_evenement: (r.type_evenement as string) || "",
+      source_file_url: fileUrl || "",
+    });
+    setMode("manual");
+    toast.success("Fiche REX analysée par l'IA — vérifiez et complétez les champs");
+  }
 
   async function handleAiGenerate() {
     if (!aiPrompt.trim()) return;
     setAiLoading(true);
-
     try {
       const res = await fetch("/api/ai/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt: aiPrompt, type: "rex" }),
       });
-
       const data = await res.json();
       if (!res.ok) {
         toast.error(data.error || "Erreur IA");
         return;
       }
-
-      const result = data.result;
-      setForm({
-        title: result.title || "",
-        description: result.description || "",
-        lessons_learned: result.lessons_learned || "",
-        chantier: result.chantier || "",
-      });
+      const r = data.result;
+      setForm((prev) => ({
+        ...prev,
+        title: r.title || "",
+        description: r.description || "",
+        lessons_learned: r.lessons_learned || "",
+        chantier: r.chantier || "",
+        faits: r.faits || r.description || "",
+        causes: r.causes || "",
+        actions_engagees: r.actions_engagees || r.actions || "",
+        vigilance: r.vigilance || "",
+      }));
       setMode("manual");
       toast.success("REX généré par l'IA");
     } catch {
@@ -55,21 +161,51 @@ export default function RexForm() {
     }
   }
 
+  async function handlePhotoUpload(sectionKey: string, file: File) {
+    setUploadingSection(sectionKey);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("section", sectionKey);
+      const result = await uploadRexPhoto(formData);
+      if (result.error) {
+        toast.error(result.error);
+        return;
+      }
+      if (result.url) {
+        const photoKey = `${sectionKey}_photo_url` as keyof RexFormData;
+        // For photo keys, map actions_engagees -> actions_photo_url
+        const actualKey = sectionKey === "actions_engagees" ? "actions_photo_url" : photoKey;
+        setForm((prev) => ({ ...prev, [actualKey]: result.url }));
+        toast.success("Photo uploadée");
+      }
+    } catch {
+      toast.error("Erreur lors de l'upload");
+    } finally {
+      setUploadingSection(null);
+    }
+  }
+
   function handleSubmit() {
     if (!form.title.trim()) {
       toast.error("Le titre est obligatoire");
       return;
     }
-    if (!form.description.trim()) {
-      toast.error("La description est obligatoire");
+    if (!form.faits.trim() && !form.description.trim()) {
+      toast.error("La description ou les faits sont obligatoires");
       return;
     }
 
     startTransition(async () => {
-      const result = await createRex(form);
+      const result = await createRex({
+        ...form,
+        description: form.description || form.faits,
+        rex_year: form.rex_year ? parseInt(form.rex_year) : null,
+        date_evenement: form.date_evenement || null,
+      });
       if (result.success) {
-        toast.success("Retour d'expérience enregistré");
-        router.push("/qse/rex");
+        toast.success("Fiche REX enregistrée");
+        router.push(result.id ? `/qse/rex/${result.id}` : "/qse/rex");
         router.refresh();
       } else {
         toast.error(result.error || "Erreur lors de l'enregistrement");
@@ -77,8 +213,30 @@ export default function RexForm() {
     });
   }
 
+  function addDejaArrive() {
+    if (!dejaArriveInput.trim()) return;
+    setForm((prev) => ({
+      ...prev,
+      deja_arrive: [...prev.deja_arrive, dejaArriveInput.trim()],
+    }));
+    setDejaArriveInput("");
+  }
+
+  function removeDejaArrive(index: number) {
+    setForm((prev) => ({
+      ...prev,
+      deja_arrive: prev.deja_arrive.filter((_, i) => i !== index),
+    }));
+  }
+
+  const modeButtons = [
+    { key: "import" as Mode, icon: Upload, label: "Importer un document" },
+    { key: "ai" as Mode, icon: Sparkles, label: "Générer par IA" },
+    { key: "manual" as Mode, icon: PenLine, label: "Saisie manuelle" },
+  ];
+
   return (
-    <div className="mx-auto max-w-2xl">
+    <div className="mx-auto max-w-4xl">
       <Link
         href="/qse/rex"
         className="mb-6 inline-flex items-center gap-1.5 text-sm text-[var(--text-secondary)] transition-colors hover:text-[var(--heading)]"
@@ -88,33 +246,54 @@ export default function RexForm() {
       </Link>
 
       <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] p-6 shadow-sm">
-        <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-[var(--heading)]">
-            Nouveau retour d&apos;expérience
+        {/* Mode selector */}
+        <div className="mb-6">
+          <h2 className="mb-4 text-lg font-semibold text-[var(--heading)]">
+            Nouvelle fiche REX
           </h2>
-          <button
-            onClick={() => setMode(mode === "ai" ? "manual" : "ai")}
-            className="flex items-center gap-1.5 text-[12px] font-medium text-purple-600 transition-colors hover:text-purple-700"
-          >
-            {mode === "ai" ? (
-              <ToggleRight className="h-4 w-4" />
-            ) : (
-              <ToggleLeft className="h-4 w-4" />
-            )}
-            {mode === "ai" ? "Mode IA actif" : "Mode manuel"}
-          </button>
+          <div className="flex gap-2">
+            {modeButtons.map(({ key, icon: Icon, label }) => (
+              <button
+                key={key}
+                onClick={() => setMode(key)}
+                className={`flex items-center gap-1.5 rounded-[var(--radius-sm)] px-3 py-2 text-[12px] font-medium transition-all ${
+                  mode === key
+                    ? "bg-[var(--navy)] text-white"
+                    : "bg-[var(--hover)] text-[var(--text-secondary)] hover:bg-[var(--border-1)]"
+                }`}
+              >
+                <Icon className="h-3.5 w-3.5" />
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {mode === "ai" ? (
+        {/* Mode: Import */}
+        {mode === "import" && (
+          <div className="space-y-4">
+            <p className="text-sm text-[var(--text-secondary)]">
+              Importez une fiche REX existante (PDF ou image) et l&apos;IA extraira automatiquement toutes les informations.
+            </p>
+            <FileUploadAi
+              onAnalysisComplete={handleAiImportComplete}
+              type="rex"
+              label="Importer une fiche REX"
+            />
+          </div>
+        )}
+
+        {/* Mode: AI Generate */}
+        {mode === "ai" && (
           <div className="space-y-4">
             <div>
               <label className="mb-1.5 block text-[12px] font-medium text-[var(--text-secondary)]">
-                Décrivez le contexte
+                Décrivez le contexte de l&apos;événement
               </label>
               <textarea
                 value={aiPrompt}
                 onChange={(e) => setAiPrompt(e.target.value)}
-                placeholder="Ex: Lors du chantier de pose fibre à Lyon, nous avons rencontré un problème de coordination avec le sous-traitant qui a causé 2 jours de retard..."
+                placeholder="Ex: Lors du chantier de pose fibre à Lyon, un camion a accroché un câble télécom aérien en passant par une rue étroite..."
                 rows={5}
                 className="w-full resize-none rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none placeholder:text-[var(--text-muted)] focus:border-purple-400"
               />
@@ -123,62 +302,256 @@ export default function RexForm() {
               onClick={handleAiGenerate}
               loading={aiLoading}
               disabled={!aiPrompt.trim()}
-              label="Générer le REX"
+              label="Générer la fiche REX"
             />
           </div>
-        ) : (
-          <div className="space-y-5">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="mb-1.5 block text-[12px] font-medium text-[var(--text-secondary)]">
-                  Titre *
-                </label>
-                <input
-                  value={form.title}
-                  onChange={(e) => setForm({ ...form, title: e.target.value })}
-                  className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none focus:border-[var(--yellow)]"
-                  placeholder="Titre du REX"
-                />
+        )}
+
+        {/* Mode: Manual (also shown after AI import/generate) */}
+        {mode === "manual" && (
+          <div className="space-y-6">
+            {/* Header fields */}
+            <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--hover)] p-4">
+              <h3 className="mb-3 text-[12px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+                Informations générales
+              </h3>
+              <div className="grid grid-cols-4 gap-3">
+                <div>
+                  <label className="mb-1 block text-[11px] font-medium text-[var(--text-secondary)]">
+                    N° Fiche
+                  </label>
+                  <input
+                    value={form.rex_number}
+                    onChange={(e) => setForm({ ...form, rex_number: e.target.value })}
+                    className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-2.5 py-2 text-sm text-[var(--heading)] outline-none focus:border-[var(--yellow)]"
+                    placeholder="5"
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-[11px] font-medium text-[var(--text-secondary)]">
+                    Année
+                  </label>
+                  <input
+                    type="number"
+                    value={form.rex_year}
+                    onChange={(e) => setForm({ ...form, rex_year: e.target.value })}
+                    className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-2.5 py-2 text-sm text-[var(--heading)] outline-none focus:border-[var(--yellow)]"
+                    placeholder="2025"
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-[11px] font-medium text-[var(--text-secondary)]">
+                    Date
+                  </label>
+                  <input
+                    type="date"
+                    value={form.date_evenement}
+                    onChange={(e) => setForm({ ...form, date_evenement: e.target.value })}
+                    className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-2.5 py-2 text-sm text-[var(--heading)] outline-none focus:border-[var(--yellow)]"
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-[11px] font-medium text-[var(--text-secondary)]">
+                    Horaire
+                  </label>
+                  <input
+                    value={form.horaire}
+                    onChange={(e) => setForm({ ...form, horaire: e.target.value })}
+                    className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-2.5 py-2 text-sm text-[var(--heading)] outline-none focus:border-[var(--yellow)]"
+                    placeholder="10h40"
+                  />
+                </div>
               </div>
-              <div>
-                <label className="mb-1.5 block text-[12px] font-medium text-[var(--text-secondary)]">
+              <div className="mt-3 grid grid-cols-2 gap-3">
+                <div>
+                  <label className="mb-1 block text-[11px] font-medium text-[var(--text-secondary)]">
+                    Titre de l&apos;événement *
+                  </label>
+                  <input
+                    value={form.title}
+                    onChange={(e) => setForm({ ...form, title: e.target.value })}
+                    className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-2.5 py-2 text-sm text-[var(--heading)] outline-none focus:border-[var(--yellow)]"
+                    placeholder="Accrochage d'un réseau télécom aérien par un camion"
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block text-[11px] font-medium text-[var(--text-secondary)]">
+                    Lieu
+                  </label>
+                  <input
+                    value={form.lieu}
+                    onChange={(e) => setForm({ ...form, lieu: e.target.value })}
+                    className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-2.5 py-2 text-sm text-[var(--heading)] outline-none focus:border-[var(--yellow)]"
+                    placeholder="Croisement rue Cadeneaux / rue Fenouil"
+                  />
+                </div>
+              </div>
+              <div className="mt-3">
+                <label className="mb-1 block text-[11px] font-medium text-[var(--text-secondary)]">
                   Chantier
                 </label>
                 <input
                   value={form.chantier}
                   onChange={(e) => setForm({ ...form, chantier: e.target.value })}
-                  className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none focus:border-[var(--yellow)]"
-                  placeholder="Nom du chantier"
+                  className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-2.5 py-2 text-sm text-[var(--heading)] outline-none focus:border-[var(--yellow)]"
+                  placeholder="DC25-068944"
                 />
               </div>
             </div>
 
-            <div>
-              <label className="mb-1.5 block text-[12px] font-medium text-[var(--text-secondary)]">
-                Description *
-              </label>
-              <textarea
-                value={form.description}
-                onChange={(e) => setForm({ ...form, description: e.target.value })}
-                rows={6}
-                className="w-full resize-none rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none focus:border-[var(--yellow)]"
-                placeholder="Contexte et déroulement de la situation..."
-              />
+            {/* 4 Sections */}
+            {SECTIONS.map(({ key, label, photoKey, bgClass, Icon }) => {
+              const textValue = form[key as keyof RexFormData] as string;
+              const actualPhotoKey = key === "actions_engagees" ? "actions_photo_url" : photoKey;
+              const photoValue = form[actualPhotoKey as keyof RexFormData] as string;
+
+              return (
+                <div
+                  key={key}
+                  className={`rounded-[var(--radius)] border-l-4 p-4 ${bgClass}`}
+                >
+                  <div className="mb-3 flex items-center gap-2">
+                    <Icon size={28} />
+                    <h3 className="text-sm font-bold uppercase tracking-wide text-[var(--heading)]">
+                      {label}
+                    </h3>
+                  </div>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="col-span-2">
+                      <textarea
+                        value={textValue}
+                        onChange={(e) =>
+                          setForm({ ...form, [key]: e.target.value })
+                        }
+                        rows={4}
+                        className="w-full resize-none rounded-[var(--radius-xs)] border border-[var(--border-1)] bg-white px-3 py-2.5 text-sm text-[var(--heading)] outline-none focus:border-[var(--yellow)]"
+                        placeholder={`Contenu de la section "${label}"...`}
+                      />
+                    </div>
+                    <div className="flex flex-col items-center justify-center rounded-[var(--radius-xs)] border border-dashed border-[var(--border-1)] bg-white p-2">
+                      {photoValue ? (
+                        <div className="relative w-full">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={photoValue}
+                            alt={`Photo ${label}`}
+                            className="h-24 w-full rounded object-cover"
+                          />
+                          <button
+                            onClick={() =>
+                              setForm({ ...form, [actualPhotoKey]: "" })
+                            }
+                            className="absolute -right-1 -top-1 rounded-full bg-red-500 p-0.5 text-white"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => photoInputRefs.current[key]?.click()}
+                          disabled={uploadingSection === key}
+                          className="flex flex-col items-center gap-1 text-[var(--text-muted)] transition-colors hover:text-[var(--text-secondary)]"
+                        >
+                          {uploadingSection === key ? (
+                            <Loader2 className="h-6 w-6 animate-spin" />
+                          ) : (
+                            <Camera className="h-6 w-6" />
+                          )}
+                          <span className="text-[10px]">Ajouter une photo</span>
+                        </button>
+                      )}
+                      <input
+                        ref={(el) => { photoInputRefs.current[key] = el; }}
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          const f = e.target.files?.[0];
+                          if (f) handlePhotoUpload(key, f);
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+
+            {/* Footer: Déjà arrivé + Type d'événement */}
+            <div className="grid grid-cols-2 gap-4">
+              {/* Déjà arrivé */}
+              <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--hover)] p-4">
+                <h3 className="mb-2 text-[12px] font-semibold uppercase tracking-wider text-blue-600">
+                  Déjà arrivé ?
+                </h3>
+                <div className="space-y-2">
+                  {form.deja_arrive.map((item, i) => (
+                    <div key={i} className="flex items-center gap-1.5">
+                      <span className="h-1.5 w-1.5 rounded-full bg-[var(--text-muted)]" />
+                      <span className="flex-1 text-sm text-[var(--heading)]">{item}</span>
+                      <button
+                        onClick={() => removeDejaArrive(i)}
+                        className="rounded p-0.5 text-[var(--text-muted)] hover:bg-red-50 hover:text-red-500"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  ))}
+                  <div className="flex gap-1.5">
+                    <input
+                      value={dejaArriveInput}
+                      onChange={(e) => setDejaArriveInput(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addDejaArrive())}
+                      className="flex-1 rounded-[var(--radius-xs)] border border-[var(--border-1)] px-2 py-1.5 text-sm outline-none focus:border-[var(--yellow)]"
+                      placeholder="Ajouter un précédent..."
+                    />
+                    <button
+                      onClick={addDejaArrive}
+                      className="rounded-[var(--radius-xs)] bg-[var(--navy)] p-1.5 text-white hover:bg-[var(--navy)]/90"
+                    >
+                      <Plus className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Type d'événement */}
+              <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--hover)] p-4">
+                <h3 className="mb-2 text-[12px] font-semibold uppercase tracking-wider text-orange-600">
+                  Type d&apos;événement
+                </h3>
+                <div className="space-y-1.5">
+                  {EVENT_TYPES.map((t) => (
+                    <button
+                      key={t.value}
+                      onClick={() =>
+                        setForm({
+                          ...form,
+                          type_evenement:
+                            form.type_evenement === t.value ? "" : t.value,
+                        })
+                      }
+                      className={`w-full rounded-[var(--radius-xs)] border px-3 py-2 text-left text-sm font-medium transition-all ${
+                        form.type_evenement === t.value
+                          ? t.color + " ring-1 ring-current"
+                          : "border-transparent bg-white text-[var(--text-secondary)] hover:bg-gray-50"
+                      }`}
+                    >
+                      <span className="font-semibold">{t.label}</span>
+                      <span className="ml-1.5 text-[11px] font-normal opacity-70">
+                        ({t.full})
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
 
-            <div>
-              <label className="mb-1.5 block text-[12px] font-medium text-[var(--text-secondary)]">
-                Leçons tirées
-              </label>
-              <textarea
-                value={form.lessons_learned}
-                onChange={(e) => setForm({ ...form, lessons_learned: e.target.value })}
-                rows={4}
-                className="w-full resize-none rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none focus:border-[var(--yellow)]"
-                placeholder="Points d'amélioration et leçons retenues..."
-              />
-            </div>
+            {/* Hidden description field (auto-filled from faits) */}
+            {!form.description && form.faits && (
+              <input type="hidden" value={form.faits} />
+            )}
 
+            {/* Submit */}
             <div className="flex justify-end border-t border-[var(--border-1)] pt-5">
               <button
                 onClick={handleSubmit}
@@ -186,7 +559,7 @@ export default function RexForm() {
                 className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[var(--yellow-hover)] disabled:opacity-50"
               >
                 <Send className="h-4 w-4" />
-                {isPending ? "Enregistrement..." : "Enregistrer"}
+                {isPending ? "Enregistrement..." : "Enregistrer la fiche REX"}
               </button>
             </div>
           </div>

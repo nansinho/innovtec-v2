@@ -1,18 +1,23 @@
 "use client";
 
-import { BookOpen, Eye } from "lucide-react";
-import { formatRelative } from "@/lib/utils";
+import { BookOpen, Eye, Download, Trash2 } from "lucide-react";
 import { DataTable, type ColumnDef } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
 import { getStandardToolbarActions } from "@/lib/table-toolbar-actions";
+import { useRouter } from "next/navigation";
+import { deleteRex } from "@/actions/qse";
+import { toast } from "sonner";
+import { exportRexPdf } from "@/lib/export/rex-pdf";
+import type { Rex } from "@/lib/types/database";
 
-interface RexItem {
-  id: string;
-  title: string;
-  description: string;
-  lessons_learned: string;
-  chantier: string;
-  created_at: string;
+const EVENT_TYPE_LABELS: Record<string, { label: string; variant: "blue" | "yellow" | "red" | "purple" | "default" }> = {
+  sd: { label: "SD", variant: "yellow" },
+  presquaccident: { label: "PRESQU'ACCIDENT", variant: "yellow" },
+  accident: { label: "ACCIDENT", variant: "red" },
+  hpe: { label: "HPE", variant: "purple" },
+};
+
+interface RexItem extends Rex {
   author?: { first_name: string; last_name: string } | null;
 }
 
@@ -22,16 +27,32 @@ interface RexListProps {
 }
 
 export default function RexList({ rexList, headerAction }: RexListProps) {
+  const router = useRouter();
+
   const columns: ColumnDef<RexItem>[] = [
     {
-      key: "created_at",
+      key: "rex_number",
+      header: "N°",
+      width: "70px",
+      sortable: true,
+      accessor: (r) => r.rex_number || "",
+      render: (r) => (
+        <span className="font-semibold text-orange-600">
+          {r.rex_number ? `${r.rex_number}/${r.rex_year || ""}` : "—"}
+        </span>
+      ),
+    },
+    {
+      key: "date_evenement",
       header: "Date",
       sortable: true,
-      width: "110px",
-      accessor: (r) => r.created_at,
+      width: "100px",
+      accessor: (r) => r.date_evenement || r.created_at,
       render: (r) => (
         <span className="text-[var(--text-secondary)]">
-          {new Date(r.created_at).toLocaleDateString("fr-FR")}
+          {r.date_evenement
+            ? new Date(r.date_evenement).toLocaleDateString("fr-FR")
+            : new Date(r.created_at).toLocaleDateString("fr-FR")}
         </span>
       ),
     },
@@ -42,11 +63,27 @@ export default function RexList({ rexList, headerAction }: RexListProps) {
       render: (r) => (
         <div>
           <div className="font-medium text-[var(--heading)]">{r.title}</div>
-          <div className="mt-0.5 line-clamp-1 text-xs text-[var(--text-muted)]">
-            {r.description}
-          </div>
+          {r.lieu && (
+            <div className="mt-0.5 text-xs text-[var(--text-muted)]">
+              {r.lieu}
+            </div>
+          )}
         </div>
       ),
+    },
+    {
+      key: "type_evenement",
+      header: "Type",
+      sortable: true,
+      width: "140px",
+      render: (r) => {
+        const t = EVENT_TYPE_LABELS[r.type_evenement];
+        return t ? (
+          <Badge variant={t.variant}>{t.label}</Badge>
+        ) : (
+          <span className="text-[var(--text-muted)]">—</span>
+        );
+      },
     },
     {
       key: "chantier",
@@ -58,15 +95,6 @@ export default function RexList({ rexList, headerAction }: RexListProps) {
         ) : (
           <span className="text-[var(--text-muted)]">—</span>
         ),
-    },
-    {
-      key: "lessons_learned",
-      header: "Leçons tirées",
-      render: (r) => (
-        <span className="line-clamp-1 text-[var(--text-secondary)]">
-          {r.lessons_learned || "—"}
-        </span>
-      ),
     },
     {
       key: "author",
@@ -87,8 +115,8 @@ export default function RexList({ rexList, headerAction }: RexListProps) {
       data={rexList}
       columns={columns}
       keyField="id"
-      title="Retours d'expérience"
-      description="Consultez les retours d'expérience de l'équipe."
+      title="Fiches REX"
+      description="Retours d'expérience — consultez, importez ou exportez en PDF."
       toolbarActions={getStandardToolbarActions()}
       headerAction={headerAction}
       selectable
@@ -96,14 +124,38 @@ export default function RexList({ rexList, headerAction }: RexListProps) {
       searchPlaceholder="Rechercher un REX..."
       emptyState={{
         icon: BookOpen,
-        title: "Aucun retour d'expérience",
-        description: "Aucun REX n'a été enregistré pour le moment.",
+        title: "Aucune fiche REX",
+        description: "Aucun retour d'expérience n'a été enregistré pour le moment.",
       }}
       actions={(r) => [
         {
-          label: "Voir les détails",
+          label: "Voir la fiche",
           icon: Eye,
-          onClick: () => {},
+          onClick: () => router.push(`/qse/rex/${r.id}`),
+        },
+        {
+          label: "Télécharger PDF",
+          icon: Download,
+          onClick: () => {
+            const num = r.rex_number || "X";
+            const year = r.rex_year || new Date().getFullYear();
+            exportRexPdf(r, `Fiche-REX-${num}-${year}.pdf`);
+          },
+        },
+        {
+          label: "Supprimer",
+          icon: Trash2,
+          onClick: async () => {
+            if (!confirm("Supprimer cette fiche REX ?")) return;
+            const result = await deleteRex(r.id);
+            if (result.success) {
+              toast.success("Fiche REX supprimée");
+              router.refresh();
+            } else {
+              toast.error(result.error || "Erreur");
+            }
+          },
+          variant: "danger",
         },
       ]}
     />
