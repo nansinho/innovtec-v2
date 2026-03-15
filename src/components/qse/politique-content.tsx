@@ -1083,7 +1083,7 @@ export default function PolitiqueContent({
       {/* Header — style C&CO */}
       <div className="mb-5 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="font-display text-xl font-bold text-[var(--heading)]">Politique QSE</h1>
+          <h1 className="text-xl font-bold text-[var(--heading)]">Politique QSE</h1>
           <p className="mt-1 text-sm text-[var(--text-secondary)]">
             La politique Qualité, Sécurité et Environnement d&apos;INNOVTEC Réseaux.
           </p>
