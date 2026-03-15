@@ -4,45 +4,36 @@ import { useState } from "react";
 import Link from "next/link";
 import {
   Search,
+  Shield,
   UserCheck,
   UserX,
-  Shield,
   Pencil,
   Trash2,
   UserPlus,
   Filter,
   Eye,
+  Plus,
 } from "lucide-react";
 import { toast } from "sonner";
 import { updateUserRole, toggleUserActive, deleteUser } from "@/actions/users";
+import { updateUserJobTitle, addJobTitle, type JobTitle } from "@/actions/job-titles";
+import { DropdownMenu } from "@/components/ui/dropdown-menu";
 import type { Profile, UserRole } from "@/lib/types/database";
 import ConfirmDialog from "@/components/ui/confirm-dialog";
 import UserFormModal from "@/components/admin/user-form-modal";
 
 const roleLabels: Record<string, string> = {
-  admin: "Administrateur",
-  rh: "Ressources Humaines",
-  responsable_qse: "Responsable QSE",
-  chef_chantier: "Chef de chantier",
-  technicien: "Technicien",
+  admin: "Admin",
   collaborateur: "Collaborateur",
 };
 
 const roleOptions: { value: UserRole; label: string }[] = [
-  { value: "admin", label: "Administrateur" },
+  { value: "admin", label: "Admin" },
   { value: "collaborateur", label: "Collaborateur" },
-  { value: "rh", label: "Ressources Humaines" },
-  { value: "responsable_qse", label: "Responsable QSE" },
-  { value: "chef_chantier", label: "Chef de chantier" },
-  { value: "technicien", label: "Technicien" },
 ];
 
 const roleBadgeColors: Record<string, string> = {
   admin: "bg-[var(--red-surface)] text-[var(--red)]",
-  rh: "bg-[var(--purple-surface)] text-[var(--purple)]",
-  responsable_qse: "bg-[var(--blue-surface)] text-[var(--blue)]",
-  chef_chantier: "bg-orange-50 text-orange-700",
-  technicien: "bg-[var(--hover)] text-[var(--text-secondary)]",
   collaborateur: "bg-[var(--green-surface)] text-[var(--green)]",
 };
 
@@ -50,13 +41,18 @@ interface UsersTableProps {
   users: Profile[];
   currentUserId: string;
   currentUserRole: string;
+  jobTitles: JobTitle[];
 }
 
-export default function UsersTable({ users, currentUserId, currentUserRole }: UsersTableProps) {
+export default function UsersTable({ users, currentUserId, currentUserRole, jobTitles: initialJobTitles }: UsersTableProps) {
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [editingRole, setEditingRole] = useState<string | null>(null);
+  const [editingJobTitle, setEditingJobTitle] = useState<string | null>(null);
+  const [customJobTitle, setCustomJobTitle] = useState("");
+  const [showCustomInput, setShowCustomInput] = useState(false);
+  const [jobTitles, setJobTitles] = useState(initialJobTitles);
   const [loading, setLoading] = useState<string | null>(null);
 
   // Modals
@@ -101,6 +97,43 @@ export default function UsersTable({ users, currentUserId, currentUserRole }: Us
       toast.error(result.error || "Erreur lors du changement de rôle");
     }
     setEditingRole(null);
+    setLoading(null);
+  }
+
+  async function handleJobTitleChange(userId: string, jobTitle: string) {
+    if (jobTitle === "__custom__") {
+      setShowCustomInput(true);
+      return;
+    }
+    setLoading(userId);
+    const result = await updateUserJobTitle(userId, jobTitle);
+    if (result.success) {
+      toast.success("Poste mis à jour");
+    } else {
+      toast.error(result.error || "Erreur");
+    }
+    setEditingJobTitle(null);
+    setLoading(null);
+  }
+
+  async function handleAddCustomJobTitle(userId: string) {
+    if (!customJobTitle.trim()) return;
+    setLoading(userId);
+
+    const addResult = await addJobTitle(customJobTitle.trim());
+    if (addResult.success && addResult.jobTitle) {
+      setJobTitles((prev) => [...prev, addResult.jobTitle!].sort((a, b) => a.label.localeCompare(b.label)));
+    }
+
+    const result = await updateUserJobTitle(userId, customJobTitle.trim());
+    if (result.success) {
+      toast.success("Poste ajouté et assigné");
+    } else {
+      toast.error(result.error || "Erreur");
+    }
+    setCustomJobTitle("");
+    setShowCustomInput(false);
+    setEditingJobTitle(null);
     setLoading(null);
   }
 
@@ -209,17 +242,14 @@ export default function UsersTable({ users, currentUserId, currentUserRole }: Us
               <th className="hidden px-4 py-3.5 text-xs font-medium text-[var(--text-secondary)] md:table-cell">
                 Poste
               </th>
-              <th className="hidden px-4 py-3.5 text-xs font-medium text-[var(--text-secondary)] lg:table-cell">
-                Département
-              </th>
               <th className="px-4 py-3.5 text-xs font-medium text-[var(--text-secondary)]">
                 Rôle
               </th>
               <th className="px-4 py-3.5 text-xs font-medium text-[var(--text-secondary)]">
                 Statut
               </th>
-              <th className="px-4 py-3.5 text-xs font-medium text-[var(--text-secondary)]">
-                Actions
+              <th className="w-12 px-4 py-3.5 text-xs font-medium text-[var(--text-secondary)]">
+                <span className="sr-only">Actions</span>
               </th>
             </tr>
           </thead>
@@ -260,14 +290,67 @@ export default function UsersTable({ users, currentUserId, currentUserRole }: Us
                     </div>
                   </td>
 
-                  {/* Job title */}
-                  <td className="hidden px-4 py-3.5 text-xs text-[var(--text-secondary)] md:table-cell">
-                    {user.job_title || "—"}
-                  </td>
-
-                  {/* Department */}
-                  <td className="hidden px-4 py-3.5 text-xs text-[var(--text-secondary)] lg:table-cell">
-                    {user.department || "—"}
+                  {/* Job title - editable with select */}
+                  <td className="hidden px-4 py-3.5 md:table-cell">
+                    {editingJobTitle === user.id ? (
+                      <div className="flex flex-col gap-1.5">
+                        {showCustomInput ? (
+                          <div className="flex items-center gap-1.5">
+                            <input
+                              value={customJobTitle}
+                              onChange={(e) => setCustomJobTitle(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") handleAddCustomJobTitle(user.id);
+                                if (e.key === "Escape") {
+                                  setShowCustomInput(false);
+                                  setEditingJobTitle(null);
+                                }
+                              }}
+                              autoFocus
+                              placeholder="Nouveau poste..."
+                              className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-2 py-1.5 text-xs outline-none focus:border-[var(--yellow)]"
+                            />
+                            <button
+                              onClick={() => handleAddCustomJobTitle(user.id)}
+                              className="shrink-0 rounded-[var(--radius-xs)] bg-[var(--yellow)] p-1.5 text-white hover:bg-[var(--yellow-hover)]"
+                            >
+                              <Plus className="h-3 w-3" />
+                            </button>
+                          </div>
+                        ) : (
+                          <select
+                            defaultValue={user.job_title || ""}
+                            onChange={(e) => handleJobTitleChange(user.id, e.target.value)}
+                            onBlur={() => {
+                              if (!showCustomInput) setEditingJobTitle(null);
+                            }}
+                            autoFocus
+                            className="w-full rounded-xl border border-[var(--border-1)] px-2 py-1.5 text-xs outline-none transition-colors focus:border-[var(--yellow)]"
+                          >
+                            <option value="">— Aucun poste —</option>
+                            {jobTitles.map((jt) => (
+                              <option key={jt.id} value={jt.label}>
+                                {jt.label}
+                              </option>
+                            ))}
+                            <option value="__custom__">+ Ajouter un poste...</option>
+                          </select>
+                        )}
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => !isMe && setEditingJobTitle(user.id)}
+                        disabled={isMe}
+                        className={`text-xs transition-colors ${
+                          isMe
+                            ? "cursor-default text-[var(--text-secondary)]"
+                            : "text-[var(--text-secondary)] hover:text-[var(--heading)]"
+                        }`}
+                        title={isMe ? "" : "Cliquer pour modifier le poste"}
+                      >
+                        {user.job_title || "—"}
+                      </button>
+                    )}
                   </td>
 
                   {/* Role */}
@@ -289,16 +372,13 @@ export default function UsersTable({ users, currentUserId, currentUserRole }: Us
                         ))}
                       </select>
                     ) : (
-                      <button
-                        onClick={() => !isMe && setEditingRole(user.id)}
-                        disabled={isMe}
-                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium transition-opacity duration-200 ${
+                      <span
+                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium ${
                           roleBadgeColors[user.role] ?? "bg-[var(--hover)] text-[var(--text-secondary)]"
-                        } ${isMe ? "cursor-default" : "cursor-pointer hover:opacity-80"}`}
-                        title={isMe ? "Vous ne pouvez pas changer votre propre rôle" : "Cliquer pour modifier"}
+                        }`}
                       >
                         {roleLabels[user.role] ?? user.role}
-                      </button>
+                      </span>
                     )}
                   </td>
 
@@ -316,86 +396,62 @@ export default function UsersTable({ users, currentUserId, currentUserRole }: Us
                     </span>
                   </td>
 
-                  {/* Actions */}
+                  {/* Actions — 3-dot dropdown menu */}
                   <td className="px-4 py-3.5">
-                    <div className="flex items-center gap-1">
-                      {/* View profile */}
-                      <Link
-                        href={`/admin/users/${user.id}`}
-                        className="rounded-lg p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--hover)] hover:text-[var(--heading)]"
-                        title="Voir le profil"
-                      >
-                        <Eye className="h-3.5 w-3.5" />
-                      </Link>
-                      {!isMe && (
-                        <>
-                          {/* Edit */}
-                          <button
-                            onClick={() => setFormModal({ open: true, user })}
-                            disabled={loading === user.id}
-                            className="rounded-lg p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--blue-surface)] hover:text-[var(--blue)] disabled:opacity-50"
-                            title="Modifier"
-                          >
-                            <Pencil className="h-3.5 w-3.5" />
-                          </button>
-
-                          {/* Role */}
-                          <button
-                            onClick={() => setEditingRole(user.id)}
-                            disabled={loading === user.id}
-                            className="rounded-lg p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--purple-surface)] hover:text-[var(--purple)] disabled:opacity-50"
-                            title="Changer le rôle"
-                          >
-                            <Shield className="h-3.5 w-3.5" />
-                          </button>
-
-                          {/* Toggle active */}
-                          <button
-                            onClick={() =>
-                              setConfirmDialog({
-                                open: true,
-                                type: "toggle",
-                                userId: user.id,
-                                userName: `${user.first_name} ${user.last_name}`,
-                                isActive: user.is_active,
-                              })
-                            }
-                            disabled={loading === user.id}
-                            className={`rounded-lg p-1.5 transition-colors disabled:opacity-50 ${
-                              user.is_active
-                                ? "text-[var(--text-muted)] hover:bg-orange-50 hover:text-orange-600"
-                                : "text-[var(--green)] hover:bg-[var(--green-surface)]"
-                            }`}
-                            title={user.is_active ? "Désactiver" : "Réactiver"}
-                          >
-                            {user.is_active ? (
-                              <UserX className="h-3.5 w-3.5" />
-                            ) : (
-                              <UserCheck className="h-3.5 w-3.5" />
-                            )}
-                          </button>
-
-                          {/* Delete (admin only) */}
-                          {isAdmin && (
-                            <button
-                              onClick={() =>
-                                setConfirmDialog({
-                                  open: true,
-                                  type: "delete",
-                                  userId: user.id,
-                                  userName: `${user.first_name} ${user.last_name}`,
-                                })
-                              }
-                              disabled={loading === user.id}
-                              className="rounded-lg p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--red-surface)] hover:text-[var(--red)] disabled:opacity-50"
-                              title="Supprimer"
-                            >
-                              <Trash2 className="h-3.5 w-3.5" />
-                            </button>
-                          )}
-                        </>
-                      )}
-                    </div>
+                    <DropdownMenu
+                      items={[
+                        {
+                          label: "Voir le profil",
+                          icon: Eye,
+                          onClick: () => {
+                            window.location.href = `/admin/users/${user.id}`;
+                          },
+                        },
+                        ...(!isMe
+                          ? [
+                              {
+                                label: "Modifier",
+                                icon: Pencil,
+                                onClick: () => setFormModal({ open: true, user }),
+                              },
+                              {
+                                label: "Changer le rôle",
+                                icon: Shield,
+                                onClick: () => setEditingRole(user.id),
+                              },
+                              {
+                                label: user.is_active ? "Désactiver" : "Réactiver",
+                                icon: user.is_active ? UserX : UserCheck,
+                                onClick: () =>
+                                  setConfirmDialog({
+                                    open: true,
+                                    type: "toggle",
+                                    userId: user.id,
+                                    userName: `${user.first_name} ${user.last_name}`,
+                                    isActive: user.is_active,
+                                  }),
+                                variant: user.is_active ? ("danger" as const) : ("default" as const),
+                              },
+                              ...(isAdmin
+                                ? [
+                                    {
+                                      label: "Supprimer",
+                                      icon: Trash2,
+                                      onClick: () =>
+                                        setConfirmDialog({
+                                          open: true,
+                                          type: "delete",
+                                          userId: user.id,
+                                          userName: `${user.first_name} ${user.last_name}`,
+                                        }),
+                                      variant: "danger" as const,
+                                    },
+                                  ]
+                                : []),
+                            ]
+                          : []),
+                      ]}
+                    />
                   </td>
                 </tr>
               );

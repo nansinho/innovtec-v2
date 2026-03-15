@@ -20,6 +20,7 @@ import {
   togglePublishNews,
   deleteNews,
 } from "@/actions/news";
+import { DropdownMenu } from "@/components/ui/dropdown-menu";
 import type { News, NewsCategory, NewsPriority } from "@/lib/types/database";
 
 const categoryLabels: Record<NewsCategory, string> = {
@@ -442,40 +443,21 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
                       : formatDate(article.created_at)}
                   </td>
                   <td className="px-4 py-3.5">
-                    <div className="flex items-center gap-1">
-                      <button
-                        onClick={() =>
-                          handleTogglePublish(
-                            article.id,
-                            !article.is_published
-                          )
-                        }
-                        disabled={loading === article.id}
-                        className={cn(
-                          "rounded-[var(--radius-xs)] p-1.5 transition-colors",
-                          article.is_published
-                            ? "text-[var(--green)] hover:bg-[var(--green-surface)]"
-                            : "text-[var(--text-muted)] hover:bg-[var(--hover)]"
-                        )}
-                        title={
-                          article.is_published ? "Dépublier" : "Publier"
-                        }
-                      >
-                        {article.is_published ? (
-                          <Eye className="h-3.5 w-3.5" />
-                        ) : (
-                          <EyeOff className="h-3.5 w-3.5" />
-                        )}
-                      </button>
-                      <button
-                        onClick={() => handleDelete(article.id)}
-                        disabled={loading === article.id}
-                        className="rounded-[var(--radius-xs)] p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--red-surface)] hover:text-[var(--red)]"
-                        title="Supprimer"
-                      >
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
+                    <DropdownMenu
+                      items={[
+                        {
+                          label: article.is_published ? "Dépublier" : "Publier",
+                          icon: article.is_published ? EyeOff : Eye,
+                          onClick: () => handleTogglePublish(article.id, !article.is_published),
+                        },
+                        {
+                          label: "Supprimer",
+                          icon: Trash2,
+                          onClick: () => handleDelete(article.id),
+                          variant: "danger" as const,
+                        },
+                      ]}
+                    />
                   </td>
                 </tr>
               );
