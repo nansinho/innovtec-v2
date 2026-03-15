@@ -40,28 +40,31 @@ export function DataTableSkeleton({
         <Skeleton className="h-10 w-28 rounded-xl" />
       </div>
 
-      {/* Table header */}
-      <div className="flex gap-4 border-b border-[var(--border-2)] px-4 py-3">
-        {Array.from({ length: columns }).map((_, i) => (
-          <Skeleton key={i} className="h-3 flex-1 rounded" />
-        ))}
-      </div>
-
-      {/* Table rows */}
-      {Array.from({ length: rows }).map((_, rowIdx) => (
-        <div
-          key={rowIdx}
-          className="flex gap-4 border-b border-[var(--border-1)] px-4 py-3.5"
-        >
-          {Array.from({ length: columns }).map((_, colIdx) => (
-            <Skeleton
-              key={colIdx}
-              className="h-4 flex-1"
-              style={{ maxWidth: colIdx === 0 ? "40px" : undefined }}
-            />
+      {/* Table card */}
+      <div className="overflow-hidden rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] shadow-sm">
+        {/* Table header */}
+        <div className="flex gap-4 border-b border-[var(--border-2)] bg-[var(--hover)] px-4 py-3">
+          {Array.from({ length: columns }).map((_, i) => (
+            <Skeleton key={i} className="h-3 flex-1 rounded" />
           ))}
         </div>
-      ))}
+
+        {/* Table rows */}
+        {Array.from({ length: rows }).map((_, rowIdx) => (
+          <div
+            key={rowIdx}
+            className="flex gap-4 border-b border-[var(--border-1)] px-4 py-3.5"
+          >
+            {Array.from({ length: columns }).map((_, colIdx) => (
+              <Skeleton
+                key={colIdx}
+                className="h-4 flex-1"
+                style={{ maxWidth: colIdx === 0 ? "40px" : undefined }}
+              />
+            ))}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
