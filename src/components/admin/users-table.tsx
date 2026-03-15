@@ -33,8 +33,8 @@ const roleOptions: { value: UserRole; label: string }[] = [
 ];
 
 const roleBadgeColors: Record<string, string> = {
-  admin: "bg-[var(--red-surface)] text-[var(--red)]",
-  collaborateur: "bg-[var(--green-surface)] text-[var(--green)]",
+  admin: "bg-gradient-to-b from-red-500 to-red-600 text-white shadow-sm",
+  collaborateur: "bg-gradient-to-b from-emerald-500 to-emerald-600 text-white shadow-sm",
 };
 
 interface UsersTableProps {
@@ -248,8 +248,8 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
               <th className="px-4 py-3.5 text-xs font-medium text-[var(--text-secondary)]">
                 Statut
               </th>
-              <th className="w-12 px-4 py-3.5 text-xs font-medium text-[var(--text-secondary)]">
-                <span className="sr-only">Actions</span>
+              <th className="w-14 px-4 py-3.5 text-right text-xs font-medium text-[var(--text-secondary)]">
+                Actions
               </th>
             </tr>
           </thead>
@@ -368,8 +368,8 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
                       </select>
                     ) : (
                       <span
-                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium ${
-                          roleBadgeColors[user.role] ?? "bg-[var(--hover)] text-[var(--text-secondary)]"
+                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide ${
+                          roleBadgeColors[user.role] ?? "bg-zinc-100 text-zinc-700 ring-1 ring-zinc-200/60"
                         }`}
                       >
                         {roleLabels[user.role] ?? user.role}
@@ -380,19 +380,19 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
                   {/* Status */}
                   <td className="px-4 py-3.5">
                     <span
-                      className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium ${
+                      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide shadow-sm ${
                         user.is_active
-                          ? "bg-[var(--green-surface)] text-[var(--green)]"
-                          : "bg-[var(--red-surface)] text-[var(--red)]"
+                          ? "bg-gradient-to-b from-emerald-500 to-emerald-600 text-white"
+                          : "bg-zinc-100 text-zinc-500 ring-1 ring-zinc-200/60"
                       }`}
                     >
-                      <span className={`h-1.5 w-1.5 rounded-full ${user.is_active ? "bg-[var(--green)]" : "bg-[var(--red)]"}`} />
+                      <span className={`h-1.5 w-1.5 rounded-full ${user.is_active ? "bg-white/80" : "bg-zinc-400"}`} />
                       {user.is_active ? "Actif" : "Inactif"}
                     </span>
                   </td>
 
                   {/* Actions — 3-dot dropdown menu */}
-                  <td className="px-4 py-3.5">
+                  <td className="px-4 py-3.5 text-right">
                     <DropdownMenu
                       items={[
                         {

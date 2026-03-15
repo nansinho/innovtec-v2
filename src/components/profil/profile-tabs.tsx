@@ -48,7 +48,7 @@ export default function ProfileTabs({
 
   return (
     <div>
-      <div className="mb-6 flex gap-1 overflow-x-auto rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--hover)] p-1.5 shadow-xs">
+      <div className="mb-6 flex gap-0 overflow-x-auto border-b border-[var(--border-1)]">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = active === tab.id;
@@ -57,14 +57,17 @@ export default function ProfileTabs({
               key={tab.id}
               onClick={() => setActive(tab.id)}
               className={cn(
-                "flex shrink-0 items-center gap-2 rounded-[var(--radius-sm)] px-4 py-2.5 text-xs font-medium transition-all duration-200",
+                "relative flex shrink-0 items-center gap-2 px-4 py-3 text-xs font-medium transition-colors duration-200",
                 isActive
-                  ? "bg-[var(--card)] text-[var(--heading)] shadow-sm"
-                  : "text-[var(--text-secondary)] hover:bg-[var(--card)]/60 hover:text-[var(--heading)]"
+                  ? "text-[var(--heading)]"
+                  : "text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
               )}
             >
               <Icon className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">{tab.label}</span>
+              {isActive && (
+                <span className="absolute bottom-0 left-2 right-2 h-[2px] rounded-full bg-[var(--yellow)]" />
+              )}
             </button>
           );
         })}

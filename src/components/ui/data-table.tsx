@@ -195,7 +195,7 @@ export function DataTable<T>({
   return (
     <div className="overflow-hidden rounded-2xl border border-[var(--border-1)] bg-white shadow-sm ring-1 ring-black/[0.03]">
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-3 border-b border-[var(--border-1)] px-4 py-3">
+      <div className="flex flex-wrap items-center gap-3 border-b border-[var(--border-1)] bg-[var(--hover)]/50 px-5 py-3.5">
         {/* Search */}
         {searchable && (
           <div className="relative">
@@ -207,7 +207,7 @@ export function DataTable<T>({
                 setPage(0);
               }}
               placeholder={searchPlaceholder}
-              className="h-9 w-64 rounded-xl border border-[var(--border-1)] bg-white pl-9 pr-8 text-sm outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+              className="h-9 w-64 rounded-lg border border-[var(--border-1)] bg-white pl-9 pr-8 text-sm outline-none transition-all placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)] focus:shadow-sm"
             />
             {search && (
               <button
@@ -233,7 +233,7 @@ export function DataTable<T>({
                   }));
                   setPage(0);
                 }}
-                className="h-9 rounded-xl border border-[var(--border-1)] bg-white px-3 text-sm text-[var(--text)] outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                className="h-9 rounded-lg border border-[var(--border-1)] bg-white px-3 text-sm text-[var(--text)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)] focus:shadow-sm"
               >
                 <option value="">{f.placeholder ?? f.label}</option>
                 {f.options.map((opt) => (
@@ -254,7 +254,7 @@ export function DataTable<T>({
                   setPage(0);
                 }}
                 placeholder={f.placeholder ?? f.label}
-                className="h-9 rounded-xl border border-[var(--border-1)] bg-white px-3 text-sm outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                className="h-9 rounded-lg border border-[var(--border-1)] bg-white px-3 text-sm outline-none transition-all placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)] focus:shadow-sm"
               />
             )}
             {f.type === "date" && (
@@ -268,7 +268,7 @@ export function DataTable<T>({
                   }));
                   setPage(0);
                 }}
-                className="h-9 rounded-xl border border-[var(--border-1)] bg-white px-3 text-sm outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                className="h-9 rounded-lg border border-[var(--border-1)] bg-white px-3 text-sm outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)] focus:shadow-sm"
               />
             )}
           </div>
@@ -279,7 +279,7 @@ export function DataTable<T>({
           {onAdd && (
             <button
               onClick={onAdd}
-              className="inline-flex h-9 items-center gap-2 rounded-xl bg-[var(--yellow)] px-4 text-sm font-medium text-white transition-colors hover:bg-[var(--yellow-hover)]"
+              className="inline-flex h-9 items-center gap-2 rounded-lg bg-gradient-to-b from-amber-500 to-amber-600 px-4 text-sm font-medium text-white shadow-sm transition-all hover:from-amber-600 hover:to-amber-700 active:scale-[0.97]"
             >
               <Plus className="h-4 w-4" />
               {addLabel}
@@ -363,8 +363,8 @@ export function DataTable<T>({
                 </th>
               ))}
               {actions && (
-                <th className="w-12 px-4 py-3.5">
-                  <span className="sr-only">Actions</span>
+                <th className="w-14 px-4 py-3.5 text-right text-xs font-medium text-[var(--text-secondary)]">
+                  Actions
                 </th>
               )}
             </tr>
@@ -410,7 +410,7 @@ export function DataTable<T>({
                     </td>
                   ))}
                   {actions && (
-                    <td className="px-4 py-3.5">
+                    <td className="px-4 py-3.5 text-right">
                       <DropdownMenu items={actions(item)} />
                     </td>
                   )}
