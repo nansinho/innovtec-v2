@@ -17,6 +17,7 @@ const breadcrumbLabels: Record<string, string> = {
   qse: "QSE",
   politique: "Politique QSE",
   dangers: "Situations dangereuses",
+  signalements: "Signalements",
   rex: "REX",
   plans: "Plans d'actions",
   "bonnes-pratiques": "Bonnes pratiques",

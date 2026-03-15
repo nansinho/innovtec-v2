@@ -9,6 +9,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { getAllQseContent, getDangerReports, getRexList } from "@/actions/qse";
+import { getActionPlans } from "@/actions/action-plans";
 
 export const dynamic = "force-dynamic";
 
@@ -24,8 +25,8 @@ const qseCards = [
     countKey: "politique" as const,
   },
   {
-    href: "/qse/dangers",
-    label: "Situations dangereuses",
+    href: "/qse/signalements",
+    label: "Signalements",
     description: "Signalez et suivez les situations dangereuses sur les chantiers.",
     icon: AlertCircle,
     color: "var(--red)",
@@ -41,7 +42,7 @@ const qseCards = [
     color: "var(--blue)",
     surface: "var(--blue-surface)",
     border: "rgba(0, 122, 255, 0.14)",
-    countKey: null,
+    countKey: "plans" as const,
   },
   {
     href: "/qse/rex",
@@ -76,16 +77,18 @@ const qseCards = [
 ];
 
 export default async function QseHubPage() {
-  const [politiques, dangers, rexList] = await Promise.all([
+  const [politiques, dangers, rexList, plans] = await Promise.all([
     getAllQseContent("politique"),
     getDangerReports(),
     getRexList(),
+    getActionPlans(),
   ]);
 
   const counts: Record<string, number> = {
     politique: politiques.length,
     dangers: dangers.length,
     rex: rexList.length,
+    plans: plans.length,
   };
 
   return (

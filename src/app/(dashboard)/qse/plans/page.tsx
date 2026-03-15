@@ -1,28 +1,37 @@
-import { ClipboardList } from "lucide-react";
+import { getProfile } from "@/actions/auth";
+import { getActionPlans } from "@/actions/action-plans";
+import { getSignalements } from "@/actions/signalements";
+import { getAllUsers } from "@/actions/users";
+import PlansPageClient from "./page-client";
 
-export default function PlansActionsPage() {
+export const dynamic = "force-dynamic";
+
+export default async function PlansActionsPage() {
+  const [profile, plans, signalements, users] = await Promise.all([
+    getProfile(),
+    getActionPlans(),
+    getSignalements(),
+    getAllUsers(),
+  ]);
+
+  const canManage =
+    profile !== null &&
+    ["admin", "rh", "responsable_qse"].includes(profile.role);
+
+  const unresolvedSignalements = signalements
+    .filter((s) => s.status !== "resolu" && s.status !== "cloture")
+    .map((s) => ({ id: s.id, title: s.title, priority: s.priority }));
+
+  const profiles = users
+    .filter((u) => u.is_active)
+    .map((u) => ({ id: u.id, first_name: u.first_name, last_name: u.last_name }));
+
   return (
-    <div className="p-6 pb-20 md:pb-6">
-      <div className="mb-6">
-        <h1 className="text-xl font-semibold text-[var(--heading)]">
-          Plans d&apos;actions
-        </h1>
-        <p className="mt-1 text-sm text-[var(--text-secondary)]">
-          Suivez les plans d&apos;actions correctives et préventives.
-        </p>
-      </div>
-
-      <div className="flex flex-col items-center rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] py-16 text-center shadow-xs">
-        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--blue-surface)]">
-          <ClipboardList className="h-7 w-7 text-[var(--blue)]" />
-        </div>
-        <p className="mt-4 text-sm font-medium text-[var(--heading)]">
-          Fonctionnalité en cours de développement
-        </p>
-        <p className="mx-auto mt-1 max-w-xs text-[13px] text-[var(--text-muted)]">
-          Les plans d&apos;actions seront bientôt disponibles pour gérer les actions correctives et préventives.
-        </p>
-      </div>
-    </div>
+    <PlansPageClient
+      plans={plans}
+      canManage={canManage}
+      profiles={profiles}
+      unresolvedSignalements={unresolvedSignalements}
+    />
   );
 }
