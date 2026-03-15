@@ -10,6 +10,8 @@ import {
 } from "lucide-react";
 import { getAllQseContent, getDangerReports, getRexList } from "@/actions/qse";
 import { getActionPlans } from "@/actions/action-plans";
+import { getSseDashboards } from "@/actions/sse-dashboard";
+import { getBonnesPratiques } from "@/actions/bonnes-pratiques";
 
 export const dynamic = "force-dynamic";
 
@@ -62,7 +64,7 @@ const qseCards = [
     color: "var(--green)",
     surface: "var(--green-surface)",
     border: "rgba(52, 199, 89, 0.14)",
-    countKey: null,
+    countKey: "bonnes_pratiques" as const,
   },
   {
     href: "/qse/tableau-sse",
@@ -72,16 +74,18 @@ const qseCards = [
     color: "var(--navy)",
     surface: "rgba(26, 45, 78, 0.06)",
     border: "rgba(26, 45, 78, 0.14)",
-    countKey: null,
+    countKey: "sse" as const,
   },
 ];
 
 export default async function QseHubPage() {
-  const [politiques, dangers, rexList, plans] = await Promise.all([
+  const [politiques, dangers, rexList, plans, sseDashboards, bonnesPratiques] = await Promise.all([
     getAllQseContent("politique"),
     getDangerReports(),
     getRexList(),
     getActionPlans(),
+    getSseDashboards(),
+    getBonnesPratiques(),
   ]);
 
   const counts: Record<string, number> = {
@@ -89,6 +93,8 @@ export default async function QseHubPage() {
     dangers: dangers.length,
     rex: rexList.length,
     plans: plans.length,
+    bonnes_pratiques: bonnesPratiques.length,
+    sse: sseDashboards.length,
   };
 
   return (
@@ -105,8 +111,7 @@ export default async function QseHubPage() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {qseCards.map((card) => {
           const Icon = card.icon;
-          const count = card.countKey ? counts[card.countKey] : null;
-          const isComingSoon = card.countKey === null;
+          const count = card.countKey ? counts[card.countKey] ?? 0 : null;
 
           return (
             <Link
@@ -122,11 +127,7 @@ export default async function QseHubPage() {
                 >
                   <Icon className="h-5 w-5" style={{ color: card.color }} />
                 </div>
-                {isComingSoon ? (
-                  <span className="rounded-full bg-[var(--bg)] px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
-                    Bientôt
-                  </span>
-                ) : count !== null ? (
+                {count !== null ? (
                   <span
                     className="rounded-full px-2.5 py-0.5 text-[11px] font-bold"
                     style={{ background: card.surface, color: card.color }}
@@ -144,7 +145,7 @@ export default async function QseHubPage() {
               </p>
 
               <div className="mt-4 flex items-center gap-1 text-[12px] font-medium transition-colors group-hover:text-[var(--heading)]" style={{ color: card.color }}>
-                {isComingSoon ? "En cours de développement" : "Accéder"}
+                Accéder
                 <ChevronRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
               </div>
             </Link>

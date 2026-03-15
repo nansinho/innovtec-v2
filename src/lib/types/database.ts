@@ -258,6 +258,20 @@ export interface Rex {
   created_at: string;
 }
 
+export interface BonnePratique {
+  id: string;
+  title: string;
+  pillar: string;
+  category: string;
+  description: string;
+  chantier: string;
+  photos: string[];
+  author_id: string;
+  created_at: string;
+  updated_at: string;
+  author?: { full_name: string; avatar_url: string };
+}
+
 export interface SseIndicator {
   id: string;
   period: string;
