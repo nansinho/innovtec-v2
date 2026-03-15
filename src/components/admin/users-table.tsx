@@ -339,14 +339,9 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
                       </div>
                     ) : (
                       <button
-                        onClick={() => !isMe && setEditingJobTitle(user.id)}
-                        disabled={isMe}
-                        className={`text-xs transition-colors ${
-                          isMe
-                            ? "cursor-default text-[var(--text-secondary)]"
-                            : "text-[var(--text-secondary)] hover:text-[var(--heading)]"
-                        }`}
-                        title={isMe ? "" : "Cliquer pour modifier le poste"}
+                        onClick={() => setEditingJobTitle(user.id)}
+                        className="text-xs text-[var(--text-secondary)] transition-colors hover:text-[var(--heading)]"
+                        title="Cliquer pour modifier le poste"
                       >
                         {user.job_title || "—"}
                       </button>
@@ -407,13 +402,13 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
                             window.location.href = `/admin/users/${user.id}`;
                           },
                         },
+                        {
+                          label: "Modifier",
+                          icon: Pencil,
+                          onClick: () => setFormModal({ open: true, user }),
+                        },
                         ...(!isMe
                           ? [
-                              {
-                                label: "Modifier",
-                                icon: Pencil,
-                                onClick: () => setFormModal({ open: true, user }),
-                              },
                               {
                                 label: "Changer le rôle",
                                 icon: Shield,

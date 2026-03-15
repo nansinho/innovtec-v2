@@ -8,11 +8,7 @@ import type { Profile, UserRole } from "@/lib/types/database";
 
 const roleOptions: { value: UserRole; label: string }[] = [
   { value: "collaborateur", label: "Collaborateur" },
-  { value: "technicien", label: "Technicien" },
-  { value: "chef_chantier", label: "Chef de chantier" },
-  { value: "responsable_qse", label: "Responsable QSE" },
-  { value: "rh", label: "Ressources Humaines" },
-  { value: "admin", label: "Administrateur" },
+  { value: "admin", label: "Admin" },
 ];
 
 interface UserFormModalProps {
