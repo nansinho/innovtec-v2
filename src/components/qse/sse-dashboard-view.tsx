@@ -178,11 +178,11 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
   }
 
   async function handleExportPdf() {
-    if (!selected || !printRef.current) return;
+    if (!selected) return;
     setExporting("pdf");
     try {
       const { exportSsePdf } = await import("@/lib/export/sse-pdf");
-      await exportSsePdf(printRef.current, `Tableau_SSE_${MONTH_NAMES[selected.month - 1]}_${selected.year}.pdf`);
+      exportSsePdf(selected, `Tableau_SSE_${MONTH_NAMES[selected.month - 1]}_${selected.year}.pdf`);
     } catch (err) {
       console.error("PDF export error:", err);
       toast.error("Erreur lors de l'export PDF");

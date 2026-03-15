@@ -1,197 +1,227 @@
-import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
+import autoTable from "jspdf-autotable";
+import type { SseDashboard } from "@/lib/types/database";
 
-/**
- * Convert all modern CSS color functions (lab, oklch, oklab, etc.)
- * to rgb() format that html2canvas can parse.
- * Tailwind CSS v4 uses oklch/lab internally which html2canvas v1 doesn't support.
- */
-function convertColorsToRgb(clonedDoc: Document, sourceDoc: Document) {
-  const colorProps = [
-    "color", "background-color", "border-color",
-    "border-top-color", "border-right-color", "border-bottom-color", "border-left-color",
-    "outline-color", "text-decoration-color", "box-shadow",
-  ];
+const MONTH_NAMES = [
+  "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
+  "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre",
+];
 
-  const unsupportedColorPattern = /\b(lab|oklch|oklab|lch|color)\s*\(/i;
-
-  // Walk all elements in the cloned document and fix their colors
-  const clonedElements = clonedDoc.querySelectorAll("*");
-  const sourceElements = sourceDoc.querySelectorAll("*");
-
-  // Build a map of source elements to their computed styles
-  // We need to read computed styles from the SOURCE document (live DOM)
-  // and apply rgb equivalents to the CLONED document
-  const sourceArray = Array.from(sourceElements);
-  const clonedArray = Array.from(clonedElements);
-
-  // Match elements by index (html2canvas clones preserve order)
-  const len = Math.min(sourceArray.length, clonedArray.length);
-  for (let i = 0; i < len; i++) {
-    const sourceEl = sourceArray[i] as HTMLElement;
-    const clonedEl = clonedArray[i] as HTMLElement;
-    const computed = getComputedStyle(sourceEl);
-
-    for (const prop of colorProps) {
-      const value = computed.getPropertyValue(prop);
-      if (value && unsupportedColorPattern.test(value)) {
-        // The browser's computed style should already resolve to rgb()
-        // but some browsers return the original lab/oklch format
-        // Use a canvas trick to convert to rgb
-        const rgbValue = cssColorToRgb(value);
-        if (rgbValue) {
-          clonedEl.style.setProperty(prop, rgbValue, "important");
-        }
-      }
-    }
-  }
-
-  // Also fix CSS variables on :root
-  const computedRoot = getComputedStyle(sourceDoc.documentElement);
-  const rootStyle = clonedDoc.documentElement.style;
-  for (let i = 0; i < computedRoot.length; i++) {
-    const prop = computedRoot[i];
-    if (prop.startsWith("--")) {
-      const value = computedRoot.getPropertyValue(prop).trim();
-      if (value && unsupportedColorPattern.test(value)) {
-        const rgbValue = cssColorToRgb(value);
-        if (rgbValue) {
-          rootStyle.setProperty(prop, rgbValue);
-        }
-      }
-    }
-  }
+function formatFr(value: number): string {
+  return value.toString().replace(".", ",");
 }
 
-/**
- * Convert any CSS color string to rgb() using a temporary canvas context.
- * The browser's canvas API handles all CSS color formats and always returns rgb/rgba.
- */
-function cssColorToRgb(color: string): string | null {
-  try {
-    const ctx = document.createElement("canvas").getContext("2d");
-    if (!ctx) return null;
-    ctx.fillStyle = color;
-    // ctx.fillStyle normalizes to #rrggbb or rgba()
-    const normalized = ctx.fillStyle;
-    if (normalized.startsWith("#")) {
-      // Convert hex to rgb
-      const r = parseInt(normalized.slice(1, 3), 16);
-      const g = parseInt(normalized.slice(3, 5), 16);
-      const b = parseInt(normalized.slice(5, 7), 16);
-      return `rgb(${r}, ${g}, ${b})`;
-    }
-    return normalized;
-  } catch {
-    return null;
-  }
-}
+// Colors
+const NAVY = [0, 32, 96] as const;
+const YELLOW = [230, 160, 0] as const;
+const HEADER_BG = [0, 32, 96] as const;
+const ALT_ROW = [245, 247, 250] as const;
 
-export async function exportSsePdf(element: HTMLElement, filename: string) {
-  if (!element) {
-    throw new Error("Élément non trouvé pour l'export PDF");
-  }
+export function exportSsePdf(dashboard: SseDashboard, filename: string) {
+  const d = dashboard;
+  const monthLabel = MONTH_NAMES[d.month - 1];
+  const pdf = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
+  const pageW = 297;
+  const marginX = 12;
+  const contentW = pageW - marginX * 2;
+  let y = 14;
 
-  // Temporarily adjust element for capture
-  const originalStyles = {
-    width: element.style.width,
-    maxWidth: element.style.maxWidth,
-    overflow: element.style.overflow,
-  };
+  // ── Header ──
+  pdf.setFillColor(...NAVY);
+  pdf.rect(0, 0, pageW, 22, "F");
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(16);
+  pdf.setTextColor(255, 255, 255);
+  pdf.text(`INNOVTEC - Tableau de Bord SSE - ${monthLabel} ${d.year}`, pageW / 2, y, { align: "center" });
+  y = 28;
 
-  element.style.width = "1200px";
-  element.style.maxWidth = "1200px";
-  element.style.overflow = "visible";
+  // ── Two tables side by side ──
+  const tableW = (contentW - 6) / 2;
 
-  // Wait for fonts to load
-  await document.fonts.ready;
-  await new Promise((resolve) => setTimeout(resolve, 100));
+  // Table 1: Indicateurs principaux
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(10);
+  pdf.setTextColor(...NAVY);
+  pdf.text("Indicateurs", marginX, y);
 
-  let canvas: HTMLCanvasElement;
-  try {
-    canvas = await html2canvas(element, {
-      scale: 2,
-      useCORS: true,
-      allowTaint: true,
-      backgroundColor: "#ffffff",
-      logging: false,
-      width: 1200,
-      windowWidth: 1200,
-      onclone: (clonedDoc) => {
-        // Convert modern CSS color functions (lab, oklch) to rgb
-        // so html2canvas can parse them
-        convertColorsToRgb(clonedDoc, document);
-      },
-    });
-  } finally {
-    // Restore original styles
-    element.style.width = originalStyles.width;
-    element.style.maxWidth = originalStyles.maxWidth;
-    element.style.overflow = originalStyles.overflow;
-  }
-
-  // A4 landscape dimensions in mm
-  const pageWidth = 297;
-  const pageHeight = 210;
-
-  const pdf = new jsPDF({
-    orientation: "landscape",
-    unit: "mm",
-    format: "a4",
+  autoTable(pdf, {
+    startY: y + 2,
+    margin: { left: marginX, right: pageW - marginX - tableW },
+    tableWidth: tableW,
+    theme: "grid",
+    headStyles: { fillColor: [...HEADER_BG], textColor: [255, 255, 255], fontStyle: "bold", fontSize: 8, halign: "center" },
+    bodyStyles: { fontSize: 8, cellPadding: 2 },
+    alternateRowStyles: { fillColor: [...ALT_ROW] },
+    columnStyles: {
+      0: { cellWidth: tableW * 0.6, halign: "left" },
+      1: { cellWidth: tableW * 0.2, halign: "center", fontStyle: "bold" },
+      2: { cellWidth: tableW * 0.2, halign: "center" },
+    },
+    head: [["Indicateur", "Réalisé", `Objectif ${d.year}`]],
+    body: [
+      ["Nombre d'Accidents en Service Avec Arrêts (ASAA)", String(d.accidents_with_leave), d.accidents_with_leave_objective],
+      ["Suivi des formations réglementaires", `${formatFr(d.regulatory_training_completion)}%`, d.regulatory_training_objective],
+      ["Taux de conformité réglementaire", `${formatFr(d.regulatory_compliance_rate)}%`, d.regulatory_compliance_objective],
+      ["Taux de réalisation de la vérification périodique", `${formatFr(d.periodic_verification_rate)}%`, d.periodic_verification_objective],
+      ["Suivi des déchets", `${formatFr(d.waste_monitoring)}%`, d.waste_monitoring_objective],
+      ["Taux de SST", `${formatFr(d.sst_rate)}%`, d.sst_rate_objective],
+      ["Bennes déclassées", String(d.downgraded_bins), String(d.downgraded_bins_objective)],
+    ],
   });
 
-  const imgWidth = pageWidth;
-  const imgHeight = (canvas.height * imgWidth) / canvas.width;
+  // Table 2: Indicateurs de suivi
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(10);
+  pdf.setTextColor(...NAVY);
+  const rightX = marginX + tableW + 6;
+  pdf.text("Indicateurs de suivi", rightX, y);
 
-  const imgData = canvas.toDataURL("image/png");
+  autoTable(pdf, {
+    startY: y + 2,
+    margin: { left: rightX, right: marginX },
+    tableWidth: tableW,
+    theme: "grid",
+    headStyles: { fillColor: [...HEADER_BG], textColor: [255, 255, 255], fontStyle: "bold", fontSize: 8, halign: "center" },
+    bodyStyles: { fontSize: 8, cellPadding: 2 },
+    alternateRowStyles: { fillColor: [...ALT_ROW] },
+    columnStyles: {
+      0: { cellWidth: tableW * 0.6, halign: "left" },
+      1: { cellWidth: tableW * 0.2, halign: "center" },
+      2: { cellWidth: tableW * 0.2, halign: "center", fontStyle: "bold" },
+    },
+    head: [["Indicateur", "Objectif", "Réalisé"]],
+    body: [
+      ["Nombre d'accidents en service sans arrêt (ASSA)", String(d.accidents_without_leave_objective), String(d.accidents_without_leave)],
+      ["Nombre de visites croisées", d.cross_visits_objective, String(d.cross_visits)],
+      ["Nombre de visites managériales", String(d.managerial_visits_objective), String(d.managerial_visits)],
+      ["% de déclarants de SD (salariés)", formatFr(d.sd_declarants_objective), `${formatFr(d.sd_declarants_percentage)}%`],
+      ["Nombres de SD déclarés", String(d.sd_declared_objective), String(d.sd_declared_count)],
+      ["Nombre de salariés sensibilisés au tri des déchets", d.waste_awareness_objective, String(d.waste_awareness_employees)],
+      ["Taux de suivi du plan de formation", d.training_plan_objective, `${formatFr(d.training_plan_follow_rate)}%`],
+    ],
+  });
 
-  if (imgHeight <= pageHeight) {
-    pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
-  } else {
-    // Multi-page
-    let y = 0;
-    let pageNum = 0;
-    while (y < imgHeight) {
-      if (pageNum > 0) pdf.addPage();
+  // Get Y position after the tallest table
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  y = (pdf as any).lastAutoTable?.finalY ?? y + 50;
+  y += 8;
 
-      const sourceY = (y / imgHeight) * canvas.height;
-      const sourceHeight = Math.min(
-        (pageHeight / imgHeight) * canvas.height,
-        canvas.height - sourceY
-      );
+  // ── Bottom sections ──
+  const colW = contentW / 3;
 
-      const pageCanvas = document.createElement("canvas");
-      pageCanvas.width = canvas.width;
-      pageCanvas.height = sourceHeight;
-      const ctx = pageCanvas.getContext("2d");
-      if (ctx) {
-        ctx.drawImage(
-          canvas,
-          0, sourceY, canvas.width, sourceHeight,
-          0, 0, canvas.width, sourceHeight
-        );
-        const pageData = pageCanvas.toDataURL("image/png");
-        const sliceHeight = (sourceHeight * imgWidth) / canvas.width;
-        pdf.addImage(pageData, "PNG", 0, 0, imgWidth, sliceHeight);
-      }
+  // Section: Bilan mensuel
+  drawSectionBadge(pdf, marginX, y, "Bilan mensuel", NAVY);
+  y += 8;
+  pdf.setFont("helvetica", "normal");
+  pdf.setFontSize(8);
+  pdf.setTextColor(60, 60, 60);
+  const reportLines = pdf.splitTextToSize(d.monthly_report || "Aucun bilan renseigné.", colW - 4);
+  pdf.text(reportLines, marginX, y);
+  const reportH = reportLines.length * 3.5;
 
-      y += pageHeight;
-      pageNum++;
-    }
+  // Section: Visites terrain (centered in middle column)
+  const midX = marginX + colW;
+  drawSectionBadge(pdf, midX + colW / 2 - 15, y - 8, "Visites terrain", NAVY);
+  // Circle with number
+  const circleX = midX + colW / 2;
+  const circleY = y + 8;
+  pdf.setFillColor(...YELLOW);
+  pdf.circle(circleX, circleY, 8, "F");
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(14);
+  pdf.setTextColor(255, 255, 255);
+  pdf.text(String(d.field_visits_count), circleX, circleY + 1, { align: "center" });
+
+  // Section: Priorités d'action
+  const nextMonth = d.month === 12 ? `Janvier ${d.year + 1}` : `${MONTH_NAMES[d.month]} ${d.year}`;
+  const rightColX = marginX + colW * 2;
+  drawSectionBadge(pdf, rightColX, y - 8, `Priorités d'action pour ${nextMonth}`, NAVY);
+  drawBulletList(pdf, rightColX, y, d.action_priorities, colW - 4, NAVY);
+  const prioritiesH = d.action_priorities.length * 4.5;
+
+  y += Math.max(reportH, 24, prioritiesH) + 8;
+
+  // Check page break
+  if (y > 170) {
+    pdf.addPage();
+    y = 14;
   }
 
-  // Download with fallback
-  try {
-    pdf.save(filename);
-  } catch {
-    const blob = pdf.output("blob");
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+  // ── Row 2: Vigilance + Focus ──
+  // Vigilance (spans 2 columns)
+  drawSectionBadge(pdf, marginX, y, "Point de vigilance/alerte", YELLOW);
+  y += 8;
+  drawBulletList(pdf, marginX, y, d.vigilance_points, colW * 2 - 4, YELLOW);
+  const vigilanceH = Math.max(d.vigilance_points.length * 4.5, 6);
+
+  // Focus événement (1 column, right)
+  drawSectionBadge(pdf, rightColX, y - 8, `Focus événement -- ${d.focus_event_title}`, NAVY, true);
+  drawBulletList(pdf, rightColX, y, d.focus_event_content, colW - 4, NAVY);
+
+  y += Math.max(vigilanceH, d.focus_event_content.length * 4.5, 6) + 8;
+
+  // ── Quote ──
+  if (d.quote) {
+    if (y > 185) { pdf.addPage(); y = 14; }
+    pdf.setFont("helvetica", "italic");
+    pdf.setFontSize(8);
+    pdf.setTextColor(120, 120, 120);
+    pdf.text(`"${d.quote}"`, pageW / 2, y, { align: "center" });
+  }
+
+  pdf.save(filename);
+}
+
+function drawSectionBadge(
+  pdf: jsPDF,
+  x: number,
+  y: number,
+  text: string,
+  color: readonly [number, number, number],
+  outlined = false,
+) {
+  const textW = pdf.getStringUnitWidth(text) * 8 / pdf.internal.scaleFactor + 6;
+  if (outlined) {
+    pdf.setDrawColor(...color);
+    pdf.setLineWidth(0.5);
+    pdf.roundedRect(x, y - 3.5, textW, 5.5, 1, 1, "S");
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(8);
+    pdf.setTextColor(...color);
+  } else {
+    pdf.setFillColor(...color);
+    pdf.roundedRect(x, y - 3.5, textW, 5.5, 1, 1, "F");
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(8);
+    pdf.setTextColor(255, 255, 255);
+  }
+  pdf.text(text, x + 3, y);
+}
+
+function drawBulletList(
+  pdf: jsPDF,
+  x: number,
+  y: number,
+  items: string[],
+  maxW: number,
+  color: readonly [number, number, number],
+) {
+  if (items.length === 0) {
+    pdf.setFont("helvetica", "italic");
+    pdf.setFontSize(8);
+    pdf.setTextColor(160, 160, 160);
+    pdf.text("Aucun élément.", x, y);
+    return;
+  }
+  pdf.setFont("helvetica", "normal");
+  pdf.setFontSize(8);
+  pdf.setTextColor(60, 60, 60);
+  let currentY = y;
+  for (const item of items) {
+    pdf.setFillColor(...color);
+    pdf.circle(x + 1.5, currentY - 0.8, 0.8, "F");
+    const lines = pdf.splitTextToSize(item, maxW - 6);
+    pdf.text(lines, x + 5, currentY);
+    currentY += lines.length * 3.5 + 1;
   }
 }
