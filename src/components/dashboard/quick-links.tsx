@@ -14,7 +14,7 @@ const links = [
 export default function QuickLinks() {
   return (
     <Card>
-      <CardHeader title="Acc\u00e8s rapides" />
+      <CardHeader title="Accès rapides" />
       <div className="grid grid-cols-3 gap-2 p-3">
         {links.map((link) => (
           <button

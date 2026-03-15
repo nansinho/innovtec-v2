@@ -2,6 +2,7 @@ import { getProfile } from "@/actions/auth";
 import { getApiSettings } from "@/actions/settings";
 import { redirect } from "next/navigation";
 import ApiKeySettings from "@/components/admin/api-key-settings";
+import ThemeSettings from "@/components/admin/theme-settings";
 
 export const dynamic = "force-dynamic";
 
@@ -24,6 +25,7 @@ export default async function AdminSettingsPage() {
       </p>
 
       <div className="max-w-2xl space-y-6">
+        <ThemeSettings />
         <ApiKeySettings
           hasKey={apiSettings?.hasKey ?? false}
           maskedKey={apiSettings?.maskedKey ?? ""}

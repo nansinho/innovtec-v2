@@ -18,9 +18,9 @@ interface Slide {
 const fallbackSlides: Slide[] = [
   {
     badge: "Bienvenue",
-    title: "Bienvenue sur l\u2019intranet INNOVTEC R\u00e9seaux",
-    description: "Retrouvez toutes les informations de l\u2019entreprise, les actualit\u00e9s et vos outils au quotidien.",
-    cta: "D\u00e9couvrir",
+    title: "Bienvenue sur l'intranet INNOVTEC Réseaux",
+    description: "Retrouvez toutes les informations de l'entreprise, les actualités et vos outils au quotidien.",
+    cta: "Découvrir",
     image: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=500&q=80",
     gradient: "from-[#1E3A5F] via-[#1a3355] to-[#0F2035]",
   },
@@ -37,7 +37,7 @@ const categoryGradients: Record<string, string> = {
 
 function newsToSlide(news: News): Slide {
   const badge = news.priority === "urgent"
-    ? `Urgent \u00b7 ${news.category}`
+    ? `Urgent · ${news.category}`
     : news.category.charAt(0).toUpperCase() + news.category.slice(1);
 
   return {
@@ -127,7 +127,7 @@ export default function WelcomeCarousel() {
           <button
             onClick={prev}
             className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/15 text-white backdrop-blur-sm transition-all hover:bg-white/25 active:scale-95"
-            aria-label="Pr\u00e9c\u00e9dent"
+            aria-label="Précédent"
           >
             <ChevronLeft className="h-4 w-4" />
           </button>

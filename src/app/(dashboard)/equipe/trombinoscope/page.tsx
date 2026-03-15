@@ -21,7 +21,7 @@ export default async function TrombinoscopePage() {
           Trombinoscope
         </h1>
         <p className="mt-1 text-sm text-[var(--text-secondary)]">
-          L&apos;annuaire de tous les collaborateurs INNOVTEC R&eacute;seaux.
+          L&apos;annuaire de tous les collaborateurs INNOVTEC Réseaux.
         </p>
       </div>
 

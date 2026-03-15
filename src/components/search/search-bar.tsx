@@ -35,14 +35,14 @@ const categoryConfig: Record<
   formation: {
     label: "Formations",
     icon: GraduationCap,
-    color: "text-orange-600",
-    bg: "bg-orange-50",
+    color: "text-orange-500",
+    bg: "bg-orange-500/[0.06]",
   },
   evenement: {
     label: "Événements",
     icon: Calendar,
-    color: "text-indigo-600",
-    bg: "bg-indigo-50",
+    color: "text-indigo-500",
+    bg: "bg-indigo-500/[0.06]",
   },
 };
 
@@ -52,6 +52,7 @@ export default function SearchBar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const containerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -90,6 +91,7 @@ export default function SearchBar() {
     setQuery("");
     setResults([]);
     setIsOpen(false);
+    inputRef.current?.focus();
   }
 
   // Group results by category
@@ -104,48 +106,53 @@ export default function SearchBar() {
 
   return (
     <div ref={containerRef} className="relative">
-      {/* Search input */}
-      <div className="flex items-center gap-2.5 rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] px-4 py-2.5 transition-all focus-within:border-[var(--yellow)] focus-within:shadow-[0_0_0_3px_var(--yellow-surface)]">
+      {/* Search input — Apple style */}
+      <div className={cn(
+        "flex items-center gap-3 rounded-full px-4 py-2 transition-all duration-300",
+        "bg-black/[0.04] backdrop-blur-xl",
+        "hover:bg-black/[0.06]",
+        isOpen || query
+          ? "bg-white shadow-[0_2px_12px_rgba(0,0,0,0.08)] ring-1 ring-black/[0.04]"
+          : ""
+      )}>
         <Search className="h-4 w-4 shrink-0 text-[var(--text-muted)]" />
         <input
+          ref={inputRef}
           value={query}
           onChange={(e) => handleSearch(e.target.value)}
           onFocus={() => results.length > 0 && setIsOpen(true)}
-          placeholder="Rechercher des fichiers, actualités, documents, collaborateurs..."
-          className="w-full bg-transparent text-[13px] text-[var(--heading)] outline-none placeholder:text-[var(--text-muted)]"
+          placeholder="Rechercher..."
+          className="w-full min-w-0 bg-transparent text-sm text-[var(--heading)] outline-none placeholder:text-[var(--text-muted)]"
         />
-        {query && (
-          <button
-            onClick={handleClear}
-            className="shrink-0 rounded-full p-0.5 text-[var(--text-muted)] transition-colors hover:bg-gray-100 hover:text-[var(--heading)]"
-          >
-            <X className="h-3.5 w-3.5" />
-          </button>
+        {(query || isPending) && (
+          <div className="flex items-center gap-1.5">
+            {isPending && (
+              <div className="h-4 w-4 animate-spin rounded-full border-[1.5px] border-[var(--text-muted)] border-t-transparent" />
+            )}
+            {query && (
+              <button
+                onClick={handleClear}
+                className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-black/[0.08] text-[var(--text-muted)] transition-colors hover:bg-black/[0.14] hover:text-[var(--heading)]"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            )}
+          </div>
         )}
-        <button
-          onClick={() => query.trim().length >= 2 && handleSearch(query)}
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-sm)] bg-[var(--yellow)] transition-colors hover:bg-[var(--yellow-hover)]"
-        >
-          <Search className="h-4 w-4 text-white" />
-        </button>
       </div>
 
-      {/* Results dropdown */}
+      {/* Results dropdown — Apple style */}
       {isOpen && (
-        <div className="absolute left-0 right-0 top-full z-50 mt-2 max-h-[480px] overflow-y-auto rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] shadow-lg">
-          {isPending ? (
-            <div className="flex items-center justify-center py-8">
-              <div className="h-5 w-5 animate-spin rounded-full border-2 border-[var(--yellow)] border-t-transparent" />
-            </div>
-          ) : results.length === 0 ? (
-            <div className="py-8 text-center">
-              <Search className="mx-auto mb-2 h-8 w-8 text-[var(--border-1)]" />
+        <div className="animate-slide-down absolute left-0 right-0 top-full z-50 mt-2 max-h-[480px] overflow-y-auto rounded-2xl bg-white/95 shadow-[0_8px_32px_rgba(0,0,0,0.12)] ring-1 ring-black/[0.04] backdrop-blur-2xl">
+          {results.length === 0 ? (
+            <div className="py-10 text-center">
+              <Search className="mx-auto mb-2.5 h-8 w-8 text-[var(--text-muted)] opacity-40" />
               <p className="text-sm text-[var(--text-secondary)]">
                 Aucun résultat pour &quot;{query}&quot;
               </p>
             </div>
           ) : (
-            <div className="divide-y divide-[var(--border-1)]">
+            <div className="py-1.5">
               {(Object.entries(grouped) as [SearchResult["category"], SearchResult[]][]).map(
                 ([category, items]) => {
                   const config = categoryConfig[category];
@@ -154,12 +161,11 @@ export default function SearchBar() {
                   return (
                     <div key={category}>
                       {/* Category header */}
-                      <div className="flex items-center gap-2 bg-[var(--hover)] px-4 py-2">
-                        <Icon className={cn("h-3.5 w-3.5", config.color)} />
-                        <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
+                      <div className="flex items-center gap-2 px-4 pb-1 pt-3">
+                        <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
                           {config.label}
                         </span>
-                        <span className="rounded-full bg-gray-200 px-1.5 py-0.5 text-[9px] font-bold text-[var(--text-secondary)]">
+                        <span className="rounded-full bg-black/[0.04] px-1.5 py-0.5 text-[9px] font-bold text-[var(--text-muted)]">
                           {items.length}
                         </span>
                       </div>
@@ -170,20 +176,20 @@ export default function SearchBar() {
                           key={item.id}
                           href={item.link}
                           onClick={() => setIsOpen(false)}
-                          className="flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-[var(--yellow-surface)]"
+                          className="mx-1.5 flex items-center gap-3 rounded-xl px-3 py-2.5 transition-all duration-200 hover:bg-black/[0.04] active:scale-[0.99]"
                         >
                           <div
                             className={cn(
-                              "flex h-8 w-8 shrink-0 items-center justify-center rounded-full",
+                              "flex h-8 w-8 shrink-0 items-center justify-center rounded-xl",
                               config.bg
                             )}
                           >
                             <Icon
-                              className={cn("h-3.5 w-3.5", config.color)}
+                              className={cn("h-4 w-4", config.color)}
                             />
                           </div>
                           <div className="min-w-0 flex-1">
-                            <p className="truncate text-[12.5px] font-medium text-[var(--heading)]">
+                            <p className="truncate text-[13px] font-medium text-[var(--heading)]">
                               {item.title}
                             </p>
                             {item.description && (
@@ -203,7 +209,7 @@ export default function SearchBar() {
 
           {/* Footer */}
           {results.length > 0 && (
-            <div className="border-t border-[var(--border-1)] bg-gray-50/50 px-4 py-2 text-center">
+            <div className="border-t border-black/[0.04] px-4 py-2 text-center">
               <span className="text-[11px] text-[var(--text-muted)]">
                 {results.length} résultat{results.length > 1 ? "s" : ""} trouvé
                 {results.length > 1 ? "s" : ""}

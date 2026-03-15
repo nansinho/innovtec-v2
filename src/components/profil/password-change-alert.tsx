@@ -18,7 +18,7 @@ export default function PasswordChangeAlert() {
             Changement de mot de passe requis
           </p>
           <p className="text-[11px] text-[var(--text-secondary)]">
-            Pour des raisons de s&eacute;curit&eacute;, veuillez modifier votre mot de passe.
+            Pour des raisons de sécurité, veuillez modifier votre mot de passe.
           </p>
         </div>
         <Link

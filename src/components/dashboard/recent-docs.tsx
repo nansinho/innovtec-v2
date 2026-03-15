@@ -12,7 +12,7 @@ export default async function RecentDocs() {
   return (
     <Card>
       <CardHeader
-        title="Documents r\u00e9cents"
+        title="Documents récents"
         icon={FileText}
         action={
           <Link

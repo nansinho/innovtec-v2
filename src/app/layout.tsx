@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Toaster } from "sonner";
+import ThemeInitializer from "@/components/theme-initializer";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -23,6 +24,7 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased">
+        <ThemeInitializer />
         {children}
         <Toaster richColors position="top-right" duration={3000} />
       </body>

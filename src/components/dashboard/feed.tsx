@@ -12,7 +12,7 @@ export default async function Feed() {
   return (
     <Card>
       <CardHeader
-        title="Fil d'actualit\u00e9s"
+        title="Fil d'actualités"
         icon={Rss}
         action={
           <Link

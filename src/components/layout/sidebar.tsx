@@ -25,7 +25,7 @@ import {
 import { cn } from "@/lib/utils";
 import { signOut } from "@/actions/auth";
 import type { Profile } from "@/lib/types/database";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const roleLabels: Record<string, string> = {
   admin: "Administrateur",
@@ -79,17 +79,17 @@ function NavItem({ href, label, icon: Icon, badge, isActive, collapsed }: NavIte
       href={href}
       title={collapsed ? label : undefined}
       className={cn(
-        "group flex items-center gap-2.5 rounded-[var(--radius)] px-3 py-2 text-[13px] transition-all duration-150",
+        "group flex items-center gap-2.5 rounded-xl px-3 py-2 text-[13px] transition-all duration-200",
         collapsed && "justify-center px-0",
         isActive
-          ? "bg-[#F59E0B] font-medium text-white shadow-sm"
-          : "text-white/55 hover:bg-white/10 hover:text-white/90"
+          ? "bg-white/15 font-medium text-white shadow-sm backdrop-blur-sm"
+          : "text-white/55 hover:bg-white/[0.08] hover:text-white/90"
       )}
     >
       <Icon
         className={cn(
-          "h-[18px] w-[18px] shrink-0",
-          isActive ? "text-white" : "text-white/50 group-hover:text-white/80"
+          "h-[18px] w-[18px] shrink-0 transition-colors duration-200",
+          isActive ? "text-[var(--yellow)]" : "text-white/50 group-hover:text-white/80"
         )}
       />
       {!collapsed && (
@@ -101,7 +101,7 @@ function NavItem({ href, label, icon: Icon, badge, isActive, collapsed }: NavIte
                 "ml-auto rounded-full px-[7px] py-0.5 text-[9px] font-semibold",
                 isActive
                   ? "bg-white/20 text-white"
-                  : "bg-[#F59E0B]/20 text-[#F59E0B]"
+                  : "bg-[var(--yellow)]/20 text-[var(--yellow)]"
               )}
             >
               {badge}
@@ -115,7 +115,7 @@ function NavItem({ href, label, icon: Icon, badge, isActive, collapsed }: NavIte
 
 function SectionLabel({ label, collapsed }: { label: string; collapsed: boolean }) {
   if (collapsed) {
-    return <div className="my-2 border-t border-white/[0.08]" />;
+    return <div className="my-2 border-t border-white/[0.06]" />;
   }
   return (
     <div className="px-3 pb-1.5 pt-5 text-[10px] font-semibold uppercase tracking-[1.5px] text-white/25">
@@ -132,6 +132,12 @@ export default function Sidebar({ profile }: SidebarProps) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
 
+  // Update CSS variable when collapsed state changes
+  useEffect(() => {
+    const width = collapsed ? "72px" : "260px";
+    document.documentElement.style.setProperty("--sidebar-width", width);
+  }, [collapsed]);
+
   const displayName = profile
     ? `${profile.first_name} ${profile.last_name}`.trim() || profile.email
     : "Utilisateur";
@@ -144,18 +150,16 @@ export default function Sidebar({ profile }: SidebarProps) {
 
   const isAdmin = profile && ["admin", "rh"].includes(profile.role);
 
-  const sidebarWidth = collapsed ? "w-16" : "w-[var(--sidebar-width)]";
-
   return (
     <aside
       className={cn(
-        "fixed bottom-0 left-0 top-0 z-[100] hidden flex-col bg-[#0F2035] text-white transition-all duration-200 md:flex",
-        sidebarWidth
+        "fixed bottom-0 left-0 top-0 z-[100] hidden flex-col bg-[#0F2035]/95 text-white backdrop-blur-2xl transition-all duration-300 ease-out md:flex",
+        collapsed ? "w-[72px]" : "w-[260px]"
       )}
     >
       {/* Logo */}
-      <div className="flex items-center gap-2.5 border-b border-white/[0.08] px-4 py-4">
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[var(--radius)] bg-[#F59E0B]">
+      <div className="flex items-center gap-2.5 border-b border-white/[0.06] px-4 py-4">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-b from-[var(--yellow)] to-[var(--yellow-hover)] shadow-sm shadow-amber-600/20">
           <Zap className="h-4 w-4 text-white" />
         </div>
         {!collapsed && (
@@ -230,7 +234,7 @@ export default function Sidebar({ profile }: SidebarProps) {
       <div className="border-t border-white/[0.06] px-2.5 py-2">
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="flex w-full items-center justify-center gap-2 rounded-[var(--radius)] px-2 py-2 text-[11px] text-white/30 transition-all hover:bg-white/[0.06] hover:text-white/55"
+          className="flex w-full items-center justify-center gap-2 rounded-xl px-2 py-2 text-[11px] text-white/30 transition-all duration-200 hover:bg-white/[0.06] hover:text-white/55"
           aria-label={collapsed ? "Agrandir le menu" : "Réduire le menu"}
         >
           {collapsed ? (
@@ -250,7 +254,7 @@ export default function Sidebar({ profile }: SidebarProps) {
           href="#"
           title={collapsed ? "Support" : undefined}
           className={cn(
-            "flex items-center gap-2.5 rounded-[var(--radius)] px-3 py-2 text-[12px] text-white/30 transition-all hover:bg-white/[0.06] hover:text-white/55",
+            "flex items-center gap-2.5 rounded-xl px-3 py-2 text-[12px] text-white/30 transition-all duration-200 hover:bg-white/[0.06] hover:text-white/55",
             collapsed && "justify-center px-0"
           )}
         >
@@ -266,7 +270,7 @@ export default function Sidebar({ profile }: SidebarProps) {
       )}>
         <Link
           href="/profil"
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/10 text-[11px] font-medium text-white/70 transition-colors hover:bg-white/20"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/10 text-[11px] font-medium text-white/70 transition-all duration-200 hover:bg-white/20 hover:scale-105"
           title={collapsed ? displayName : undefined}
         >
           {initials}
@@ -285,7 +289,7 @@ export default function Sidebar({ profile }: SidebarProps) {
             <form action={signOut}>
               <button
                 type="submit"
-                className="text-white/20 transition-colors hover:text-white/50"
+                className="rounded-lg p-1.5 text-white/20 transition-all duration-200 hover:bg-white/[0.08] hover:text-white/50"
                 aria-label="Se déconnecter"
               >
                 <LogOut className="h-4 w-4" />
