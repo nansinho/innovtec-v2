@@ -21,6 +21,8 @@ import {
   UserCog,
   ChevronLeft,
   ChevronRight,
+  ClipboardList,
+  BarChart3,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { signOut } from "@/actions/auth";
@@ -42,9 +44,13 @@ const mainNav = [
 ];
 
 const qseNav = [
+  { href: "/qse", label: "Vue d'ensemble", icon: LayoutGrid, exact: true },
   { href: "/qse/politique", label: "Politique QSE", icon: Shield },
   { href: "/qse/dangers", label: "Situations dangereuses", icon: AlertCircle },
+  { href: "/qse/plans", label: "Plans d'actions", icon: ClipboardList },
   { href: "/qse/rex", label: "REX", icon: Eye },
+  { href: "/qse/bonnes-pratiques", label: "Bonnes pratiques", icon: BookOpen },
+  { href: "/qse/tableau-sse", label: "Tableau de Bord SSE", icon: BarChart3 },
 ];
 
 const equipeNav = [
@@ -189,9 +195,15 @@ export default function Sidebar({ profile }: SidebarProps) {
         {qseNav.map((item) => (
           <NavItem
             key={item.href}
-            {...item}
+            href={item.href}
+            label={item.label}
+            icon={item.icon}
             collapsed={collapsed}
-            isActive={pathname.startsWith(item.href)}
+            isActive={
+              "exact" in item && item.exact
+                ? pathname === item.href
+                : pathname.startsWith(item.href)
+            }
           />
         ))}
 
