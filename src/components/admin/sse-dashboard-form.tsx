@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import type { SseDashboard } from "@/lib/types/database";
 import { createSseDashboard, updateSseDashboard, getSseDashboard } from "@/actions/sse-dashboard";
 import { toast } from "sonner";
-import { ArrowLeft, Plus, X, Save, Sparkles } from "lucide-react";
+import { ArrowLeft, Plus, X, Save, Sparkles, Upload } from "lucide-react";
 
 const MONTH_NAMES = [
   "Janvier", "Fevrier", "Mars", "Avril", "Mai", "Juin",
@@ -75,23 +75,24 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
 
   // AI import state
   const [showAiImport, setShowAiImport] = useState(false);
-  const [aiText, setAiText] = useState("");
+  const [aiFile, setAiFile] = useState<File | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
 
   async function handleAiImport() {
-    if (!aiText.trim()) {
-      toast.error("Collez du texte a analyser");
+    if (!aiFile) {
+      toast.error("Selectionnez un fichier a analyser");
       return;
     }
     setAiLoading(true);
     try {
-      const res = await fetch("/api/ai/generate", {
+      const formData = new FormData();
+      formData.append("file", aiFile);
+      formData.append("type", "sse_dashboard");
+      formData.append("prompt", "Analyse ce document SSE et extrais toutes les donnees vers le format JSON demande.");
+
+      const res = await fetch("/api/ai/analyze-file", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          prompt: aiText,
-          type: "sse_dashboard",
-        }),
+        body: formData,
       });
 
       if (!res.ok) {
@@ -147,7 +148,7 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
 
       toast.success("Donnees importees par l'IA -- verifiez et ajustez si necessaire");
       setShowAiImport(false);
-      setAiText("");
+      setAiFile(null);
     } catch {
       toast.error("Erreur lors de l'import IA");
     }
@@ -232,20 +233,56 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
               </button>
             </div>
             <p className="mb-3 text-sm text-[var(--text-secondary)]">
-              Collez le contenu de votre tableau SSE (texte, donnees copiees depuis un fichier Excel, Word ou PDF).
-              L&apos;IA analysera le contenu et pre-remplira automatiquement tous les champs du formulaire.
+              Importez une image (PNG, JPG) ou un PDF de votre tableau de bord SSE.
+              L&apos;IA analysera le document et pre-remplira automatiquement tous les champs du formulaire.
             </p>
-            <textarea
-              value={aiText}
-              onChange={(e) => setAiText(e.target.value)}
-              rows={12}
-              disabled={aiLoading}
-              placeholder={"Collez ici le contenu de votre tableau SSE...\n\nExemple :\nJanvier 2026\nASAA : 1 (objectif <=2)\nFormations reglementaires : 100 (objectif > 95%)\nTaux de conformite : 91.3 (objectif > 80%)\n..."}
-              className="w-full rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-3 py-2 text-sm text-[var(--heading)] outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 disabled:opacity-50"
-            />
+            <label
+              className={`flex cursor-pointer flex-col items-center justify-center rounded-[var(--radius-xs)] border-2 border-dashed px-6 py-10 transition-colors ${
+                aiFile
+                  ? "border-purple-400 bg-purple-50"
+                  : "border-[var(--border-2)] bg-[var(--hover)] hover:border-purple-400"
+              } ${aiLoading ? "pointer-events-none opacity-50" : ""}`}
+            >
+              <Upload className="mb-3 h-8 w-8 text-[var(--text-muted)]" />
+              {aiFile ? (
+                <div className="text-center">
+                  <p className="text-sm font-medium text-[var(--heading)]">{aiFile.name}</p>
+                  <p className="mt-1 text-xs text-[var(--text-muted)]">
+                    {(aiFile.size / 1024 / 1024).toFixed(2)} Mo
+                  </p>
+                  <button
+                    type="button"
+                    onClick={(e) => { e.preventDefault(); setAiFile(null); }}
+                    className="mt-2 text-xs font-medium text-red-600 hover:text-red-700"
+                  >
+                    Supprimer
+                  </button>
+                </div>
+              ) : (
+                <div className="text-center">
+                  <p className="text-sm font-medium text-[var(--heading)]">
+                    Cliquez pour selectionner un fichier
+                  </p>
+                  <p className="mt-1 text-xs text-[var(--text-muted)]">
+                    PNG, JPG ou PDF
+                  </p>
+                </div>
+              )}
+              <input
+                type="file"
+                accept="image/png,image/jpeg,image/jpg,image/webp,application/pdf"
+                className="hidden"
+                disabled={aiLoading}
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) setAiFile(f);
+                  e.target.value = "";
+                }}
+              />
+            </label>
             <div className="mt-4 flex items-center justify-end gap-3">
               <button
-                onClick={() => setShowAiImport(false)}
+                onClick={() => { setShowAiImport(false); setAiFile(null); }}
                 disabled={aiLoading}
                 className="rounded-[var(--radius-xs)] border border-[var(--border-2)] px-4 py-2 text-sm font-medium text-[var(--heading)] hover:bg-[var(--hover)] disabled:opacity-50"
               >
@@ -253,7 +290,7 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
               </button>
               <button
                 onClick={handleAiImport}
-                disabled={aiLoading || !aiText.trim()}
+                disabled={aiLoading || !aiFile}
                 className="flex items-center gap-1.5 rounded-[var(--radius-xs)] bg-gradient-to-r from-purple-600 to-blue-600 px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50"
               >
                 <Sparkles className="h-4 w-4" />
