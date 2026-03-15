@@ -43,6 +43,24 @@ function isQseManager(role: string) {
   return ["admin", "rh", "responsable_qse"].includes(role);
 }
 
+async function resolvePhotoUrls(report: DangerReport): Promise<DangerReport> {
+  const urls = report.photo_urls;
+  if (!urls || urls.length === 0) return report;
+
+  const supabase = await createClient();
+  const resolved = await Promise.all(
+    urls.map(async (path) => {
+      // If already a full URL (legacy data), keep it
+      if (path.startsWith("http")) return path;
+      const { data } = await supabase.storage
+        .from("documents")
+        .createSignedUrl(path, 60 * 60); // 1h
+      return data?.signedUrl ?? path;
+    })
+  );
+  return { ...report, photo_urls: resolved };
+}
+
 // ==========================================
 // CATEGORIES
 // ==========================================
@@ -165,9 +183,14 @@ export async function getSignalements(): Promise<DangerReport[]> {
 
   if (!data) return [];
 
+  let reports = data as unknown as DangerReport[];
+
+  // Resolve photo signed URLs
+  reports = await Promise.all(reports.map(resolvePhotoUrls));
+
   // If not QSE manager, mask anonymous reporters
   if (!isQseManager(profile.role)) {
-    return (data as unknown as DangerReport[]).map((d) => {
+    return reports.map((d) => {
       if (d.is_anonymous) {
         return { ...d, reporter: null, reported_by: "" };
       }
@@ -175,7 +198,7 @@ export async function getSignalements(): Promise<DangerReport[]> {
     });
   }
 
-  return data as unknown as DangerReport[];
+  return reports;
 }
 
 export async function getSignalement(id: string): Promise<DangerReport | null> {
@@ -191,7 +214,10 @@ export async function getSignalement(id: string): Promise<DangerReport | null> {
 
   if (!data) return null;
 
-  const report = data as unknown as DangerReport;
+  let report = data as unknown as DangerReport;
+
+  // Resolve photo signed URLs
+  report = await resolvePhotoUrls(report);
 
   // Mask anonymous reporter for non-managers (unless it's their own)
   if (report.is_anonymous && !isQseManager(profile.role) && report.reported_by !== profile.id) {
@@ -212,7 +238,8 @@ export async function getMySignalements(): Promise<DangerReport[]> {
     .eq("reported_by", user.id)
     .order("created_at", { ascending: false });
 
-  return (data as unknown as DangerReport[]) ?? [];
+  if (!data) return [];
+  return Promise.all((data as unknown as DangerReport[]).map(resolvePhotoUrls));
 }
 
 export async function createSignalement(report: {
@@ -392,9 +419,5 @@ export async function uploadSignalementPhoto(
     return { success: false, error: uploadError.message };
   }
 
-  const {
-    data: { publicUrl },
-  } = supabase.storage.from("documents").getPublicUrl(filePath);
-
-  return { success: true, url: publicUrl };
+  return { success: true, url: filePath };
 }
