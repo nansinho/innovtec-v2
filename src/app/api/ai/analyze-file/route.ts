@@ -159,6 +159,43 @@ Retourne UNIQUEMENT un JSON valide avec ces champs :
 }
 
 Retourne UNIQUEMENT du JSON valide, sans markdown, sans backticks.`;
+    } else if (type === "rex") {
+      systemPrompt = `Tu es un assistant IA spécialisé dans l'analyse de fiches REX (Retour d'Expérience) pour INNOVTEC Réseaux.
+Analyse cette fiche REX et extrais TOUTES les informations structurées.
+
+La fiche REX contient typiquement :
+- Un header avec : numéro de fiche, année, titre de l'événement, lieu, date, horaire
+- Section "LES FAITS" : description factuelle de l'événement
+- Section "LES CAUSES ET LES CIRCONSTANCES" : analyse des causes
+- Section "LA SYNTHÈSE DES ACTIONS ENGAGÉES" : actions correctives prises
+- Section "LE RAPPEL À VIGILANCE" : rappels et consignes de vigilance
+- Footer avec : "DÉJÀ ARRIVÉ ?" (précédents similaires) et "TYPE D'ÉVÉNEMENT" (SD, PRESQU'ACCIDENT, ACCIDENT, HPE)
+
+Retourne UNIQUEMENT un JSON valide avec ces champs :
+{
+  "rex_number": "<numéro de la fiche, ex: 5>",
+  "rex_year": <année, ex: 2025>,
+  "title": "<titre complet de l'événement>",
+  "lieu": "<lieu de l'événement>",
+  "date_evenement": "<date au format YYYY-MM-DD>",
+  "horaire": "<horaire, ex: 10h40>",
+  "faits": "<texte complet de la section Les Faits>",
+  "causes": "<texte complet de la section Les Causes et les Circonstances>",
+  "actions_engagees": "<texte complet de la section La Synthèse des Actions Engagées>",
+  "vigilance": "<texte complet de la section Le Rappel à Vigilance>",
+  "deja_arrive": ["<élément 1>", "<élément 2>"],
+  "type_evenement": "<sd|presquaccident|accident|hpe>",
+  "description": "<résumé court de l'événement en 1-2 phrases>",
+  "lessons_learned": "<leçons principales tirées>",
+  "chantier": "<nom du chantier ou référence si mentionné>"
+}
+
+IMPORTANT:
+- Extrais le contenu EXACT de chaque section, en préservant les sauts de ligne.
+- Pour type_evenement, identifie quel type est mis en surbrillance/sélectionné dans le footer.
+- Pour deja_arrive, extrais les points listés sous "DÉJÀ ARRIVÉ ?" (peut être vide).
+- Utilise les accents français corrects.
+- Retourne UNIQUEMENT du JSON valide, sans markdown, sans backticks.`;
     } else if (type === "politique") {
       systemPrompt +=
         ` Analyse ce document de politique QSE et retourne un JSON avec ces champs:

@@ -1,0 +1,252 @@
+"use client";
+
+import type { Rex } from "@/lib/types/database";
+import { InnovtecLogo } from "@/components/icons/innovtec-logo";
+import {
+  RexFaitsBadge,
+  RexCausesBadge,
+  RexActionsBadge,
+  RexVigilanceBadge,
+} from "@/components/icons/rex-section-icons";
+import { ArrowLeft, Download, Trash2 } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { deleteRex } from "@/actions/qse";
+import { toast } from "sonner";
+import { useState } from "react";
+
+const EVENT_TYPES = [
+  { value: "sd", label: "SD", full: "Situation Dangereuse", color: "text-orange-600", bg: "bg-orange-100" },
+  { value: "presquaccident", label: "PRESQU'ACCIDENT", full: "Presqu'accident", color: "text-yellow-700", bg: "bg-yellow-200" },
+  { value: "accident", label: "ACCIDENT", full: "Accident", color: "text-red-600", bg: "bg-red-100" },
+  { value: "hpe", label: "HPE", full: "High Potential Events", color: "text-purple-600", bg: "bg-purple-100" },
+];
+
+const SECTIONS = [
+  {
+    key: "faits",
+    photoKey: "faits_photo_url",
+    borderColor: "border-l-[#1E3A5F]",
+    Badge: RexFaitsBadge,
+  },
+  {
+    key: "causes",
+    photoKey: "causes_photo_url",
+    borderColor: "border-l-[#6B8E23]",
+    Badge: RexCausesBadge,
+  },
+  {
+    key: "actions_engagees",
+    photoKey: "actions_photo_url",
+    borderColor: "border-l-[#E67E22]",
+    Badge: RexActionsBadge,
+  },
+  {
+    key: "vigilance",
+    photoKey: "vigilance_photo_url",
+    borderColor: "border-l-[#F1C40F]",
+    Badge: RexVigilanceBadge,
+  },
+] as const;
+
+interface RexDetailProps {
+  rex: Rex;
+  onExportPdf?: () => void;
+}
+
+export default function RexDetail({ rex, onExportPdf }: RexDetailProps) {
+  const router = useRouter();
+  const [deleting, setDeleting] = useState(false);
+
+  const dateFormatted = rex.date_evenement
+    ? new Date(rex.date_evenement).toLocaleDateString("fr-FR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      })
+    : null;
+
+  async function handleDelete() {
+    if (!confirm("Supprimer cette fiche REX ?")) return;
+    setDeleting(true);
+    const result = await deleteRex(rex.id);
+    if (result.success) {
+      toast.success("Fiche REX supprimée");
+      router.push("/qse/rex");
+      router.refresh();
+    } else {
+      toast.error(result.error || "Erreur");
+      setDeleting(false);
+    }
+  }
+
+  return (
+    <div className="mx-auto max-w-4xl">
+      {/* Toolbar */}
+      <div className="mb-4 flex items-center justify-between">
+        <Link
+          href="/qse/rex"
+          className="inline-flex items-center gap-1.5 text-sm text-[var(--text-secondary)] transition-colors hover:text-[var(--heading)]"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Retour aux REX
+        </Link>
+        <div className="flex gap-2">
+          {onExportPdf && (
+            <button
+              onClick={onExportPdf}
+              className="flex items-center gap-1.5 rounded-[var(--radius-sm)] bg-[var(--navy)] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[var(--navy)]/90"
+            >
+              <Download className="h-4 w-4" />
+              Télécharger PDF
+            </button>
+          )}
+          <button
+            onClick={handleDelete}
+            disabled={deleting}
+            className="flex items-center gap-1.5 rounded-[var(--radius-sm)] bg-red-50 px-3 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-100 disabled:opacity-50"
+          >
+            <Trash2 className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
+
+      {/* Fiche REX Card */}
+      <div className="overflow-hidden rounded-[var(--radius)] border border-[var(--border-1)] bg-white shadow-sm">
+        {/* Header */}
+        <div className="p-6 pb-4">
+          <div className="flex items-start justify-between">
+            {/* Left: Badge + Info */}
+            <div className="flex items-start gap-4">
+              {/* Badge FICHE REX */}
+              <div className="flex flex-col items-center rounded-lg bg-gradient-to-b from-orange-500 to-orange-600 px-3 py-2 text-white shadow-sm">
+                <span className="text-[10px] font-bold uppercase tracking-wider">
+                  Fiche REX
+                </span>
+                <span className="text-lg font-bold leading-tight">
+                  {rex.rex_number || "—"}/{rex.rex_year || "—"}
+                </span>
+              </div>
+              {/* Info */}
+              <div>
+                <h1 className="text-base font-bold text-[var(--heading)]">
+                  <span className="text-orange-500">TITRE DE L&apos;ÉVÉNEMENT</span>
+                  {" — "}
+                  {rex.title}
+                </h1>
+                <div className="mt-1.5 space-y-0.5 text-sm text-[var(--text-secondary)]">
+                  {rex.lieu && (
+                    <p>
+                      <span className="font-semibold text-blue-600">Lieu</span> : {rex.lieu}
+                    </p>
+                  )}
+                  {dateFormatted && (
+                    <p>
+                      <span className="font-semibold text-blue-600">Date</span> : {dateFormatted}
+                    </p>
+                  )}
+                  {rex.horaire && (
+                    <p>
+                      <span className="font-semibold text-blue-600">Horaire</span> : {rex.horaire}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+            {/* Right: Logo */}
+            <InnovtecLogo width={120} height={40} />
+          </div>
+        </div>
+
+        {/* Orange separator */}
+        <div className="h-1 bg-gradient-to-r from-orange-400 via-orange-500 to-red-500" />
+
+        {/* Sections */}
+        <div className="space-y-6 p-6">
+          {SECTIONS.map(({ key, photoKey, borderColor, Badge }) => {
+            const text = rex[key as keyof Rex] as string;
+            const photo = rex[photoKey as keyof Rex] as string;
+
+            if (!text && !photo) return null;
+
+            return (
+              <div key={key}>
+                {/* Section header with badge */}
+                <div className="mb-3">
+                  <Badge />
+                </div>
+
+                {/* Content: 2/3 text + 1/3 photo */}
+                <div className={`grid ${photo ? "grid-cols-3" : "grid-cols-1"} gap-4`}>
+                  <div className={`${photo ? "col-span-2" : ""} rounded-[var(--radius)] border-l-4 ${borderColor} bg-gray-50/50 p-4`}>
+                    <p className="whitespace-pre-line text-sm leading-relaxed text-[var(--heading)]">
+                      {text}
+                    </p>
+                  </div>
+                  {photo && (
+                    <div className="flex items-start">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={photo}
+                        alt={key}
+                        className="w-full rounded-[var(--radius)] border border-[var(--border-1)] object-cover shadow-sm"
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Footer */}
+        <div className="border-t border-[var(--border-1)] bg-gray-50/50 p-6">
+          <div className="grid grid-cols-2 gap-6">
+            {/* Déjà arrivé */}
+            <div>
+              <h3 className="mb-2 text-[12px] font-bold uppercase tracking-wider text-blue-600">
+                Déjà arrivé ?
+              </h3>
+              {rex.deja_arrive && rex.deja_arrive.length > 0 ? (
+                <ul className="space-y-1">
+                  {rex.deja_arrive.map((item, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-[var(--heading)]">
+                      <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[var(--text-muted)]" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm italic text-[var(--text-muted)]">Non renseigné</p>
+              )}
+            </div>
+
+            {/* Type d'événement */}
+            <div>
+              <h3 className="mb-2 text-[12px] font-bold uppercase tracking-wider text-orange-600">
+                Type d&apos;événement
+              </h3>
+              <div className="space-y-1">
+                {EVENT_TYPES.map((t) => (
+                  <div
+                    key={t.value}
+                    className={`rounded px-2.5 py-1 text-sm font-medium ${
+                      rex.type_evenement === t.value
+                        ? `${t.bg} ${t.color} font-bold`
+                        : "text-[var(--text-muted)]"
+                    }`}
+                  >
+                    {t.label}
+                    {rex.type_evenement === t.value && (
+                      <span className="ml-1 text-[11px] font-normal">({t.full})</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

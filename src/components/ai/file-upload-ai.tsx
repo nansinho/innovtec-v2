@@ -71,12 +71,11 @@ export default function FileUploadAi({
       const formData = new FormData();
       formData.append("file", file);
       formData.append("type", type);
-      formData.append(
-        "prompt",
-        type === "politique"
-          ? "Analyse ce document de politique QSE et extrais toutes les sections avec leur contenu."
-          : "Analyse ce document et extrais les informations pertinentes."
-      );
+      const promptByType: Record<string, string> = {
+        politique: "Analyse ce document de politique QSE et extrais toutes les sections avec leur contenu.",
+        rex: "Analyse cette fiche REX (Retour d'Expérience) et extrais toutes les informations structurées : faits, causes, actions engagées, vigilance, type d'événement, etc.",
+      };
+      formData.append("prompt", promptByType[type] || "Analyse ce document et extrais les informations pertinentes.");
 
       const res = await fetch("/api/ai/analyze-file", {
         method: "POST",

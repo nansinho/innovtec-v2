@@ -249,6 +249,8 @@ export interface ActionPlanTask {
   created_at: string;
 }
 
+export type RexEventType = "sd" | "presquaccident" | "accident" | "hpe" | "";
+
 export interface Rex {
   id: string;
   title: string;
@@ -257,6 +259,22 @@ export interface Rex {
   chantier: string;
   author_id: string;
   created_at: string;
+  rex_number: string;
+  rex_year: number | null;
+  lieu: string;
+  date_evenement: string | null;
+  horaire: string;
+  faits: string;
+  faits_photo_url: string;
+  causes: string;
+  causes_photo_url: string;
+  actions_engagees: string;
+  actions_photo_url: string;
+  vigilance: string;
+  vigilance_photo_url: string;
+  deja_arrive: string[];
+  type_evenement: RexEventType;
+  source_file_url: string;
 }
 
 export interface BonnePratique {

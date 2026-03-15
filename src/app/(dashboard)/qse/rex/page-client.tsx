@@ -5,14 +5,9 @@ import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
 import RexList from "@/components/qse/rex-list";
 import RexForm from "@/components/qse/rex-form";
+import type { Rex } from "@/lib/types/database";
 
-interface RexItem {
-  id: string;
-  title: string;
-  description: string;
-  lessons_learned: string;
-  chantier: string;
-  created_at: string;
+interface RexItem extends Rex {
   author?: { first_name: string; last_name: string } | null;
 }
 
@@ -41,8 +36,11 @@ export default function RexPageClient({ rexList }: Props) {
 
       {showForm && (
         <RexForm
-          onCreated={() => {
+          onCreated={(id) => {
             setShowForm(false);
+            if (id) {
+              router.push(`/qse/rex/${id}`);
+            }
             router.refresh();
           }}
           onClose={() => setShowForm(false)}

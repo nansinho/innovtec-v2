@@ -327,28 +327,142 @@ export async function getRexList(): Promise<Rex[]> {
   return (data as unknown as Rex[]) ?? [];
 }
 
-export async function createRex(rex: {
+export async function getRexById(id: string): Promise<Rex | null> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("rex")
+    .select("*, author:profiles!rex_author_id_fkey(first_name, last_name)")
+    .eq("id", id)
+    .single();
+
+  return (data as unknown as Rex) ?? null;
+}
+
+export interface CreateRexInput {
   title: string;
   description: string;
   lessons_learned: string;
   chantier: string;
-}): Promise<{ success: boolean; error?: string }> {
+  rex_number?: string;
+  rex_year?: number | null;
+  lieu?: string;
+  date_evenement?: string | null;
+  horaire?: string;
+  faits?: string;
+  faits_photo_url?: string;
+  causes?: string;
+  causes_photo_url?: string;
+  actions_engagees?: string;
+  actions_photo_url?: string;
+  vigilance?: string;
+  vigilance_photo_url?: string;
+  deja_arrive?: string[];
+  type_evenement?: string;
+  source_file_url?: string;
+}
+
+export async function createRex(
+  rex: CreateRexInput
+): Promise<{ success: boolean; error?: string; id?: string }> {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { success: false, error: "Non authentifié" };
 
-  const { error } = await supabase.from("rex").insert({
+  const insertData: Record<string, unknown> = {
     title: rex.title,
     description: rex.description,
-    lessons_learned: rex.lessons_learned,
-    chantier: rex.chantier,
+    lessons_learned: rex.lessons_learned || "",
+    chantier: rex.chantier || "",
     author_id: user.id,
-  });
+  };
+
+  if (rex.rex_number !== undefined) insertData.rex_number = rex.rex_number;
+  if (rex.rex_year !== undefined) insertData.rex_year = rex.rex_year;
+  if (rex.lieu !== undefined) insertData.lieu = rex.lieu;
+  if (rex.date_evenement !== undefined) insertData.date_evenement = rex.date_evenement;
+  if (rex.horaire !== undefined) insertData.horaire = rex.horaire;
+  if (rex.faits !== undefined) insertData.faits = rex.faits;
+  if (rex.faits_photo_url !== undefined) insertData.faits_photo_url = rex.faits_photo_url;
+  if (rex.causes !== undefined) insertData.causes = rex.causes;
+  if (rex.causes_photo_url !== undefined) insertData.causes_photo_url = rex.causes_photo_url;
+  if (rex.actions_engagees !== undefined) insertData.actions_engagees = rex.actions_engagees;
+  if (rex.actions_photo_url !== undefined) insertData.actions_photo_url = rex.actions_photo_url;
+  if (rex.vigilance !== undefined) insertData.vigilance = rex.vigilance;
+  if (rex.vigilance_photo_url !== undefined) insertData.vigilance_photo_url = rex.vigilance_photo_url;
+  if (rex.deja_arrive !== undefined) insertData.deja_arrive = rex.deja_arrive;
+  if (rex.type_evenement !== undefined) insertData.type_evenement = rex.type_evenement;
+  if (rex.source_file_url !== undefined) insertData.source_file_url = rex.source_file_url;
+
+  const { data, error } = await supabase
+    .from("rex")
+    .insert(insertData)
+    .select("id")
+    .single();
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath("/qse/rex");
+  return { success: true, id: data?.id };
+}
+
+export async function deleteRex(
+  id: string
+): Promise<{ success: boolean; error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { success: false, error: "Non authentifié" };
+
+  const { error } = await supabase.from("rex").delete().eq("id", id);
 
   if (error) return { success: false, error: error.message };
 
   revalidatePath("/qse/rex");
   return { success: true };
+}
+
+export async function uploadRexPhoto(
+  formData: FormData
+): Promise<{ url?: string; error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Non authentifié" };
+
+  const file = formData.get("file") as File | null;
+  if (!file) return { error: "Aucun fichier fourni" };
+
+  const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+  const section = (formData.get("section") as string) || "photo";
+  const filePath = `qse/rex/${section}-${Date.now()}-${randomUUID()}.${ext}`;
+
+  const { error } = await supabase.storage
+    .from("documents")
+    .upload(filePath, file);
+
+  if (error) return { error: error.message };
+
+  const { data: urlData } = supabase.storage
+    .from("documents")
+    .getPublicUrl(filePath);
+
+  return { url: urlData.publicUrl };
+}
+
+export async function getRexPhotoUrl(
+  filePath: string
+): Promise<{ url?: string; error?: string }> {
+  if (!filePath) return { error: "Chemin vide" };
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.storage
+    .from("documents")
+    .createSignedUrl(filePath, 60 * 60);
+
+  if (error) return { error: error.message };
+  return { url: data.signedUrl };
 }
