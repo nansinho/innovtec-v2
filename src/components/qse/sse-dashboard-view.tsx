@@ -30,20 +30,55 @@ function parseObjective(objective: string): { operator: string; value: number } 
   return { operator: match[1], value: parseFloat(match[2].replace(",", ".")) };
 }
 
-function meetsObjective(realise: number, objectiveStr: string): boolean | null {
+/**
+ * Retourne la couleur d'un indicateur selon son objectif :
+ * - "green"  : objectif atteint
+ * - "orange" : objectif pas atteint mais pas catastrophique
+ * - "red"    : vraiment pas atteint (< 40% pour les pourcentages, > objectif pour les limites)
+ * - null     : pas d'objectif à évaluer
+ */
+function getIndicatorStatus(realise: number, objectiveStr: string): "green" | "orange" | "red" | null {
   if (objectiveStr === "--" || objectiveStr === "") return null;
   const parsed = parseObjective(objectiveStr);
   if (!parsed) return null;
   const { operator, value } = parsed;
+
   switch (operator) {
-    case ">": return realise > value;
+    // "Plus c'est haut, mieux c'est" (ex: > 95%, > 80%)
+    case ">":
+      if (realise > value) return "green";
+      if (realise >= 40) return "orange";
+      return "red";
     case ">=":
-    case "≥": return realise >= value;
-    case "<": return realise < value;
+    case "≥":
+      if (realise >= value) return "green";
+      if (realise >= 40) return "orange";
+      return "red";
+    // "Plus c'est bas, mieux c'est" (ex: ≤2 accidents)
+    case "<":
+      if (realise < value) {
+        return realise === 0 ? "green" : "orange";
+      }
+      return "red";
     case "<=":
-    case "≤": return realise <= value;
-    case "=": return realise === value;
-    default: return null;
+    case "≤":
+      if (realise <= value) {
+        return realise === 0 ? "green" : "orange";
+      }
+      return "red";
+    case "=":
+      return realise === value ? "green" : "red";
+    default:
+      return null;
+  }
+}
+
+function getStatusColorClass(status: "green" | "orange" | "red" | null): string {
+  switch (status) {
+    case "green": return "text-emerald-600";
+    case "orange": return "text-orange-500";
+    case "red": return "text-red-600";
+    default: return "text-[var(--heading)]";
   }
 }
 
@@ -59,9 +94,9 @@ function getSstColorClass(rate: number): string {
 }
 
 function ValueCell({ value, objective, isPercentage = false, colorClass }: { value: number; objective: string; isPercentage?: boolean; colorClass?: string }) {
-  const met = colorClass ? null : meetsObjective(value, objective);
+  const status = colorClass ? null : getIndicatorStatus(value, objective);
   const display = isPercentage ? `${formatFr(value)}%` : formatFr(value);
-  const cls = colorClass ?? (met === false ? "text-red-600" : met === true ? "text-emerald-600" : "text-[var(--heading)]");
+  const cls = colorClass ?? getStatusColorClass(status);
   return (
     <td className={`px-4 py-2.5 text-center text-sm font-semibold ${cls}`}>
       {display}
@@ -426,10 +461,10 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
             </thead>
             <tbody className="divide-y divide-[var(--border-1)]">
               {allSorted.map((d) => {
-                const hasIssues = meetsObjective(d.sst_rate, d.sst_rate_objective) === false ||
-                  meetsObjective(d.accidents_with_leave, d.accidents_with_leave_objective) === false;
-                const sstMet = meetsObjective(d.sst_rate, d.sst_rate_objective);
-                const complianceMet = meetsObjective(d.regulatory_compliance_rate, d.regulatory_compliance_objective);
+                const sstStatus = getIndicatorStatus(d.sst_rate, d.sst_rate_objective);
+                const asaaStatus = getIndicatorStatus(d.accidents_with_leave, d.accidents_with_leave_objective);
+                const complianceStatus = getIndicatorStatus(d.regulatory_compliance_rate, d.regulatory_compliance_objective);
+                const hasIssues = sstStatus === "red" || sstStatus === "orange" || asaaStatus === "red" || asaaStatus === "orange";
 
                 const dropdownItems = [
                   { label: "Voir", icon: Eye, onClick: () => openDetail(d) },
@@ -461,7 +496,7 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
                     <td className={`px-4 py-3.5 text-center text-sm font-semibold ${getSstColorClass(d.sst_rate)}`}>
                       {formatFr(d.sst_rate)}%
                     </td>
-                    <td className={`px-4 py-3.5 text-center text-sm font-semibold ${complianceMet === false ? "text-red-600" : complianceMet === true ? "text-emerald-600" : "text-[var(--heading)]"}`}>
+                    <td className={`px-4 py-3.5 text-center text-sm font-semibold ${getStatusColorClass(complianceStatus)}`}>
                       {formatFr(d.regulatory_compliance_rate)}%
                     </td>
                     <td className="px-4 py-3.5 text-center text-sm font-semibold text-[var(--heading)]">
