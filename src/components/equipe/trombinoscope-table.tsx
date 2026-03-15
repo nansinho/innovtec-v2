@@ -184,6 +184,7 @@ export default function TrombinoscopeTable({
         data={users}
         columns={columns}
         keyField="id"
+        selectable
         searchable
         searchPlaceholder="Rechercher un collaborateur..."
         filters={filters}

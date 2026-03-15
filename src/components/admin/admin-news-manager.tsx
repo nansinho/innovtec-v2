@@ -33,12 +33,12 @@ const categoryLabels: Record<NewsCategory, string> = {
 };
 
 const categoryColors: Record<NewsCategory, string> = {
-  entreprise: "bg-gradient-to-b from-blue-500 to-blue-600 text-white shadow-sm",
-  securite: "bg-gradient-to-b from-red-500 to-red-600 text-white shadow-sm",
-  formation: "bg-gradient-to-b from-emerald-500 to-emerald-600 text-white shadow-sm",
-  chantier: "bg-gradient-to-b from-amber-400 to-amber-500 text-white shadow-sm",
-  social: "bg-gradient-to-b from-purple-500 to-purple-600 text-white shadow-sm",
-  rh: "bg-gradient-to-b from-indigo-500 to-indigo-600 text-white shadow-sm",
+  entreprise: "bg-blue-50 text-blue-600 ring-1 ring-blue-200/60",
+  securite: "bg-red-50 text-red-600 ring-1 ring-red-200/60",
+  formation: "bg-emerald-50 text-emerald-600 ring-1 ring-emerald-200/60",
+  chantier: "bg-amber-50 text-amber-600 ring-1 ring-amber-200/60",
+  social: "bg-purple-50 text-purple-600 ring-1 ring-purple-200/60",
+  rh: "bg-indigo-50 text-indigo-600 ring-1 ring-indigo-200/60",
 };
 
 type NewsItem = News & {
@@ -55,6 +55,7 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
   const [showForm, setShowForm] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [loading, setLoading] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const router = useRouter();
 
   // AI state
@@ -172,6 +173,29 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
     });
   }
 
+  const allPageSelected = filtered.length > 0 && filtered.every((n) => selectedIds.has(n.id));
+
+  function toggleAll() {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (allPageSelected) {
+        filtered.forEach((n) => next.delete(n.id));
+      } else {
+        filtered.forEach((n) => next.add(n.id));
+      }
+      return next;
+    });
+  }
+
+  function toggleOne(id: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
   return (
     <div>
       {/* Toolbar */}
@@ -188,7 +212,7 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-3 py-1.5 text-sm font-medium text-white shadow-xs transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-sm active:scale-[0.97]"
+          className="inline-flex h-9 items-center gap-2 rounded-lg bg-gradient-to-b from-amber-500 to-amber-600 px-4 text-sm font-medium text-white shadow-sm transition-all hover:from-amber-600 hover:to-amber-700 active:scale-[0.97]"
         >
           {showForm ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
           {showForm ? "Annuler" : "Nouvelle actualité"}
@@ -374,9 +398,34 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
 
       {/* News table */}
       <div className="overflow-x-auto rounded-2xl border border-[var(--border-1)] bg-white shadow-sm ring-1 ring-black/[0.03]">
+        {/* Batch actions bar */}
+        {selectedIds.size > 0 && (
+          <div className="flex items-center gap-3 border-b border-amber-200 bg-amber-50 px-4 py-2 text-sm">
+            <span className="font-medium text-amber-800">
+              {selectedIds.size} sélectionné{selectedIds.size > 1 ? "s" : ""}
+            </span>
+            <span className="text-amber-300">—</span>
+            <button
+              onClick={() => setSelectedIds(new Set())}
+              className="ml-auto text-amber-500 hover:text-amber-700"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        )}
+
         <table className="w-full text-left text-sm">
           <thead className="border-b border-[var(--border-1)] bg-[var(--hover)]">
             <tr>
+              <th className="w-10 px-4 py-3.5">
+                <input
+                  type="checkbox"
+                  checked={allPageSelected}
+                  onChange={toggleAll}
+                  className="h-4 w-4 rounded border-zinc-300 accent-[var(--yellow)]"
+                  aria-label="Sélectionner tout"
+                />
+              </th>
               <th className="px-4 py-3.5 text-xs font-medium text-[var(--text-secondary)]">
                 Titre
               </th>
@@ -403,8 +452,19 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
               return (
                 <tr
                   key={article.id}
-                  className="transition-colors duration-200 hover:bg-[var(--hover)]"
+                  className={cn(
+                    "transition-colors duration-200",
+                    selectedIds.has(article.id) ? "bg-amber-50/50" : "hover:bg-[var(--hover)]"
+                  )}
                 >
+                  <td className="px-4 py-3.5">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.has(article.id)}
+                      onChange={() => toggleOne(article.id)}
+                      className="h-4 w-4 rounded border-zinc-300 accent-[var(--yellow)]"
+                    />
+                  </td>
                   <td className="px-4 py-3.5">
                     <div>
                       <div className="font-medium text-[var(--heading)]">
@@ -428,9 +488,9 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
                   <td className="px-4 py-3.5">
                     <span
                       className={cn(
-                        "inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide shadow-sm",
+                        "inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide",
                         article.is_published
-                          ? "bg-gradient-to-b from-emerald-500 to-emerald-600 text-white"
+                          ? "bg-emerald-50 text-emerald-600 ring-1 ring-emerald-200/60"
                           : "bg-zinc-100 text-zinc-500 ring-1 ring-zinc-200/60"
                       )}
                     >

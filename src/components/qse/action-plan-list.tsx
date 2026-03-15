@@ -184,6 +184,7 @@ export default function ActionPlanList({ plans: initial, canManage, onEdit }: Ac
         data={plans}
         columns={columns}
         keyField="id"
+        selectable
         searchable
         searchPlaceholder="Rechercher un plan d'action..."
         filters={filters}
