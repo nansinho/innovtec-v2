@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { NextRequest, NextResponse } from "next/server";
 
 const ALLOWED_TYPES: Record<string, string[]> = {
@@ -56,11 +57,29 @@ export async function POST(request: NextRequest) {
     const filePath = `${user.id}/${fileName}`;
 
     const arrayBuffer = await file.arrayBuffer();
-    const { error: uploadError } = await supabase.storage
+
+    // For company-logos, use admin client to ensure bucket exists and bypass RLS
+    const useAdmin = bucket === "company-logos";
+    const storageClient = useAdmin ? createAdminClient() : supabase;
+
+    if (useAdmin) {
+      // Auto-create bucket if it doesn't exist
+      const { data: buckets } = await storageClient.storage.listBuckets();
+      const exists = buckets?.some((b) => b.id === "company-logos");
+      if (!exists) {
+        await storageClient.storage.createBucket("company-logos", {
+          public: true,
+          allowedMimeTypes: ["image/jpeg", "image/png", "image/webp", "image/svg+xml"],
+          fileSizeLimit: 2 * 1024 * 1024, // 2MB
+        });
+      }
+    }
+
+    const { error: uploadError } = await storageClient.storage
       .from(bucket)
       .upload(filePath, arrayBuffer, {
         contentType: file.type,
-        upsert: false,
+        upsert: useAdmin,
       });
 
     if (uploadError) {
@@ -72,7 +91,7 @@ export async function POST(request: NextRequest) {
 
     const {
       data: { publicUrl },
-    } = supabase.storage.from(bucket).getPublicUrl(filePath);
+    } = storageClient.storage.from(bucket).getPublicUrl(filePath);
 
     return NextResponse.json({
       url: publicUrl,
