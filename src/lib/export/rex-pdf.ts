@@ -171,7 +171,21 @@ function drawSection(
   return y + textH + 6;
 }
 
-export async function exportRexPdf(rex: Rex, filename: string) {
+async function fetchImageAsBase64(url: string): Promise<string | null> {
+  try {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    const reader = new FileReader();
+    return await new Promise<string>((resolve) => {
+      reader.onload = () => resolve(reader.result as string);
+      reader.readAsDataURL(blob);
+    });
+  } catch {
+    return null;
+  }
+}
+
+export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string | null) {
   const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
   const pageW = 210;
   const marginX = 12;
@@ -200,27 +214,37 @@ export async function exportRexPdf(rex: Rex, filename: string) {
     { align: "center" }
   );
 
-  // Logo INNOVTEC (text-based in PDF)
+  // Logo (real company logo or text fallback)
   const logoX = pageW - marginX - 50;
-  pdf.setFont("helvetica", "bold");
-  pdf.setFontSize(14);
-  pdf.setTextColor(...NAVY);
+  let logoData: string | null = null;
+  if (logoUrl) {
+    logoData = await fetchImageAsBase64(logoUrl);
+  }
 
-  // Draw "INN" with yellow NN
-  pdf.text("I", logoX, y + 8);
-  pdf.setTextColor(...YELLOW_ACCENT);
-  pdf.text("NN", logoX + 5, y + 8);
-  pdf.setTextColor(...NAVY);
-  pdf.text("OVTEC", logoX + 16, y + 8);
+  if (logoData) {
+    try {
+      pdf.addImage(logoData, "PNG", logoX, y, 45, 16);
+    } catch {
+      // Fallback to text if image fails
+      logoData = null;
+    }
+  }
 
-  // Subtitle
-  pdf.setFontSize(6);
-  pdf.setTextColor(...NAVY);
-  pdf.text("RESEAUX", logoX + 12, y + 13, { align: "center" });
-
-  // Yellow accent line under logo
-  pdf.setFillColor(...YELLOW_ACCENT);
-  pdf.rect(logoX, y + 14, 38, 0.5, "F");
+  if (!logoData) {
+    // Text-based fallback
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(14);
+    pdf.setTextColor(...NAVY);
+    pdf.text("I", logoX, y + 8);
+    pdf.setTextColor(...YELLOW_ACCENT);
+    pdf.text("NN", logoX + 5, y + 8);
+    pdf.setTextColor(...NAVY);
+    pdf.text("OVTEC", logoX + 16, y + 8);
+    pdf.setFontSize(6);
+    pdf.text("RESEAUX", logoX + 12, y + 13, { align: "center" });
+    pdf.setFillColor(...YELLOW_ACCENT);
+    pdf.rect(logoX, y + 14, 38, 0.5, "F");
+  }
 
   // Title and metadata
   const infoX = marginX + badgeW + 6;
