@@ -379,6 +379,7 @@ export interface QseContent {
   sections: QseContentSection[];
   source_file_url: string;
   year: number | null;
+  date_signature: string | null;
   updated_by: string | null;
   created_at: string;
   updated_at: string;
