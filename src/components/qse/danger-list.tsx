@@ -200,6 +200,7 @@ export default function DangerList({ dangers: initialDangers, canManage }: Dange
       data={dangers}
       columns={columns}
       keyField="id"
+      selectable
       searchable
       searchPlaceholder="Rechercher une situation..."
       filters={filters}

@@ -13,6 +13,7 @@ import {
   Filter,
   Eye,
   Plus,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
 import { updateUserRole, toggleUserActive, deleteUser } from "@/actions/users";
@@ -33,8 +34,8 @@ const roleOptions: { value: UserRole; label: string }[] = [
 ];
 
 const roleBadgeColors: Record<string, string> = {
-  admin: "bg-gradient-to-b from-red-500 to-red-600 text-white shadow-sm",
-  collaborateur: "bg-gradient-to-b from-emerald-500 to-emerald-600 text-white shadow-sm",
+  admin: "bg-red-50 text-red-600 ring-1 ring-red-200/60",
+  collaborateur: "bg-emerald-50 text-emerald-600 ring-1 ring-emerald-200/60",
 };
 
 interface UsersTableProps {
@@ -54,6 +55,7 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
   const [showCustomInput, setShowCustomInput] = useState(false);
   const [jobTitles, setJobTitles] = useState(initialJobTitles);
   const [loading, setLoading] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   // Modals
   const [formModal, setFormModal] = useState<{ open: boolean; user: Profile | null }>({
@@ -168,6 +170,29 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
   const activeCount = users.filter((u) => u.is_active).length;
   const inactiveCount = users.filter((u) => !u.is_active).length;
 
+  const allPageSelected = filtered.length > 0 && filtered.every((u) => selectedIds.has(u.id));
+
+  function toggleAll() {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (allPageSelected) {
+        filtered.forEach((u) => next.delete(u.id));
+      } else {
+        filtered.forEach((u) => next.add(u.id));
+      }
+      return next;
+    });
+  }
+
+  function toggleOne(id: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
   return (
     <div>
       {/* Toolbar */}
@@ -181,7 +206,7 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
               placeholder="Rechercher un collaborateur..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full rounded-xl border border-[var(--border-1)] bg-white py-2.5 pl-10 pr-4 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+              className="h-9 w-full rounded-xl border border-[var(--border-1)] bg-white pl-9 pr-8 text-sm text-[var(--heading)] outline-none transition-all placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)] focus:shadow-sm"
             />
           </div>
 
@@ -192,7 +217,7 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
               <select
                 value={roleFilter}
                 onChange={(e) => setRoleFilter(e.target.value)}
-                className="rounded-xl border border-[var(--border-1)] bg-white py-2 pl-8 pr-8 text-xs text-[var(--text-secondary)] outline-none transition-colors focus:border-[var(--yellow)]"
+                className="h-9 rounded-xl border border-[var(--border-1)] bg-white pl-8 pr-8 text-sm text-[var(--text)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)] focus:shadow-sm"
               >
                 <option value="all">Tous les rôles</option>
                 {roleOptions.map((opt) => (
@@ -206,7 +231,7 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="rounded-xl border border-[var(--border-1)] bg-white py-2 px-3 text-xs text-[var(--text-secondary)] outline-none transition-colors focus:border-[var(--yellow)]"
+              className="h-9 rounded-xl border border-[var(--border-1)] bg-white px-3 text-sm text-[var(--text)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)] focus:shadow-sm"
             >
               <option value="all">Tous ({users.length})</option>
               <option value="active">Actifs ({activeCount})</option>
@@ -218,7 +243,7 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
         {/* Add button */}
         <button
           onClick={() => setFormModal({ open: true, user: null })}
-          className="flex items-center gap-2 rounded-xl bg-gradient-to-b from-amber-500 to-amber-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:from-amber-600 hover:to-amber-700 active:scale-[0.97]"
+          className="inline-flex h-9 items-center gap-2 rounded-lg bg-gradient-to-b from-amber-500 to-amber-600 px-4 text-sm font-medium text-white shadow-sm transition-all hover:from-amber-600 hover:to-amber-700 active:scale-[0.97]"
         >
           <UserPlus className="h-4 w-4" />
           Ajouter
@@ -233,9 +258,34 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
 
       {/* Table */}
       <div className="overflow-x-auto rounded-2xl border border-[var(--border-1)] bg-white shadow-sm ring-1 ring-black/[0.03]">
+        {/* Batch actions bar */}
+        {selectedIds.size > 0 && (
+          <div className="flex items-center gap-3 border-b border-amber-200 bg-amber-50 px-4 py-2 text-sm">
+            <span className="font-medium text-amber-800">
+              {selectedIds.size} sélectionné{selectedIds.size > 1 ? "s" : ""}
+            </span>
+            <span className="text-amber-300">—</span>
+            <button
+              onClick={() => setSelectedIds(new Set())}
+              className="ml-auto text-amber-500 hover:text-amber-700"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        )}
+
         <table className="w-full text-left text-sm">
           <thead className="border-b border-[var(--border-1)] bg-[var(--hover)]">
             <tr>
+              <th className="w-10 px-4 py-3.5">
+                <input
+                  type="checkbox"
+                  checked={allPageSelected}
+                  onChange={toggleAll}
+                  className="h-4 w-4 rounded border-zinc-300 accent-[var(--yellow)]"
+                  aria-label="Sélectionner tout"
+                />
+              </th>
               <th className="px-4 py-3.5 text-xs font-medium text-[var(--text-secondary)]">
                 Collaborateur
               </th>
@@ -262,10 +312,19 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
               return (
                 <tr
                   key={user.id}
-                  className={`transition-colors duration-200 hover:bg-[var(--hover)] ${
-                    !user.is_active ? "opacity-50" : ""
-                  }`}
+                  className={`transition-colors duration-200 ${
+                    selectedIds.has(user.id) ? "bg-amber-50/50" : "hover:bg-[var(--hover)]"
+                  } ${!user.is_active ? "opacity-50" : ""}`}
                 >
+                  {/* Checkbox */}
+                  <td className="px-4 py-3.5">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.has(user.id)}
+                      onChange={() => toggleOne(user.id)}
+                      className="h-4 w-4 rounded border-zinc-300 accent-[var(--yellow)]"
+                    />
+                  </td>
                   {/* User info */}
                   <td className="px-4 py-3.5">
                     <div className="flex items-center gap-3">
@@ -380,13 +439,13 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
                   {/* Status */}
                   <td className="px-4 py-3.5">
                     <span
-                      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide shadow-sm ${
+                      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide ${
                         user.is_active
-                          ? "bg-gradient-to-b from-emerald-500 to-emerald-600 text-white"
+                          ? "bg-emerald-50 text-emerald-600 ring-1 ring-emerald-200/60"
                           : "bg-zinc-100 text-zinc-500 ring-1 ring-zinc-200/60"
                       }`}
                     >
-                      <span className={`h-1.5 w-1.5 rounded-full ${user.is_active ? "bg-white/80" : "bg-zinc-400"}`} />
+                      <span className={`h-1.5 w-1.5 rounded-full ${user.is_active ? "bg-emerald-500" : "bg-zinc-400"}`} />
                       {user.is_active ? "Actif" : "Inactif"}
                     </span>
                   </td>

@@ -27,12 +27,12 @@ const categoryLabels: Record<NewsCategory, string> = {
 };
 
 const categoryColors: Record<NewsCategory, string> = {
-  entreprise: "bg-gradient-to-b from-blue-500 to-blue-600 text-white shadow-sm",
-  securite: "bg-gradient-to-b from-red-500 to-red-600 text-white shadow-sm",
-  formation: "bg-gradient-to-b from-emerald-500 to-emerald-600 text-white shadow-sm",
-  chantier: "bg-gradient-to-b from-amber-400 to-amber-500 text-white shadow-sm",
-  social: "bg-gradient-to-b from-purple-500 to-purple-600 text-white shadow-sm",
-  rh: "bg-gradient-to-b from-indigo-500 to-indigo-600 text-white shadow-sm",
+  entreprise: "bg-blue-50 text-blue-600 ring-1 ring-blue-200/60",
+  securite: "bg-red-50 text-red-600 ring-1 ring-red-200/60",
+  formation: "bg-emerald-50 text-emerald-600 ring-1 ring-emerald-200/60",
+  chantier: "bg-amber-50 text-amber-600 ring-1 ring-amber-200/60",
+  social: "bg-purple-50 text-purple-600 ring-1 ring-purple-200/60",
+  rh: "bg-indigo-50 text-indigo-600 ring-1 ring-indigo-200/60",
 };
 
 const priorityConfig: Record<
@@ -42,13 +42,13 @@ const priorityConfig: Record<
   normal: { label: "", className: "", dot: "" },
   important: {
     label: "Important",
-    className: "bg-gradient-to-b from-amber-400 to-amber-500 text-white shadow-sm",
-    dot: "bg-white/80",
+    className: "bg-amber-50 text-amber-600 ring-1 ring-amber-200/60",
+    dot: "bg-amber-400",
   },
   urgent: {
     label: "Urgent",
-    className: "bg-gradient-to-b from-red-500 to-red-600 text-white shadow-sm",
-    dot: "bg-white/80",
+    className: "bg-red-50 text-red-600 ring-1 ring-red-200/60",
+    dot: "bg-red-500",
   },
 };
 

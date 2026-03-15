@@ -228,6 +228,7 @@ export default function SignalementList({ signalements: initial, categories, can
       data={signalements}
       columns={columns}
       keyField="id"
+      selectable
       searchable
       searchPlaceholder="Rechercher un signalement..."
       filters={filters}

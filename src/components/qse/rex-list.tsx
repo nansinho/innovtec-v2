@@ -85,6 +85,7 @@ export default function RexList({ rexList }: RexListProps) {
       data={rexList}
       columns={columns}
       keyField="id"
+      selectable
       searchable
       searchPlaceholder="Rechercher un REX..."
       emptyState={{

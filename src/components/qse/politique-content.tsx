@@ -898,7 +898,7 @@ export default function PolitiqueContent({
                       </span>
                     </td>
                     <td className="px-4 py-3.5">
-                      <span className="inline-flex items-center rounded-full bg-gradient-to-b from-amber-400 to-amber-500 px-2.5 py-0.5 text-xs font-semibold text-white shadow-sm">
+                      <span className="inline-flex items-center rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-600 ring-1 ring-amber-200/60">
                         {docYear}
                       </span>
                     </td>

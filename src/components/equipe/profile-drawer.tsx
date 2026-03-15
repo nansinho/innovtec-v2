@@ -99,7 +99,7 @@ export default function ProfileDrawer({
 
             {/* Birthday badge */}
             {isBirthday && (
-              <div className="mt-2 inline-flex items-center gap-1 rounded-full bg-gradient-to-b from-amber-400 to-amber-500 px-2.5 py-0.5 text-[10px] font-bold text-white shadow-sm">
+              <div className="mt-2 inline-flex items-center gap-1 rounded-full bg-white/20 px-2.5 py-0.5 text-[10px] font-bold text-white ring-1 ring-white/20">
                 <Cake className="h-3 w-3" />
                 Anniversaire !
               </div>
