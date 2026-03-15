@@ -365,8 +365,8 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
           </div>
 
           {/* Vigilance + Focus */}
-          <div className="grid grid-cols-1 gap-6 border-t border-[var(--border-1)] px-8 py-6 lg:grid-cols-2">
-            <div>
+          <div className="grid grid-cols-1 gap-6 border-t border-[var(--border-1)] px-8 py-6 lg:grid-cols-3">
+            <div className="lg:col-span-2">
               <div className="mb-3 inline-block rounded-[var(--radius-xs)] bg-[var(--yellow)] px-4 py-1.5">
                 <h3 className="text-xs font-semibold text-white">Point de vigilance/alerte</h3>
               </div>
