@@ -11,6 +11,7 @@ import {
   FolderOpen,
 } from "lucide-react";
 import { DataTable, type ColumnDef, type FilterDef } from "@/components/ui/data-table";
+import { getStandardToolbarActions } from "@/lib/table-toolbar-actions";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 
@@ -135,6 +136,9 @@ export default function DocumentsTable({ documents }: DocumentsTableProps) {
       data={documents}
       columns={columns}
       keyField="id"
+      title="Documents"
+      description="Tous les documents de l'entreprise : plans, rapports, procédures..."
+      toolbarActions={getStandardToolbarActions()}
       searchable
       searchPlaceholder="Rechercher un document..."
       filters={filters}

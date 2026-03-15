@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import {
   ChevronUp,
   ChevronDown,
@@ -10,6 +10,7 @@ import {
   Plus,
   Search,
   X,
+  SlidersHorizontal,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DropdownMenu, type DropdownItem } from "./dropdown-menu";
@@ -42,12 +43,20 @@ interface EmptyStateDef {
   description: string;
 }
 
+export interface ToolbarAction {
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  onClick: () => void;
+  disabled?: boolean;
+}
+
 export interface DataTableProps<T> {
   data: T[];
   columns: ColumnDef<T>[];
   keyField: keyof T;
   title?: string;
   description?: string;
+  toolbarActions?: ToolbarAction[];
   searchable?: boolean;
   searchPlaceholder?: string;
   filters?: FilterDef[];
@@ -73,6 +82,7 @@ export function DataTable<T>({
   keyField,
   title,
   description,
+  toolbarActions,
   searchable = false,
   searchPlaceholder = "Rechercher...",
   filters,
@@ -93,6 +103,21 @@ export function DataTable<T>({
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
   const [selectedIds, setSelectedIds] = useState<Set<T[keyof T]>>(new Set());
   const [page, setPage] = useState(0);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const filtersRef = useRef<HTMLDivElement>(null);
+
+  /* Close filter popover on outside click */
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (filtersRef.current && !filtersRef.current.contains(e.target as Node)) {
+        setFiltersOpen(false);
+      }
+    }
+    if (filtersOpen) {
+      document.addEventListener("mousedown", handleClick);
+      return () => document.removeEventListener("mousedown", handleClick);
+    }
+  }, [filtersOpen]);
 
   /* Search + Filter */
   const filtered = useMemo(() => {
@@ -193,11 +218,7 @@ export function DataTable<T>({
 
   /* Loading */
   if (loading) {
-    return (
-      <div className="overflow-hidden rounded-2xl border border-[var(--border-1)] bg-white shadow-sm ring-1 ring-black/[0.03]">
-        <DataTableSkeleton columns={columns.length} />
-      </div>
-    );
+    return <DataTableSkeleton columns={columns.length} />;
   }
 
   /* Pagination numbers */
@@ -217,36 +238,51 @@ export function DataTable<T>({
     return pages;
   };
 
+  const hasToolbar = searchable || (filters && filters.length > 0) || headerAction;
+
   return (
-    <div className="overflow-hidden rounded-2xl border border-[var(--border-1)] bg-white shadow-sm ring-1 ring-black/[0.03]">
-      {/* Integrated page header */}
+    <div>
+      {/* ============ ROW 1: Page header ============ */}
       {title && (
-        <div className="flex items-center justify-between px-6 pt-5 pb-4">
+        <div className="mb-5 flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h2 className="text-lg font-semibold text-[var(--heading)]">{title}</h2>
+            <h1 className="font-display text-xl font-bold text-[var(--heading)]">{title}</h1>
             {description && (
-              <p className="mt-0.5 text-sm text-[var(--text-secondary)]">{description}</p>
+              <p className="mt-1 text-sm text-[var(--text-secondary)]">{description}</p>
             )}
           </div>
-          {onAdd && (
-            <button
-              onClick={onAdd}
-              className="inline-flex h-9 items-center gap-2 rounded-xl bg-gradient-to-b from-amber-500 to-amber-600 px-4 text-sm font-medium text-white shadow-sm shadow-amber-600/20 transition-all hover:from-amber-600 hover:to-amber-700 hover:shadow-md hover:shadow-amber-600/25 active:scale-[0.97]"
-            >
-              <Plus className="h-4 w-4" />
-              {addLabel}
-            </button>
-          )}
+          <div className="flex items-center gap-2">
+            {toolbarActions?.map((action, i) => {
+              const Icon = action.icon;
+              return (
+                <button
+                  key={i}
+                  onClick={action.onClick}
+                  disabled={action.disabled}
+                  className="inline-flex h-9 items-center gap-2 rounded-lg border border-[var(--border-1)] bg-white px-3 text-sm font-medium text-[var(--text-secondary)] shadow-xs transition-all hover:bg-zinc-50 hover:text-[var(--heading)] hover:border-zinc-300 active:scale-[0.97] disabled:opacity-40 disabled:pointer-events-none"
+                >
+                  <Icon className="h-4 w-4" />
+                  <span className="hidden sm:inline">{action.label}</span>
+                </button>
+              );
+            })}
+            {headerAction}
+            {onAdd && (
+              <button
+                onClick={onAdd}
+                className="inline-flex h-9 items-center gap-2 rounded-lg bg-gradient-to-b from-amber-500 to-amber-600 px-4 text-sm font-medium text-white shadow-sm shadow-amber-600/20 transition-all hover:from-amber-600 hover:to-amber-700 hover:shadow-md hover:shadow-amber-600/25 active:scale-[0.97]"
+              >
+                <Plus className="h-4 w-4" />
+                {addLabel}
+              </button>
+            )}
+          </div>
         </div>
       )}
 
-      {/* Toolbar */}
-      {(searchable || (filters && filters.length > 0) || (!title && onAdd) || headerAction) && (
-        <div className={cn(
-          "flex flex-wrap items-center gap-3 border-b border-[var(--border-1)] px-5 py-3",
-          title ? "bg-[var(--hover)]/30" : "bg-[var(--hover)]/50"
-        )}>
-          {/* Search */}
+      {/* ============ ROW 2: Search + Filters button ============ */}
+      {hasToolbar && (
+        <div className="mb-4 flex flex-wrap items-center gap-3">
           {searchable && (
             <div className="relative">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-muted)]" />
@@ -257,7 +293,7 @@ export function DataTable<T>({
                   setPage(0);
                 }}
                 placeholder={searchPlaceholder}
-                className="h-9 w-64 rounded-xl border border-[var(--border-1)] bg-white pl-9 pr-8 text-sm outline-none transition-all placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)] focus:shadow-sm"
+                className="h-10 w-72 rounded-lg border border-[var(--border-1)] bg-white pl-10 pr-8 text-sm outline-none transition-all placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
               />
               {search && (
                 <button
@@ -270,101 +306,110 @@ export function DataTable<T>({
             </div>
           )}
 
-          {/* Filters */}
-          {filters?.map((f) => (
-            <div key={f.key} className="relative">
-              {f.type === "select" && f.options && (
-                <div className="relative">
-                  <select
-                    value={filterValues[f.key] ?? ""}
-                    onChange={(e) => {
-                      setFilterValues((prev) => ({
-                        ...prev,
-                        [f.key]: e.target.value,
-                      }));
-                      setPage(0);
-                    }}
-                    className={cn(
-                      "h-9 appearance-none rounded-xl border bg-white pl-3 pr-8 text-sm outline-none transition-all cursor-pointer",
-                      "focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)] focus:shadow-sm",
-                      filterValues[f.key]
-                        ? "border-amber-300 text-[var(--heading)] font-medium"
-                        : "border-[var(--border-1)] text-[var(--text-secondary)]"
+          {filters && filters.length > 0 && (
+            <div ref={filtersRef} className="relative">
+              <button
+                onClick={() => setFiltersOpen(!filtersOpen)}
+                className={cn(
+                  "inline-flex h-10 items-center gap-2 rounded-lg border px-3 text-sm font-medium transition-all",
+                  activeFilterCount > 0
+                    ? "border-amber-300 bg-amber-50 text-amber-700"
+                    : "border-[var(--border-1)] bg-white text-[var(--text-secondary)] hover:bg-zinc-50 hover:text-[var(--heading)]"
+                )}
+              >
+                <SlidersHorizontal className="h-4 w-4" />
+                Filtres
+                {activeFilterCount > 0 && (
+                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-white">
+                    {activeFilterCount}
+                  </span>
+                )}
+              </button>
+
+              {/* Filters popover */}
+              {filtersOpen && (
+                <div className="absolute left-0 top-full z-50 mt-2 w-72 rounded-xl border border-[var(--border-1)] bg-white p-4 shadow-lg ring-1 ring-black/[0.04]">
+                  <div className="mb-3 flex items-center justify-between">
+                    <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">Filtres</span>
+                    {activeFilterCount > 0 && (
+                      <button
+                        onClick={() => {
+                          setFilterValues({});
+                          setPage(0);
+                        }}
+                        className="text-xs font-medium text-amber-600 hover:text-amber-800"
+                      >
+                        Réinitialiser
+                      </button>
                     )}
-                  >
-                    <option value="">{f.placeholder ?? f.label}</option>
-                    {f.options.map((opt) => (
-                      <option key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </option>
+                  </div>
+                  <div className="space-y-3">
+                    {filters.map((f) => (
+                      <div key={f.key}>
+                        <label className="mb-1 block text-xs font-medium text-[var(--text-secondary)]">
+                          {f.label}
+                        </label>
+                        {f.type === "select" && f.options && (
+                          <select
+                            value={filterValues[f.key] ?? ""}
+                            onChange={(e) => {
+                              setFilterValues((prev) => ({
+                                ...prev,
+                                [f.key]: e.target.value,
+                              }));
+                              setPage(0);
+                            }}
+                            className="h-9 w-full rounded-lg border border-[var(--border-1)] bg-white px-3 text-sm text-[var(--text)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                          >
+                            <option value="">{f.placeholder ?? `Tous`}</option>
+                            {f.options.map((opt) => (
+                              <option key={opt.value} value={opt.value}>
+                                {opt.label}
+                              </option>
+                            ))}
+                          </select>
+                        )}
+                        {f.type === "input" && (
+                          <input
+                            value={filterValues[f.key] ?? ""}
+                            onChange={(e) => {
+                              setFilterValues((prev) => ({
+                                ...prev,
+                                [f.key]: e.target.value,
+                              }));
+                              setPage(0);
+                            }}
+                            placeholder={f.placeholder ?? f.label}
+                            className="h-9 w-full rounded-lg border border-[var(--border-1)] bg-white px-3 text-sm outline-none transition-all placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                          />
+                        )}
+                        {f.type === "date" && (
+                          <input
+                            type="date"
+                            value={filterValues[f.key] ?? ""}
+                            onChange={(e) => {
+                              setFilterValues((prev) => ({
+                                ...prev,
+                                [f.key]: e.target.value,
+                              }));
+                              setPage(0);
+                            }}
+                            className="h-9 w-full rounded-lg border border-[var(--border-1)] bg-white px-3 text-sm outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                          />
+                        )}
+                      </div>
                     ))}
-                  </select>
-                  <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--text-muted)]" />
+                  </div>
                 </div>
               )}
-              {f.type === "input" && (
-                <input
-                  value={filterValues[f.key] ?? ""}
-                  onChange={(e) => {
-                    setFilterValues((prev) => ({
-                      ...prev,
-                      [f.key]: e.target.value,
-                    }));
-                    setPage(0);
-                  }}
-                  placeholder={f.placeholder ?? f.label}
-                  className="h-9 rounded-xl border border-[var(--border-1)] bg-white px-3 text-sm outline-none transition-all placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)] focus:shadow-sm"
-                />
-              )}
-              {f.type === "date" && (
-                <input
-                  type="date"
-                  value={filterValues[f.key] ?? ""}
-                  onChange={(e) => {
-                    setFilterValues((prev) => ({
-                      ...prev,
-                      [f.key]: e.target.value,
-                    }));
-                    setPage(0);
-                  }}
-                  className="h-9 rounded-xl border border-[var(--border-1)] bg-white px-3 text-sm outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)] focus:shadow-sm"
-                />
-              )}
             </div>
-          ))}
-
-          {/* Active filter count indicator */}
-          {activeFilterCount > 0 && (
-            <button
-              onClick={() => {
-                setFilterValues({});
-                setPage(0);
-              }}
-              className="inline-flex h-7 items-center gap-1 rounded-lg bg-amber-50 px-2 text-[11px] font-medium text-amber-700 ring-1 ring-amber-200/60 transition-colors hover:bg-amber-100"
-            >
-              {activeFilterCount} filtre{activeFilterCount > 1 ? "s" : ""}
-              <X className="h-3 w-3" />
-            </button>
           )}
-
-          <div className="ml-auto flex items-center gap-2">
-            {headerAction}
-            {!title && onAdd && (
-              <button
-                onClick={onAdd}
-                className="inline-flex h-9 items-center gap-2 rounded-xl bg-gradient-to-b from-amber-500 to-amber-600 px-4 text-sm font-medium text-white shadow-sm shadow-amber-600/20 transition-all hover:from-amber-600 hover:to-amber-700 hover:shadow-md hover:shadow-amber-600/25 active:scale-[0.97]"
-              >
-                <Plus className="h-4 w-4" />
-                {addLabel}
-              </button>
-            )}
-          </div>
         </div>
       )}
 
-      {/* Batch actions bar */}
+      {/* ============ Batch actions bar ============ */}
       {selectable && selectedIds.size > 0 && batchActions && (
-        <div className="flex items-center gap-3 border-b border-amber-200 bg-amber-50 px-5 py-2.5 text-sm">
+        <div className="mb-0.5 flex items-center gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-2.5 text-sm">
           <span className="font-medium text-amber-800">
             {selectedIds.size} sélectionné{selectedIds.size > 1 ? "s" : ""}
           </span>
@@ -392,11 +437,11 @@ export function DataTable<T>({
         </div>
       )}
 
-      {/* Table */}
+      {/* ============ TABLE ============ */}
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-[var(--border-2)] bg-zinc-50/80">
+            <tr className="border-b border-[var(--border-2)]">
               {selectable && (
                 <th className="w-10 px-4 py-3">
                   <input
@@ -412,7 +457,7 @@ export function DataTable<T>({
                 <th
                   key={col.key}
                   className={cn(
-                    "px-4 py-3 text-left text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]",
+                    "px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]",
                     col.sortable && "cursor-pointer select-none hover:text-[var(--text)]"
                   )}
                   style={{ width: col.width }}
@@ -429,7 +474,7 @@ export function DataTable<T>({
                             <ChevronDown className="h-3.5 w-3.5" />
                           )
                         ) : (
-                          <ChevronsUpDown className="h-3.5 w-3.5 opacity-40" />
+                          <ChevronsUpDown className="h-3.5 w-3.5 opacity-30" />
                         )}
                       </span>
                     )}
@@ -437,7 +482,7 @@ export function DataTable<T>({
                 </th>
               ))}
               {actions && (
-                <th className="w-14 px-4 py-3 text-right text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+                <th className="w-14 px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
                   Actions
                 </th>
               )}
@@ -451,10 +496,10 @@ export function DataTable<T>({
                 <tr
                   key={String(id)}
                   className={cn(
-                    "border-l-2 transition-all duration-150",
+                    "transition-colors duration-150",
                     isSelected
-                      ? "border-l-amber-400 bg-amber-50/50"
-                      : "border-l-transparent hover:border-l-[var(--yellow)] hover:bg-[var(--hover)]",
+                      ? "bg-amber-50/60"
+                      : "hover:bg-[var(--hover)]",
                     onRowClick && "cursor-pointer"
                   )}
                   onClick={() => onRowClick?.(item)}
@@ -497,9 +542,9 @@ export function DataTable<T>({
         </table>
       </div>
 
-      {/* Empty state */}
+      {/* ============ Empty state ============ */}
       {sorted.length === 0 && emptyState && (
-        <div className="flex flex-col items-center justify-center bg-[var(--hover)]/20 py-20 text-center">
+        <div className="flex flex-col items-center justify-center py-20 text-center">
           <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-zinc-100 ring-1 ring-zinc-200/60">
             <emptyState.icon className="h-7 w-7 text-zinc-400" />
           </div>
@@ -512,9 +557,9 @@ export function DataTable<T>({
         </div>
       )}
 
-      {/* Pagination */}
+      {/* ============ Pagination ============ */}
       {sorted.length > 0 && (
-        <div className="flex items-center justify-between border-t border-[var(--border-1)] bg-[var(--hover)]/30 px-5 py-3">
+        <div className="flex items-center justify-between border-t border-[var(--border-1)] px-4 py-3">
           <span className="text-xs text-[var(--text-muted)]">
             {rangeStart}–{rangeEnd} sur {sorted.length}
           </span>

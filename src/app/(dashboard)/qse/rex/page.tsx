@@ -9,19 +9,7 @@ export default async function RexPage() {
 
   return (
     <div className="p-6 pb-20 md:pb-6">
-      <div className="mb-6 flex items-start justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-[var(--heading)]">
-            Retours d&apos;expérience (REX)
-          </h1>
-          <p className="mt-1 text-sm text-[var(--text-secondary)]">
-            Partagez et consultez les retours d&apos;expérience des chantiers.
-          </p>
-        </div>
-        <RexFormWrapper />
-      </div>
-
-      <RexList rexList={rexList} />
+      <RexList rexList={rexList} headerAction={<RexFormWrapper />} />
     </div>
   );
 }

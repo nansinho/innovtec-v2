@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ClipboardList, Eye, Pencil, Trash2 } from "lucide-react";
 import { DataTable, type ColumnDef, type FilterDef } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
+import { getStandardToolbarActions } from "@/lib/table-toolbar-actions";
 import { deleteActionPlan } from "@/actions/action-plans";
 import type { ActionPlan } from "@/lib/types/database";
 import { toast } from "sonner";
@@ -187,6 +188,7 @@ export default function ActionPlanList({ plans: initial, canManage, onEdit, onAd
         keyField="id"
         title="Plans d'actions"
         description="Gérez les plans d'actions correctives et préventives."
+        toolbarActions={getStandardToolbarActions()}
         selectable
         searchable
         searchPlaceholder="Rechercher un plan d'action..."

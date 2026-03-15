@@ -4,6 +4,7 @@ import { BookOpen, Eye } from "lucide-react";
 import { formatRelative } from "@/lib/utils";
 import { DataTable, type ColumnDef } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
+import { getStandardToolbarActions } from "@/lib/table-toolbar-actions";
 
 interface RexItem {
   id: string;
@@ -17,9 +18,10 @@ interface RexItem {
 
 interface RexListProps {
   rexList: RexItem[];
+  headerAction?: React.ReactNode;
 }
 
-export default function RexList({ rexList }: RexListProps) {
+export default function RexList({ rexList, headerAction }: RexListProps) {
   const columns: ColumnDef<RexItem>[] = [
     {
       key: "created_at",
@@ -85,6 +87,10 @@ export default function RexList({ rexList }: RexListProps) {
       data={rexList}
       columns={columns}
       keyField="id"
+      title="Retours d'expérience"
+      description="Consultez les retours d'expérience de l'équipe."
+      toolbarActions={getStandardToolbarActions()}
+      headerAction={headerAction}
       selectable
       searchable
       searchPlaceholder="Rechercher un REX..."

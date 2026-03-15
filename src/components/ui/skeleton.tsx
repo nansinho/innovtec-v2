@@ -20,22 +20,34 @@ export function DataTableSkeleton({
 }) {
   return (
     <div className="w-full">
-      {/* Toolbar skeleton */}
-      <div className="flex items-center gap-3 border-b border-[var(--border-1)] bg-[var(--hover)]/30 px-5 py-3">
-        <Skeleton className="h-9 w-64 rounded-xl" />
-        <Skeleton className="h-9 w-32 rounded-xl" />
-        <Skeleton className="h-9 w-32 rounded-xl" />
-        <div className="ml-auto">
-          <Skeleton className="h-9 w-36 rounded-xl" />
+      {/* Header row: title + toolbar buttons */}
+      <div className="mb-5 flex items-start justify-between gap-4">
+        <div>
+          <Skeleton className="mb-2 h-6 w-48 rounded-lg" />
+          <Skeleton className="h-4 w-72 rounded-lg" />
+        </div>
+        <div className="flex items-center gap-2">
+          <Skeleton className="h-9 w-24 rounded-lg" />
+          <Skeleton className="h-9 w-24 rounded-lg" />
+          <Skeleton className="h-9 w-24 rounded-lg" />
+          <Skeleton className="h-9 w-24 rounded-lg" />
         </div>
       </div>
-      {/* Header */}
-      <div className="flex gap-4 border-b border-[var(--border-2)] bg-zinc-50/80 px-4 py-3">
+
+      {/* Filter bar: search + filters button */}
+      <div className="mb-4 flex items-center gap-3">
+        <Skeleton className="h-10 w-64 rounded-xl" />
+        <Skeleton className="h-10 w-28 rounded-xl" />
+      </div>
+
+      {/* Table header */}
+      <div className="flex gap-4 border-b border-[var(--border-2)] px-4 py-3">
         {Array.from({ length: columns }).map((_, i) => (
           <Skeleton key={i} className="h-3 flex-1 rounded" />
         ))}
       </div>
-      {/* Rows */}
+
+      {/* Table rows */}
       {Array.from({ length: rows }).map((_, rowIdx) => (
         <div
           key={rowIdx}
