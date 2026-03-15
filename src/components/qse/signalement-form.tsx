@@ -46,6 +46,7 @@ export default function SignalementForm({ categories, onCreated, onClose }: Sign
     certified: false,
   });
   const [photoUrls, setPhotoUrls] = useState<string[]>([]);
+  const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
   const [error, setError] = useState("");
 
   async function handlePhotoUpload(files: FileList | null) {
@@ -61,13 +62,17 @@ export default function SignalementForm({ categories, onCreated, onClose }: Sign
     setUploading(true);
 
     for (const file of filesToUpload) {
+      const previewUrl = URL.createObjectURL(file);
+
       const formData = new FormData();
       formData.append("file", file);
 
       const result = await uploadSignalementPhoto(formData);
       if (result.success && result.url) {
         setPhotoUrls((prev) => [...prev, result.url!]);
+        setPhotoPreviews((prev) => [...prev, previewUrl]);
       } else {
+        URL.revokeObjectURL(previewUrl);
         toast.error(result.error || "Erreur upload");
       }
     }
@@ -77,7 +82,9 @@ export default function SignalementForm({ categories, onCreated, onClose }: Sign
   }
 
   function removePhoto(index: number) {
+    URL.revokeObjectURL(photoPreviews[index]);
     setPhotoUrls((prev) => prev.filter((_, i) => i !== index));
+    setPhotoPreviews((prev) => prev.filter((_, i) => i !== index));
   }
 
   function handleSubmit() {
@@ -284,12 +291,12 @@ export default function SignalementForm({ categories, onCreated, onClose }: Sign
             </label>
 
             {/* Photo previews */}
-            {photoUrls.length > 0 && (
+            {photoPreviews.length > 0 && (
               <div className="mb-3 flex flex-wrap gap-2">
-                {photoUrls.map((url, i) => (
+                {photoPreviews.map((previewUrl, i) => (
                   <div key={i} className="group relative">
                     <img
-                      src={url}
+                      src={previewUrl}
                       alt={`Photo ${i + 1}`}
                       className="h-20 w-20 rounded-[var(--radius-xs)] border border-[var(--border-1)] object-cover"
                     />

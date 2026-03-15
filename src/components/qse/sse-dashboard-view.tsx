@@ -7,19 +7,15 @@ import { SseDashboardForm } from "@/components/admin/sse-dashboard-form";
 import { deleteSseDashboard } from "@/actions/sse-dashboard";
 import ConfirmDialog from "@/components/ui/confirm-dialog";
 import { toast } from "sonner";
+import { DropdownMenu } from "@/components/ui/dropdown-menu";
 import {
   ArrowLeft, Download, FileSpreadsheet, Plus, Pencil, Trash2,
-  Calendar, BarChart3, Shield, Eye,
+  Calendar, BarChart3, Eye, Edit3,
 } from "lucide-react";
 
 const MONTH_NAMES = [
   "Janvier", "Fevrier", "Mars", "Avril", "Mai", "Juin",
   "Juillet", "Aout", "Septembre", "Octobre", "Novembre", "Decembre",
-];
-
-const MONTH_SHORT = [
-  "Jan", "Fev", "Mar", "Avr", "Mai", "Juin",
-  "Juil", "Aout", "Sep", "Oct", "Nov", "Dec",
 ];
 
 function getNextMonthLabel(month: number, year: number): string {
@@ -360,6 +356,11 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
   }
 
   // ─── LISTING VIEW (default) ─────────────────────────────────
+  const allSorted = [...dashboards].sort((a, b) => {
+    if (a.year !== b.year) return b.year - a.year;
+    return b.month - a.month;
+  });
+
   return (
     <div>
       {/* Header with action */}
@@ -375,15 +376,13 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
         </div>
       )}
 
-      {years.length === 0 ? (
-        <div className="flex flex-col items-center rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] py-20 text-center shadow-xs">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl" style={{ background: "rgba(26, 45, 78, 0.06)" }}>
-            <BarChart3 className="h-7 w-7 text-[var(--navy)]" />
-          </div>
-          <p className="mt-4 text-sm font-medium text-[var(--heading)]">
+      {allSorted.length === 0 ? (
+        <div className="flex flex-col items-center rounded-2xl border border-[var(--border-1)] bg-white py-16 text-center shadow-sm ring-1 ring-black/[0.03]">
+          <BarChart3 className="mb-3 h-12 w-12 text-zinc-300" />
+          <p className="text-sm font-medium text-[var(--heading)]">
             Aucun tableau SSE
           </p>
-          <p className="mx-auto mt-1 max-w-sm text-[13px] text-[var(--text-muted)]">
+          <p className="mx-auto mt-1 max-w-xs text-sm text-[var(--text-muted)]">
             Les tableaux de bord Sante-Securite-Environnement apparaitront ici une fois crees.
           </p>
           {canManage && (
@@ -397,89 +396,89 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
           )}
         </div>
       ) : (
-        <div className="space-y-8">
-          {years.map((year) => {
-            const yearDashboards = grouped[year].sort((a, b) => b.month - a.month);
-            return (
-              <div key={year}>
-                {/* Year header */}
-                <div className="mb-4 flex items-center gap-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-[var(--radius-xs)] bg-[var(--navy)]">
-                    <Calendar className="h-4 w-4 text-white" />
-                  </div>
-                  <h2 className="text-lg font-bold text-[var(--heading)]">{year}</h2>
-                  <span className="rounded-full bg-[var(--navy)]/10 px-2.5 py-0.5 text-xs font-medium text-[var(--navy)]">
-                    {yearDashboards.length} tableau{yearDashboards.length > 1 ? "x" : ""}
-                  </span>
-                  <div className="h-px flex-1 bg-[var(--border-1)]" />
-                </div>
+        <div className="overflow-hidden rounded-2xl border border-[var(--border-1)] bg-white shadow-sm ring-1 ring-black/[0.03]">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-[var(--border-1)] bg-[var(--hover)]">
+                <th className="px-4 py-3.5 text-left text-xs font-medium text-[var(--text-secondary)]">Mois</th>
+                <th className="px-4 py-3.5 text-left text-xs font-medium text-[var(--text-secondary)]" style={{ width: "80px" }}>Annee</th>
+                <th className="px-4 py-3.5 text-center text-xs font-medium text-[var(--text-secondary)]" style={{ width: "80px" }}>ASAA</th>
+                <th className="px-4 py-3.5 text-center text-xs font-medium text-[var(--text-secondary)]" style={{ width: "80px" }}>SST</th>
+                <th className="px-4 py-3.5 text-center text-xs font-medium text-[var(--text-secondary)]" style={{ width: "100px" }}>Conformite</th>
+                <th className="px-4 py-3.5 text-center text-xs font-medium text-[var(--text-secondary)]" style={{ width: "80px" }}>Visites</th>
+                <th className="px-4 py-3.5 text-center text-xs font-medium text-[var(--text-secondary)]" style={{ width: "80px" }}>Statut</th>
+                <th className="px-4 py-3.5 text-left text-xs font-medium text-[var(--text-secondary)]" style={{ width: "130px" }}>Date</th>
+                <th className="px-4 py-3.5 text-right text-xs font-medium text-[var(--text-secondary)]" style={{ width: "70px" }}>Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[var(--border-1)]">
+              {allSorted.map((d) => {
+                const hasIssues = meetsObjective(d.sst_rate, d.sst_rate_objective) === false ||
+                  meetsObjective(d.accidents_with_leave, d.accidents_with_leave_objective) === false;
+                const sstMet = meetsObjective(d.sst_rate, d.sst_rate_objective);
+                const complianceMet = meetsObjective(d.regulatory_compliance_rate, d.regulatory_compliance_objective);
 
-                {/* Month cards grid */}
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                  {yearDashboards.map((d) => {
-                    const hasIssues = meetsObjective(d.sst_rate, d.sst_rate_objective) === false ||
-                      meetsObjective(d.accidents_with_leave, d.accidents_with_leave_objective) === false;
+                const dropdownItems = [
+                  { label: "Voir", icon: Eye, onClick: () => openDetail(d) },
+                  ...(canManage
+                    ? [
+                        { label: "Modifier", icon: Edit3, onClick: () => { setSelected(d); setMode("edit"); } },
+                        { label: "Supprimer", icon: Trash2, variant: "danger" as const, onClick: () => setDeleteTarget(d) },
+                      ]
+                    : []),
+                ];
 
-                    return (
-                      <button
-                        key={d.id}
-                        onClick={() => openDetail(d)}
-                        className="group relative overflow-hidden rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] p-5 text-left shadow-xs transition-all hover:border-[var(--border-2)] hover:shadow-md"
-                      >
-                        {/* Month badge */}
-                        <div className="mb-4 flex items-center justify-between">
-                          <div className="flex items-center gap-2.5">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-[var(--radius-xs)] bg-[var(--navy)]">
-                              <span className="text-xs font-bold text-white">{MONTH_SHORT[d.month - 1]}</span>
-                            </div>
-                            <div>
-                              <p className="text-sm font-semibold text-[var(--heading)]">{MONTH_NAMES[d.month - 1]}</p>
-                              <p className="text-[11px] text-[var(--text-muted)]">{d.year}</p>
-                            </div>
-                          </div>
-                          {hasIssues && (
-                            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-red-50">
-                              <div className="h-2 w-2 rounded-full bg-red-500" />
-                            </div>
-                          )}
-                          {!hasIssues && (
-                            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-50">
-                              <div className="h-2 w-2 rounded-full bg-emerald-500" />
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Key metrics */}
-                        <div className="mb-3 grid grid-cols-3 gap-2">
-                          <div className="rounded-[var(--radius-xs)] bg-[var(--hover)] px-2 py-1.5 text-center">
-                            <p className="text-[10px] font-medium text-[var(--text-muted)]">ASAA</p>
-                            <p className="text-sm font-bold text-[var(--heading)]">{d.accidents_with_leave}</p>
-                          </div>
-                          <div className="rounded-[var(--radius-xs)] bg-[var(--hover)] px-2 py-1.5 text-center">
-                            <p className="text-[10px] font-medium text-[var(--text-muted)]">SST</p>
-                            <p className={`text-sm font-bold ${meetsObjective(d.sst_rate, d.sst_rate_objective) === false ? "text-red-600" : "text-emerald-600"}`}>{d.sst_rate}%</p>
-                          </div>
-                          <div className="rounded-[var(--radius-xs)] bg-[var(--hover)] px-2 py-1.5 text-center">
-                            <p className="text-[10px] font-medium text-[var(--text-muted)]">Visites</p>
-                            <p className="text-sm font-bold text-[var(--heading)]">{d.field_visits_count}</p>
-                          </div>
-                        </div>
-
-                        {/* View link */}
-                        <div className="flex items-center gap-1.5 text-xs font-medium text-[var(--text-muted)] transition-colors group-hover:text-[var(--navy)]">
-                          <Eye className="h-3.5 w-3.5" />
-                          Voir le tableau
-                        </div>
-
-                        {/* Accent bar */}
-                        <div className="absolute bottom-0 left-0 h-1 w-full bg-gradient-to-r from-[var(--navy)] to-[var(--yellow)] opacity-0 transition-opacity group-hover:opacity-100" />
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            );
-          })}
+                return (
+                  <tr
+                    key={d.id}
+                    onClick={() => openDetail(d)}
+                    className="cursor-pointer transition-colors duration-200 hover:bg-[var(--hover)]"
+                  >
+                    <td className="px-4 py-3.5">
+                      <span className="text-sm font-medium text-[var(--heading)]">{MONTH_NAMES[d.month - 1]}</span>
+                    </td>
+                    <td className="px-4 py-3.5">
+                      <span className="inline-flex items-center rounded-[var(--radius-xs)] bg-amber-500/10 px-2 py-0.5 text-xs font-semibold text-amber-700">
+                        {d.year}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3.5 text-center text-sm font-semibold text-[var(--heading)]">
+                      {d.accidents_with_leave}
+                    </td>
+                    <td className={`px-4 py-3.5 text-center text-sm font-semibold ${sstMet === false ? "text-red-600" : sstMet === true ? "text-emerald-600" : "text-[var(--heading)]"}`}>
+                      {d.sst_rate}%
+                    </td>
+                    <td className={`px-4 py-3.5 text-center text-sm font-semibold ${complianceMet === false ? "text-red-600" : complianceMet === true ? "text-emerald-600" : "text-[var(--heading)]"}`}>
+                      {d.regulatory_compliance_rate}%
+                    </td>
+                    <td className="px-4 py-3.5 text-center text-sm font-semibold text-[var(--heading)]">
+                      {d.field_visits_count}
+                    </td>
+                    <td className="px-4 py-3.5 text-center">
+                      {hasIssues ? (
+                        <span className="inline-flex items-center gap-1 rounded-[var(--radius-xs)] bg-red-50 px-2 py-0.5 text-[11px] font-medium text-red-700">
+                          Alerte
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 rounded-[var(--radius-xs)] bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-700">
+                          OK
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3.5 text-sm text-[var(--text-muted)]">
+                      {new Date(d.created_at).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" })}
+                    </td>
+                    <td className="px-4 py-3.5 text-right" onClick={(e) => e.stopPropagation()}>
+                      <DropdownMenu items={dropdownItems} />
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+          <div className="border-t border-[var(--border-1)] px-4 py-3 text-sm text-[var(--text-muted)]">
+            {allSorted.length} tableau{allSorted.length > 1 ? "x" : ""} SSE
+          </div>
         </div>
       )}
     </div>
