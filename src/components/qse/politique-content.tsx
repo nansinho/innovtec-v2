@@ -15,10 +15,7 @@ import {
   Leaf,
   FileText,
   Calendar,
-  ChevronDown,
-  ChevronRight,
   ArrowLeft,
-  Eye,
   Upload,
   Copy,
 } from "lucide-react";
@@ -46,9 +43,9 @@ const PILLARS = [
     label: "Qualité",
     match: ["qualit", "qual"],
     icon: Award,
-    color: "var(--yellow)",
-    surface: "var(--yellow-surface)",
-    border: "var(--yellow-border)",
+    color: "#d97706",
+    surface: "rgba(217, 119, 6, 0.08)",
+    border: "rgba(217, 119, 6, 0.2)",
     gradient: "from-amber-500/10 to-yellow-500/5",
   },
   {
@@ -56,51 +53,33 @@ const PILLARS = [
     label: "Santé",
     match: ["sant", "sante", "health"],
     icon: HeartPulse,
-    color: "var(--green)",
-    surface: "var(--green-surface)",
-    border: "rgba(22, 163, 74, 0.16)",
-    gradient: "from-green-500/10 to-emerald-500/5",
+    color: "#2563eb",
+    surface: "rgba(37, 99, 235, 0.08)",
+    border: "rgba(37, 99, 235, 0.2)",
+    gradient: "from-blue-500/10 to-indigo-500/5",
   },
   {
     key: "securite",
     label: "Sécurité",
     match: ["securit", "surete"],
     icon: ShieldCheck,
-    color: "var(--blue)",
-    surface: "var(--blue-surface)",
-    border: "rgba(37, 99, 235, 0.16)",
-    gradient: "from-blue-500/10 to-indigo-500/5",
+    color: "#dc2626",
+    surface: "rgba(220, 38, 38, 0.08)",
+    border: "rgba(220, 38, 38, 0.2)",
+    gradient: "from-red-500/10 to-rose-500/5",
   },
   {
     key: "environnement",
     label: "Environnement",
     match: ["environnement", "environ", "ecolog"],
     icon: Leaf,
-    color: "var(--navy)",
-    surface: "rgba(26, 45, 78, 0.06)",
-    border: "rgba(26, 45, 78, 0.16)",
-    gradient: "from-slate-500/10 to-gray-500/5",
+    color: "#16a34a",
+    surface: "rgba(22, 163, 74, 0.08)",
+    border: "rgba(22, 163, 74, 0.2)",
+    gradient: "from-green-500/10 to-emerald-500/5",
   },
 ] as const;
 
-const PILLAR_TEMPLATES: Record<string, QseContentSection[]> = {
-  qualite: [
-    { title: "QUALITÉ - Nos engagements", content: "" },
-    { title: "QUALITÉ - Nos objectifs", content: "" },
-  ],
-  sante: [
-    { title: "SANTÉ - Nos engagements", content: "" },
-    { title: "SANTÉ - Nos objectifs", content: "" },
-  ],
-  securite: [
-    { title: "SÉCURITÉ - Nos engagements", content: "" },
-    { title: "SÉCURITÉ - Nos objectifs", content: "" },
-  ],
-  environnement: [
-    { title: "ENVIRONNEMENT - Nos engagements", content: "" },
-    { title: "ENVIRONNEMENT - Nos objectifs", content: "" },
-  ],
-};
 
 interface Pillar {
   key: string;
@@ -313,16 +292,14 @@ export default function PolitiqueContent({
   const [dateSignature, setDateSignature] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const [showUpload, setShowUpload] = useState(false);
-  const [expandedEdit, setExpandedEdit] = useState<Set<number>>(
-    new Set(sections.map((_, i) => i))
-  );
   const [isDownloading, setIsDownloading] = useState(false);
-  const [showPillarMenu, setShowPillarMenu] = useState(false);
   const [documents, setDocuments] = useState<QseDocument[]>([]);
   const [engagementText, setEngagementText] = useState("");
   const [engagementLieu, setEngagementLieu] = useState("");
   const [signataires, setSignataires] = useState<string[]>([]);
   const [uploadingDocIndex, setUploadingDocIndex] = useState<number | null>(null);
+  const [introText, setIntroText] = useState("");
+  const [pillarData, setPillarData] = useState<Record<string, { engagements: string; objectifs: string }>>({});
   const router = useRouter();
 
   const selected = allContent.find((c) => c.id === selectedId) ?? null;
@@ -334,6 +311,71 @@ export default function PolitiqueContent({
     return doc.year ?? new Date(doc.updated_at).getFullYear();
   }
 
+  // Convert sections array to pillar-based edit state
+  function sectionsToEditState(secs: QseContentSection[]) {
+    const pd: Record<string, { engagements: string; objectifs: string }> = {};
+    for (const p of PILLARS) {
+      pd[p.key] = { engagements: "", objectifs: "" };
+    }
+    let intro = "";
+
+    for (const section of secs) {
+      const titleNorm = normalize(section.title);
+
+      if (
+        titleNorm.includes("presentation") ||
+        titleNorm.includes("generale") ||
+        titleNorm.includes("introduction")
+      ) {
+        intro = section.content;
+        continue;
+      }
+
+      for (const p of PILLARS) {
+        if (p.match.some((m) => titleNorm.includes(normalize(m)))) {
+          const isObjectif =
+            titleNorm.includes("objectif") ||
+            titleNorm.includes("indicateur") ||
+            titleNorm.includes("kpi") ||
+            titleNorm.includes("metrique");
+          if (isObjectif) {
+            pd[p.key].objectifs = section.content;
+          } else {
+            pd[p.key].engagements = section.content;
+          }
+          break;
+        }
+      }
+    }
+
+    return { introText: intro, pillarData: pd };
+  }
+
+  // Convert pillar-based edit state back to sections array
+  function editStateToSections(): QseContentSection[] {
+    const secs: QseContentSection[] = [];
+    if (introText.trim()) {
+      secs.push({ title: "Présentation générale", content: introText });
+    }
+    for (const p of PILLARS) {
+      const data = pillarData[p.key];
+      if (data?.engagements?.trim()) {
+        secs.push({ title: `${p.label.toUpperCase()} - Nos engagements`, content: data.engagements });
+      }
+      if (data?.objectifs?.trim()) {
+        secs.push({ title: `${p.label.toUpperCase()} - Nos objectifs`, content: data.objectifs });
+      }
+    }
+    return secs;
+  }
+
+  function updatePillar(key: string, field: "engagements" | "objectifs", value: string) {
+    setPillarData((prev) => ({
+      ...prev,
+      [key]: { ...prev[key], [field]: value },
+    }));
+  }
+
   function handleAiResult(result: unknown, fileUrl?: string) {
     const data = result as { title?: string; year?: number; date_signature?: string; sections?: QseContentSection[] };
     if (data.title) setTitle(data.title);
@@ -341,58 +383,23 @@ export default function PolitiqueContent({
     if (data.date_signature) setDateSignature(data.date_signature);
     if (data.sections && Array.isArray(data.sections)) {
       setSections(data.sections);
-      setExpandedEdit(
-        new Set(data.sections.map((_: QseContentSection, i: number) => i))
-      );
+      const state = sectionsToEditState(data.sections);
+      setIntroText(state.introText);
+      setPillarData(state.pillarData);
     }
     if (fileUrl) setSourceFileUrl(fileUrl);
     setEditing(true);
     setShowUpload(false);
   }
 
-  function addSection() {
-    const idx = sections.length;
-    setSections([...sections, { title: "", content: "" }]);
-    setExpandedEdit((prev) => new Set([...prev, idx]));
-  }
-
-  function addPillarSections(pillarKey: string) {
-    const templates = PILLAR_TEMPLATES[pillarKey];
-    if (!templates) return;
-    const startIdx = sections.length;
-    setSections([...sections, ...templates]);
-    setExpandedEdit((prev) => {
-      const next = new Set(prev);
-      templates.forEach((_, i) => next.add(startIdx + i));
-      return next;
-    });
-    setShowPillarMenu(false);
-  }
-
-  function removeSection(index: number) {
-    setSections(sections.filter((_, i) => i !== index));
-  }
-
-  function updateSection(index: number, field: keyof QseContentSection, value: string) {
-    setSections(sections.map((s, i) => (i === index ? { ...s, [field]: value } : s)));
-  }
-
-  function toggleEditSection(index: number) {
-    setExpandedEdit((prev) => {
-      const next = new Set(prev);
-      if (next.has(index)) next.delete(index);
-      else next.add(index);
-      return next;
-    });
-  }
-
   function handleSave() {
     startTransition(async () => {
+      const finalSections = editStateToSections();
       let result;
       if (editingId) {
-        result = await saveQseContent("politique", title, sections, sourceFileUrl || undefined, editingId, year, dateSignature, documents, engagementText, engagementLieu, signataires);
+        result = await saveQseContent("politique", title, finalSections, sourceFileUrl || undefined, editingId, year, dateSignature, documents, engagementText, engagementLieu, signataires);
       } else {
-        result = await createQseContent("politique", title, sections, sourceFileUrl || undefined, year, dateSignature, documents, engagementText, engagementLieu, signataires);
+        result = await createQseContent("politique", title, finalSections, sourceFileUrl || undefined, year, dateSignature, documents, engagementText, engagementLieu, signataires);
       }
       if (result.success) {
         setEditing(false);
@@ -404,15 +411,23 @@ export default function PolitiqueContent({
         setEngagementText("");
         setEngagementLieu("");
         setSignataires([]);
+        setIntroText("");
+        setPillarData({});
         router.refresh();
       }
     });
   }
 
+  function initEditState(secs: QseContentSection[]) {
+    const state = sectionsToEditState(secs);
+    setIntroText(state.introText);
+    setPillarData(state.pillarData);
+  }
+
   function startEditing(doc: QseContent) {
     setTitle(doc.title);
     setSections(doc.sections);
-    setExpandedEdit(new Set(doc.sections.map((_, i) => i)));
+    initEditState(doc.sections);
     setEditingId(doc.id);
     setYear(doc.year ?? null);
     setDateSignature(doc.date_signature ?? null);
@@ -428,7 +443,7 @@ export default function PolitiqueContent({
   function startNew() {
     setTitle("Politique Qualité, Sécurité et Environnement");
     setSections([]);
-    setExpandedEdit(new Set());
+    initEditState([]);
     setEditingId(null);
     setYear(new Date().getFullYear());
     setDateSignature(null);
@@ -444,7 +459,7 @@ export default function PolitiqueContent({
   function duplicateDoc(doc: QseContent) {
     setTitle(doc.title);
     setSections([...doc.sections]);
-    setExpandedEdit(new Set(doc.sections.map((_, i) => i)));
+    initEditState(doc.sections);
     setEditingId(null);
     setYear(new Date().getFullYear());
     setDateSignature(null);
@@ -527,123 +542,118 @@ export default function PolitiqueContent({
         )}
 
         {/* Form */}
-        <div className="rounded-2xl border border-[var(--border-1)] bg-[var(--card)] shadow-sm">
+        <div className="space-y-5">
           {/* Year + Date signature + Title header */}
-          <div className="flex flex-wrap gap-4 border-b border-[var(--border-1)] p-5">
-            <div className="w-24 shrink-0">
-              <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Année</label>
-              <input
-                type="number"
-                min={2000}
-                max={2100}
-                value={year ?? new Date().getFullYear()}
-                onChange={(e) => setYear(parseInt(e.target.value) || null)}
-                className="w-full rounded-lg border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2 text-sm font-semibold text-[var(--heading)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
-              />
-            </div>
-            <div className="w-40 shrink-0">
-              <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Date signature</label>
-              <input
-                type="date"
-                value={dateSignature ?? ""}
-                onChange={(e) => setDateSignature(e.target.value || null)}
-                className="w-full rounded-lg border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--heading)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
-              />
-            </div>
-            <div className="min-w-0 flex-1">
-              <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Titre du document</label>
-              <input
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="w-full rounded-lg border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2 text-sm font-semibold text-[var(--heading)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
-              />
-            </div>
-          </div>
-
-          {/* Sections */}
-          <div className="divide-y divide-[var(--border-1)]">
-            {sections.map((section, index) => (
-              <div key={index}>
-                <button
-                  onClick={() => toggleEditSection(index)}
-                  className="flex w-full items-center gap-3 px-5 py-3.5 text-left transition-colors hover:bg-[var(--hover)]"
-                >
-                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[var(--navy)] text-[10px] font-bold text-white shadow-sm">
-                    {index + 1}
-                  </span>
-                  <span className="flex-1 text-[13px] font-semibold text-[var(--heading)]">
-                    {section.title || "Section sans titre"}
-                  </span>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); removeSection(index); }}
-                    className="rounded-lg p-1.5 text-[var(--text-muted)] transition-all hover:bg-red-50 hover:text-red-500"
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </button>
-                  {expandedEdit.has(index) ? (
-                    <ChevronDown className="h-4 w-4 text-[var(--text-muted)] transition-transform" />
-                  ) : (
-                    <ChevronRight className="h-4 w-4 text-[var(--text-muted)] transition-transform" />
-                  )}
-                </button>
-                {expandedEdit.has(index) && (
-                  <div className="space-y-3 bg-[var(--bg)] px-5 py-4">
-                    <input
-                      value={section.title}
-                      onChange={(e) => updateSection(index, "title", e.target.value)}
-                      placeholder="Titre de la section (ex: QUALITÉ - Nos engagements)"
-                      className="w-full rounded-lg border border-[var(--border-1)] bg-[var(--card)] px-3 py-2 text-sm font-semibold text-[var(--heading)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
-                    />
-                    <textarea
-                      value={section.content}
-                      onChange={(e) => updateSection(index, "content", e.target.value)}
-                      placeholder="Contenu de la section..."
-                      rows={4}
-                      className="w-full resize-none rounded-lg border border-[var(--border-1)] bg-[var(--card)] px-3 py-2.5 text-[12.5px] leading-relaxed text-[var(--text)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
-                    />
-                  </div>
-                )}
+          <div className="rounded-2xl border border-[var(--border-1)] bg-[var(--card)] shadow-sm">
+            <div className="flex flex-wrap gap-4 p-5">
+              <div className="w-24 shrink-0">
+                <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Année</label>
+                <input
+                  type="number"
+                  min={2000}
+                  max={2100}
+                  value={year ?? new Date().getFullYear()}
+                  onChange={(e) => setYear(parseInt(e.target.value) || null)}
+                  className="w-full rounded-lg border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2 text-sm font-semibold text-[var(--heading)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                />
               </div>
-            ))}
+              <div className="w-40 shrink-0">
+                <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Date signature</label>
+                <input
+                  type="date"
+                  value={dateSignature ?? ""}
+                  onChange={(e) => setDateSignature(e.target.value || null)}
+                  className="w-full rounded-lg border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--heading)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                />
+              </div>
+              <div className="min-w-0 flex-1">
+                <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Titre du document</label>
+                <input
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="w-full rounded-lg border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2 text-sm font-semibold text-[var(--heading)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                />
+              </div>
+            </div>
           </div>
 
-          {/* Add section buttons */}
-          <div className="space-y-2 p-4">
-            {/* Pillar templates */}
-            <div className="relative">
-              <button
-                onClick={() => setShowPillarMenu(!showPillarMenu)}
-                className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-[var(--yellow-border)] py-3 text-[13px] font-medium text-[var(--yellow)] transition-all duration-200 hover:border-[var(--yellow)] hover:bg-[var(--yellow-surface)]"
-              >
-                <Plus className="h-4 w-4" />
-                Ajouter un pilier QSE
-              </button>
-              {showPillarMenu && (
-                <div className="absolute left-0 right-0 top-full z-10 mt-1 overflow-hidden rounded-xl border border-[var(--border-1)] bg-[var(--card)] shadow-lg">
-                  {PILLARS.map((p) => {
-                    const Icon = p.icon;
-                    return (
-                      <button
-                        key={p.key}
-                        onClick={() => addPillarSections(p.key)}
-                        className="flex w-full items-center gap-3 px-4 py-3 text-left text-[13px] transition-colors hover:bg-[var(--hover)]"
-                      >
-                        <Icon className="h-4 w-4" style={{ color: p.color }} />
-                        <span className="font-medium text-[var(--heading)]">{p.label}</span>
-                        <span className="ml-auto text-[11px] text-[var(--text-muted)]">engagements + objectifs</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
+          {/* Présentation générale */}
+          <div className="rounded-2xl border border-[var(--border-1)] bg-[var(--card)] shadow-sm">
+            <div className="flex items-center gap-3 border-b border-[var(--border-1)] px-5 py-4">
+              <FileText className="h-5 w-5 text-[var(--text-muted)]" />
+              <h3 className="text-[14px] font-semibold text-[var(--heading)]">Présentation générale</h3>
             </div>
-            <button
-              onClick={addSection}
-              className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-[var(--border-1)] py-3 text-[13px] font-medium text-[var(--text-muted)] transition-all duration-200 hover:border-[var(--yellow)] hover:bg-[var(--yellow-surface)] hover:text-[var(--yellow)]"
-            >
-              <Plus className="h-4 w-4" />
-              Ajouter une section libre
-            </button>
+            <div className="p-5">
+              <textarea
+                value={introText}
+                onChange={(e) => setIntroText(e.target.value)}
+                placeholder="Décrivez la politique générale de l'entreprise en matière de Qualité, Sécurité et Environnement..."
+                rows={4}
+                className="w-full resize-none rounded-lg border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-[12.5px] leading-relaxed text-[var(--text)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+              />
+            </div>
+          </div>
+
+          {/* Pillar cards - 2 column grid */}
+          <div className="grid gap-5 md:grid-cols-2">
+            {PILLARS.map((p) => {
+              const Icon = p.icon;
+              const data = pillarData[p.key] ?? { engagements: "", objectifs: "" };
+              return (
+                <div
+                  key={p.key}
+                  className="overflow-hidden rounded-2xl border bg-[var(--card)] shadow-sm"
+                  style={{ borderColor: p.border }}
+                >
+                  {/* Pillar header */}
+                  <div
+                    className={cn("flex items-center gap-3 px-5 py-3.5 bg-gradient-to-r", p.gradient)}
+                  >
+                    <div
+                      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
+                      style={{ background: p.surface }}
+                    >
+                      <Icon className="h-4.5 w-4.5" style={{ color: p.color }} />
+                    </div>
+                    <h3 className="text-[14px] font-bold uppercase tracking-wide" style={{ color: p.color }}>
+                      {p.label}
+                    </h3>
+                  </div>
+
+                  {/* Two columns: Engagements | Objectifs */}
+                  <div className="grid grid-cols-2 divide-x divide-[var(--border-1)]">
+                    <div className="p-4">
+                      <label className="mb-2 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                        <div className="h-1 w-4 rounded-full" style={{ background: p.color }} />
+                        Engagements
+                      </label>
+                      <textarea
+                        value={data.engagements}
+                        onChange={(e) => updatePillar(p.key, "engagements", e.target.value)}
+                        placeholder={"Un engagement par ligne..."}
+                        rows={5}
+                        className="w-full resize-none rounded-lg border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2 text-[12px] leading-relaxed text-[var(--text)] outline-none transition-all focus:ring-2 focus:ring-opacity-30"
+                        style={{ "--tw-ring-color": p.color } as React.CSSProperties}
+                      />
+                    </div>
+                    <div className="p-4">
+                      <label className="mb-2 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                        <div className="h-1 w-4 rounded-full bg-[var(--navy)]" />
+                        Objectifs
+                      </label>
+                      <textarea
+                        value={data.objectifs}
+                        onChange={(e) => updatePillar(p.key, "objectifs", e.target.value)}
+                        placeholder={"Un objectif par ligne..."}
+                        rows={5}
+                        className="w-full resize-none rounded-lg border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2 text-[12px] leading-relaxed text-[var(--text)] outline-none transition-all focus:ring-2 focus:ring-opacity-30"
+                        style={{ "--tw-ring-color": p.color } as React.CSSProperties}
+                      />
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
 

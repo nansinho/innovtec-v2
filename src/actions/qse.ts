@@ -1,5 +1,6 @@
 "use server";
 
+import { randomUUID } from "crypto";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import type { DangerReport, Rex, QseContent, QseContentSection, QseDocument } from "@/lib/types/database";
@@ -222,7 +223,7 @@ export async function uploadQseDocumentFile(
   if (!file) return { error: "Aucun fichier fourni" };
 
   const ext = file.name.split(".").pop()?.toLowerCase() || "pdf";
-  const filePath = `qse/documents-obligatoires/${Date.now()}-${crypto.randomUUID()}.${ext}`;
+  const filePath = `qse/documents-obligatoires/${Date.now()}-${randomUUID()}.${ext}`;
 
   const { error } = await supabase.storage
     .from("documents")
