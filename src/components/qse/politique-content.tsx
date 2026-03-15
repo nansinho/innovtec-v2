@@ -855,7 +855,7 @@ export default function PolitiqueContent({
 
       {/* DataTable view */}
       {allContent.length === 0 ? (
-        <div className="flex flex-col items-center rounded-[var(--radius)] border border-[var(--border-1)] bg-white py-16 text-center shadow-xs">
+        <div className="flex flex-col items-center rounded-2xl border border-[var(--border-1)] bg-white py-16 text-center shadow-sm ring-1 ring-black/[0.03]">
           <FileText className="mb-3 h-12 w-12 text-zinc-300" />
           <p className="text-sm font-medium text-[var(--heading)]">
             Aucune politique QSE
@@ -867,21 +867,21 @@ export default function PolitiqueContent({
           )}
         </div>
       ) : (
-        <div className="overflow-hidden rounded-[var(--radius)] border border-[var(--border-1)] bg-white shadow-xs">
+        <div className="overflow-hidden rounded-2xl border border-[var(--border-1)] bg-white shadow-sm ring-1 ring-black/[0.03]">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-[var(--border-1)] bg-zinc-50/80">
-                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">Titre</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "80px" }}>Année</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "130px" }}>Signature</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">Piliers</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "130px" }}>Date</th>
+              <tr className="border-b border-[var(--border-1)] bg-[var(--hover)]">
+                <th className="px-4 py-3.5 text-left text-xs font-medium text-[var(--text-secondary)]">Titre</th>
+                <th className="px-4 py-3.5 text-left text-xs font-medium text-[var(--text-secondary)]" style={{ width: "80px" }}>Année</th>
+                <th className="px-4 py-3.5 text-left text-xs font-medium text-[var(--text-secondary)]" style={{ width: "130px" }}>Signature</th>
+                <th className="px-4 py-3.5 text-left text-xs font-medium text-[var(--text-secondary)]">Piliers</th>
+                <th className="px-4 py-3.5 text-left text-xs font-medium text-[var(--text-secondary)]" style={{ width: "130px" }}>Date</th>
                 {canEdit && (
-                  <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "120px" }}>Actions</th>
+                  <th className="px-4 py-3.5 text-right text-xs font-medium text-[var(--text-secondary)]" style={{ width: "120px" }}>Actions</th>
                 )}
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-[var(--border-1)]">
               {allContent.map((doc) => {
                 const docYear = getDocYear(doc);
                 const docPillars = parsePillars(doc.sections).pillars;
@@ -890,24 +890,24 @@ export default function PolitiqueContent({
                   <tr
                     key={doc.id}
                     onClick={() => setSelectedId(doc.id)}
-                    className="cursor-pointer border-b border-[var(--border-1)] transition-colors last:border-0 hover:bg-zinc-50"
+                    className="cursor-pointer transition-colors duration-200 hover:bg-[var(--hover)]"
                   >
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3.5">
                       <span className="text-sm font-medium text-[var(--heading)]">
                         {doc.title}
                       </span>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3.5">
                       <span className="inline-flex items-center rounded-[var(--radius-xs)] bg-amber-500/10 px-2 py-0.5 text-xs font-semibold text-amber-700">
                         {docYear}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-sm text-[var(--text-muted)]">
+                    <td className="px-4 py-3.5 text-sm text-[var(--text-muted)]">
                       {doc.date_signature
                         ? formatDate(doc.date_signature)
                         : <span className="text-[var(--text-muted)]/50">—</span>}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3.5">
                       <div className="flex flex-wrap gap-1">
                         {docPillars.map((p) => {
                           const Icon = p.icon;
@@ -924,11 +924,11 @@ export default function PolitiqueContent({
                         })}
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-sm text-[var(--text-muted)]">
+                    <td className="px-4 py-3.5 text-sm text-[var(--text-muted)]">
                       {formatDate(doc.updated_at)}
                     </td>
                     {canEdit && (
-                      <td className="px-4 py-3 text-right">
+                      <td className="px-4 py-3.5 text-right">
                         <DropdownMenu
                           items={[
                             { label: "Dupliquer", icon: Copy, onClick: () => duplicateDoc(doc) },

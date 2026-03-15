@@ -373,7 +373,7 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
       )}
 
       {/* News table */}
-      <div className="overflow-x-auto rounded-[var(--radius)] border border-[var(--border-1)] shadow-sm">
+      <div className="overflow-x-auto rounded-2xl border border-[var(--border-1)] bg-white shadow-sm ring-1 ring-black/[0.03]">
         <table className="w-full text-left text-sm">
           <thead className="border-b border-[var(--border-1)] bg-[var(--hover)]">
             <tr>
