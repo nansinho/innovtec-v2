@@ -23,6 +23,7 @@ import {
   Copy,
 } from "lucide-react";
 import { cn, formatDate } from "@/lib/utils";
+import { DropdownMenu } from "@/components/ui/dropdown-menu";
 import FileUploadAi from "@/components/ai/file-upload-ai";
 import {
   saveQseContent,
@@ -928,29 +929,13 @@ export default function PolitiqueContent({
                     </td>
                     {canEdit && (
                       <td className="px-4 py-3 text-right">
-                        <div className="flex items-center justify-end gap-1">
-                          <button
-                            onClick={(e) => { e.stopPropagation(); duplicateDoc(doc); }}
-                            className="rounded-[var(--radius-xs)] p-1.5 text-[var(--text-muted)] transition-colors hover:bg-blue-50 hover:text-blue-600"
-                            title="Dupliquer"
-                          >
-                            <Copy className="h-4 w-4" />
-                          </button>
-                          <button
-                            onClick={(e) => { e.stopPropagation(); startEditing(doc); }}
-                            className="rounded-[var(--radius-xs)] p-1.5 text-[var(--text-muted)] transition-colors hover:bg-amber-50 hover:text-amber-600"
-                            title="Modifier"
-                          >
-                            <Edit3 className="h-4 w-4" />
-                          </button>
-                          <button
-                            onClick={(e) => { e.stopPropagation(); handleDelete(doc.id, doc.title); }}
-                            className="rounded-[var(--radius-xs)] p-1.5 text-[var(--text-muted)] transition-colors hover:bg-red-50 hover:text-red-500"
-                            title="Supprimer"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        </div>
+                        <DropdownMenu
+                          items={[
+                            { label: "Dupliquer", icon: Copy, onClick: () => duplicateDoc(doc) },
+                            { label: "Modifier", icon: Edit3, onClick: () => startEditing(doc) },
+                            { label: "Supprimer", icon: Trash2, variant: "danger", onClick: () => handleDelete(doc.id, doc.title) },
+                          ]}
+                        />
                       </td>
                     )}
                   </tr>
