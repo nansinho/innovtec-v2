@@ -386,17 +386,28 @@ export default function PolitiqueContent({
       signataires?: string[];
       sections?: QseContentSection[];
     };
+
+    console.log("[QSE AI Import] Raw result:", JSON.stringify(data, null, 2));
+
     if (data.title) setTitle(data.title);
     if (data.year) setYear(data.year);
     if (data.date_signature) setDateSignature(data.date_signature);
     if (data.engagement_text) setEngagementText(data.engagement_text);
     if (data.engagement_lieu) setEngagementLieu(data.engagement_lieu);
     if (data.signataires && Array.isArray(data.signataires)) setSignataires(data.signataires);
-    if (data.sections && Array.isArray(data.sections)) {
+    if (data.sections && Array.isArray(data.sections) && data.sections.length > 0) {
       setSections(data.sections);
       const state = sectionsToEditState(data.sections);
+      console.log("[QSE AI Import] Parsed pillarData:", JSON.stringify(state, null, 2));
       setIntroText(state.introText);
       setPillarData(state.pillarData);
+      const filledPillars = Object.values(state.pillarData).filter(
+        (p) => p.engagements.trim() || p.objectifs.trim()
+      ).length;
+      toast.success(`Import IA : ${data.sections.length} sections détectées, ${filledPillars} piliers remplis`);
+    } else {
+      toast.error("L'IA n'a pas pu extraire de sections du document");
+      console.warn("[QSE AI Import] No sections found in result:", data);
     }
     if (fileUrl) setSourceFileUrl(fileUrl);
     setEditing(true);
