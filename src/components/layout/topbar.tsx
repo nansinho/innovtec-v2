@@ -51,13 +51,16 @@ export default function Topbar({ profile, unreadCount = 0 }: TopbarProps) {
     ? `${profile.first_name?.[0] ?? ""}${profile.last_name?.[0] ?? ""}`.toUpperCase() || "?"
     : "?";
 
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   const segments = pathname.split("/").filter(Boolean);
 
-  const breadcrumbs = segments.map((seg, i) => ({
-    label: breadcrumbLabels[seg] ?? seg,
-    href: "/" + segments.slice(0, i + 1).join("/"),
-    isLast: i === segments.length - 1,
-  }));
+  const breadcrumbs = segments
+    .filter((seg) => !uuidRegex.test(seg))
+    .map((seg, i, arr) => ({
+      label: breadcrumbLabels[seg] ?? seg,
+      href: "/" + segments.slice(0, segments.indexOf(seg) + 1).join("/"),
+      isLast: i === arr.length - 1,
+    }));
 
   return (
     <>

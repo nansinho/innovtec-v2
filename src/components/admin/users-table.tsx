@@ -399,7 +399,7 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
                           label: "Voir le profil",
                           icon: Eye,
                           onClick: () => {
-                            window.location.href = `/admin/users/${user.id}`;
+                            window.location.href = user.id === currentUserId ? "/profil" : `/admin/users/${user.id}`;
                           },
                         },
                         {

@@ -9,7 +9,7 @@ import {
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, Pencil } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import UserProfileTabs from "@/components/admin/user-profile-tabs";
 
 export const dynamic = "force-dynamic";
@@ -47,7 +47,8 @@ export default async function UserDetailPage({
 
   if (!user) notFound();
 
-  const isOwnProfile = currentProfile.id === user.id;
+  // Redirect to /profil if viewing own profile
+  if (currentProfile.id === user.id) redirect("/profil");
   const initials =
     `${user.first_name?.[0] ?? ""}${user.last_name?.[0] ?? ""}`.toUpperCase() ||
     "?";
@@ -86,11 +87,6 @@ export default async function UserDetailPage({
         <div className="flex-1">
           <h1 className="text-xl font-semibold text-[var(--heading)]">
             {fullName}
-            {isOwnProfile && (
-              <span className="ml-2 text-sm font-normal text-[var(--text-muted)]">
-                (vous)
-              </span>
-            )}
           </h1>
           {user.job_title && (
             <p className="mt-0.5 text-sm text-[var(--text-secondary)]">
@@ -119,15 +115,6 @@ export default async function UserDetailPage({
             </span>
           </div>
         </div>
-        {isAdminOrRh && (
-          <Link
-            href="/admin/users"
-            className="inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] px-3.5 py-2 text-xs font-medium text-[var(--text-secondary)] shadow-xs transition-all duration-200 hover:bg-[var(--hover)] hover:shadow-sm"
-          >
-            <Pencil className="h-3.5 w-3.5" />
-            Modifier le profil
-          </Link>
-        )}
       </div>
 
       {/* Tabs */}
