@@ -104,7 +104,54 @@ export async function POST(req: NextRequest) {
     let systemPrompt =
       "Tu es un assistant IA pour l'intranet d'INNOVTEC Réseaux. Tu analyses des documents et images pour en extraire du contenu structuré. Réponds toujours en français.";
 
-    if (type === "politique") {
+    if (type === "sse_dashboard") {
+      systemPrompt = `Tu es un assistant IA specialise dans les tableaux de bord SSE (Sante-Securite-Environnement) pour INNOVTEC Reseaux.
+Analyse ce document (image ou PDF) d'un tableau de bord SSE et extrais TOUTES les donnees vers le format JSON suivant.
+Utilise 0 si une donnee n'est pas visible ou lisible.
+
+Retourne UNIQUEMENT un JSON valide avec ces champs :
+{
+  "month": <numero du mois 1-12>,
+  "year": <annee>,
+  "accidents_with_leave": <nombre d'accidents avec arret>,
+  "accidents_with_leave_objective": "<objectif ex: ≤2>",
+  "regulatory_training_completion": <suivi formations reglementaires>,
+  "regulatory_training_objective": "<objectif ex: > 95%>",
+  "regulatory_compliance_rate": <taux de conformite reglementaire>,
+  "regulatory_compliance_objective": "<objectif ex: > 80 %>",
+  "periodic_verification_rate": <taux realisation verification periodique>,
+  "periodic_verification_objective": "<objectif ex: > 95%>",
+  "waste_monitoring": <suivi des dechets en pourcentage>,
+  "waste_monitoring_objective": "<objectif ex: > 95%>",
+  "sst_rate": <taux de SST en pourcentage>,
+  "sst_rate_objective": "<objectif ex: > 40 %>",
+  "downgraded_bins": <nombre de bennes declassees>,
+  "downgraded_bins_objective": <objectif nombre>,
+  "accidents_without_leave": <nombre d'accidents sans arret>,
+  "accidents_without_leave_objective": <objectif nombre>,
+  "cross_visits": <nombre de visites croisees>,
+  "cross_visits_objective": "<objectif ou -->",
+  "managerial_visits": <nombre de visites manageriales>,
+  "managerial_visits_objective": <objectif nombre>,
+  "sd_declarants_percentage": <pourcentage de declarants SD>,
+  "sd_declarants_objective": <objectif decimal>,
+  "sd_declared_count": <nombre de SD declares>,
+  "sd_declared_objective": <objectif nombre>,
+  "waste_awareness_employees": <nombre salaries sensibilises tri dechets>,
+  "waste_awareness_objective": "<objectif ou -->",
+  "training_plan_follow_rate": <taux suivi plan de formation>,
+  "training_plan_objective": "<objectif ex: 100%>",
+  "field_visits_count": <nombre de visites terrain>,
+  "monthly_report": "<texte du bilan mensuel>",
+  "action_priorities": ["priorite 1", "priorite 2"],
+  "vigilance_points": ["point 1", "point 2"],
+  "focus_event_title": "<titre du focus evenement>",
+  "focus_event_content": ["fait 1", "fait 2"],
+  "quote": "Aucune urgence, aucune importance sont prioritaires sur la securite"
+}
+
+Retourne UNIQUEMENT du JSON valide, sans markdown, sans backticks.`;
+    } else if (type === "politique") {
       systemPrompt +=
         ` Analyse ce document de politique QSE et retourne un JSON avec: title (titre du document), year (l'année du document en nombre entier, par exemple 2025 ou 2026 — cherche la date dans le document, souvent en bas comme "Fait à ... le JJ/MM/AAAA"), date_signature (la date complète de signature/parution au format YYYY-MM-DD, extraite du document — souvent en bas comme "Fait à ... le JJ/MM/AAAA" ou "Signé le ..."), sections (tableau d'objets {title, content}).
 IMPORTANT: Structure les sections EXACTEMENT selon les 4 piliers QSE avec engagements ET objectifs séparés:
