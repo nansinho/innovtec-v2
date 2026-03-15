@@ -161,7 +161,15 @@ Retourne UNIQUEMENT un JSON valide avec ces champs :
 Retourne UNIQUEMENT du JSON valide, sans markdown, sans backticks.`;
     } else if (type === "politique") {
       systemPrompt +=
-        ` Analyse ce document de politique QSE et retourne un JSON avec: title (titre du document), year (l'année du document en nombre entier, par exemple 2025 ou 2026 — cherche la date dans le document, souvent en bas comme "Fait à ... le JJ/MM/AAAA"), date_signature (la date complète de signature/parution au format YYYY-MM-DD, extraite du document — souvent en bas comme "Fait à ... le JJ/MM/AAAA" ou "Signé le ..."), sections (tableau d'objets {title, content}).
+        ` Analyse ce document de politique QSE et retourne un JSON avec ces champs:
+- title: titre du document
+- year: l'année du document (nombre entier, ex: 2025 ou 2026)
+- date_signature: la date complète de signature au format YYYY-MM-DD (souvent en bas "Fait à ... le JJ/MM/AAAA")
+- engagement_lieu: la ville mentionnée dans "Fait à [VILLE]" (ex: "Gardanne")
+- engagement_text: le texte d'engagement de la direction (le paragraphe où la direction s'engage, souvent en bas du document avant la signature)
+- signataires: tableau de noms des signataires du document (ex: ["Jean Dupont, Directeur Général"])
+- sections: tableau d'objets {title, content}
+
 IMPORTANT: Structure les sections EXACTEMENT selon les 4 piliers QSE avec engagements ET objectifs séparés:
 - "Présentation générale" (le texte d'introduction du document)
 - "QUALITÉ - Nos engagements" (les engagements qualité, chaque point sur une nouvelle ligne)
