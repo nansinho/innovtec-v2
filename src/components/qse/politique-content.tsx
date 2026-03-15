@@ -20,6 +20,7 @@ import {
   ArrowLeft,
   Eye,
   Upload,
+  Copy,
 } from "lucide-react";
 import { cn, formatDate } from "@/lib/utils";
 import FileUploadAi from "@/components/ai/file-upload-ai";
@@ -38,8 +39,8 @@ import type { QseContent, QseContentSection } from "@/lib/types/database";
 const PILLARS = [
   {
     key: "qualite",
-    label: "Qualite",
-    match: ["qualit"],
+    label: "Qualité",
+    match: ["qualit", "qual"],
     icon: Award,
     color: "var(--yellow)",
     surface: "var(--yellow-surface)",
@@ -48,8 +49,8 @@ const PILLARS = [
   },
   {
     key: "sante",
-    label: "Sante",
-    match: ["sant"],
+    label: "Santé",
+    match: ["sant", "sante", "health"],
     icon: HeartPulse,
     color: "var(--green)",
     surface: "var(--green-surface)",
@@ -58,8 +59,8 @@ const PILLARS = [
   },
   {
     key: "securite",
-    label: "Securite",
-    match: ["sécurit", "securit"],
+    label: "Sécurité",
+    match: ["securit", "surete"],
     icon: ShieldCheck,
     color: "var(--blue)",
     surface: "var(--blue-surface)",
@@ -69,7 +70,7 @@ const PILLARS = [
   {
     key: "environnement",
     label: "Environnement",
-    match: ["environnement"],
+    match: ["environnement", "environ", "ecolog"],
     icon: Leaf,
     color: "var(--navy)",
     surface: "rgba(26, 45, 78, 0.06)",
@@ -77,6 +78,25 @@ const PILLARS = [
     gradient: "from-slate-500/10 to-gray-500/5",
   },
 ] as const;
+
+const PILLAR_TEMPLATES: Record<string, QseContentSection[]> = {
+  qualite: [
+    { title: "QUALITÉ - Nos engagements", content: "" },
+    { title: "QUALITÉ - Nos objectifs", content: "" },
+  ],
+  sante: [
+    { title: "SANTÉ - Nos engagements", content: "" },
+    { title: "SANTÉ - Nos objectifs", content: "" },
+  ],
+  securite: [
+    { title: "SÉCURITÉ - Nos engagements", content: "" },
+    { title: "SÉCURITÉ - Nos objectifs", content: "" },
+  ],
+  environnement: [
+    { title: "ENVIRONNEMENT - Nos engagements", content: "" },
+    { title: "ENVIRONNEMENT - Nos objectifs", content: "" },
+  ],
+};
 
 interface Pillar {
   key: string;
@@ -88,6 +108,10 @@ interface Pillar {
   gradient: string;
   engagements: string[];
   objectifs: string[];
+}
+
+function normalize(str: string): string {
+  return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 
 function parsePillars(sections: QseContentSection[]): {
@@ -102,12 +126,12 @@ function parsePillars(sections: QseContentSection[]): {
   }
 
   for (const section of sections) {
-    const titleLower = section.title.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const titleNorm = normalize(section.title);
 
     if (
-      titleLower.includes("presentation") ||
-      titleLower.includes("generale") ||
-      titleLower.includes("introduction")
+      titleNorm.includes("presentation") ||
+      titleNorm.includes("generale") ||
+      titleNorm.includes("introduction")
     ) {
       intro = section.content;
       continue;
@@ -115,9 +139,12 @@ function parsePillars(sections: QseContentSection[]): {
 
     let matched = false;
     for (const p of PILLARS) {
-      const sectionTitleNorm = section.title.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-      if (p.match.some((m) => sectionTitleNorm.includes(m.normalize("NFD").replace(/[\u0300-\u036f]/g, "")))) {
-        const isObjectif = titleLower.includes("objectif");
+      if (p.match.some((m) => titleNorm.includes(normalize(m)))) {
+        const isObjectif =
+          titleNorm.includes("objectif") ||
+          titleNorm.includes("indicateur") ||
+          titleNorm.includes("kpi") ||
+          titleNorm.includes("metrique");
         const lines = section.content
           .split("\n")
           .map((l) => l.replace(/^[\s\u2022\u2023\u25E6\u2043\u2219*\-]+/, "").trim())
@@ -159,6 +186,7 @@ function parsePillars(sections: QseContentSection[]): {
 
 function PillarCard({ pillar }: { pillar: Pillar }) {
   const Icon = pillar.icon;
+  const totalItems = pillar.engagements.length + pillar.objectifs.length;
 
   return (
     <div
@@ -176,9 +204,21 @@ function PillarCard({ pillar }: { pillar: Pillar }) {
         >
           <Icon className="h-5 w-5" style={{ color: pillar.color }} />
         </div>
-        <h3 className="text-[15px] font-bold uppercase tracking-wide text-[var(--heading)]">
-          {pillar.label}
-        </h3>
+        <div className="flex-1">
+          <h3 className="text-[15px] font-bold uppercase tracking-wide text-[var(--heading)]">
+            {pillar.label}
+          </h3>
+          <p className="text-[10px] text-[var(--text-muted)]">
+            {pillar.engagements.length} engagement{pillar.engagements.length > 1 ? "s" : ""}
+            {pillar.objectifs.length > 0 && ` · ${pillar.objectifs.length} objectif${pillar.objectifs.length > 1 ? "s" : ""}`}
+          </p>
+        </div>
+        <span
+          className="rounded-full px-2 py-0.5 text-[10px] font-bold"
+          style={{ background: pillar.surface, color: pillar.color }}
+        >
+          {totalItems}
+        </span>
         {/* Decorative accent bar */}
         <div
           className="absolute bottom-0 left-5 right-5 h-[2px] rounded-full opacity-30"
@@ -217,8 +257,11 @@ function PillarCard({ pillar }: { pillar: Pillar }) {
         <div className="mx-4 mb-4 overflow-hidden rounded-xl bg-gradient-to-br from-[var(--navy)] to-[#1e3a5f] px-4 py-4 shadow-inner">
           <div className="mb-2.5 flex items-center gap-2">
             <div className="h-1 w-6 rounded-full bg-[var(--yellow)]" />
-            <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-white/50">
+            <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-white/60">
               Nos objectifs
+            </span>
+            <span className="ml-auto rounded-full bg-white/10 px-2 py-0.5 text-[9px] font-bold text-white/50">
+              {pillar.objectifs.length}
             </span>
           </div>
           <ul className="space-y-2">
@@ -256,19 +299,21 @@ export default function PolitiqueContent({
   const [editing, setEditing] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [title, setTitle] = useState(
-    content?.title ?? "Politique Qualite, Securite et Environnement"
+    content?.title ?? "Politique Qualité, Sécurité et Environnement"
   );
   const [sections, setSections] = useState<QseContentSection[]>(
     content?.sections ?? []
   );
   const [sourceFileUrl, setSourceFileUrl] = useState("");
   const [year, setYear] = useState<number | null>(null);
+  const [dateSignature, setDateSignature] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const [showUpload, setShowUpload] = useState(false);
   const [expandedEdit, setExpandedEdit] = useState<Set<number>>(
     new Set(sections.map((_, i) => i))
   );
   const [isDownloading, setIsDownloading] = useState(false);
+  const [showPillarMenu, setShowPillarMenu] = useState(false);
   const router = useRouter();
 
   const selected = allContent.find((c) => c.id === selectedId) ?? null;
@@ -281,9 +326,10 @@ export default function PolitiqueContent({
   }
 
   function handleAiResult(result: unknown, fileUrl?: string) {
-    const data = result as { title?: string; year?: number; sections?: QseContentSection[] };
+    const data = result as { title?: string; year?: number; date_signature?: string; sections?: QseContentSection[] };
     if (data.title) setTitle(data.title);
     if (data.year) setYear(data.year);
+    if (data.date_signature) setDateSignature(data.date_signature);
     if (data.sections && Array.isArray(data.sections)) {
       setSections(data.sections);
       setExpandedEdit(
@@ -299,6 +345,19 @@ export default function PolitiqueContent({
     const idx = sections.length;
     setSections([...sections, { title: "", content: "" }]);
     setExpandedEdit((prev) => new Set([...prev, idx]));
+  }
+
+  function addPillarSections(pillarKey: string) {
+    const templates = PILLAR_TEMPLATES[pillarKey];
+    if (!templates) return;
+    const startIdx = sections.length;
+    setSections([...sections, ...templates]);
+    setExpandedEdit((prev) => {
+      const next = new Set(prev);
+      templates.forEach((_, i) => next.add(startIdx + i));
+      return next;
+    });
+    setShowPillarMenu(false);
   }
 
   function removeSection(index: number) {
@@ -322,15 +381,16 @@ export default function PolitiqueContent({
     startTransition(async () => {
       let result;
       if (editingId) {
-        result = await saveQseContent("politique", title, sections, sourceFileUrl || undefined, editingId, year);
+        result = await saveQseContent("politique", title, sections, sourceFileUrl || undefined, editingId, year, dateSignature);
       } else {
-        result = await createQseContent("politique", title, sections, sourceFileUrl || undefined, year);
+        result = await createQseContent("politique", title, sections, sourceFileUrl || undefined, year, dateSignature);
       }
       if (result.success) {
         setEditing(false);
         setEditingId(null);
         setSourceFileUrl("");
         setYear(null);
+        setDateSignature(null);
         router.refresh();
       }
     });
@@ -342,24 +402,38 @@ export default function PolitiqueContent({
     setExpandedEdit(new Set(doc.sections.map((_, i) => i)));
     setEditingId(doc.id);
     setYear(doc.year ?? null);
+    setDateSignature(doc.date_signature ?? null);
     setSourceFileUrl(doc.source_file_url ?? "");
     setEditing(true);
     setSelectedId(null);
   }
 
   function startNew() {
-    setTitle("Politique Qualite, Securite et Environnement");
+    setTitle("Politique Qualité, Sécurité et Environnement");
     setSections([]);
     setExpandedEdit(new Set());
     setEditingId(null);
     setYear(new Date().getFullYear());
+    setDateSignature(null);
+    setSourceFileUrl("");
+    setEditing(true);
+    setSelectedId(null);
+  }
+
+  function duplicateDoc(doc: QseContent) {
+    setTitle(doc.title);
+    setSections([...doc.sections]);
+    setExpandedEdit(new Set(doc.sections.map((_, i) => i)));
+    setEditingId(null);
+    setYear(new Date().getFullYear());
+    setDateSignature(null);
     setSourceFileUrl("");
     setEditing(true);
     setSelectedId(null);
   }
 
   function handleDelete(id: string, docTitle: string) {
-    if (!window.confirm(`Supprimer la politique "${docTitle}" ? Cette action est irreversible.`)) return;
+    if (!window.confirm(`Supprimer la politique "${docTitle}" ? Cette action est irréversible.`)) return;
     startTransition(async () => {
       const result = await deleteQseContent(id);
       if (result.success) {
@@ -421,7 +495,7 @@ export default function PolitiqueContent({
               <h3 className="text-sm font-semibold text-[var(--heading)]">Import IA</h3>
             </div>
             <p className="mb-4 text-[12px] text-[var(--text-muted)]">
-              L&apos;IA va analyser votre document et generer automatiquement le contenu structure.
+              L&apos;IA va analyser votre document et générer automatiquement le contenu structuré.
             </p>
             <FileUploadAi onAnalysisComplete={handleAiResult} type="politique" label="Importer votre politique QSE (PDF ou image)" />
           </div>
@@ -429,10 +503,10 @@ export default function PolitiqueContent({
 
         {/* Form */}
         <div className="rounded-2xl border border-[var(--border-1)] bg-[var(--card)] shadow-sm">
-          {/* Year + Title header */}
-          <div className="flex gap-4 border-b border-[var(--border-1)] p-5">
-            <div className="w-28 shrink-0">
-              <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Annee</label>
+          {/* Year + Date signature + Title header */}
+          <div className="flex flex-wrap gap-4 border-b border-[var(--border-1)] p-5">
+            <div className="w-24 shrink-0">
+              <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Année</label>
               <input
                 type="number"
                 min={2000}
@@ -442,7 +516,16 @@ export default function PolitiqueContent({
                 className="w-full rounded-lg border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2 text-sm font-semibold text-[var(--heading)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
               />
             </div>
-            <div className="flex-1">
+            <div className="w-40 shrink-0">
+              <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Date signature</label>
+              <input
+                type="date"
+                value={dateSignature ?? ""}
+                onChange={(e) => setDateSignature(e.target.value || null)}
+                className="w-full rounded-lg border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--heading)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+              />
+            </div>
+            <div className="min-w-0 flex-1">
               <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Titre du document</label>
               <input
                 value={title}
@@ -483,7 +566,7 @@ export default function PolitiqueContent({
                     <input
                       value={section.title}
                       onChange={(e) => updateSection(index, "title", e.target.value)}
-                      placeholder="Titre de la section (ex: QUALITE - Nos engagements)"
+                      placeholder="Titre de la section (ex: QUALITÉ - Nos engagements)"
                       className="w-full rounded-lg border border-[var(--border-1)] bg-[var(--card)] px-3 py-2 text-sm font-semibold text-[var(--heading)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
                     />
                     <textarea
@@ -499,14 +582,42 @@ export default function PolitiqueContent({
             ))}
           </div>
 
-          {/* Add section button */}
-          <div className="p-4">
+          {/* Add section buttons */}
+          <div className="space-y-2 p-4">
+            {/* Pillar templates */}
+            <div className="relative">
+              <button
+                onClick={() => setShowPillarMenu(!showPillarMenu)}
+                className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-[var(--yellow-border)] py-3 text-[13px] font-medium text-[var(--yellow)] transition-all duration-200 hover:border-[var(--yellow)] hover:bg-[var(--yellow-surface)]"
+              >
+                <Plus className="h-4 w-4" />
+                Ajouter un pilier QSE
+              </button>
+              {showPillarMenu && (
+                <div className="absolute left-0 right-0 top-full z-10 mt-1 overflow-hidden rounded-xl border border-[var(--border-1)] bg-[var(--card)] shadow-lg">
+                  {PILLARS.map((p) => {
+                    const Icon = p.icon;
+                    return (
+                      <button
+                        key={p.key}
+                        onClick={() => addPillarSections(p.key)}
+                        className="flex w-full items-center gap-3 px-4 py-3 text-left text-[13px] transition-colors hover:bg-[var(--hover)]"
+                      >
+                        <Icon className="h-4 w-4" style={{ color: p.color }} />
+                        <span className="font-medium text-[var(--heading)]">{p.label}</span>
+                        <span className="ml-auto text-[11px] text-[var(--text-muted)]">engagements + objectifs</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
             <button
               onClick={addSection}
               className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-[var(--border-1)] py-3 text-[13px] font-medium text-[var(--text-muted)] transition-all duration-200 hover:border-[var(--yellow)] hover:bg-[var(--yellow-surface)] hover:text-[var(--yellow)]"
             >
               <Plus className="h-4 w-4" />
-              Ajouter une section
+              Ajouter une section libre
             </button>
           </div>
         </div>
@@ -546,11 +657,18 @@ export default function PolitiqueContent({
                 Modifier
               </button>
               <button
+                onClick={() => duplicateDoc(selected)}
+                className="inline-flex items-center gap-2 rounded-xl border border-[var(--border-1)] bg-[var(--card)] px-3.5 py-1.5 text-[13px] font-medium text-[var(--text-secondary)] transition-all duration-200 hover:bg-[var(--hover)] active:scale-[0.97]"
+              >
+                <Copy className="h-3.5 w-3.5" />
+                Dupliquer
+              </button>
+              <button
                 onClick={() => setShowUpload(!showUpload)}
                 className="inline-flex items-center gap-2 rounded-xl border border-[var(--navy)]/20 bg-[var(--navy)]/5 px-3.5 py-1.5 text-[13px] font-medium text-[var(--navy)] transition-all duration-200 hover:bg-[var(--navy)] hover:text-white active:scale-[0.97]"
               >
                 <Sparkles className="h-3.5 w-3.5" />
-                Reimporter
+                Réimporter
               </button>
               <button
                 onClick={() => handleDelete(selected.id, selected.title)}
@@ -591,11 +709,13 @@ export default function PolitiqueContent({
                 className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[var(--navy)] to-[#2a4a7a] px-5 py-2.5 text-[13px] font-semibold text-white shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.97] disabled:opacity-50"
               >
                 <Download className="h-4 w-4" />
-                {isDownloading ? "Chargement..." : "Telecharger le document"}
+                {isDownloading ? "Chargement..." : "Télécharger le document"}
               </button>
               <span className="flex items-center gap-1.5 text-[11px] text-[var(--text-muted)]">
                 <Calendar className="h-3 w-3" />
-                Mis a jour le {formatDate(selected.updated_at, "d MMMM yyyy")}
+                {selected.date_signature
+                  ? `Signé le ${formatDate(selected.date_signature, "d MMMM yyyy")}`
+                  : `Mis à jour le ${formatDate(selected.updated_at, "d MMMM yyyy")}`}
               </span>
             </div>
           </div>
@@ -607,7 +727,11 @@ export default function PolitiqueContent({
                 <Download className="h-5 w-5 text-[var(--navy)]" />
                 <div className="flex-1">
                   <p className="text-sm font-medium text-[var(--heading)]">Document source disponible</p>
-                  <p className="text-xs text-[var(--text-muted)]">Mis a jour le {formatDate(selected.updated_at, "d MMMM yyyy")}</p>
+                  <p className="text-xs text-[var(--text-muted)]">
+                    {selected.date_signature
+                      ? `Signé le ${formatDate(selected.date_signature, "d MMMM yyyy")}`
+                      : `Mis à jour le ${formatDate(selected.updated_at, "d MMMM yyyy")}`}
+                  </p>
                 </div>
                 <button
                   onClick={() => handleDownloadFile(selected.source_file_url)}
@@ -615,7 +739,7 @@ export default function PolitiqueContent({
                   className="inline-flex items-center gap-2 rounded-[var(--radius)] bg-[var(--navy)] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[var(--navy-dark)] disabled:opacity-50"
                 >
                   <Download className="h-4 w-4" />
-                  {isDownloading ? "Chargement..." : "Telecharger"}
+                  {isDownloading ? "Chargement..." : "Télécharger"}
                 </button>
               </div>
             )}
@@ -634,9 +758,17 @@ export default function PolitiqueContent({
                 <h2 className="mt-3 text-2xl font-bold leading-tight text-white">
                   {selected.title}
                 </h2>
-                <div className="mt-3 flex items-center gap-2 text-[12px] text-white/40">
-                  <Calendar className="h-3.5 w-3.5" />
-                  Mise a jour le {formatDate(selected.updated_at, "d MMMM yyyy")}
+                <div className="mt-3 flex flex-wrap items-center gap-4 text-[12px] text-white/40">
+                  {selected.date_signature && (
+                    <span className="flex items-center gap-1.5">
+                      <Calendar className="h-3.5 w-3.5" />
+                      Signé le {formatDate(selected.date_signature, "d MMMM yyyy")}
+                    </span>
+                  )}
+                  <span className="flex items-center gap-1.5">
+                    <Calendar className="h-3.5 w-3.5" />
+                    Mis à jour le {formatDate(selected.updated_at, "d MMMM yyyy")}
+                  </span>
                 </div>
               </div>
             </div>
@@ -673,7 +805,8 @@ export default function PolitiqueContent({
 
             {/* Footer */}
             <div className="border-t border-[var(--border-1)] pt-4 text-center text-[11px] text-[var(--text-muted)]">
-              Document mis a jour le {formatDate(selected.updated_at, "d MMMM yyyy")}
+              Document mis à jour le {formatDate(selected.updated_at, "d MMMM yyyy")}
+              {selected.date_signature && ` · Signé le ${formatDate(selected.date_signature, "d MMMM yyyy")}`}
             </div>
           </>
         )}
@@ -713,7 +846,7 @@ export default function PolitiqueContent({
             <h3 className="text-sm font-semibold text-[var(--heading)]">Import IA</h3>
           </div>
           <p className="mb-4 text-xs text-[var(--text-muted)]">
-            L&apos;IA va analyser votre document et generer automatiquement le contenu structure.
+            L&apos;IA va analyser votre document et générer automatiquement le contenu structuré.
           </p>
           <FileUploadAi onAnalysisComplete={handleAiResult} type="politique" label="Importer votre politique QSE (PDF ou image)" />
         </div>
@@ -728,7 +861,7 @@ export default function PolitiqueContent({
           </p>
           {canEdit && (
             <p className="mx-auto mt-1 max-w-xs text-sm text-[var(--text-muted)]">
-              Creez une nouvelle politique ou importez un PDF/image pour commencer.
+              Créez une nouvelle politique ou importez un PDF/image pour commencer.
             </p>
           )}
         </div>
@@ -739,10 +872,11 @@ export default function PolitiqueContent({
               <tr className="border-b border-[var(--border-1)] bg-zinc-50/80">
                 <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">Titre</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "80px" }}>Année</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "130px" }}>Signature</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">Piliers</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "130px" }}>Date</th>
                 {canEdit && (
-                  <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "100px" }}>Actions</th>
+                  <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "120px" }}>Actions</th>
                 )}
               </tr>
             </thead>
@@ -767,6 +901,11 @@ export default function PolitiqueContent({
                         {docYear}
                       </span>
                     </td>
+                    <td className="px-4 py-3 text-sm text-[var(--text-muted)]">
+                      {doc.date_signature
+                        ? formatDate(doc.date_signature)
+                        : <span className="text-[var(--text-muted)]/50">—</span>}
+                    </td>
                     <td className="px-4 py-3">
                       <div className="flex flex-wrap gap-1">
                         {docPillars.map((p) => {
@@ -790,6 +929,13 @@ export default function PolitiqueContent({
                     {canEdit && (
                       <td className="px-4 py-3 text-right">
                         <div className="flex items-center justify-end gap-1">
+                          <button
+                            onClick={(e) => { e.stopPropagation(); duplicateDoc(doc); }}
+                            className="rounded-[var(--radius-xs)] p-1.5 text-[var(--text-muted)] transition-colors hover:bg-blue-50 hover:text-blue-600"
+                            title="Dupliquer"
+                          >
+                            <Copy className="h-4 w-4" />
+                          </button>
                           <button
                             onClick={(e) => { e.stopPropagation(); startEditing(doc); }}
                             className="rounded-[var(--radius-xs)] p-1.5 text-[var(--text-muted)] transition-colors hover:bg-amber-50 hover:text-amber-600"

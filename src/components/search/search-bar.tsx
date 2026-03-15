@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useTransition } from "react";
-import { Search, Newspaper, FileText, User, GraduationCap, Calendar, X } from "lucide-react";
+import { Search, Newspaper, FileText, User, GraduationCap, Calendar, X, Shield, AlertCircle, Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { globalSearch, type SearchResult } from "@/actions/search";
 
@@ -43,6 +43,24 @@ const categoryConfig: Record<
     icon: Calendar,
     color: "text-indigo-500",
     bg: "bg-indigo-500/[0.06]",
+  },
+  qse: {
+    label: "Politique QSE",
+    icon: Shield,
+    color: "text-[var(--yellow)]",
+    bg: "bg-[var(--yellow-surface)]",
+  },
+  danger: {
+    label: "Situations dangereuses",
+    icon: AlertCircle,
+    color: "text-[var(--red)]",
+    bg: "bg-[var(--red-surface)]",
+  },
+  rex: {
+    label: "Fiches REX",
+    icon: Eye,
+    color: "text-[var(--navy)]",
+    bg: "bg-[rgba(26,45,78,0.06)]",
   },
 };
 

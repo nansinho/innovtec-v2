@@ -105,7 +105,7 @@ export async function POST(req: NextRequest) {
 
     if (type === "politique") {
       systemPrompt +=
-        ` Analyse ce document de politique QSE et retourne un JSON avec: title (titre du document), year (l'année du document en nombre entier, par exemple 2025 ou 2026 — cherche la date dans le document, souvent en bas comme "Fait à ... le JJ/MM/AAAA"), sections (tableau d'objets {title, content}).
+        ` Analyse ce document de politique QSE et retourne un JSON avec: title (titre du document), year (l'année du document en nombre entier, par exemple 2025 ou 2026 — cherche la date dans le document, souvent en bas comme "Fait à ... le JJ/MM/AAAA"), date_signature (la date complète de signature/parution au format YYYY-MM-DD, extraite du document — souvent en bas comme "Fait à ... le JJ/MM/AAAA" ou "Signé le ..."), sections (tableau d'objets {title, content}).
 IMPORTANT: Structure les sections EXACTEMENT selon les 4 piliers QSE avec engagements ET objectifs séparés:
 - "Présentation générale" (le texte d'introduction du document)
 - "QUALITÉ - Nos engagements" (les engagements qualité, chaque point sur une nouvelle ligne)
