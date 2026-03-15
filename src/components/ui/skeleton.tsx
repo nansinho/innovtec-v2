@@ -21,7 +21,7 @@ export function DataTableSkeleton({
   return (
     <div className="w-full">
       {/* Header */}
-      <div className="flex gap-4 border-b border-[var(--border-1)] px-4 py-3">
+      <div className="flex gap-4 border-b border-[var(--border-1)] bg-[var(--hover)] px-4 py-3.5">
         {Array.from({ length: columns }).map((_, i) => (
           <Skeleton key={i} className="h-4 flex-1" />
         ))}
