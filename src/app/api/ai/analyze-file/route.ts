@@ -109,10 +109,13 @@ export async function POST(req: NextRequest) {
 Analyse ce document (image ou PDF) d'un tableau de bord SSE et extrais TOUTES les données vers le format JSON suivant.
 Utilise 0 si une donnée n'est pas visible ou lisible.
 
-IMPORTANT: Le document contient deux tableaux :
-- Tableau de gauche "Indicateurs" avec les colonnes : Indicateur | Réalisé | Objectif
-- Tableau de droite "Indicateurs de suivi" avec les colonnes : Indicateur | Objectif | Réalisé
-Ne confonds pas les colonnes Objectif et Réalisé.
+IMPORTANT:
+1. Le document contient deux tableaux :
+   - Tableau de gauche "Indicateurs" avec les colonnes : Indicateur | Réalisé | Objectif
+   - Tableau de droite "Indicateurs de suivi" avec les colonnes : Indicateur | Objectif | Réalisé
+   Ne confonds pas les colonnes Objectif et Réalisé.
+2. Tous les textes (bilan mensuel, priorités, vigilances, focus, citation) DOIVENT utiliser les accents français corrects (é, è, ê, à, â, ç, î, ô, û, etc.). Corrige les fautes d'orthographe si nécessaire.
+3. Les valeurs numériques doivent être des nombres (pas de chaînes). Utilise le point comme séparateur décimal (ex: 91.3, pas 91,3). Les pourcentages sont des nombres sans le symbole % (ex: 63 pour 63%).
 
 Retourne UNIQUEMENT un JSON valide avec ces champs :
 {

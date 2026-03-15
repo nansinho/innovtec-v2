@@ -20,7 +20,7 @@ export default async function TableauSsePage() {
           Tableau de Bord SSE
         </h1>
         <p className="mt-1 text-sm text-[var(--text-secondary)]">
-          Visualisez les indicateurs Sante, Securite et Environnement.
+          Visualisez les indicateurs Santé, Sécurité et Environnement.
         </p>
       </div>
 
