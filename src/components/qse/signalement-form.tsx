@@ -116,7 +116,7 @@ export default function SignalementForm({ categories, onCreated, onClose }: Sign
     "w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]";
 
   return (
-    <div className="fixed inset-0 z-[200] flex flex-col bg-black/40 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[200] flex flex-col md:left-[var(--sidebar-width)]">
       <div className="relative flex h-full w-full flex-col bg-[var(--card)]">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[var(--border-1)] px-6 py-4">
@@ -136,7 +136,10 @@ export default function SignalementForm({ categories, onCreated, onClose }: Sign
 
         <div className="flex-1 space-y-5 overflow-y-auto px-6 py-5">
           {/* Anonymous toggle */}
-          <label className="flex cursor-pointer items-center gap-3 rounded-[var(--radius-sm)] border border-[var(--border-1)] p-3 transition-colors hover:bg-[var(--hover)]">
+          <label
+            onClick={() => setForm({ ...form, is_anonymous: !form.is_anonymous })}
+            className="flex cursor-pointer items-center gap-3 rounded-[var(--radius-sm)] border border-[var(--border-1)] p-3 transition-colors hover:bg-[var(--hover)]"
+          >
             <div
               className={cn(
                 "flex h-5 w-9 items-center rounded-full transition-colors",
