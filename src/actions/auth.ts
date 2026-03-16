@@ -156,16 +156,33 @@ export async function requestPasswordReset(email: string): Promise<{ success: bo
     return { success: false, error: "Veuillez saisir votre email" };
   }
 
-  const supabase = await createClient();
+  try {
+    const supabaseAdmin = createAdminClient();
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "";
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "";
+    // Générer un lien de recovery via l'admin API
+    const { data, error } = await supabaseAdmin.auth.admin.generateLink({
+      type: "recovery",
+      email,
+      options: {
+        redirectTo: `${siteUrl}/reset-password`,
+      },
+    });
 
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${siteUrl}/auth/confirm`,
-  });
+    if (error || !data?.properties?.hashed_token) {
+      // Ne pas révéler si l'email existe ou non
+      console.error("[requestPasswordReset]", error?.message ?? "No token");
+      return { success: true };
+    }
 
-  if (error) {
-    console.error("[requestPasswordReset]", error.message);
+    // Construire le lien de confirmation
+    const resetLink = `${siteUrl}/auth/confirm?token_hash=${data.properties.hashed_token}&type=recovery`;
+
+    // Envoyer l'email nous-mêmes via nodemailer
+    const { sendPasswordResetEmail } = await import("@/lib/email");
+    await sendPasswordResetEmail(email, resetLink);
+  } catch (err) {
+    console.error("[requestPasswordReset] Error:", err);
   }
 
   // Toujours retourner success pour ne pas révéler si l'email existe
