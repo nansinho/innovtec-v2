@@ -3,42 +3,35 @@ interface IconProps {
   size?: number;
 }
 
-/**
- * LES FAITS - Cercle beige/kaki avec icône de groupe de personnes (bleu marine)
- * + Badge bleu marine "LES FAITS"
- */
+// ==========================================
+// LES FAITS — Cercle beige/kaki, icône personnes bleu marine
+// ==========================================
 export function RexFaitsIcon({ className, size = 48 }: IconProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
-      {/* Cercle beige/kaki avec contour */}
-      <circle cx="24" cy="24" r="22" fill="#D4C9A8" stroke="#8B7D5E" strokeWidth="1.5" />
-      <circle cx="24" cy="24" r="19" fill="#C5B89A" />
-      {/* Personnes/groupe - bleu marine */}
-      <g fill="#1E3A5F">
-        {/* Personne gauche */}
-        <circle cx="17" cy="17" r="3" />
-        <path d="M11 28 C11 23 14 21 17 21 C20 21 23 23 23 28" />
-        {/* Personne droite */}
-        <circle cx="31" cy="17" r="3" />
-        <path d="M25 28 C25 23 28 21 31 21 C34 21 37 23 37 28" />
-        {/* Connexion/discussion - petites lignes */}
-        <rect x="22" y="14" width="4" height="1" rx="0.5" />
-        <rect x="21" y="17" width="6" height="1" rx="0.5" />
-        <rect x="22" y="20" width="4" height="1" rx="0.5" />
-      </g>
+      <circle cx="24" cy="24" r="23" fill="#C8BC9A" stroke="#9E8E6C" strokeWidth="1" />
+      <circle cx="24" cy="24" r="20" fill="#D4C9A8" />
+      <circle cx="24" cy="24" r="18.5" stroke="#B5A882" strokeWidth="0.5" fill="none" />
+      {/* Personne gauche */}
+      <circle cx="16.5" cy="16" r="3.2" fill="#1E3A5F" />
+      <path d="M10 27.5c0-4.5 2.8-7 6.5-7s6.5 2.5 6.5 7" fill="#1E3A5F" />
+      {/* Personne droite */}
+      <circle cx="31.5" cy="16" r="3.2" fill="#1E3A5F" />
+      <path d="M25 27.5c0-4.5 2.8-7 6.5-7s6.5 2.5 6.5 7" fill="#1E3A5F" />
+      {/* Lignes de discussion entre les deux */}
+      <rect x="21.5" y="14" width="5" height="1.2" rx="0.6" fill="#1E3A5F" opacity="0.7" />
+      <rect x="20.5" y="17" width="7" height="1.2" rx="0.6" fill="#1E3A5F" opacity="0.7" />
+      <rect x="21.5" y="20" width="5" height="1.2" rx="0.6" fill="#1E3A5F" opacity="0.7" />
     </svg>
   );
 }
 
-/**
- * LES FAITS - Version badge complet (icône + label)
- */
 export function RexFaitsBadge({ className }: { className?: string }) {
   return (
-    <div className={`flex items-center gap-0 ${className || ""}`}>
-      <RexFaitsIcon size={44} />
-      <div className="rounded-r-md bg-[#1E3A5F] px-4 py-1.5 -ml-2">
-        <span className="text-[13px] font-extrabold tracking-wide text-white">
+    <div className={`flex items-center ${className || ""}`}>
+      <RexFaitsIcon size={46} />
+      <div className="rounded-r-lg bg-[#1E3A5F] px-5 py-2 -ml-3 shadow-sm">
+        <span className="text-[13px] font-extrabold tracking-wider text-white">
           LES FAITS
         </span>
       </div>
@@ -46,50 +39,27 @@ export function RexFaitsBadge({ className }: { className?: string }) {
   );
 }
 
-/**
- * LES CAUSES ET LES CIRCONSTANCES - Cercle beige/kaki avec "??" rouges
- * + Badge vert olive
- */
+// ==========================================
+// LES CAUSES ET LES CIRCONSTANCES — Cercle beige, "??" rouge foncé
+// ==========================================
 export function RexCausesIcon({ className, size = 48 }: IconProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
-      {/* Cercle beige/kaki avec contour */}
-      <circle cx="24" cy="24" r="22" fill="#D4C9A8" stroke="#8B7D5E" strokeWidth="1.5" />
-      <circle cx="24" cy="24" r="19" fill="#C5B89A" />
-      {/* Double point d'interrogation - rouge foncé */}
-      <text
-        x="16"
-        y="32"
-        fill="#8B1A1A"
-        fontSize="26"
-        fontWeight="900"
-        fontFamily="Inter, Arial, sans-serif"
-      >
-        ?
-      </text>
-      <text
-        x="27"
-        y="32"
-        fill="#8B1A1A"
-        fontSize="26"
-        fontWeight="900"
-        fontFamily="Inter, Arial, sans-serif"
-      >
-        ?
-      </text>
+      <circle cx="24" cy="24" r="23" fill="#C8BC9A" stroke="#9E8E6C" strokeWidth="1" />
+      <circle cx="24" cy="24" r="20" fill="#D4C9A8" />
+      <circle cx="24" cy="24" r="18.5" stroke="#B5A882" strokeWidth="0.5" fill="none" />
+      <text x="13" y="34" fill="#8B1A1A" fontSize="28" fontWeight="900" fontFamily="Arial, Helvetica, sans-serif">?</text>
+      <text x="26" y="34" fill="#8B1A1A" fontSize="28" fontWeight="900" fontFamily="Arial, Helvetica, sans-serif">?</text>
     </svg>
   );
 }
 
-/**
- * LES CAUSES - Version badge complet (icône + label)
- */
 export function RexCausesBadge({ className }: { className?: string }) {
   return (
-    <div className={`flex items-center gap-0 ${className || ""}`}>
-      <RexCausesIcon size={44} />
-      <div className="rounded-r-md bg-[#6B8E23] px-3 py-1 -ml-2">
-        <span className="text-[11px] font-extrabold leading-tight tracking-wide text-white">
+    <div className={`flex items-center ${className || ""}`}>
+      <RexCausesIcon size={46} />
+      <div className="rounded-r-lg bg-[#6B8E23] px-4 py-1.5 -ml-3 shadow-sm">
+        <span className="text-[11px] font-extrabold leading-tight tracking-wider text-white block">
           LES CAUSES
           <br />
           ET LES
@@ -101,44 +71,37 @@ export function RexCausesBadge({ className }: { className?: string }) {
   );
 }
 
-/**
- * LA SYNTHÈSE DES ACTIONS ENGAGÉES - Cercle vert foncé avec document+crayon blanc
- * + Badge orange
- */
+// ==========================================
+// LA SYNTHÈSE DES ACTIONS ENGAGÉES — Cercle vert foncé, doc+crayon blanc
+// ==========================================
 export function RexActionsIcon({ className, size = 48 }: IconProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
-      {/* Cercle vert foncé avec contour */}
-      <circle cx="24" cy="24" r="22" fill="#2E7D32" stroke="#1B5E20" strokeWidth="1.5" />
-      <circle cx="24" cy="24" r="19" fill="#388E3C" />
-      {/* Document avec crayon - blanc */}
-      <g stroke="white" strokeWidth="1.5" fill="none">
-        {/* Document */}
-        <rect x="14" y="11" width="14" height="20" rx="1.5" />
-        {/* Lignes du document */}
-        <line x1="17" y1="16" x2="25" y2="16" strokeWidth="1.2" />
-        <line x1="17" y1="20" x2="25" y2="20" strokeWidth="1.2" />
-        <line x1="17" y1="24" x2="22" y2="24" strokeWidth="1.2" />
-      </g>
-      {/* Crayon */}
-      <g transform="translate(27, 22) rotate(-45)">
-        <rect x="0" y="0" width="4" height="14" rx="0.5" fill="white" />
-        <polygon points="0,14 4,14 2,18" fill="white" />
-        <rect x="0" y="0" width="4" height="3" rx="0.5" fill="#FFC107" />
+      <circle cx="24" cy="24" r="23" fill="#256D28" stroke="#1B5E20" strokeWidth="1" />
+      <circle cx="24" cy="24" r="20" fill="#2E7D32" />
+      <circle cx="24" cy="24" r="18.5" stroke="#3A9140" strokeWidth="0.5" fill="none" />
+      {/* Document */}
+      <rect x="13" y="10" width="15" height="21" rx="1.5" stroke="white" strokeWidth="1.8" fill="none" />
+      {/* Lignes du document */}
+      <line x1="16" y1="15.5" x2="25" y2="15.5" stroke="white" strokeWidth="1.3" strokeLinecap="round" />
+      <line x1="16" y1="19.5" x2="25" y2="19.5" stroke="white" strokeWidth="1.3" strokeLinecap="round" />
+      <line x1="16" y1="23.5" x2="22" y2="23.5" stroke="white" strokeWidth="1.3" strokeLinecap="round" />
+      {/* Crayon incliné */}
+      <g transform="translate(28, 20) rotate(-40)">
+        <rect x="-1.8" y="-1" width="3.6" height="15" rx="0.5" fill="white" />
+        <polygon points="-1.8,14 1.8,14 0,17.5" fill="white" />
+        <rect x="-1.8" y="-1" width="3.6" height="3.5" rx="0.5" fill="#FFC107" />
       </g>
     </svg>
   );
 }
 
-/**
- * LA SYNTHÈSE - Version badge complet (icône + label)
- */
 export function RexActionsBadge({ className }: { className?: string }) {
   return (
-    <div className={`flex items-center gap-0 ${className || ""}`}>
-      <RexActionsIcon size={44} />
-      <div className="rounded-r-md bg-[#E67E22] px-3 py-1 -ml-2">
-        <span className="text-[11px] font-extrabold leading-tight tracking-wide text-white">
+    <div className={`flex items-center ${className || ""}`}>
+      <RexActionsIcon size={46} />
+      <div className="rounded-r-lg bg-[#E67E22] px-4 py-1.5 -ml-3 shadow-sm">
+        <span className="text-[11px] font-extrabold leading-tight tracking-wider text-white block">
           LA SYNTHÈSE DES
           <br />
           ACTIONS ENGAGÉES
@@ -148,40 +111,37 @@ export function RexActionsBadge({ className }: { className?: string }) {
   );
 }
 
-/**
- * LE RAPPEL À VIGILANCE - Cercle vert foncé avec triangle attention orange
- * + Badge jaune
- */
+// ==========================================
+// LE RAPPEL À VIGILANCE — Cercle vert foncé, triangle attention orange
+// ==========================================
 export function RexVigilanceIcon({ className, size = 48 }: IconProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
-      {/* Cercle vert foncé avec contour */}
-      <circle cx="24" cy="24" r="22" fill="#2E7D32" stroke="#1B5E20" strokeWidth="1.5" />
-      <circle cx="24" cy="24" r="19" fill="#388E3C" />
-      {/* Triangle attention - orange */}
+      <circle cx="24" cy="24" r="23" fill="#256D28" stroke="#1B5E20" strokeWidth="1" />
+      <circle cx="24" cy="24" r="20" fill="#2E7D32" />
+      <circle cx="24" cy="24" r="18.5" stroke="#3A9140" strokeWidth="0.5" fill="none" />
+      {/* Triangle attention orange */}
       <path
-        d="M24 10 L38 34 H10 Z"
+        d="M24 8 L40 36 H8 Z"
         fill="#FF9800"
         stroke="#E65100"
-        strokeWidth="1"
+        strokeWidth="1.2"
         strokeLinejoin="round"
       />
-      {/* Point d'exclamation dans le triangle */}
-      <line x1="24" y1="18" x2="24" y2="27" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
-      <circle cx="24" cy="31" r="1.5" fill="white" />
+      {/* Barre du ! */}
+      <line x1="24" y1="16" x2="24" y2="27" stroke="white" strokeWidth="3" strokeLinecap="round" />
+      {/* Point du ! */}
+      <circle cx="24" cy="32" r="1.8" fill="white" />
     </svg>
   );
 }
 
-/**
- * LE RAPPEL À VIGILANCE - Version badge complet (icône + label)
- */
 export function RexVigilanceBadge({ className }: { className?: string }) {
   return (
-    <div className={`flex items-center gap-0 ${className || ""}`}>
-      <RexVigilanceIcon size={44} />
-      <div className="rounded-r-md bg-[#F1C40F] px-3 py-1.5 -ml-2">
-        <span className="text-[12px] font-extrabold leading-tight tracking-wide text-[#333]">
+    <div className={`flex items-center ${className || ""}`}>
+      <RexVigilanceIcon size={46} />
+      <div className="rounded-r-lg bg-[#F1C40F] px-4 py-2 -ml-3 shadow-sm">
+        <span className="text-[12px] font-extrabold leading-tight tracking-wider text-[#333] block">
           LE RAPPEL À
           <br />
           VIGILANCE
@@ -190,3 +150,65 @@ export function RexVigilanceBadge({ className }: { className?: string }) {
     </div>
   );
 }
+
+// ==========================================
+// RAW SVG STRINGS — For PDF export (canvas rendering)
+// ==========================================
+export const REX_BADGE_SVGS = {
+  faits: `<svg width="240" height="56" viewBox="0 0 240 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="28" cy="28" r="27" fill="#C8BC9A" stroke="#9E8E6C" stroke-width="1"/>
+    <circle cx="28" cy="28" r="24" fill="#D4C9A8"/>
+    <circle cx="28" cy="28" r="22" stroke="#B5A882" stroke-width="0.5" fill="none"/>
+    <circle cx="20" cy="19" r="3.8" fill="#1E3A5F"/>
+    <path d="M12 32c0-5.5 3.2-8 8-8s8 2.5 8 8" fill="#1E3A5F"/>
+    <circle cx="36" cy="19" r="3.8" fill="#1E3A5F"/>
+    <path d="M28 32c0-5.5 3.2-8 8-8s8 2.5 8 8" fill="#1E3A5F"/>
+    <rect x="25" y="16" width="6" height="1.5" rx="0.75" fill="#1E3A5F" opacity="0.6"/>
+    <rect x="24" y="20" width="8" height="1.5" rx="0.75" fill="#1E3A5F" opacity="0.6"/>
+    <rect x="25" y="24" width="6" height="1.5" rx="0.75" fill="#1E3A5F" opacity="0.6"/>
+    <rect x="52" y="14" width="110" height="28" rx="6" fill="#1E3A5F"/>
+    <text x="107" y="33" fill="white" font-family="Arial,Helvetica,sans-serif" font-size="16" font-weight="800" text-anchor="middle" letter-spacing="1">LES FAITS</text>
+  </svg>`,
+
+  causes: `<svg width="280" height="60" viewBox="0 0 280 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="30" cy="30" r="29" fill="#C8BC9A" stroke="#9E8E6C" stroke-width="1"/>
+    <circle cx="30" cy="30" r="26" fill="#D4C9A8"/>
+    <circle cx="30" cy="30" r="24" stroke="#B5A882" stroke-width="0.5" fill="none"/>
+    <text x="15" y="42" fill="#8B1A1A" font-family="Arial,Helvetica,sans-serif" font-size="34" font-weight="900">?</text>
+    <text x="32" y="42" fill="#8B1A1A" font-family="Arial,Helvetica,sans-serif" font-size="34" font-weight="900">?</text>
+    <rect x="56" y="6" width="160" height="48" rx="6" fill="#6B8E23"/>
+    <text x="136" y="22" fill="white" font-family="Arial,Helvetica,sans-serif" font-size="12" font-weight="800" text-anchor="middle" letter-spacing="0.5">LES CAUSES</text>
+    <text x="136" y="36" fill="white" font-family="Arial,Helvetica,sans-serif" font-size="12" font-weight="800" text-anchor="middle" letter-spacing="0.5">ET LES</text>
+    <text x="136" y="50" fill="white" font-family="Arial,Helvetica,sans-serif" font-size="12" font-weight="800" text-anchor="middle" letter-spacing="0.5">CIRCONSTANCES</text>
+  </svg>`,
+
+  actions: `<svg width="290" height="60" viewBox="0 0 290 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="30" cy="30" r="29" fill="#256D28" stroke="#1B5E20" stroke-width="1"/>
+    <circle cx="30" cy="30" r="26" fill="#2E7D32"/>
+    <circle cx="30" cy="30" r="24" stroke="#3A9140" stroke-width="0.5" fill="none"/>
+    <rect x="17" y="13" width="17" height="25" rx="2" stroke="white" stroke-width="2" fill="none"/>
+    <line x1="21" y1="19" x2="30" y2="19" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="21" y1="24" x2="30" y2="24" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="21" y1="29" x2="27" y2="29" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+    <g transform="translate(34,25) rotate(-40)">
+      <rect x="-2" y="-1" width="4" height="16" rx="0.5" fill="white"/>
+      <polygon points="-2,15 2,15 0,19" fill="white"/>
+      <rect x="-2" y="-1" width="4" height="4" rx="0.5" fill="#FFC107"/>
+    </g>
+    <rect x="56" y="10" width="185" height="40" rx="6" fill="#E67E22"/>
+    <text x="148" y="28" fill="white" font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="800" text-anchor="middle" letter-spacing="0.5">LA SYNTHESE DES</text>
+    <text x="148" y="44" fill="white" font-family="Arial,Helvetica,sans-serif" font-size="13" font-weight="800" text-anchor="middle" letter-spacing="0.5">ACTIONS ENGAGEES</text>
+  </svg>`,
+
+  vigilance: `<svg width="260" height="60" viewBox="0 0 260 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="30" cy="30" r="29" fill="#256D28" stroke="#1B5E20" stroke-width="1"/>
+    <circle cx="30" cy="30" r="26" fill="#2E7D32"/>
+    <circle cx="30" cy="30" r="24" stroke="#3A9140" stroke-width="0.5" fill="none"/>
+    <path d="M30 9 L48 42 H12 Z" fill="#FF9800" stroke="#E65100" stroke-width="1.2" stroke-linejoin="round"/>
+    <line x1="30" y1="18" x2="30" y2="31" stroke="white" stroke-width="3.5" stroke-linecap="round"/>
+    <circle cx="30" cy="36" r="2" fill="white"/>
+    <rect x="56" y="10" width="145" height="40" rx="6" fill="#F1C40F"/>
+    <text x="128" y="28" fill="#333333" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="800" text-anchor="middle" letter-spacing="0.5">LE RAPPEL A</text>
+    <text x="128" y="44" fill="#333333" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="800" text-anchor="middle" letter-spacing="0.5">VIGILANCE</text>
+  </svg>`,
+};
