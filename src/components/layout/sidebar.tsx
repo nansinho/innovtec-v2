@@ -17,7 +17,6 @@ import {
   Image,
   HelpCircle,
   Settings,
-  Newspaper,
   UserCog,
   ChevronLeft,
   ChevronRight,
@@ -67,7 +66,6 @@ const ressourcesNav = [
 const adminNav = [
   { href: "/admin/users", label: "Utilisateurs", icon: UserCog },
   { href: "/admin/logs", label: "Journal d'activité", icon: ClipboardList },
-  { href: "/admin/news", label: "Actualités", icon: Newspaper },
   { href: "/admin/settings", label: "Paramètres", icon: Settings },
 ];
 

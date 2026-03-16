@@ -1,17 +1,14 @@
 import { getNewsWithViewCounts } from "@/actions/news";
-import { getTodayBirthdays } from "@/actions/birthday";
 import { getProfile } from "@/actions/auth";
 import NewsTable from "@/components/news/news-grid";
-import BirthdayBanner from "@/components/birthday/birthday-banner";
 import Link from "next/link";
 import { Plus } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
 export default async function ActualitesPage() {
-  const [news, birthdays, profile] = await Promise.all([
+  const [news, profile] = await Promise.all([
     getNewsWithViewCounts(),
-    getTodayBirthdays(),
     getProfile(),
   ]);
 
@@ -40,16 +37,6 @@ export default async function ActualitesPage() {
           </Link>
         )}
       </div>
-
-      {/* Birthday banner */}
-      {birthdays.length > 0 && profile && (
-        <div className="mb-6">
-          <BirthdayBanner
-            birthdays={birthdays}
-            currentUserId={profile.id}
-          />
-        </div>
-      )}
 
       {/* News table */}
       <NewsTable news={news} />
