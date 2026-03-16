@@ -4,6 +4,7 @@ import { randomUUID } from "crypto";
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import type { BonnePratique } from "@/lib/types/database";
+import { createNotificationForAll } from "@/actions/notifications";
 
 export async function getBonnesPratiques(): Promise<BonnePratique[]> {
   const supabase = await createClient();
@@ -40,6 +41,15 @@ export async function createBonnePratique(bp: {
   });
 
   if (error) return { success: false, error: error.message };
+
+  // Notify all users about new bonne pratique
+  await createNotificationForAll({
+    type: "system",
+    title: "Nouvelle bonne pratique",
+    message: bp.title,
+    link: "/qse/bonnes-pratiques",
+    excludeUserId: user.id,
+  });
 
   revalidatePath("/qse/bonnes-pratiques");
   revalidatePath("/qse");

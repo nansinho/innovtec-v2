@@ -212,12 +212,39 @@ export async function updateActionPlan(
     updateData.completed_at = new Date().toISOString();
   }
 
+  // Get current plan info before update for notification
+  const { data: currentPlan } = await supabase
+    .from("action_plans")
+    .select("title, status, responsible_id")
+    .eq("id", id)
+    .single();
+
   const { error } = await supabase
     .from("action_plans")
     .update(updateData)
     .eq("id", id);
 
   if (error) return { success: false, error: error.message };
+
+  // Notify responsible if status changed
+  if (planData.status && currentPlan && planData.status !== currentPlan.status) {
+    const statusLabels: Record<string, string> = {
+      a_faire: "À faire",
+      en_cours: "En cours",
+      termine: "Terminé",
+    };
+    const recipientId = planData.responsible_id ?? currentPlan.responsible_id;
+    if (recipientId && recipientId !== profile.id) {
+      await createNotificationForUser({
+        user_id: recipientId,
+        type: "action_plan",
+        title: "Plan d'action mis à jour",
+        message: `Le plan "${currentPlan.title}" est passé en statut : ${statusLabels[planData.status] ?? planData.status}`,
+        link: `/qse/plans/${id}`,
+        related_id: id,
+      });
+    }
+  }
 
   revalidateAll();
   return { success: true };
