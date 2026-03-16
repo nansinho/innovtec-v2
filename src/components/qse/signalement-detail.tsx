@@ -104,7 +104,7 @@ export default function SignalementDetail({
           {/* Header card */}
           <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] p-6 shadow-xs">
             <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
-              <h1 className="text-xl font-semibold text-[var(--heading)]">{signalement.title}</h1>
+              <h1 className="text-base font-semibold text-[var(--heading)]">{signalement.title}</h1>
               <StatusBadge module="signalements" status={signalement.status} />
             </div>
 
@@ -155,7 +155,7 @@ export default function SignalementDetail({
             </div>
 
             <div className="border-t border-[var(--border-1)] pt-4">
-              <h3 className="mb-2 text-xs font-medium uppercase tracking-wider text-[var(--text-muted)]">
+              <h3 className="mb-2 text-xs font-medium text-[var(--text-muted)]">
                 Description
               </h3>
               <p className="whitespace-pre-wrap text-sm leading-relaxed text-[var(--text-secondary)]">
@@ -167,7 +167,7 @@ export default function SignalementDetail({
           {/* Photos */}
           {photos.length > 0 && (
             <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] p-6 shadow-xs">
-              <h3 className="mb-3 text-xs font-medium uppercase tracking-wider text-[var(--text-muted)]">
+              <h3 className="mb-3 text-xs font-medium text-[var(--text-muted)]">
                 Photos ({photos.length})
               </h3>
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
@@ -186,7 +186,7 @@ export default function SignalementDetail({
 
           {/* Status timeline */}
           <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] p-6 shadow-xs">
-            <h3 className="mb-4 text-xs font-medium uppercase tracking-wider text-[var(--text-muted)]">
+            <h3 className="mb-4 text-xs font-medium text-[var(--text-muted)]">
               Suivi du signalement
             </h3>
             <div className="flex items-center gap-0">
@@ -238,7 +238,7 @@ export default function SignalementDetail({
           <div className="space-y-4">
             {/* Status */}
             <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] p-5 shadow-xs">
-              <h3 className="mb-3 text-xs font-medium uppercase tracking-wider text-[var(--text-muted)]">
+              <h3 className="mb-3 text-xs font-medium text-[var(--text-muted)]">
                 Changer le statut
               </h3>
               <select
@@ -256,7 +256,7 @@ export default function SignalementDetail({
 
             {/* Assign */}
             <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] p-5 shadow-xs">
-              <h3 className="mb-3 text-xs font-medium uppercase tracking-wider text-[var(--text-muted)]">
+              <h3 className="mb-3 text-xs font-medium text-[var(--text-muted)]">
                 Assigner à
               </h3>
               <select
@@ -282,7 +282,7 @@ export default function SignalementDetail({
             {/* Link to action plan */}
             {!signalement.action_plan_id && actionPlans.length > 0 && (
               <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] p-5 shadow-xs">
-                <h3 className="mb-3 text-xs font-medium uppercase tracking-wider text-[var(--text-muted)]">
+                <h3 className="mb-3 text-xs font-medium text-[var(--text-muted)]">
                   Lier à un plan d&apos;action
                 </h3>
                 <select
@@ -305,7 +305,7 @@ export default function SignalementDetail({
             {/* Linked plan */}
             {signalement.action_plan_id && (
               <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] p-5 shadow-xs">
-                <h3 className="mb-3 text-xs font-medium uppercase tracking-wider text-[var(--text-muted)]">
+                <h3 className="mb-3 text-xs font-medium text-[var(--text-muted)]">
                   Plan d&apos;action lié
                 </h3>
                 <button

@@ -20,17 +20,17 @@ export default async function ActualitesPage() {
     <div className="px-7 py-6 pb-20 md:pb-7">
       <div className="mb-6 flex items-start justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-[var(--heading)]">
+          <h1 className="text-base font-semibold text-[var(--heading)]">
             Actualités
           </h1>
-          <p className="mt-1 text-sm text-[var(--text-secondary)]">
+          <p className="mt-1 text-[13px] text-[var(--text-secondary)]">
             Les dernières nouvelles de l&apos;entreprise
           </p>
         </div>
         {canCreate && (
           <Link
             href="/actualites/creer"
-            className="inline-flex items-center gap-2 rounded-lg bg-[var(--yellow)] px-4 py-2 text-sm font-medium text-white shadow-sm transition-all hover:bg-[var(--yellow-hover)] active:scale-[0.98]"
+            className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-[var(--yellow)] px-3 text-xs font-medium text-white shadow-sm transition-all hover:bg-[var(--yellow-hover)] active:scale-[0.98]"
           >
             <Plus className="h-4 w-4" />
             Créer un article

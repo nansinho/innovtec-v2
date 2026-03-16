@@ -122,7 +122,7 @@ export default function ProfileDrawer({
               <div className="flex items-center gap-3 rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--hover)] px-4 py-3">
                 <Building2 className="h-4 w-4 shrink-0 text-[var(--navy)]" />
                 <div>
-                  <p className="text-[10px] font-medium uppercase tracking-wider text-[var(--text-muted)]">
+                  <p className="text-[10px] font-medium text-[var(--text-muted)]">
                     Département
                   </p>
                   <p className="text-[13px] font-medium text-[var(--heading)]">
@@ -136,7 +136,7 @@ export default function ProfileDrawer({
               <div className="flex items-center gap-3 rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--hover)] px-4 py-3">
                 <Users className="h-4 w-4 shrink-0 text-[var(--navy)]" />
                 <div>
-                  <p className="text-[10px] font-medium uppercase tracking-wider text-[var(--text-muted)]">
+                  <p className="text-[10px] font-medium text-[var(--text-muted)]">
                     Équipe
                   </p>
                   <p className="text-[13px] font-medium text-[var(--heading)]">
@@ -150,7 +150,7 @@ export default function ProfileDrawer({
               <div className="flex items-center gap-3 rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--hover)] px-4 py-3">
                 <MapPin className="h-4 w-4 shrink-0 text-[var(--navy)]" />
                 <div>
-                  <p className="text-[10px] font-medium uppercase tracking-wider text-[var(--text-muted)]">
+                  <p className="text-[10px] font-medium text-[var(--text-muted)]">
                     Agence
                   </p>
                   <p className="text-[13px] font-medium text-[var(--heading)]">
@@ -164,7 +164,7 @@ export default function ProfileDrawer({
               <div className="flex items-center gap-3 rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--hover)] px-4 py-3">
                 <Calendar className="h-4 w-4 shrink-0 text-[var(--navy)]" />
                 <div>
-                  <p className="text-[10px] font-medium uppercase tracking-wider text-[var(--text-muted)]">
+                  <p className="text-[10px] font-medium text-[var(--text-muted)]">
                     Date d&apos;arrivée
                   </p>
                   <p className="text-[13px] font-medium text-[var(--heading)]">
@@ -181,7 +181,7 @@ export default function ProfileDrawer({
 
           {/* Contact */}
           <div className="mt-5">
-            <p className="mb-2.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+            <p className="mb-2.5 text-[10px] font-semibold text-[var(--text-muted)]">
               Contact
             </p>
             <div className="space-y-2">

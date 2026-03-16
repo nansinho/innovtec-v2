@@ -120,7 +120,7 @@ export default function ActionPlanForm({
         <div className="flex-1 space-y-4 overflow-y-auto px-6 py-5">
           {/* Title */}
           <div>
-            <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-[var(--text-secondary)]">
+            <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">
               Titre <span className="text-[var(--red)]">*</span>
             </label>
             <input
@@ -133,7 +133,7 @@ export default function ActionPlanForm({
 
           {/* Description */}
           <div>
-            <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-[var(--text-secondary)]">
+            <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">
               Description
             </label>
             <textarea
@@ -148,7 +148,7 @@ export default function ActionPlanForm({
           {/* Type + Priority */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-[var(--text-secondary)]">
+              <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">
                 Type
               </label>
               <select
@@ -164,7 +164,7 @@ export default function ActionPlanForm({
               </select>
             </div>
             <div>
-              <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-[var(--text-secondary)]">
+              <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">
                 Priorité <span className="text-[var(--red)]">*</span>
               </label>
               <select
@@ -184,7 +184,7 @@ export default function ActionPlanForm({
           {/* Responsible + Due date */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-[var(--text-secondary)]">
+              <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">
                 Responsable
               </label>
               <select
@@ -201,7 +201,7 @@ export default function ActionPlanForm({
               </select>
             </div>
             <div>
-              <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-[var(--text-secondary)]">
+              <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">
                 Échéance <span className="text-[var(--red)]">*</span>
               </label>
               <input
@@ -216,7 +216,7 @@ export default function ActionPlanForm({
           {/* Link signalement (only on create) */}
           {!isEdit && unresolvedSignalements.length > 0 && (
             <div>
-              <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-[var(--text-secondary)]">
+              <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">
                 Lier un signalement (optionnel)
               </label>
               <select

@@ -15,7 +15,7 @@ export type BadgeVariant =
 export type BadgeSize = "default" | "sm" | "lg";
 
 const badgeVariants = cva(
-  "inline-flex items-center gap-1 rounded-full font-medium tracking-wide border-[1.5px] bg-transparent transition-colors",
+  "inline-flex items-center gap-1 rounded-full font-medium border bg-transparent transition-colors",
   {
     variants: {
       variant: {
@@ -39,9 +39,9 @@ const badgeVariants = cva(
           "border-zinc-400 text-zinc-600 dark:border-zinc-500 dark:text-zinc-400",
       },
       size: {
-        default: "px-2.5 py-0.5 text-xs",
-        sm: "px-2 py-[1px] text-[11px]",
-        lg: "px-3 py-1 text-[13px]",
+        default: "px-2 py-[1px] text-[11px]",
+        sm: "px-1.5 py-px text-[10px]",
+        lg: "px-2.5 py-0.5 text-xs",
       },
     },
     defaultVariants: {

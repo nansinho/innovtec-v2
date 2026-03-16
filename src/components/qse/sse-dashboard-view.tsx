@@ -298,9 +298,9 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
               <table className="w-full text-left text-sm">
                 <thead>
                   <tr className="bg-[var(--navy)]">
-                    <th className="px-4 py-2.5 text-xs font-semibold text-white">Indicateurs</th>
-                    <th className="px-4 py-2.5 text-center text-xs font-semibold text-white">Réalisé</th>
-                    <th className="px-4 py-2.5 text-center text-xs font-semibold text-white">Objectif {d.year}</th>
+                    <th className="px-4 py-2.5 text-xs font-medium text-white">Indicateurs</th>
+                    <th className="px-4 py-2.5 text-center text-xs font-medium text-white">Réalisé</th>
+                    <th className="px-4 py-2.5 text-center text-xs font-medium text-white">Objectif {d.year}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[var(--border-1)]">
@@ -320,9 +320,9 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
               <table className="w-full text-left text-sm">
                 <thead>
                   <tr className="bg-[var(--navy)]">
-                    <th className="px-4 py-2.5 text-xs font-semibold text-white">Indicateurs de suivi</th>
-                    <th className="px-4 py-2.5 text-center text-xs font-semibold text-white">Objectif</th>
-                    <th className="px-4 py-2.5 text-center text-xs font-semibold text-white">Réalisé</th>
+                    <th className="px-4 py-2.5 text-xs font-medium text-white">Indicateurs de suivi</th>
+                    <th className="px-4 py-2.5 text-center text-xs font-medium text-white">Objectif</th>
+                    <th className="px-4 py-2.5 text-center text-xs font-medium text-white">Réalisé</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[var(--border-1)]">
