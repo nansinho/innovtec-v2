@@ -2,6 +2,7 @@
 
 import { randomUUID } from "crypto";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
 import type { DangerReport, Rex, QseContent, QseContentSection, QseDocument } from "@/lib/types/database";
 
@@ -484,6 +485,14 @@ export async function uploadRexPhoto(
   const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
   const section = (formData.get("section") as string) || "photo";
   const filePath = `qse/rex/${section}-${Date.now()}-${randomUUID()}.${ext}`;
+
+  // Ensure documents bucket is public
+  const adminClient = createAdminClient();
+  const { data: buckets } = await adminClient.storage.listBuckets();
+  const existingBucket = buckets?.find((b) => b.id === "documents");
+  if (existingBucket && !existingBucket.public) {
+    await adminClient.storage.updateBucket("documents", { public: true });
+  }
 
   const { error } = await supabase.storage
     .from("documents")
