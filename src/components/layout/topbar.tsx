@@ -7,6 +7,7 @@ import Link from "next/link";
 
 import { signOut } from "@/actions/auth";
 import type { Profile } from "@/lib/types/database";
+import { useNotifications } from "@/components/notifications/notification-provider";
 import NotificationSidebar from "@/components/notifications/notification-sidebar";
 import SearchBar from "@/components/search/search-bar";
 
@@ -37,11 +38,11 @@ const breadcrumbLabels: Record<string, string> = {
 
 interface TopbarProps {
   profile: Profile | null;
-  unreadCount?: number;
 }
 
-export default function Topbar({ profile, unreadCount = 0 }: TopbarProps) {
+export default function Topbar({ profile }: TopbarProps) {
   const [notifOpen, setNotifOpen] = useState(false);
+  const { unreadCount } = useNotifications();
   const pathname = usePathname();
 
   const displayName = profile

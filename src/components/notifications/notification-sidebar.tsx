@@ -19,12 +19,12 @@ import {
 } from "lucide-react";
 import { cn, formatRelative } from "@/lib/utils";
 import {
-  getMyNotifications,
   markAsRead,
   markAllAsRead,
   deleteNotification,
 } from "@/actions/notifications";
-import type { Notification, NotificationType } from "@/lib/types/database";
+import { useNotifications } from "@/components/notifications/notification-provider";
+import type { NotificationType } from "@/lib/types/database";
 
 const typeConfig: Record<
   NotificationType,
@@ -50,41 +50,41 @@ export default function NotificationSidebar({
   isOpen,
   onClose,
 }: NotificationSidebarProps) {
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const {
+    notifications,
+    unreadCount,
+    refreshNotifications,
+    markAsReadLocal,
+    markAllAsReadLocal,
+    deleteLocal,
+  } = useNotifications();
   const [filter, setFilter] = useState<"all" | "unread">("all");
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     if (isOpen) {
-      loadNotifications();
+      refreshNotifications();
     }
-  }, [isOpen]);
-
-  async function loadNotifications() {
-    const data = await getMyNotifications();
-    setNotifications(data);
-  }
+  }, [isOpen, refreshNotifications]);
 
   function handleMarkAsRead(id: string) {
     startTransition(async () => {
+      markAsReadLocal(id);
       await markAsRead(id);
-      setNotifications((prev) =>
-        prev.map((n) => (n.id === id ? { ...n, is_read: true } : n))
-      );
     });
   }
 
   function handleMarkAllAsRead() {
     startTransition(async () => {
+      markAllAsReadLocal();
       await markAllAsRead();
-      setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
     });
   }
 
   function handleDelete(id: string) {
     startTransition(async () => {
+      deleteLocal(id);
       await deleteNotification(id);
-      setNotifications((prev) => prev.filter((n) => n.id !== id));
     });
   }
 
@@ -92,8 +92,6 @@ export default function NotificationSidebar({
     filter === "unread"
       ? notifications.filter((n) => !n.is_read)
       : notifications;
-
-  const unreadCount = notifications.filter((n) => !n.is_read).length;
 
   return (
     <>

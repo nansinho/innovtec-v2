@@ -3,6 +3,7 @@ import Topbar from "@/components/layout/topbar";
 import MobileNav from "@/components/layout/mobile-nav";
 import BirthdayPopupWrapper from "@/components/birthday/birthday-popup-wrapper";
 import PasswordChangeAlert from "@/components/profil/password-change-alert";
+import NotificationProvider from "@/components/notifications/notification-provider";
 import { getProfile } from "@/actions/auth";
 import { getUnreadCount } from "@/actions/notifications";
 import { isMyBirthday, getMyBirthdayWishes } from "@/actions/birthday";
@@ -40,10 +41,10 @@ export default async function DashboardLayout({
     : "Collaborateur";
 
   return (
-    <>
+    <NotificationProvider userId={profile?.id ?? ""} initialCount={unreadCount}>
       <Sidebar profile={profile} logos={logos} />
       <div className="min-h-screen transition-all duration-300 ease-out md:ml-[var(--sidebar-width)]">
-        <Topbar profile={profile} unreadCount={unreadCount} />
+        <Topbar profile={profile} />
         <main>{children}</main>
       </div>
       <MobileNav />
@@ -51,6 +52,6 @@ export default async function DashboardLayout({
       {isBirthday && (
         <BirthdayPopupWrapper wishes={wishes} userName={userName} />
       )}
-    </>
+    </NotificationProvider>
   );
 }
