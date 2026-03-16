@@ -25,6 +25,7 @@ export default function ResetPasswordsButton() {
       setError(res.error ?? "Erreur inconnue");
     } else {
       setResult({ ok: res.ok, failed: res.failed, total: res.total });
+      if (res.error) setError(res.error);
     }
     setLoading(false);
   }
