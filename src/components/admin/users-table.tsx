@@ -18,6 +18,8 @@ import {
 import { toast } from "sonner";
 import { updateUserRole, toggleUserActive, deleteUser } from "@/actions/users";
 import { updateUserJobTitle, addJobTitle, type JobTitle } from "@/actions/job-titles";
+import type { Department } from "@/actions/departments";
+import type { Team } from "@/actions/teams";
 import { DropdownMenu } from "@/components/ui/dropdown-menu";
 import type { Profile, UserRole } from "@/lib/types/database";
 import ConfirmDialog from "@/components/ui/confirm-dialog";
@@ -43,9 +45,11 @@ interface UsersTableProps {
   currentUserId: string;
   currentUserRole: string;
   jobTitles: JobTitle[];
+  departments: Department[];
+  teams: Team[];
 }
 
-export default function UsersTable({ users, currentUserId, currentUserRole, jobTitles: initialJobTitles }: UsersTableProps) {
+export default function UsersTable({ users, currentUserId, currentUserRole, jobTitles: initialJobTitles, departments, teams }: UsersTableProps) {
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -525,6 +529,9 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
         open={formModal.open}
         onClose={() => setFormModal({ open: false, user: null })}
         user={formModal.user}
+        jobTitles={jobTitles}
+        departments={departments}
+        teams={teams}
       />
 
       {/* Confirm Dialog */}
