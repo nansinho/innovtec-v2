@@ -98,6 +98,15 @@ export async function saveQseContent(
 
   revalidatePath("/qse/politique");
   revalidatePath("/qse");
+
+  await createNotificationForAll({
+    type: "system",
+    title: id ? "Contenu QSE mis à jour" : "Nouveau contenu QSE",
+    message: title,
+    link: "/qse/politique",
+    excludeUserId: user.id,
+  });
+
   return { success: true };
 }
 
@@ -139,6 +148,15 @@ export async function createQseContent(
 
   revalidatePath("/qse/politique");
   revalidatePath("/qse");
+
+  await createNotificationForAll({
+    type: "system",
+    title: "Nouveau contenu QSE",
+    message: title,
+    link: "/qse/politique",
+    excludeUserId: user.id,
+  });
+
   return { success: true };
 }
 
