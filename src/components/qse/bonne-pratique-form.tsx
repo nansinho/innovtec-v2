@@ -217,9 +217,13 @@ export default function BonnePratiqueForm({ onCreated, onClose }: BonnePratiqueF
       return;
     }
 
+    console.log("[BP-Form] handleSubmit called, form:", JSON.stringify({ title: form.title, pillar: form.pillar, descLen: form.description.length }));
+
     startTransition(async () => {
       try {
+        console.log("[BP-Form] Calling createBonnePratique...");
         const result = await createBonnePratique(form);
+        console.log("[BP-Form] Result:", JSON.stringify(result));
         if (result.success) {
           toast.success("Bonne pratique enregistrée");
           onCreated();
@@ -227,8 +231,8 @@ export default function BonnePratiqueForm({ onCreated, onClose }: BonnePratiqueF
           toast.error(result.error || "Erreur lors de l'enregistrement");
         }
       } catch (err) {
-        console.error("handleSubmit error:", err);
-        toast.error("Erreur lors de l'enregistrement");
+        console.error("[BP-Form] handleSubmit error:", err);
+        toast.error("Erreur lors de l'enregistrement : " + String(err));
       }
     });
   }

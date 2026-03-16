@@ -32,74 +32,62 @@ export async function createBonnePratique(bp: {
   safety_impact?: string;
   source_file_url?: string;
 }): Promise<{ success: boolean; error?: string }> {
+  console.log("[BP] createBonnePratique called with title:", bp.title);
+
   try {
     const supabase = await createClient();
     const {
       data: { user },
     } = await supabase.auth.getUser();
-    if (!user) return { success: false, error: "Non authentifié" };
 
-    // Use admin client to bypass RLS for insert
+    if (!user) {
+      console.log("[BP] User not authenticated");
+      return { success: false, error: "Non authentifié" };
+    }
+    console.log("[BP] User:", user.id);
+
+    // Use admin client to bypass RLS
     const adminSupabase = createAdminClient();
+    console.log("[BP] Admin client created");
 
-    // Base payload (always works with original schema)
-    const payload: Record<string, unknown> = {
+    // Insert with base columns only (guaranteed to work)
+    const { error } = await adminSupabase.from("bonnes_pratiques").insert({
       title: bp.title,
       pillar: bp.pillar,
-      category: bp.category,
+      category: bp.category || "",
       description: bp.description,
-      chantier: bp.chantier,
-      photos: bp.photos,
+      chantier: bp.chantier || "",
+      photos: bp.photos || [],
       author_id: user.id,
-    };
+    });
 
-    // Add extended fields if they have values (requires migration)
-    if (bp.cover_photo) payload.cover_photo = bp.cover_photo;
-    if (bp.difficulty) payload.difficulty = bp.difficulty;
-    if (bp.priority) payload.priority = bp.priority;
-    if (bp.cost_impact) payload.cost_impact = bp.cost_impact;
-    if (bp.environmental_impact) payload.environmental_impact = bp.environmental_impact;
-    if (bp.safety_impact) payload.safety_impact = bp.safety_impact;
-    if (bp.source_file_url) payload.source_file_url = bp.source_file_url;
-
-    let { error } = await adminSupabase.from("bonnes_pratiques").insert(payload);
-
-    // Fallback: if extended fields cause error, retry with base fields only
     if (error) {
-      console.error("Insert with extended fields failed:", error.message);
-      const basePayload = {
-        title: bp.title,
-        pillar: bp.pillar,
-        category: bp.category,
-        description: bp.description,
-        chantier: bp.chantier,
-        photos: bp.photos,
-        author_id: user.id,
-      };
-      const fallback = await adminSupabase.from("bonnes_pratiques").insert(basePayload);
-      error = fallback.error;
-      if (error) {
-        console.error("Fallback insert also failed:", error.message);
-      }
+      console.error("[BP] Insert failed:", error.message, error.details, error.hint);
+      return { success: false, error: error.message };
     }
 
-    if (error) return { success: false, error: error.message };
+    console.log("[BP] Insert successful");
 
-    // Notify all users about new bonne pratique
-    await createNotificationForAll({
-      type: "system",
-      title: "Nouvelle bonne pratique",
-      message: bp.title,
-      link: "/qse/bonnes-pratiques",
-      excludeUserId: user.id,
-    });
+    // Notify (non-blocking — don't let notification failure break the save)
+    try {
+      await createNotificationForAll({
+        type: "system",
+        title: "Nouvelle bonne pratique",
+        message: bp.title,
+        link: "/qse/bonnes-pratiques",
+        excludeUserId: user.id,
+      });
+    } catch (notifErr) {
+      console.error("[BP] Notification failed (non-blocking):", notifErr);
+    }
 
     revalidatePath("/qse/bonnes-pratiques");
     revalidatePath("/qse");
+    console.log("[BP] Returning success");
     return { success: true };
   } catch (err) {
-    console.error("createBonnePratique exception:", err);
-    return { success: false, error: "Erreur inattendue lors de l'enregistrement" };
+    console.error("[BP] Exception:", err);
+    return { success: false, error: String(err) };
   }
 }
 
