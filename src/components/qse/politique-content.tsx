@@ -1126,10 +1126,10 @@ export default function PolitiqueContent({
   return (
     <div>
       {/* Header — style C&CO */}
-      <div className="mb-5 flex flex-wrap items-start justify-between gap-4">
+      <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="text-base font-semibold text-[var(--heading)]">Politique QSE</h1>
-          <p className="mt-1 text-[13px] text-[var(--text-secondary)]">
+          <p className="mt-0.5 text-[13px] text-[var(--text-secondary)]">
             La politique Qualité, Sécurité et Environnement d&apos;INNOVTEC Réseaux.
           </p>
         </div>
@@ -1137,13 +1137,13 @@ export default function PolitiqueContent({
           <div className="flex items-center gap-2">
             <button
               onClick={() => { setShowUpload(!showUpload); setEditingId(null); }}
-              className="inline-flex h-9 items-center gap-2 rounded-lg border border-[var(--border-1)] bg-white px-3 text-sm font-medium text-[var(--text-secondary)] shadow-xs transition-all hover:bg-zinc-50 hover:text-[var(--heading)] hover:border-zinc-300 active:scale-[0.97]"
+              className="inline-flex h-7 items-center gap-1.5 rounded-lg border border-[var(--border-1)] bg-white px-2.5 text-[11px] font-medium text-[var(--text-secondary)] shadow-xs transition-all hover:bg-zinc-50 hover:text-[var(--heading)] hover:border-zinc-300 active:scale-[0.97]"
             >
-              <Sparkles className="h-4 w-4" />
+              <Sparkles className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">Importer (IA)</span>
             </button>
-            <Button onClick={startNew}>
-              <Plus className="h-4 w-4" />
+            <Button size="sm" onClick={startNew}>
+              <Plus className="h-3.5 w-3.5" />
               Nouvelle politique QSE
             </Button>
           </div>
@@ -1179,18 +1179,18 @@ export default function PolitiqueContent({
           )}
         </div>
       ) : (
-        <div className="overflow-hidden rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] shadow-sm">
+        <div className="overflow-hidden rounded-xl border border-[var(--border-1)] bg-[var(--card)] shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b border-[var(--border-2)] bg-[var(--hover)]">
-                <th className="px-4 py-3 text-left text-[11px] font-medium text-[var(--text-muted)]">Titre</th>
-                <th className="px-4 py-3 text-left text-[11px] font-medium text-[var(--text-muted)]" style={{ width: "80px" }}>Année</th>
-                <th className="px-4 py-3 text-left text-[11px] font-medium text-[var(--text-muted)]" style={{ width: "130px" }}>Signature</th>
-                <th className="px-4 py-3 text-left text-[11px] font-medium text-[var(--text-muted)]">Piliers</th>
-                <th className="px-4 py-3 text-left text-[11px] font-medium text-[var(--text-muted)]" style={{ width: "130px" }}>Date</th>
+                <th className="px-3 py-2 text-left text-[11px] font-medium text-[var(--text-muted)]">Titre</th>
+                <th className="px-3 py-2 text-left text-[11px] font-medium text-[var(--text-muted)]" style={{ width: "80px" }}>Année</th>
+                <th className="px-3 py-2 text-left text-[11px] font-medium text-[var(--text-muted)]" style={{ width: "130px" }}>Signature</th>
+                <th className="px-3 py-2 text-left text-[11px] font-medium text-[var(--text-muted)]">Piliers</th>
+                <th className="px-3 py-2 text-left text-[11px] font-medium text-[var(--text-muted)]" style={{ width: "130px" }}>Date</th>
                 {canEdit && (
-                  <th className="px-4 py-3 text-right text-[11px] font-medium text-[var(--text-muted)]" style={{ width: "120px" }}>Actions</th>
+                  <th className="px-3 py-2 text-right text-[11px] font-medium text-[var(--text-muted)]" style={{ width: "120px" }}>Actions</th>
                 )}
               </tr>
             </thead>
@@ -1205,22 +1205,22 @@ export default function PolitiqueContent({
                     onClick={() => setSelectedId(doc.id)}
                     className="cursor-pointer transition-colors duration-150 hover:bg-[var(--hover)]"
                   >
-                    <td className="px-4 py-3.5">
-                      <span className="text-sm font-medium text-[var(--heading)]">
+                    <td className="px-3 py-2">
+                      <span className="text-[13px] font-medium text-[var(--heading)]">
                         {doc.title}
                       </span>
                     </td>
-                    <td className="px-4 py-3.5">
+                    <td className="px-3 py-2">
                       <Badge variant="amber">
                         {docYear}
                       </Badge>
                     </td>
-                    <td className="px-4 py-3.5 text-sm text-[var(--text-muted)]">
+                    <td className="px-3 py-2 text-[13px] text-[var(--text-muted)]">
                       {doc.date_signature
                         ? formatDate(doc.date_signature)
                         : <span className="text-[var(--text-muted)]/50">—</span>}
                     </td>
-                    <td className="px-4 py-3.5">
+                    <td className="px-3 py-2">
                       <div className="flex flex-wrap gap-1.5">
                         {docPillars.map((p) => {
                           const Icon = p.icon;
@@ -1242,11 +1242,11 @@ export default function PolitiqueContent({
                         })}
                       </div>
                     </td>
-                    <td className="px-4 py-3.5 text-sm text-[var(--text-muted)]">
+                    <td className="px-3 py-2 text-[13px] text-[var(--text-muted)]">
                       {formatDate(doc.updated_at)}
                     </td>
                     {canEdit && (
-                      <td className="px-4 py-3.5 text-right">
+                      <td className="px-3 py-2 text-right">
                         <DropdownMenu
                           items={[
                             { label: "Dupliquer", icon: Copy, onClick: () => duplicateDoc(doc) },
@@ -1261,7 +1261,7 @@ export default function PolitiqueContent({
               })}
             </tbody>
           </table>
-          <div className="border-t border-[var(--border-1)] px-4 py-3 text-xs text-[var(--text-muted)]">
+          <div className="border-t border-[var(--border-1)] px-3 py-2 text-[11px] text-[var(--text-muted)]">
             {allContent.length} politique{allContent.length > 1 ? "s" : ""} QSE
           </div>
         </div>
