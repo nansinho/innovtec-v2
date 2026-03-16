@@ -54,3 +54,34 @@ export async function addDepartment(
 
   return { success: true, department: data as Department };
 }
+
+export async function deleteDepartment(
+  id: string
+): Promise<{ success: boolean; error?: string }> {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { success: false, error: "Non authentifié" };
+
+  const { data: callerProfile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
+  if (!callerProfile || !["admin", "rh"].includes(callerProfile.role)) {
+    return { success: false, error: "Accès refusé" };
+  }
+
+  const supabaseAdmin = createAdminClient();
+  const { error } = await supabaseAdmin
+    .from("departments")
+    .delete()
+    .eq("id", id);
+
+  if (error) return { success: false, error: error.message };
+
+  return { success: true };
+}
