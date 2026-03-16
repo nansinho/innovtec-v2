@@ -88,7 +88,7 @@ export function SseDashboardManager({ dashboards: initialDashboards }: SseDashbo
       </div>
 
       {dashboards.length === 0 ? (
-        <div className="flex flex-col items-center rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] py-16 text-center shadow-xs">
+        <div className="flex flex-col items-center rounded-xl border border-[var(--border-1)] bg-[var(--card)] py-16 text-center shadow-xs">
           <div className="flex h-14 w-14 items-center justify-center rounded-2xl" style={{ background: "rgba(26, 45, 78, 0.06)" }}>
             <Calendar className="h-7 w-7 text-[var(--navy)]" />
           </div>

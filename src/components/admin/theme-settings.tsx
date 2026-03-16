@@ -77,7 +77,7 @@ export default function ThemeSettings() {
   const currentColorLight = `hsl(${hue}, ${sat}%, 95%)`;
 
   return (
-    <div className="rounded-2xl bg-white/92 p-6 shadow-[0_1px_4px_rgba(0,0,0,0.04)] ring-1 ring-black/[0.03] backdrop-blur-xl">
+    <div className="rounded-xl bg-white/92 p-6 shadow-[0_1px_4px_rgba(0,0,0,0.04)] ring-1 ring-black/[0.03] backdrop-blur-xl">
       <div className="mb-5 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl" style={{ background: currentColorLight }}>

@@ -30,10 +30,10 @@ export default async function SocialPage() {
   return (
     <div className="p-6 pb-20 md:pb-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold tracking-tight text-[var(--heading)]">
+        <h1 className="text-lg font-semibold tracking-tight text-[var(--heading)]">
           Vie sociale
         </h1>
-        <p className="mt-1 text-sm text-[var(--text-muted)]">
+        <p className="mt-0.5 text-[13px] text-[var(--text-muted)]">
           Partagez, échangez et célébrez avec vos collègues
         </p>
       </div>

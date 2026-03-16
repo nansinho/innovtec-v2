@@ -85,7 +85,7 @@ export default function ConfirmDialog({
       {/* Dialog */}
       <div
         ref={dialogRef}
-        className="relative mx-4 w-full max-w-[400px] animate-scale-in rounded-2xl bg-white p-6 shadow-xl ring-1 ring-black/[0.05]"
+        className="relative mx-4 w-full max-w-[400px] animate-scale-in rounded-xl bg-white p-6 shadow-xl ring-1 ring-black/[0.05]"
       >
         {/* Close button */}
         <button

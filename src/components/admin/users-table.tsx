@@ -257,7 +257,7 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto rounded-2xl border border-[var(--border-1)] bg-white shadow-sm ring-1 ring-black/[0.03]">
+      <div className="overflow-x-auto rounded-xl border border-[var(--border-1)] bg-white shadow-sm ring-1 ring-black/[0.03]">
         {/* Batch actions bar */}
         {selectedIds.size > 0 && (
           <div className="flex items-center gap-3 border-b border-amber-200 bg-amber-50 px-4 py-2 text-sm">

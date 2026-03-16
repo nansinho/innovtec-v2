@@ -161,7 +161,7 @@ export default function SearchBar() {
 
       {/* Results dropdown — Apple style */}
       {isOpen && (
-        <div className="animate-slide-down absolute left-0 right-0 top-full z-50 mt-2 max-h-[480px] overflow-y-auto rounded-2xl bg-white/95 shadow-[0_8px_32px_rgba(0,0,0,0.12)] ring-1 ring-black/[0.04] backdrop-blur-2xl">
+        <div className="animate-slide-down absolute left-0 right-0 top-full z-50 mt-2 max-h-[480px] overflow-y-auto rounded-xl bg-white/95 shadow-[0_8px_32px_rgba(0,0,0,0.12)] ring-1 ring-black/[0.04] backdrop-blur-2xl">
           {results.length === 0 ? (
             <div className="py-10 text-center">
               <Search className="mx-auto mb-2.5 h-8 w-8 text-[var(--text-muted)] opacity-40" />

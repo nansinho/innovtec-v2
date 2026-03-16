@@ -7,7 +7,7 @@ const cardVariants = cva("overflow-hidden transition-all duration-300 ease-out",
   variants: {
     variant: {
       default:
-        "rounded-2xl bg-white/92 shadow-[0_1px_4px_rgba(0,0,0,0.04)] ring-1 ring-black/[0.03] backdrop-blur-xl hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)] hover:translate-y-[-1px]",
+        "rounded-xl bg-white/92 shadow-[0_1px_4px_rgba(0,0,0,0.04)] ring-1 ring-black/[0.03] backdrop-blur-xl hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)] hover:translate-y-[-1px]",
       stat:
         "rounded-lg bg-[var(--hover)] p-4 ring-1 ring-black/[0.03]",
       flat:
@@ -64,7 +64,7 @@ export function CardHeader({
   return (
     <div
       className={cn(
-        "flex items-center justify-between px-5 py-3.5",
+        "flex items-center justify-between px-4 py-3",
         className
       )}
       {...props}
@@ -99,7 +99,7 @@ export function CardHeaderWithBadge({
   return (
     <div
       className={cn(
-        "flex items-center justify-between gap-3 px-5 py-3.5",
+        "flex items-center justify-between gap-3 px-4 py-3",
         className
       )}
       {...props}
