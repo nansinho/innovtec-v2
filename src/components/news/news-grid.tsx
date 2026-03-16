@@ -142,7 +142,7 @@ export default function NewsTable({ news }: NewsTableProps) {
                   className="group cursor-pointer px-5 py-4 transition-colors hover:bg-[var(--hover)] md:grid md:grid-cols-[1fr_100px_100px_80px_120px_24px] md:items-center md:gap-4"
                 >
                   {/* Article info */}
-                  <div className="flex items-center gap-3.5">
+                  <div className="flex items-center gap-3.5 overflow-hidden">
                     {/* Thumbnail */}
                     <div className="relative hidden h-12 w-18 shrink-0 overflow-hidden rounded-[var(--radius-xs)] bg-[var(--hover)] sm:block">
                       {article.image_url ? (

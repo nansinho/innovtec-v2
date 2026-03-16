@@ -72,14 +72,11 @@ export async function POST(request: NextRequest) {
       await adminClient.storage.updateBucket(bucket, { public: true });
     }
 
-    const useAdmin = bucket === "company-logos";
-    const storageClient = useAdmin ? adminClient : supabase;
-
-    const { error: uploadError } = await storageClient.storage
+    const { error: uploadError } = await adminClient.storage
       .from(bucket)
       .upload(filePath, arrayBuffer, {
         contentType: file.type,
-        upsert: useAdmin,
+        upsert: true,
       });
 
     if (uploadError) {
@@ -91,7 +88,7 @@ export async function POST(request: NextRequest) {
 
     const {
       data: { publicUrl },
-    } = storageClient.storage.from(bucket).getPublicUrl(filePath);
+    } = adminClient.storage.from(bucket).getPublicUrl(filePath);
 
     return NextResponse.json({
       url: publicUrl,
@@ -99,7 +96,8 @@ export async function POST(request: NextRequest) {
       fileSize: file.size,
       fileType: file.type,
     });
-  } catch {
+  } catch (error) {
+    console.error("[upload] Unhandled error:", error);
     return NextResponse.json(
       { error: "Erreur lors de l'upload" },
       { status: 500 }
