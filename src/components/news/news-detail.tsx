@@ -22,29 +22,12 @@ import {
   shareNews,
 } from "@/actions/news";
 import { NewsAttachmentsDisplay } from "./news-attachments";
+import { CategoryBadge, PriorityBadge } from "@/components/ui/status-badge";
 import type {
   NewsComment,
   NewsCategory,
   NewsAttachment,
 } from "@/lib/types/database";
-
-const categoryLabels: Record<NewsCategory, string> = {
-  entreprise: "Entreprise",
-  securite: "Sécurité",
-  formation: "Formation",
-  chantier: "Chantier",
-  social: "Social",
-  rh: "RH",
-};
-
-const categoryColors: Record<NewsCategory, string> = {
-  entreprise: "bg-gradient-to-b from-blue-500 to-blue-600 text-white shadow-sm",
-  securite: "bg-gradient-to-b from-red-500 to-red-600 text-white shadow-sm",
-  formation: "bg-gradient-to-b from-emerald-500 to-emerald-600 text-white shadow-sm",
-  chantier: "bg-gradient-to-b from-amber-400 to-amber-500 text-white shadow-sm",
-  social: "bg-gradient-to-b from-purple-500 to-purple-600 text-white shadow-sm",
-  rh: "bg-gradient-to-b from-indigo-500 to-indigo-600 text-white shadow-sm",
-};
 
 interface NewsDetailProps {
   article: {
@@ -183,25 +166,9 @@ export default function NewsDetail({
         {/* Header */}
         <div className="mb-6">
           <div className="mb-3 flex flex-wrap items-center gap-2">
-            <span
-              className={cn(
-                "rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide",
-                categoryColors[article.category]
-              )}
-            >
-              {categoryLabels[article.category]}
-            </span>
+            <CategoryBadge module="articles" category={article.category} />
             {article.priority !== "normal" && (
-              <span
-                className={cn(
-                  "rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide text-white shadow-sm",
-                  article.priority === "urgent"
-                    ? "bg-gradient-to-b from-red-500 to-red-600"
-                    : "bg-gradient-to-b from-amber-400 to-amber-500"
-                )}
-              >
-                {article.priority === "urgent" ? "Urgent" : "Important"}
-              </span>
+              <PriorityBadge priority={article.priority} />
             )}
           </div>
 

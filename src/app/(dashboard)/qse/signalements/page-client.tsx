@@ -45,7 +45,7 @@ export default function SignalementPageClient({
             <span className={cn(
               "rounded-full px-2 py-0.5 text-[11px] font-semibold",
               tab === "all"
-                ? "bg-gradient-to-b from-amber-400 to-amber-500 text-white shadow-sm"
+                ? "bg-[var(--yellow)] text-white"
                 : "bg-zinc-100 text-zinc-500"
             )}>
               {signalements.length}
@@ -69,7 +69,7 @@ export default function SignalementPageClient({
           <span className={cn(
             "rounded-full px-2 py-0.5 text-[11px] font-semibold",
             tab === "mine"
-              ? "bg-gradient-to-b from-blue-500 to-blue-600 text-white shadow-sm"
+              ? "bg-[var(--navy)] text-white"
               : "bg-zinc-100 text-zinc-500"
           )}>
             {mySignalements.length}

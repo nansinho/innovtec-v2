@@ -9,6 +9,7 @@ import { addDepartment, deleteDepartment, type Department } from "@/actions/depa
 import { addTeam, deleteTeam, type Team } from "@/actions/teams";
 import SearchableSelect from "@/components/ui/searchable-select";
 import type { Profile, UserRole } from "@/lib/types/database";
+import { Button } from "@/components/ui/button";
 
 const roleOptions: { value: UserRole; label: string }[] = [
   { value: "collaborateur", label: "Collaborateur" },
@@ -466,11 +467,7 @@ export default function UserFormModal({
             >
               Annuler
             </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="rounded-xl bg-gradient-to-b from-amber-500 to-amber-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:from-amber-600 hover:to-amber-700 active:scale-[0.97] disabled:opacity-50"
-            >
+            <Button type="submit" disabled={loading} size="lg">
               {loading ? (
                 <span className="flex items-center gap-2">
                   <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
@@ -481,7 +478,7 @@ export default function UserFormModal({
               ) : (
                 "Créer l'utilisateur"
               )}
-            </button>
+            </Button>
           </div>
         </form>
       </div>

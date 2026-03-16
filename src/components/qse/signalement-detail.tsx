@@ -112,10 +112,9 @@ export default function SignalementDetail({
               <PriorityBadge priority={signalement.priority} />
               {cat && (
                 <span
-                  className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide text-white shadow-sm"
-                  style={{ background: `linear-gradient(to bottom, ${cat.color}, ${cat.color}dd)` }}
+                  className="inline-flex items-center gap-1 rounded-full border-[1.5px] bg-transparent px-2 py-[1px] text-[11px] font-medium tracking-wide"
+                  style={{ borderColor: cat.color, color: cat.color }}
                 >
-                  <span className="h-1.5 w-1.5 rounded-full bg-white/80" />
                   {cat.name}
                 </span>
               )}

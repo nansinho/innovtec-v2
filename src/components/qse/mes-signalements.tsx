@@ -88,8 +88,8 @@ export default function MesSignalements({ signalements }: MesSignalementsProps) 
               <PriorityBadge priority={s.priority} />
               {cat && (
                 <span
-                  className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-wide text-white shadow-sm"
-                  style={{ background: `linear-gradient(to bottom, ${cat.color}, ${cat.color}dd)` }}
+                  className="inline-flex items-center gap-1 rounded-full border-[1.5px] bg-transparent px-2 py-[1px] text-[11px] font-medium tracking-wide"
+                  style={{ borderColor: cat.color, color: cat.color }}
                 >
                   {cat.name}
                 </span>

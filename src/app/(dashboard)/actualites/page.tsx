@@ -30,7 +30,7 @@ export default async function ActualitesPage() {
         {canCreate && (
           <Link
             href="/actualites/creer"
-            className="inline-flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-4 py-2.5 text-[12.5px] font-medium text-white shadow-sm transition-colors hover:bg-[var(--yellow-hover)]"
+            className="inline-flex items-center gap-2 rounded-lg bg-[var(--yellow)] px-4 py-2 text-sm font-medium text-white shadow-sm transition-all hover:bg-[var(--yellow-hover)] active:scale-[0.98]"
           >
             <Plus className="h-4 w-4" />
             Créer un article

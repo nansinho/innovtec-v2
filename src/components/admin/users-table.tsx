@@ -27,6 +27,7 @@ import UserFormModal from "@/components/admin/user-form-modal";
 import { Badge } from "@/components/ui/badge";
 import { ROLE_MAP } from "@/lib/status-config";
 import { RoleBadge } from "@/components/ui/status-badge";
+import { Button } from "@/components/ui/button";
 
 const roleLabels: Record<string, string> = {
   admin: "Admin",
@@ -243,13 +244,10 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
         </div>
 
         {/* Add button */}
-        <button
-          onClick={() => setFormModal({ open: true, user: null })}
-          className="inline-flex h-9 items-center gap-2 rounded-lg bg-gradient-to-b from-amber-500 to-amber-600 px-4 text-sm font-medium text-white shadow-sm transition-all hover:from-amber-600 hover:to-amber-700 active:scale-[0.97]"
-        >
+        <Button onClick={() => setFormModal({ open: true, user: null })}>
           <UserPlus className="h-4 w-4" />
           Ajouter
-        </button>
+        </Button>
       </div>
 
       {/* Stats */}

@@ -26,7 +26,7 @@ interface StatusBadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
 export function StatusBadge({
   module,
   status,
-  size = "default",
+  size = "sm",
   className,
   children,
   ...props
