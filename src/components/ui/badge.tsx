@@ -1,34 +1,57 @@
 import { cn } from "@/lib/utils";
 
+export type BadgeVariant =
+  | "default"
+  | "yellow"
+  | "blue"
+  | "green"
+  | "red"
+  | "purple"
+  | "orange"
+  | "indigo"
+  | "pink";
+
 interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-  variant?: "default" | "yellow" | "blue" | "green" | "red" | "purple";
+  variant?: BadgeVariant;
   dot?: boolean;
 }
 
 const variantStyles = {
   default: {
-    badge: "bg-zinc-100 text-zinc-700 ring-1 ring-zinc-300/50",
+    badge: "bg-zinc-500/10 text-zinc-600 border border-zinc-500/20",
     dot: "bg-zinc-500",
   },
   yellow: {
-    badge: "bg-amber-50 text-amber-700 ring-1 ring-amber-300/50",
+    badge: "bg-amber-500/10 text-amber-600 border border-amber-500/20",
     dot: "bg-amber-500",
   },
   blue: {
-    badge: "bg-blue-50 text-blue-700 ring-1 ring-blue-300/50",
+    badge: "bg-blue-500/10 text-blue-600 border border-blue-500/20",
     dot: "bg-blue-500",
   },
   green: {
-    badge: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-300/50",
+    badge: "bg-emerald-500/10 text-emerald-600 border border-emerald-500/20",
     dot: "bg-emerald-500",
   },
   red: {
-    badge: "bg-red-50 text-red-700 ring-1 ring-red-300/50",
+    badge: "bg-red-500/10 text-red-600 border border-red-500/20",
     dot: "bg-red-500",
   },
   purple: {
-    badge: "bg-purple-50 text-purple-700 ring-1 ring-purple-300/50",
+    badge: "bg-purple-500/10 text-purple-600 border border-purple-500/20",
     dot: "bg-purple-500",
+  },
+  orange: {
+    badge: "bg-orange-500/10 text-orange-600 border border-orange-500/20",
+    dot: "bg-orange-500",
+  },
+  indigo: {
+    badge: "bg-indigo-500/10 text-indigo-600 border border-indigo-500/20",
+    dot: "bg-indigo-500",
+  },
+  pink: {
+    badge: "bg-pink-500/10 text-pink-600 border border-pink-500/20",
+    dot: "bg-pink-500",
   },
 };
 

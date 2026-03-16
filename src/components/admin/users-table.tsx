@@ -24,6 +24,7 @@ import { DropdownMenu } from "@/components/ui/dropdown-menu";
 import type { Profile, UserRole } from "@/lib/types/database";
 import ConfirmDialog from "@/components/ui/confirm-dialog";
 import UserFormModal from "@/components/admin/user-form-modal";
+import { Badge } from "@/components/ui/badge";
 
 const roleLabels: Record<string, string> = {
   admin: "Admin",
@@ -35,9 +36,9 @@ const roleOptions: { value: UserRole; label: string }[] = [
   { value: "collaborateur", label: "Collaborateur" },
 ];
 
-const roleBadgeColors: Record<string, string> = {
-  admin: "bg-red-50 text-red-600 ring-1 ring-red-200/60",
-  collaborateur: "bg-emerald-50 text-emerald-600 ring-1 ring-emerald-200/60",
+const roleBadgeVariants: Record<string, "red" | "green" | "default"> = {
+  admin: "red",
+  collaborateur: "green",
 };
 
 interface UsersTableProps {
@@ -430,28 +431,17 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
                         ))}
                       </select>
                     ) : (
-                      <span
-                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide ${
-                          roleBadgeColors[user.role] ?? "bg-zinc-100 text-zinc-700 ring-1 ring-zinc-200/60"
-                        }`}
-                      >
+                      <Badge variant={roleBadgeVariants[user.role] ?? "default"} dot={false}>
                         {roleLabels[user.role] ?? user.role}
-                      </span>
+                      </Badge>
                     )}
                   </td>
 
                   {/* Status */}
                   <td className="px-4 py-3.5">
-                    <span
-                      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide ${
-                        user.is_active
-                          ? "bg-emerald-50 text-emerald-600 ring-1 ring-emerald-200/60"
-                          : "bg-zinc-100 text-zinc-500 ring-1 ring-zinc-200/60"
-                      }`}
-                    >
-                      <span className={`h-1.5 w-1.5 rounded-full ${user.is_active ? "bg-emerald-500" : "bg-zinc-400"}`} />
+                    <Badge variant={user.is_active ? "green" : "default"}>
                       {user.is_active ? "Actif" : "Inactif"}
-                    </span>
+                    </Badge>
                   </td>
 
                   {/* Actions — 3-dot dropdown menu */}

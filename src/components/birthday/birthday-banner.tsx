@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { Cake, Send } from "lucide-react";
 import { sendBirthdayWish } from "@/actions/birthday";
 import type { Profile } from "@/lib/types/database";
+import { Badge } from "@/components/ui/badge";
 
 interface BirthdayBannerProps {
   birthdays: Profile[];
@@ -76,9 +77,9 @@ export default function BirthdayBanner({
                 </div>
 
                 {hasSent ? (
-                  <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-semibold text-emerald-600 ring-1 ring-emerald-200/60">
+                  <Badge variant="green" dot={false}>
                     Voeux envoyés
-                  </span>
+                  </Badge>
                 ) : (
                   <button
                     onClick={() =>

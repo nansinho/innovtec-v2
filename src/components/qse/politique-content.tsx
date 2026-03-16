@@ -32,6 +32,7 @@ import {
   deleteQseDocumentFile,
 } from "@/actions/qse";
 import type { QseContent, QseContentSection, QseDocument } from "@/lib/types/database";
+import { Badge } from "@/components/ui/badge";
 
 // ==========================================
 // PILLAR CONFIG
@@ -1212,10 +1213,9 @@ export default function PolitiqueContent({
                       </span>
                     </td>
                     <td className="px-4 py-3.5">
-                      <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-[11px] font-semibold text-amber-700 ring-1 ring-amber-300/50">
-                        <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+                      <Badge variant="yellow">
                         {docYear}
-                      </span>
+                      </Badge>
                     </td>
                     <td className="px-4 py-3.5 text-sm text-[var(--text-muted)]">
                       {doc.date_signature
@@ -1227,14 +1227,19 @@ export default function PolitiqueContent({
                         {docPillars.map((p) => {
                           const Icon = p.icon;
                           return (
-                            <span
+                            <Badge
                               key={p.key}
-                              className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide"
-                              style={{ background: p.surface, color: p.color, boxShadow: `inset 0 0 0 1px ${p.border}` }}
+                              dot={false}
+                              className="border"
+                              style={{
+                                backgroundColor: `${p.color}15`,
+                                color: p.color,
+                                borderColor: `${p.color}30`,
+                              }}
                             >
                               <Icon className="h-3 w-3" />
                               {p.label}
-                            </span>
+                            </Badge>
                           );
                         })}
                       </div>
