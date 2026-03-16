@@ -10,11 +10,11 @@ import { toast } from "sonner";
 import { exportRexPdf } from "@/lib/export/rex-pdf";
 import type { Rex } from "@/lib/types/database";
 
-const EVENT_TYPE_LABELS: Record<string, { label: string; variant: "blue" | "yellow" | "red" | "purple" | "default" }> = {
-  sd: { label: "SD", variant: "yellow" },
-  presquaccident: { label: "PRESQU'ACCIDENT", variant: "yellow" },
-  accident: { label: "ACCIDENT", variant: "red" },
-  hpe: { label: "HPE", variant: "purple" },
+const EVENT_TYPE_LABELS: Record<string, { label: string; variant: "warning" | "error" | "info" | "default" }> = {
+  sd: { label: "SD", variant: "warning" },
+  presquaccident: { label: "PRESQU'ACCIDENT", variant: "warning" },
+  accident: { label: "ACCIDENT", variant: "error" },
+  hpe: { label: "HPE", variant: "info" },
 };
 
 interface RexItem extends Rex {
@@ -91,7 +91,7 @@ export default function RexList({ rexList, headerAction }: RexListProps) {
       sortable: true,
       render: (r) =>
         r.chantier ? (
-          <Badge variant="blue">{r.chantier}</Badge>
+          <Badge variant="default">{r.chantier}</Badge>
         ) : (
           <span className="text-[var(--text-muted)]">—</span>
         ),

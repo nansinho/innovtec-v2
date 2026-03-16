@@ -78,7 +78,7 @@ export default function ProfileAvatarSection({
             className="h-full w-full object-cover"
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center bg-[var(--navy)] text-2xl font-bold text-white">
+          <div className="flex h-full w-full items-center justify-center bg-gray-900 text-2xl font-bold text-white">
             {initials}
           </div>
         )}
@@ -99,13 +99,13 @@ export default function ProfileAvatarSection({
         className="hidden"
       />
       <div>
-        <p className="text-sm font-semibold text-[var(--heading)]">
+        <p className="text-sm font-semibold text-gray-900">
           {profile.first_name} {profile.last_name}
         </p>
-        <p className="text-xs text-[var(--text-muted)]">
+        <p className="text-xs text-gray-400">
           {profile.job_title || "Collaborateur"}
         </p>
-        <p className="mt-1 text-[11px] text-[var(--text-muted)]">
+        <p className="mt-1 text-[11px] text-gray-400">
           Cliquez sur la photo pour changer votre avatar
         </p>
       </div>

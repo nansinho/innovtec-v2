@@ -14,7 +14,7 @@ export default async function AuthLayout({
   return (
     <div className="flex min-h-screen">
       {/* Left branding panel - hidden on mobile */}
-      <div className="relative hidden overflow-hidden bg-[var(--navy)] lg:flex lg:w-[45%] lg:flex-col lg:justify-between lg:p-12">
+      <div className="relative hidden overflow-hidden bg-gray-900 lg:flex lg:w-[45%] lg:flex-col lg:justify-between lg:p-12">
         {/* Decorative geometric shapes */}
         <div
           className="absolute -right-20 -top-20 h-80 w-80 rounded-full"
@@ -46,8 +46,8 @@ export default async function AuthLayout({
               />
             ) : (
               <>
-                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--yellow)]">
-                  <Zap className="h-5 w-5 text-[var(--navy)]" />
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-orange-600">
+                  <Zap className="h-5 w-5 text-gray-900" />
                 </div>
                 <div className="text-lg font-bold tracking-tight text-white">
                   INNOVTEC{" "}
@@ -61,7 +61,7 @@ export default async function AuthLayout({
           <h1 className="mb-4 text-3xl font-bold leading-tight text-white">
             Votre espace de travail
             <br />
-            <span className="text-[var(--yellow)]">collaboratif</span>
+            <span className="text-orange-600">collaboratif</span>
           </h1>
           <p className="mb-10 max-w-sm text-sm leading-relaxed text-white/60">
             Retrouvez tous vos outils et informations au même endroit pour
@@ -72,7 +72,7 @@ export default async function AuthLayout({
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-3">
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/[0.07]">
-                <Users className="h-4 w-4 text-[var(--yellow)]" />
+                <Users className="h-4 w-4 text-orange-600" />
               </div>
               <span className="text-sm text-white/70">
                 Gestion de profil et documents
@@ -80,7 +80,7 @@ export default async function AuthLayout({
             </div>
             <div className="flex items-center gap-3">
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/[0.07]">
-                <Shield className="h-4 w-4 text-[var(--yellow)]" />
+                <Shield className="h-4 w-4 text-orange-600" />
               </div>
               <span className="text-sm text-white/70">
                 Suivi QSE et sécurité
@@ -88,7 +88,7 @@ export default async function AuthLayout({
             </div>
             <div className="flex items-center gap-3">
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/[0.07]">
-                <Newspaper className="h-4 w-4 text-[var(--yellow)]" />
+                <Newspaper className="h-4 w-4 text-orange-600" />
               </div>
               <span className="text-sm text-white/70">
                 Actualités de l&apos;entreprise
@@ -104,7 +104,7 @@ export default async function AuthLayout({
       </div>
 
       {/* Right form panel */}
-      <div className="flex flex-1 items-center justify-center bg-[var(--card)] p-6 sm:p-8">
+      <div className="flex flex-1 items-center justify-center bg-white p-6 sm:p-8">
         <AuthLogoProvider logos={logos}>
           {children}
         </AuthLogoProvider>

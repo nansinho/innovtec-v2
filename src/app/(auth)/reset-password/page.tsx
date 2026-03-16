@@ -28,15 +28,15 @@ export default function ResetPasswordPage() {
             <AlertTriangle className="h-6 w-6 text-red-500" />
           </div>
         </div>
-        <h1 className="mb-2 text-xl font-bold text-[var(--heading)]">
+        <h1 className="mb-2 text-xl font-bold text-gray-900">
           Lien invalide
         </h1>
-        <p className="mb-6 text-sm text-[var(--text-secondary)]">
+        <p className="mb-6 text-sm text-gray-500">
           Ce lien de réinitialisation est invalide ou a expiré.
         </p>
         <Link
           href="/forgot-password"
-          className="text-sm font-semibold text-[var(--yellow)] hover:underline"
+          className="text-sm font-semibold text-orange-600 hover:underline"
         >
           Demander un nouveau lien
         </Link>
@@ -83,26 +83,26 @@ export default function ResetPasswordPage() {
           />
         ) : (
           <>
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--yellow)]">
-              <Zap className="h-5 w-5 text-[var(--navy)]" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-600">
+              <Zap className="h-5 w-5 text-gray-900" />
             </div>
-            <div className="text-base font-bold tracking-tight text-[var(--heading)]">
+            <div className="text-base font-bold tracking-tight text-gray-900">
               INNOVTEC{" "}
-              <span className="font-normal text-[var(--text-muted)]">Réseaux</span>
+              <span className="font-normal text-gray-400">Réseaux</span>
             </div>
           </>
         )}
       </div>
 
-      <h1 className="mb-1.5 text-2xl font-bold text-[var(--heading)]">
+      <h1 className="mb-1.5 text-2xl font-bold text-gray-900">
         Nouveau mot de passe
       </h1>
-      <p className="mb-8 text-sm text-[var(--text-secondary)]">
+      <p className="mb-8 text-sm text-gray-500">
         Choisissez votre nouveau mot de passe
       </p>
 
       {success ? (
-        <div className="rounded-[var(--radius-sm)] bg-green-50 px-4 py-3 text-sm text-green-700">
+        <div className="rounded-lg bg-green-50 px-4 py-3 text-sm text-green-700">
           Mot de passe mis à jour ! Redirection vers la connexion...
         </div>
       ) : (
@@ -110,12 +110,12 @@ export default function ResetPasswordPage() {
           <div>
             <label
               htmlFor="password"
-              className="mb-1.5 block text-sm font-medium text-[var(--heading)]"
+              className="mb-1.5 block text-sm font-medium text-gray-900"
             >
               Nouveau mot de passe
             </label>
             <div className="relative">
-              <Lock className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-muted)]" />
+              <Lock className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
               <input
                 id="password"
                 type="password"
@@ -124,7 +124,7 @@ export default function ResetPasswordPage() {
                 placeholder="••••••••"
                 required
                 minLength={6}
-                className="w-full rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] py-3 pl-11 pr-4 text-sm text-[var(--heading)] outline-none transition-all placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                className="w-full rounded-lg border border-gray-200 bg-white py-3 pl-11 pr-4 text-sm text-gray-900 outline-none transition-all placeholder:text-gray-400 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
               />
             </div>
           </div>
@@ -132,12 +132,12 @@ export default function ResetPasswordPage() {
           <div>
             <label
               htmlFor="confirmPassword"
-              className="mb-1.5 block text-sm font-medium text-[var(--heading)]"
+              className="mb-1.5 block text-sm font-medium text-gray-900"
             >
               Confirmer le mot de passe
             </label>
             <div className="relative">
-              <Lock className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-muted)]" />
+              <Lock className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
               <input
                 id="confirmPassword"
                 type="password"
@@ -146,13 +146,13 @@ export default function ResetPasswordPage() {
                 placeholder="••••••••"
                 required
                 minLength={6}
-                className="w-full rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] py-3 pl-11 pr-4 text-sm text-[var(--heading)] outline-none transition-all placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                className="w-full rounded-lg border border-gray-200 bg-white py-3 pl-11 pr-4 text-sm text-gray-900 outline-none transition-all placeholder:text-gray-400 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
               />
             </div>
           </div>
 
           {error && (
-            <div className="rounded-[var(--radius-xs)] bg-[var(--red-surface)] px-3.5 py-2.5 text-sm text-[var(--red)]">
+            <div className="rounded-lg bg-red-50 px-3.5 py-2.5 text-sm text-red-600">
               {error}
             </div>
           )}
@@ -160,7 +160,7 @@ export default function ResetPasswordPage() {
           <button
             type="submit"
             disabled={loading}
-            className="mt-1 w-full rounded-[var(--radius-sm)] bg-[var(--yellow)] py-3 text-base font-semibold text-white shadow-sm transition-all hover:bg-[var(--yellow-hover)] hover:shadow-md active:scale-[0.97] disabled:opacity-50"
+            className="mt-1 w-full rounded-lg bg-orange-600 py-3 text-base font-semibold text-white shadow-sm transition-all hover:bg-orange-700 hover:shadow-md disabled:opacity-50"
           >
             {loading ? "Mise à jour..." : "Mettre à jour le mot de passe"}
           </button>

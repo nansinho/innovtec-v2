@@ -45,21 +45,21 @@ export default function LoginPage() {
           />
         ) : (
           <>
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--yellow)]">
-              <Zap className="h-5 w-5 text-[var(--navy)]" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-600">
+              <Zap className="h-5 w-5 text-gray-900" />
             </div>
-            <div className="text-base font-bold tracking-tight text-[var(--heading)]">
+            <div className="text-base font-bold tracking-tight text-gray-900">
               INNOVTEC{" "}
-              <span className="font-normal text-[var(--text-muted)]">Réseaux</span>
+              <span className="font-normal text-gray-400">Réseaux</span>
             </div>
           </>
         )}
       </div>
 
-      <h1 className="mb-1.5 text-2xl font-bold text-[var(--heading)]">
+      <h1 className="mb-1.5 text-2xl font-bold text-gray-900">
         Connexion
       </h1>
-      <p className="mb-8 text-sm text-[var(--text-secondary)]">
+      <p className="mb-8 text-sm text-gray-500">
         Accédez à votre espace intranet
       </p>
 
@@ -67,12 +67,12 @@ export default function LoginPage() {
         <div>
           <label
             htmlFor="email"
-            className="mb-1.5 block text-sm font-medium text-[var(--heading)]"
+            className="mb-1.5 block text-sm font-medium text-gray-900"
           >
             Email
           </label>
           <div className="relative">
-            <Mail className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-muted)]" />
+            <Mail className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
             <input
               id="email"
               type="email"
@@ -80,7 +80,7 @@ export default function LoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="prenom@innovtec-reseaux.fr"
               required
-              className="w-full rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] py-3 pl-11 pr-4 text-sm text-[var(--heading)] outline-none transition-all placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+              className="w-full rounded-lg border border-gray-200 bg-white py-3 pl-11 pr-4 text-sm text-gray-900 outline-none transition-all placeholder:text-gray-400 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
             />
           </div>
         </div>
@@ -88,12 +88,12 @@ export default function LoginPage() {
         <div>
           <label
             htmlFor="password"
-            className="mb-1.5 block text-sm font-medium text-[var(--heading)]"
+            className="mb-1.5 block text-sm font-medium text-gray-900"
           >
             Mot de passe
           </label>
           <div className="relative">
-            <Lock className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-muted)]" />
+            <Lock className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
             <input
               id="password"
               type="password"
@@ -101,7 +101,7 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               required
-              className="w-full rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] py-3 pl-11 pr-4 text-sm text-[var(--heading)] outline-none transition-all placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+              className="w-full rounded-lg border border-gray-200 bg-white py-3 pl-11 pr-4 text-sm text-gray-900 outline-none transition-all placeholder:text-gray-400 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
             />
           </div>
         </div>
@@ -109,14 +109,14 @@ export default function LoginPage() {
         <div className="flex justify-end -mt-1">
           <Link
             href="/forgot-password"
-            className="text-sm text-[var(--text-secondary)] hover:text-[var(--navy)] hover:underline"
+            className="text-sm text-gray-500 hover:text-gray-900 hover:underline"
           >
             Mot de passe oublié ?
           </Link>
         </div>
 
         {error && (
-          <div className="rounded-[var(--radius-xs)] bg-[var(--red-surface)] px-3.5 py-2.5 text-sm text-[var(--red)]">
+          <div className="rounded-lg bg-red-50 px-3.5 py-2.5 text-sm text-red-600">
             {error}
           </div>
         )}
@@ -124,17 +124,17 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={loading}
-          className="mt-1 w-full rounded-[var(--radius-sm)] bg-[var(--yellow)] py-3 text-base font-semibold text-white shadow-sm transition-all hover:bg-[var(--yellow-hover)] hover:shadow-md active:scale-[0.97] disabled:opacity-50"
+          className="mt-1 w-full rounded-lg bg-orange-600 py-3 text-base font-semibold text-white shadow-sm transition-all hover:bg-orange-700 hover:shadow-md disabled:opacity-50"
         >
           {loading ? "Connexion..." : "Se connecter"}
         </button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-[var(--text-secondary)]">
+      <p className="mt-6 text-center text-sm text-gray-500">
         Pas encore de compte ?{" "}
         <Link
           href="/signup"
-          className="font-semibold text-[var(--navy)] hover:underline"
+          className="font-semibold text-gray-900 hover:underline"
         >
           Créer un compte
         </Link>

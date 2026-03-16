@@ -37,12 +37,12 @@ export default function AiGenerateButton({
       <button
         onClick={onClick}
         disabled={disabled || loading || noCredits}
-        className="flex items-center gap-2 rounded-[var(--radius-sm)] border border-[var(--navy)] bg-transparent px-3 py-1.5 text-sm font-medium text-[var(--navy)] shadow-xs transition-all duration-200 hover:bg-[var(--navy)] hover:text-white hover:shadow-sm active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50"
+        className="flex items-center gap-2 rounded-lg border border-gray-900 bg-transparent px-3 py-1.5 text-sm font-medium text-gray-900 shadow-sm transition-all duration-200 hover:bg-gray-900 hover:text-white hover:shadow-sm disabled:cursor-not-allowed disabled:opacity-50"
       >
         {loading ? (
           <Loader2 className="h-4 w-4 animate-spin" />
         ) : (
-          <Sparkles className="h-4 w-4 text-[var(--yellow)]" />
+          <Sparkles className="h-4 w-4 text-orange-600" />
         )}
         {loading ? "Génération en cours..." : label}
       </button>
@@ -50,7 +50,7 @@ export default function AiGenerateButton({
         <span
           className={cn(
             "text-[10px] font-medium",
-            noCredits ? "text-red-500" : "text-[var(--text-muted)]"
+            noCredits ? "text-red-500" : "text-gray-400"
           )}
         >
           {noCredits

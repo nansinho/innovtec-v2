@@ -21,6 +21,11 @@ export default function ThemeInitializer() {
       try {
         const { hue, sat } = JSON.parse(saved);
         const root = document.documentElement;
+        root.style.setProperty("--accent", hslToHex(hue, sat, 50));
+        root.style.setProperty("--accent-hover", hslToHex(hue, sat, 42));
+        root.style.setProperty("--accent-surface", `hsla(${hue}, ${sat}%, 50%, 0.06)`);
+        root.style.setProperty("--accent-border", `hsla(${hue}, ${sat}%, 50%, 0.14)`);
+        // Legacy aliases
         root.style.setProperty("--yellow", hslToHex(hue, sat, 50));
         root.style.setProperty("--yellow-hover", hslToHex(hue, sat, 42));
         root.style.setProperty("--yellow-surface", `hsla(${hue}, ${sat}%, 50%, 0.06)`);

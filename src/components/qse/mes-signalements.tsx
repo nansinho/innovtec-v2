@@ -14,18 +14,18 @@ import {
 import { Badge } from "@/components/ui/badge";
 import type { DangerReport } from "@/lib/types/database";
 
-const statusConfig: Record<string, { label: string; variant: "red" | "yellow" | "green" | "default"; icon: typeof AlertCircle }> = {
-  signale: { label: "Signalé", variant: "red", icon: AlertCircle },
-  en_cours: { label: "En cours", variant: "yellow", icon: Clock },
-  resolu: { label: "Résolu", variant: "green", icon: CheckCircle },
+const statusConfig: Record<string, { label: string; variant: "error" | "warning" | "success" | "default"; icon: typeof AlertCircle }> = {
+  signale: { label: "Signalé", variant: "error", icon: AlertCircle },
+  en_cours: { label: "En cours", variant: "warning", icon: Clock },
+  resolu: { label: "Résolu", variant: "success", icon: CheckCircle },
   cloture: { label: "Clôturé", variant: "default", icon: CheckCircle },
 };
 
-const priorityConfig: Record<string, { label: string; variant: "green" | "yellow" | "red" | "default" }> = {
-  faible: { label: "Faible", variant: "green" },
-  moyenne: { label: "Moyenne", variant: "yellow" },
-  haute: { label: "Haute", variant: "red" },
-  critique: { label: "Critique", variant: "red" },
+const priorityConfig: Record<string, { label: string; variant: "error" | "warning" | "info" | "default" }> = {
+  faible: { label: "Faible", variant: "default" },
+  moyenne: { label: "Moyenne", variant: "info" },
+  haute: { label: "Haute", variant: "warning" },
+  critique: { label: "Critique", variant: "error" },
 };
 
 interface MesSignalementsProps {
@@ -37,14 +37,14 @@ export default function MesSignalements({ signalements }: MesSignalementsProps) 
 
   if (signalements.length === 0) {
     return (
-      <div className="flex flex-col items-center rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] py-16 text-center shadow-xs">
-        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--yellow-surface)]">
-          <AlertTriangle className="h-7 w-7 text-[var(--yellow)]" />
+      <div className="flex flex-col items-center rounded-xl border border-gray-200 bg-white py-16 text-center">
+        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100">
+          <AlertTriangle className="h-6 w-6 text-gray-400" />
         </div>
-        <p className="mt-4 text-sm font-medium text-[var(--heading)]">
+        <p className="mt-4 text-sm font-medium text-gray-900">
           Aucun signalement
         </p>
-        <p className="mx-auto mt-1 max-w-xs text-[13px] text-[var(--text-muted)]">
+        <p className="mx-auto mt-1 max-w-xs text-[13px] text-gray-400">
           Vous n&apos;avez pas encore soumis de signalement de situation dangereuse.
         </p>
       </div>
@@ -63,37 +63,32 @@ export default function MesSignalements({ signalements }: MesSignalementsProps) 
           <button
             key={s.id}
             onClick={() => router.push(`/qse/signalements/${s.id}`)}
-            className="group flex flex-col rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] p-4 text-left shadow-xs transition-all hover:border-[var(--yellow)] hover:shadow-sm"
+            className="group flex flex-col rounded-xl border border-gray-200 bg-white p-4 text-left shadow-sm transition-colors hover:bg-gray-50"
           >
             <div className="mb-3 flex items-start justify-between">
               <div className="flex items-center gap-2">
-                <StatusIcon className="h-4 w-4" style={{ color: `var(--${st.variant === "default" ? "text-muted" : st.variant})` }} />
+                <StatusIcon className="h-4 w-4 text-gray-400" />
                 <Badge variant={st.variant}>{st.label}</Badge>
               </div>
               {s.is_anonymous && (
-                <span className="flex items-center gap-1 text-[11px] text-[var(--text-muted)]">
+                <span className="flex items-center gap-1 text-[11px] text-gray-400">
                   <EyeOff className="h-3 w-3" />
                   Anonyme
                 </span>
               )}
             </div>
 
-            <h3 className="mb-1 text-sm font-semibold text-[var(--heading)] group-hover:text-[var(--yellow)]">
+            <h3 className="mb-1 text-sm font-semibold text-gray-900 group-hover:text-gray-700">
               {s.title}
             </h3>
-            <p className="mb-3 line-clamp-2 text-xs text-[var(--text-muted)]">
+            <p className="mb-3 line-clamp-2 text-xs text-gray-400">
               {s.description}
             </p>
 
-            <div className="mt-auto flex flex-wrap items-center gap-3 text-[11px] text-[var(--text-muted)]">
+            <div className="mt-auto flex flex-wrap items-center gap-3 text-[11px] text-gray-400">
               <Badge variant={pri.variant}>{pri.label}</Badge>
               {cat && (
-                <span
-                  className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-wide text-white shadow-sm"
-                  style={{ background: `linear-gradient(to bottom, ${cat.color}, ${cat.color}dd)` }}
-                >
-                  {cat.name}
-                </span>
+                <Badge variant="default">{cat.name}</Badge>
               )}
               <span className="flex items-center gap-1">
                 <Calendar className="h-3 w-3" />
@@ -107,7 +102,7 @@ export default function MesSignalements({ signalements }: MesSignalementsProps) 
               )}
             </div>
 
-            <div className="mt-3 flex items-center gap-1 text-[11px] font-medium text-[var(--yellow)] opacity-0 transition-opacity group-hover:opacity-100">
+            <div className="mt-3 flex items-center gap-1 text-[11px] font-medium text-gray-500 opacity-0 transition-opacity group-hover:opacity-100">
               Voir le détail
               <ArrowRight className="h-3 w-3" />
             </div>

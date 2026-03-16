@@ -17,20 +17,20 @@ const categoryConfig: Record<
   actualite: {
     label: "Actualités",
     icon: Newspaper,
-    color: "text-[var(--blue)]",
-    bg: "bg-[var(--blue-surface)]",
+    color: "text-blue-600",
+    bg: "bg-blue-50",
   },
   document: {
     label: "Documents",
     icon: FileText,
-    color: "text-[var(--green)]",
-    bg: "bg-[var(--green-surface)]",
+    color: "text-emerald-600",
+    bg: "bg-emerald-50",
   },
   collaborateur: {
     label: "Collaborateurs",
     icon: User,
-    color: "text-[var(--purple)]",
-    bg: "bg-[var(--purple-surface)]",
+    color: "text-purple-600",
+    bg: "bg-purple-50",
   },
   formation: {
     label: "Formations",
@@ -47,20 +47,20 @@ const categoryConfig: Record<
   qse: {
     label: "Politique QSE",
     icon: Shield,
-    color: "text-[var(--yellow)]",
-    bg: "bg-[var(--yellow-surface)]",
+    color: "text-orange-600",
+    bg: "bg-orange-50",
   },
   danger: {
     label: "Situations dangereuses",
     icon: AlertCircle,
-    color: "text-[var(--red)]",
-    bg: "bg-[var(--red-surface)]",
+    color: "text-red-600",
+    bg: "bg-red-50",
   },
   rex: {
     label: "Fiches REX",
     icon: Eye,
-    color: "text-[var(--navy)]",
-    bg: "bg-[rgba(26,45,78,0.06)]",
+    color: "text-gray-900",
+    bg: "bg-gray-900/[0.06]",
   },
 };
 
@@ -127,30 +127,30 @@ export default function SearchBar() {
       {/* Search input — Apple style */}
       <div className={cn(
         "flex items-center gap-3 rounded-full px-4 py-2 transition-all duration-300",
-        "bg-black/[0.04] backdrop-blur-xl",
+        "bg-black/[0.04] bg-gray-100",
         "hover:bg-black/[0.06]",
         isOpen || query
           ? "bg-white shadow-[0_2px_12px_rgba(0,0,0,0.08)] ring-1 ring-black/[0.04]"
           : ""
       )}>
-        <Search className="h-4 w-4 shrink-0 text-[var(--text-muted)]" />
+        <Search className="h-4 w-4 shrink-0 text-gray-400" />
         <input
           ref={inputRef}
           value={query}
           onChange={(e) => handleSearch(e.target.value)}
           onFocus={() => results.length > 0 && setIsOpen(true)}
           placeholder="Rechercher..."
-          className="w-full min-w-0 bg-transparent text-sm text-[var(--heading)] outline-none placeholder:text-[var(--text-muted)]"
+          className="w-full min-w-0 bg-transparent text-sm text-gray-900 outline-none placeholder:text-gray-400"
         />
         {(query || isPending) && (
           <div className="flex items-center gap-1.5">
             {isPending && (
-              <div className="h-4 w-4 animate-spin rounded-full border-[1.5px] border-[var(--text-muted)] border-t-transparent" />
+              <div className="h-4 w-4 animate-spin rounded-full border-[1.5px] border-gray-400 border-t-transparent" />
             )}
             {query && (
               <button
                 onClick={handleClear}
-                className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-black/[0.08] text-[var(--text-muted)] transition-colors hover:bg-black/[0.14] hover:text-[var(--heading)]"
+                className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-black/[0.08] text-gray-400 transition-colors hover:bg-black/[0.14] hover:text-gray-900"
               >
                 <X className="h-3 w-3" />
               </button>
@@ -161,11 +161,11 @@ export default function SearchBar() {
 
       {/* Results dropdown — Apple style */}
       {isOpen && (
-        <div className="animate-slide-down absolute left-0 right-0 top-full z-50 mt-2 max-h-[480px] overflow-y-auto rounded-2xl bg-white/95 shadow-[0_8px_32px_rgba(0,0,0,0.12)] ring-1 ring-black/[0.04] backdrop-blur-2xl">
+        <div className="animate-slide-down absolute left-0 right-0 top-full z-50 mt-2 max-h-[480px] overflow-y-auto rounded-2xl bg-white shadow-[0_8px_32px_rgba(0,0,0,0.12)] ring-1 ring-black/[0.04] bg-white">
           {results.length === 0 ? (
             <div className="py-10 text-center">
-              <Search className="mx-auto mb-2.5 h-8 w-8 text-[var(--text-muted)] opacity-40" />
-              <p className="text-sm text-[var(--text-secondary)]">
+              <Search className="mx-auto mb-2.5 h-8 w-8 text-gray-400 opacity-40" />
+              <p className="text-sm text-gray-500">
                 Aucun résultat pour &quot;{query}&quot;
               </p>
             </div>
@@ -180,10 +180,10 @@ export default function SearchBar() {
                     <div key={category}>
                       {/* Category header */}
                       <div className="flex items-center gap-2 px-4 pb-1 pt-3">
-                        <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+                        <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">
                           {config.label}
                         </span>
-                        <span className="rounded-full bg-black/[0.04] px-1.5 py-0.5 text-[9px] font-bold text-[var(--text-muted)]">
+                        <span className="rounded-full bg-black/[0.04] px-1.5 py-0.5 text-[9px] font-bold text-gray-400">
                           {items.length}
                         </span>
                       </div>
@@ -207,11 +207,11 @@ export default function SearchBar() {
                             />
                           </div>
                           <div className="min-w-0 flex-1">
-                            <p className="truncate text-[13px] font-medium text-[var(--heading)]">
+                            <p className="truncate text-[13px] font-medium text-gray-900">
                               {item.title}
                             </p>
                             {item.description && (
-                              <p className="truncate text-[11px] text-[var(--text-muted)]">
+                              <p className="truncate text-[11px] text-gray-400">
                                 {item.description}
                               </p>
                             )}
@@ -228,7 +228,7 @@ export default function SearchBar() {
           {/* Footer */}
           {results.length > 0 && (
             <div className="border-t border-black/[0.04] px-4 py-2 text-center">
-              <span className="text-[11px] text-[var(--text-muted)]">
+              <span className="text-[11px] text-gray-400">
                 {results.length} résultat{results.length > 1 ? "s" : ""} trouvé
                 {results.length > 1 ? "s" : ""}
               </span>

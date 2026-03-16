@@ -125,16 +125,16 @@ export default function FileUploadAi({
         onDragLeave={handleDragLeave}
         onClick={() => !loading && inputRef.current?.click()}
         className={cn(
-          "flex flex-col items-center gap-3 rounded-[var(--radius)] border-2 border-dashed p-8 text-center transition-all",
+          "flex flex-col items-center gap-3 rounded-xl border-2 border-dashed p-8 text-center transition-all",
           loading
-            ? "pointer-events-none border-[var(--border-1)] opacity-50"
+            ? "pointer-events-none border-gray-200 opacity-50"
             : "cursor-pointer",
           !loading && isDragging
-            ? "border-[var(--yellow)] bg-[var(--yellow-surface)]"
+            ? "border-orange-500 bg-orange-50"
             : !loading && file
-              ? "border-[var(--green)]/30 bg-[var(--green-surface)]"
+              ? "border-emerald-600/30 bg-emerald-50"
               : !loading
-                ? "border-[var(--border-1)] bg-[var(--hover)] hover:border-[var(--yellow)]/50 hover:bg-[var(--yellow-surface)]"
+                ? "border-gray-200 bg-gray-50 hover:border-orange-500/50 hover:bg-orange-50"
                 : ""
         )}
       >
@@ -152,15 +152,15 @@ export default function FileUploadAi({
         {file ? (
           <>
             {isImage ? (
-              <Image className="h-8 w-8 text-[var(--green)]" />
+              <Image className="h-8 w-8 text-emerald-600" />
             ) : (
-              <FileText className="h-8 w-8 text-[var(--green)]" />
+              <FileText className="h-8 w-8 text-emerald-600" />
             )}
             <div>
-              <p className="text-sm font-medium text-[var(--heading)]">
+              <p className="text-sm font-medium text-gray-900">
                 {file.name}
               </p>
-              <p className="text-[11px] text-[var(--text-muted)]">
+              <p className="text-[11px] text-gray-400">
                 {(file.size / 1024).toFixed(0)} Ko —{" "}
                 {isImage ? "Image" : "PDF"}
               </p>
@@ -177,12 +177,12 @@ export default function FileUploadAi({
           </>
         ) : (
           <>
-            <Upload className="h-8 w-8 text-[var(--text-muted)]" />
+            <Upload className="h-8 w-8 text-gray-400" />
             <div>
-              <p className="text-sm font-medium text-[var(--heading)]">
+              <p className="text-sm font-medium text-gray-900">
                 {label}
               </p>
-              <p className="text-[11px] text-[var(--text-muted)]">
+              <p className="text-[11px] text-gray-400">
                 Glissez-déposez un PDF ou une image, ou cliquez pour parcourir
               </p>
             </div>
@@ -198,7 +198,7 @@ export default function FileUploadAi({
       {file && !loading && (
         <button
           onClick={handleAnalyze}
-          className="flex w-full items-center justify-center gap-2 rounded-[var(--radius-sm)] bg-[var(--navy)] py-2 text-sm font-medium text-white transition-all hover:bg-[var(--navy)]/90 active:scale-[0.97]"
+          className="flex w-full items-center justify-center gap-2 rounded-lg bg-gray-900 py-2 text-sm font-medium text-white transition-all hover:bg-gray-900/90"
         >
           <Sparkles className="h-4 w-4" />
           Analyser avec l&apos;IA

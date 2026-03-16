@@ -47,16 +47,16 @@ export default function ApiKeySettings({ hasKey, maskedKey }: ApiKeySettingsProp
   }
 
   return (
-    <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] p-6 shadow-sm">
+    <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
       <div className="mb-4 flex items-center gap-2.5">
-        <div className="flex h-9 w-9 items-center justify-center rounded-[var(--radius-sm)] bg-[var(--purple-surface)]">
-          <Key className="h-4.5 w-4.5 text-[var(--purple)]" />
+        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-purple-50">
+          <Key className="h-4.5 w-4.5 text-purple-600" />
         </div>
         <div>
-          <h3 className="text-sm font-semibold text-[var(--heading)]">
+          <h3 className="text-sm font-semibold text-gray-900">
             Connecteur API Claude
           </h3>
-          <p className="text-[11px] text-[var(--text-muted)]">
+          <p className="text-[11px] text-gray-400">
             Clef API Anthropic pour l&apos;import PDF et la generation IA
           </p>
         </div>
@@ -64,18 +64,18 @@ export default function ApiKeySettings({ hasKey, maskedKey }: ApiKeySettingsProp
 
       {/* Current status */}
       {hasKey && (
-        <div className="mb-4 flex items-center justify-between rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--hover)] px-4 py-3">
+        <div className="mb-4 flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
           <div className="flex items-center gap-2">
-            <CheckCircle className="h-4 w-4 text-[var(--green)]" />
-            <span className="text-xs text-[var(--text)]">Cle active :</span>
-            <code className="rounded bg-[var(--bg)] px-2 py-0.5 font-mono text-[11px] text-[var(--text-secondary)]">
+            <CheckCircle className="h-4 w-4 text-emerald-600" />
+            <span className="text-xs text-gray-700">Cle active :</span>
+            <code className="rounded bg-gray-50 px-2 py-0.5 font-mono text-[11px] text-gray-500">
               {maskedKey}
             </code>
           </div>
           <button
             onClick={handleDelete}
             disabled={isPending}
-            className="flex items-center gap-1 rounded-[var(--radius-xs)] px-2 py-1 text-[11px] text-[var(--text-muted)] transition-colors hover:bg-[var(--red-surface)] hover:text-[var(--red)]"
+            className="flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600"
           >
             <Trash2 className="h-3 w-3" />
             Supprimer
@@ -84,9 +84,9 @@ export default function ApiKeySettings({ hasKey, maskedKey }: ApiKeySettingsProp
       )}
 
       {!hasKey && (
-        <div className="mb-4 flex items-center gap-2 rounded-[var(--radius-sm)] border border-[var(--yellow-border)] bg-[var(--yellow-surface)] px-4 py-3">
-          <AlertCircle className="h-4 w-4 text-[var(--yellow)]" />
-          <span className="text-xs text-[var(--text)]">
+        <div className="mb-4 flex items-center gap-2 rounded-lg border border-orange-500 bg-orange-50 px-4 py-3">
+          <AlertCircle className="h-4 w-4 text-orange-600" />
+          <span className="text-xs text-gray-700">
             Aucune cle API configuree. Les fonctions d&apos;import PDF et de generation IA ne sont pas disponibles.
           </span>
         </div>
@@ -94,7 +94,7 @@ export default function ApiKeySettings({ hasKey, maskedKey }: ApiKeySettingsProp
 
       {/* Input */}
       <div className="space-y-3">
-        <label className="block text-xs font-medium text-[var(--text-secondary)]">
+        <label className="block text-xs font-medium text-gray-500">
           {hasKey ? "Remplacer la cle API" : "Cle API Anthropic"}
         </label>
         <div className="relative">
@@ -103,12 +103,12 @@ export default function ApiKeySettings({ hasKey, maskedKey }: ApiKeySettingsProp
             value={apiKey}
             onChange={(e) => setApiKey(e.target.value)}
             placeholder="sk-ant-api03-..."
-            className="w-full rounded-[var(--radius-sm)] border border-[var(--border-1)] py-2.5 pl-4 pr-10 font-mono text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+            className="w-full rounded-lg border border-gray-200 py-2.5 pl-4 pr-10 font-mono text-sm text-gray-900 outline-none transition-colors placeholder:text-gray-400 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
           />
           <button
             type="button"
             onClick={() => setShowKey(!showKey)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text)]"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700"
           >
             {showKey ? (
               <EyeOff className="h-4 w-4" />
@@ -118,16 +118,16 @@ export default function ApiKeySettings({ hasKey, maskedKey }: ApiKeySettingsProp
           </button>
         </div>
         <div className="flex items-center justify-between">
-          <p className="text-[10.5px] text-[var(--text-muted)]">
+          <p className="text-[10.5px] text-gray-400">
             Obtenez votre cle sur{" "}
-            <span className="font-medium text-[var(--purple)]">
+            <span className="font-medium text-purple-600">
               console.anthropic.com
             </span>
           </p>
           <button
             onClick={handleSave}
             disabled={isPending || !apiKey.trim()}
-            className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-4 py-2 text-sm font-medium text-white shadow-xs transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-sm active:scale-[0.97] disabled:opacity-50"
+            className="flex items-center gap-2 rounded-lg bg-orange-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:bg-orange-700 hover:shadow-sm  disabled:opacity-50"
           >
             {isPending ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -142,10 +142,10 @@ export default function ApiKeySettings({ hasKey, maskedKey }: ApiKeySettingsProp
       {/* Message */}
       {message && (
         <div
-          className={`mt-4 flex items-center gap-2 rounded-[var(--radius-sm)] px-4 py-2.5 text-xs ${
+          className={`mt-4 flex items-center gap-2 rounded-lg px-4 py-2.5 text-xs ${
             message.type === "success"
-              ? "bg-[var(--green-surface)] text-[var(--green)]"
-              : "bg-[var(--red-surface)] text-[var(--red)]"
+              ? "bg-emerald-50 text-emerald-600"
+              : "bg-red-50 text-red-600"
           }`}
         >
           {message.type === "success" ? (

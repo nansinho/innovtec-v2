@@ -80,12 +80,12 @@ export default function ProfileInfoSection({
   }
 
   return (
-    <section className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] p-6 shadow-sm">
+    <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
       <div className="mb-5 flex items-center gap-3">
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--yellow-surface)]">
-          <User className="h-[18px] w-[18px] text-[var(--yellow)]" />
+        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-50">
+          <User className="h-[18px] w-[18px] text-orange-600" />
         </div>
-        <h2 className="text-sm font-semibold text-[var(--heading)]">
+        <h2 className="text-sm font-semibold text-gray-900">
           Informations personnelles
         </h2>
       </div>
@@ -93,7 +93,7 @@ export default function ProfileInfoSection({
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">
+            <label className="mb-1.5 block text-xs font-medium text-gray-500">
               Prénom
             </label>
             <input
@@ -103,11 +103,11 @@ export default function ProfileInfoSection({
               onChange={(e) =>
                 setForm({ ...form, first_name: e.target.value })
               }
-              className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+              className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm text-gray-900 outline-none transition-colors focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
             />
           </div>
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">
+            <label className="mb-1.5 block text-xs font-medium text-gray-500">
               Nom
             </label>
             <input
@@ -117,39 +117,39 @@ export default function ProfileInfoSection({
               onChange={(e) =>
                 setForm({ ...form, last_name: e.target.value })
               }
-              className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+              className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm text-gray-900 outline-none transition-colors focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
             />
           </div>
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">
+            <label className="mb-1.5 block text-xs font-medium text-gray-500">
               Email
             </label>
             <input
               type="email"
               disabled
               value={profile.email}
-              className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] bg-[var(--hover)] px-3 py-2.5 text-sm text-[var(--text-secondary)]"
+              className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-500"
             />
           </div>
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">
+            <label className="mb-1.5 block text-xs font-medium text-gray-500">
               Rôle
             </label>
             <input
               type="text"
               disabled
               value={roleLabels[profile.role] ?? profile.role}
-              className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] bg-[var(--hover)] px-3 py-2.5 text-sm text-[var(--text-secondary)]"
+              className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-500"
             />
           </div>
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">
+            <label className="mb-1.5 block text-xs font-medium text-gray-500">
               Poste / Métier
             </label>
             <select
@@ -165,7 +165,7 @@ export default function ProfileInfoSection({
                   setForm({ ...form, job_title: e.target.value });
                 }
               }}
-              className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+              className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm text-gray-900 outline-none transition-colors focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
             >
               <option value="">-- Sélectionner un poste --</option>
               {jobTitles.map((title) => (
@@ -184,12 +184,12 @@ export default function ProfileInfoSection({
                     setForm({ ...form, job_title: e.target.value })
                   }
                   placeholder="Saisissez votre poste"
-                  className="mt-2 w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                  className="mt-2 w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm text-gray-900 outline-none transition-colors placeholder:text-gray-400 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
                 />
               )}
           </div>
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">
+            <label className="mb-1.5 block text-xs font-medium text-gray-500">
               Téléphone
             </label>
             <input
@@ -197,14 +197,14 @@ export default function ProfileInfoSection({
               value={form.phone}
               onChange={(e) => setForm({ ...form, phone: e.target.value })}
               placeholder="06 12 34 56 78"
-              className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+              className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm text-gray-900 outline-none transition-colors placeholder:text-gray-400 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
             />
           </div>
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">
+            <label className="mb-1.5 block text-xs font-medium text-gray-500">
               Genre
             </label>
             <select
@@ -212,7 +212,7 @@ export default function ProfileInfoSection({
               onChange={(e) =>
                 setForm({ ...form, gender: e.target.value as "" | "M" | "F" })
               }
-              className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+              className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm text-gray-900 outline-none transition-colors focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
             >
               <option value="">-- Non renseigné --</option>
               <option value="M">Homme</option>
@@ -223,7 +223,7 @@ export default function ProfileInfoSection({
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">
+            <label className="mb-1.5 block text-xs font-medium text-gray-500">
               Date de naissance
             </label>
             <input
@@ -232,11 +232,11 @@ export default function ProfileInfoSection({
               onChange={(e) =>
                 setForm({ ...form, date_of_birth: e.target.value })
               }
-              className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+              className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm text-gray-900 outline-none transition-colors focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
             />
           </div>
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">
+            <label className="mb-1.5 block text-xs font-medium text-gray-500">
               Date d&apos;entrée dans l&apos;entreprise
             </label>
             <input
@@ -245,7 +245,7 @@ export default function ProfileInfoSection({
               onChange={(e) =>
                 setForm({ ...form, hire_date: e.target.value })
               }
-              className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+              className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm text-gray-900 outline-none transition-colors focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
             />
           </div>
         </div>
@@ -254,7 +254,7 @@ export default function ProfileInfoSection({
           <button
             type="submit"
             disabled={saving}
-            className="inline-flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-4 py-2 text-xs font-medium text-white shadow-xs transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-sm disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-lg bg-orange-600 px-4 py-2 text-xs font-medium text-white shadow-sm transition-all duration-200 hover:bg-orange-700 hover:shadow-sm disabled:opacity-50"
           >
             <Save className="h-3.5 w-3.5" />
             {saving ? "Enregistrement..." : "Enregistrer"}

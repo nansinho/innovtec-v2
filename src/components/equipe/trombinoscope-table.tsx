@@ -9,12 +9,12 @@ import { getStandardToolbarActions } from "@/lib/table-toolbar-actions";
 import ProfileDrawer from "./profile-drawer";
 import type { Profile } from "@/lib/types/database";
 
-const DEPT_VARIANTS: Record<string, "yellow" | "blue" | "green" | "red" | "purple" | "default"> = {
-  "Travaux": "yellow",
-  "Ingénierie": "blue",
-  "Administration": "purple",
-  "Ressources Humaines": "red",
-  "Direction": "green",
+const DEPT_VARIANTS: Record<string, "warning" | "info" | "success" | "error" | "accent" | "default"> = {
+  "Travaux": "warning",
+  "Ingénierie": "info",
+  "Administration": "default",
+  "Ressources Humaines": "default",
+  "Direction": "accent",
 };
 
 interface TrombinoscopeTableProps {
@@ -63,7 +63,7 @@ export default function TrombinoscopeTable({
                   "flex h-9 w-9 items-center justify-center rounded-full text-xs font-semibold text-white",
                   hasBirthday
                     ? "bg-gradient-to-br from-pink-500 to-orange-400"
-                    : "bg-[var(--navy)]"
+                    : "bg-gray-900"
                 )}
               >
                 {initials}
@@ -85,7 +85,7 @@ export default function TrombinoscopeTable({
       accessor: (user) => `${user.first_name} ${user.last_name}`,
       render: (user) => (
         <div>
-          <span className="font-medium text-[var(--heading)]">
+          <span className="font-medium text-gray-900">
             {user.first_name}{" "}
             <span className="uppercase">{user.last_name}</span>
           </span>
@@ -97,7 +97,7 @@ export default function TrombinoscopeTable({
       header: "Poste",
       sortable: true,
       render: (user) => (
-        <span className="text-[var(--text-secondary)]">
+        <span className="text-gray-500">
           {user.job_title || "—"}
         </span>
       ),
@@ -112,7 +112,7 @@ export default function TrombinoscopeTable({
             {user.department}
           </Badge>
         ) : (
-          <span className="text-[var(--text-muted)]">—</span>
+          <span className="text-gray-400">—</span>
         ),
     },
     {
@@ -120,7 +120,7 @@ export default function TrombinoscopeTable({
       header: "Site",
       sortable: true,
       render: (user) => (
-        <span className="text-[var(--text-secondary)]">
+        <span className="text-gray-500">
           {user.agency || "—"}
         </span>
       ),
@@ -133,12 +133,12 @@ export default function TrombinoscopeTable({
           <a
             href={`tel:${user.phone}`}
             onClick={(e) => e.stopPropagation()}
-            className="text-[var(--text-secondary)] hover:text-[var(--navy)]"
+            className="text-gray-500 hover:text-gray-900"
           >
             {user.phone}
           </a>
         ) : (
-          <span className="text-[var(--text-muted)]">—</span>
+          <span className="text-gray-400">—</span>
         ),
     },
     {
@@ -149,12 +149,12 @@ export default function TrombinoscopeTable({
           <a
             href={`mailto:${user.email}`}
             onClick={(e) => e.stopPropagation()}
-            className="text-[var(--text-secondary)] hover:text-[var(--navy)]"
+            className="text-gray-500 hover:text-gray-900"
           >
             {user.email}
           </a>
         ) : (
-          <span className="text-[var(--text-muted)]">—</span>
+          <span className="text-gray-400">—</span>
         ),
     },
   ];
