@@ -59,22 +59,21 @@ export async function POST(request: NextRequest) {
 
     const arrayBuffer = await file.arrayBuffer();
 
-    // For company-logos, use admin client to ensure bucket exists and bypass RLS
-    const useAdmin = bucket === "company-logos";
-    const storageClient = useAdmin ? createAdminClient() : supabase;
-
-    if (useAdmin) {
-      // Auto-create bucket if it doesn't exist
-      const { data: buckets } = await storageClient.storage.listBuckets();
-      const exists = buckets?.some((b) => b.id === "company-logos");
-      if (!exists) {
-        await storageClient.storage.createBucket("company-logos", {
-          public: true,
-          allowedMimeTypes: ["image/jpeg", "image/png", "image/webp", "image/svg+xml"],
-          fileSizeLimit: 2 * 1024 * 1024, // 2MB
-        });
-      }
+    // Use admin client to ensure bucket exists and is public
+    const adminClient = createAdminClient();
+    const { data: buckets } = await adminClient.storage.listBuckets();
+    const existingBucket = buckets?.find((b) => b.id === bucket);
+    if (!existingBucket) {
+      await adminClient.storage.createBucket(bucket, {
+        public: true,
+        allowedMimeTypes: allowedTypes,
+      });
+    } else if (!existingBucket.public) {
+      await adminClient.storage.updateBucket(bucket, { public: true });
     }
+
+    const useAdmin = bucket === "company-logos";
+    const storageClient = useAdmin ? adminClient : supabase;
 
     const { error: uploadError } = await storageClient.storage
       .from(bucket)
