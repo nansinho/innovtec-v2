@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, UserPlus, Pencil, Plus } from "lucide-react";
+import { X, UserPlus, Pencil } from "lucide-react";
 import { toast } from "sonner";
 import { createUser, updateUser } from "@/actions/users";
-import { addJobTitle, type JobTitle } from "@/actions/job-titles";
-import { addDepartment, type Department } from "@/actions/departments";
-import { addTeam, type Team } from "@/actions/teams";
+import { addJobTitle, deleteJobTitle, type JobTitle } from "@/actions/job-titles";
+import { addDepartment, deleteDepartment, type Department } from "@/actions/departments";
+import { addTeam, deleteTeam, type Team } from "@/actions/teams";
+import SearchableSelect from "@/components/ui/searchable-select";
 import type { Profile, UserRole } from "@/lib/types/database";
 
 const roleOptions: { value: UserRole; label: string }[] = [
@@ -23,7 +24,14 @@ interface UserFormModalProps {
   teams?: Team[];
 }
 
-export default function UserFormModal({ open, onClose, user, jobTitles = [], departments = [], teams = [] }: UserFormModalProps) {
+export default function UserFormModal({
+  open,
+  onClose,
+  user,
+  jobTitles = [],
+  departments = [],
+  teams = [],
+}: UserFormModalProps) {
   const isEdit = !!user;
   const [loading, setLoading] = useState(false);
 
@@ -43,18 +51,10 @@ export default function UserFormModal({ open, onClose, user, jobTitles = [], dep
     hire_date: "",
   });
 
-  // Local lists (updated optimistically when creating new items)
+  // Local lists (updated optimistically when creating/deleting items)
   const [localJobTitles, setLocalJobTitles] = useState(jobTitles);
   const [localDepartments, setLocalDepartments] = useState(departments);
   const [localTeams, setLocalTeams] = useState(teams);
-
-  // Custom input states
-  const [showCustomJobTitle, setShowCustomJobTitle] = useState(false);
-  const [customJobTitle, setCustomJobTitle] = useState("");
-  const [showCustomDepartment, setShowCustomDepartment] = useState(false);
-  const [customDepartment, setCustomDepartment] = useState("");
-  const [showCustomTeam, setShowCustomTeam] = useState(false);
-  const [customTeam, setCustomTeam] = useState("");
 
   useEffect(() => {
     setLocalJobTitles(jobTitles);
@@ -96,12 +96,6 @@ export default function UserFormModal({ open, onClose, user, jobTitles = [], dep
         hire_date: "",
       });
     }
-    setShowCustomJobTitle(false);
-    setCustomJobTitle("");
-    setShowCustomDepartment(false);
-    setCustomDepartment("");
-    setShowCustomTeam(false);
-    setCustomTeam("");
   }, [user, open]);
 
   useEffect(() => {
@@ -167,52 +161,85 @@ export default function UserFormModal({ open, onClose, user, jobTitles = [], dep
     setForm((prev) => ({ ...prev, [field]: value }));
   }
 
-  async function handleAddCustomJobTitle() {
-    if (!customJobTitle.trim()) return;
-    const result = await addJobTitle(customJobTitle.trim());
+  // Add/Delete handlers for SearchableSelect
+  async function handleAddJobTitle(label: string) {
+    const result = await addJobTitle(label);
     if (result.success && result.jobTitle) {
-      setLocalJobTitles((prev) => [...prev, result.jobTitle!].sort((a, b) => a.label.localeCompare(b.label)));
-      handleChange("job_title", customJobTitle.trim());
+      setLocalJobTitles((prev) =>
+        [...prev, result.jobTitle!].sort((a, b) => a.label.localeCompare(b.label))
+      );
       toast.success("Poste créé");
-    } else {
-      toast.error(result.error || "Erreur");
+      return result.jobTitle;
     }
-    setCustomJobTitle("");
-    setShowCustomJobTitle(false);
+    toast.error(result.error || "Erreur");
+    return null;
   }
 
-  async function handleAddCustomDepartment() {
-    if (!customDepartment.trim()) return;
-    const result = await addDepartment(customDepartment.trim());
+  async function handleDeleteJobTitle(id: string) {
+    const result = await deleteJobTitle(id);
+    if (result.success) {
+      setLocalJobTitles((prev) => prev.filter((jt) => jt.id !== id));
+      toast.success("Poste supprimé");
+      return true;
+    }
+    toast.error(result.error || "Erreur");
+    return false;
+  }
+
+  async function handleAddDepartment(label: string) {
+    const result = await addDepartment(label);
     if (result.success && result.department) {
-      setLocalDepartments((prev) => [...prev, result.department!].sort((a, b) => a.label.localeCompare(b.label)));
-      handleChange("department", customDepartment.trim());
+      setLocalDepartments((prev) =>
+        [...prev, result.department!].sort((a, b) => a.label.localeCompare(b.label))
+      );
       toast.success("Département créé");
-    } else {
-      toast.error(result.error || "Erreur");
+      return result.department;
     }
-    setCustomDepartment("");
-    setShowCustomDepartment(false);
+    toast.error(result.error || "Erreur");
+    return null;
   }
 
-  async function handleAddCustomTeam() {
-    if (!customTeam.trim()) return;
-    const result = await addTeam(customTeam.trim());
-    if (result.success && result.team) {
-      setLocalTeams((prev) => [...prev, result.team!].sort((a, b) => a.label.localeCompare(b.label)));
-      handleChange("team", customTeam.trim());
-      toast.success("Équipe créée");
-    } else {
-      toast.error(result.error || "Erreur");
+  async function handleDeleteDepartment(id: string) {
+    const result = await deleteDepartment(id);
+    if (result.success) {
+      setLocalDepartments((prev) => prev.filter((d) => d.id !== id));
+      toast.success("Département supprimé");
+      return true;
     }
-    setCustomTeam("");
-    setShowCustomTeam(false);
+    toast.error(result.error || "Erreur");
+    return false;
+  }
+
+  async function handleAddTeam(label: string) {
+    const result = await addTeam(label);
+    if (result.success && result.team) {
+      setLocalTeams((prev) =>
+        [...prev, result.team!].sort((a, b) => a.label.localeCompare(b.label))
+      );
+      toast.success("Équipe créée");
+      return result.team;
+    }
+    toast.error(result.error || "Erreur");
+    return null;
+  }
+
+  async function handleDeleteTeam(id: string) {
+    const result = await deleteTeam(id);
+    if (result.success) {
+      setLocalTeams((prev) => prev.filter((t) => t.id !== id));
+      toast.success("Équipe supprimée");
+      return true;
+    }
+    toast.error(result.error || "Erreur");
+    return false;
   }
 
   if (!open) return null;
 
-  const inputClass = "w-full rounded-xl border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]";
-  const selectClass = "w-full rounded-xl border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]";
+  const inputClass =
+    "w-full rounded-xl border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]";
+  const selectClass =
+    "w-full rounded-xl border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]";
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center">
@@ -263,26 +290,22 @@ export default function UserFormModal({ open, onClose, user, jobTitles = [], dep
                 Identité
               </label>
               <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <input
-                    type="text"
-                    placeholder="Prénom *"
-                    value={form.first_name}
-                    onChange={(e) => handleChange("first_name", e.target.value)}
-                    required
-                    className={inputClass}
-                  />
-                </div>
-                <div>
-                  <input
-                    type="text"
-                    placeholder="Nom *"
-                    value={form.last_name}
-                    onChange={(e) => handleChange("last_name", e.target.value)}
-                    required
-                    className={inputClass}
-                  />
-                </div>
+                <input
+                  type="text"
+                  placeholder="Prénom *"
+                  value={form.first_name}
+                  onChange={(e) => handleChange("first_name", e.target.value)}
+                  required
+                  className={inputClass}
+                />
+                <input
+                  type="text"
+                  placeholder="Nom *"
+                  value={form.last_name}
+                  onChange={(e) => handleChange("last_name", e.target.value)}
+                  required
+                  className={inputClass}
+                />
               </div>
               <select
                 value={form.gender}
@@ -330,51 +353,15 @@ export default function UserFormModal({ open, onClose, user, jobTitles = [], dep
                 Poste & Rôle
               </label>
               <div className="grid grid-cols-2 gap-3">
-                {/* Job title select + create */}
-                <div>
-                  {showCustomJobTitle ? (
-                    <div className="flex items-center gap-1.5">
-                      <input
-                        value={customJobTitle}
-                        onChange={(e) => setCustomJobTitle(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") { e.preventDefault(); handleAddCustomJobTitle(); }
-                          if (e.key === "Escape") setShowCustomJobTitle(false);
-                        }}
-                        autoFocus
-                        placeholder="Nouveau poste..."
-                        className={inputClass}
-                      />
-                      <button
-                        type="button"
-                        onClick={handleAddCustomJobTitle}
-                        className="shrink-0 rounded-xl bg-[var(--yellow)] p-2.5 text-white hover:bg-[var(--yellow-hover)]"
-                      >
-                        <Plus className="h-4 w-4" />
-                      </button>
-                    </div>
-                  ) : (
-                    <select
-                      value={form.job_title}
-                      onChange={(e) => {
-                        if (e.target.value === "__custom__") {
-                          setShowCustomJobTitle(true);
-                        } else {
-                          handleChange("job_title", e.target.value);
-                        }
-                      }}
-                      className={selectClass}
-                    >
-                      <option value="">-- Poste --</option>
-                      {localJobTitles.map((jt) => (
-                        <option key={jt.id} value={jt.label}>
-                          {jt.label}
-                        </option>
-                      ))}
-                      <option value="__custom__">+ Ajouter un poste...</option>
-                    </select>
-                  )}
-                </div>
+                <SearchableSelect
+                  value={form.job_title}
+                  onChange={(v) => handleChange("job_title", v)}
+                  options={localJobTitles}
+                  placeholder="Poste"
+                  onAdd={handleAddJobTitle}
+                  onDelete={handleDeleteJobTitle}
+                  addLabel="Nouveau poste"
+                />
                 <select
                   value={form.role}
                   onChange={(e) => handleChange("role", e.target.value)}
@@ -409,98 +396,24 @@ export default function UserFormModal({ open, onClose, user, jobTitles = [], dep
                 Organisation
               </label>
               <div className="grid grid-cols-3 gap-3">
-                {/* Department select + create */}
-                <div>
-                  {showCustomDepartment ? (
-                    <div className="flex items-center gap-1.5">
-                      <input
-                        value={customDepartment}
-                        onChange={(e) => setCustomDepartment(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") { e.preventDefault(); handleAddCustomDepartment(); }
-                          if (e.key === "Escape") setShowCustomDepartment(false);
-                        }}
-                        autoFocus
-                        placeholder="Nouveau dept..."
-                        className={inputClass}
-                      />
-                      <button
-                        type="button"
-                        onClick={handleAddCustomDepartment}
-                        className="shrink-0 rounded-xl bg-[var(--yellow)] p-2.5 text-white hover:bg-[var(--yellow-hover)]"
-                      >
-                        <Plus className="h-4 w-4" />
-                      </button>
-                    </div>
-                  ) : (
-                    <select
-                      value={form.department}
-                      onChange={(e) => {
-                        if (e.target.value === "__custom__") {
-                          setShowCustomDepartment(true);
-                        } else {
-                          handleChange("department", e.target.value);
-                        }
-                      }}
-                      className={selectClass}
-                    >
-                      <option value="">-- Département --</option>
-                      {localDepartments.map((d) => (
-                        <option key={d.id} value={d.label}>
-                          {d.label}
-                        </option>
-                      ))}
-                      <option value="__custom__">+ Ajouter...</option>
-                    </select>
-                  )}
-                </div>
-
-                {/* Team select + create */}
-                <div>
-                  {showCustomTeam ? (
-                    <div className="flex items-center gap-1.5">
-                      <input
-                        value={customTeam}
-                        onChange={(e) => setCustomTeam(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") { e.preventDefault(); handleAddCustomTeam(); }
-                          if (e.key === "Escape") setShowCustomTeam(false);
-                        }}
-                        autoFocus
-                        placeholder="Nouvelle équipe..."
-                        className={inputClass}
-                      />
-                      <button
-                        type="button"
-                        onClick={handleAddCustomTeam}
-                        className="shrink-0 rounded-xl bg-[var(--yellow)] p-2.5 text-white hover:bg-[var(--yellow-hover)]"
-                      >
-                        <Plus className="h-4 w-4" />
-                      </button>
-                    </div>
-                  ) : (
-                    <select
-                      value={form.team}
-                      onChange={(e) => {
-                        if (e.target.value === "__custom__") {
-                          setShowCustomTeam(true);
-                        } else {
-                          handleChange("team", e.target.value);
-                        }
-                      }}
-                      className={selectClass}
-                    >
-                      <option value="">-- Équipe --</option>
-                      {localTeams.map((t) => (
-                        <option key={t.id} value={t.label}>
-                          {t.label}
-                        </option>
-                      ))}
-                      <option value="__custom__">+ Ajouter...</option>
-                    </select>
-                  )}
-                </div>
-
+                <SearchableSelect
+                  value={form.department}
+                  onChange={(v) => handleChange("department", v)}
+                  options={localDepartments}
+                  placeholder="Département"
+                  onAdd={handleAddDepartment}
+                  onDelete={handleDeleteDepartment}
+                  addLabel="Nouveau département"
+                />
+                <SearchableSelect
+                  value={form.team}
+                  onChange={(v) => handleChange("team", v)}
+                  options={localTeams}
+                  placeholder="Équipe"
+                  onAdd={handleAddTeam}
+                  onDelete={handleDeleteTeam}
+                  addLabel="Nouvelle équipe"
+                />
                 <input
                   type="text"
                   placeholder="Agence"
@@ -530,7 +443,7 @@ export default function UserFormModal({ open, onClose, user, jobTitles = [], dep
                 </div>
                 <div>
                   <label className="mb-1 block text-xs text-[var(--text-secondary)]">
-                    Date d'embauche
+                    Date d&apos;embauche
                   </label>
                   <input
                     type="date"
