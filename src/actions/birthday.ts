@@ -114,7 +114,7 @@ export async function sendBirthdayWish(
     type: "birthday",
     title: `${senderName} vous souhaite un joyeux anniversaire !`,
     message,
-    link: "/",
+    link: "/social",
   });
 
   // Publier dans le fil d'actualités

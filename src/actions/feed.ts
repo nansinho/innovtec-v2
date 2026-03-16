@@ -115,6 +115,7 @@ export async function createFeedPost(
   });
 
   revalidatePath("/");
+  revalidatePath("/social");
 }
 
 // ==========================================
@@ -213,7 +214,7 @@ export async function addFeedComment(
       type: "comment",
       title: "Nouveau commentaire",
       message: `${name} a commenté votre publication`,
-      link: "/",
+      link: "/social",
       related_id: postId,
     });
   }
