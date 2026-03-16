@@ -17,6 +17,7 @@ export default function BirthdayBanner({
   const [sentWishes, setSentWishes] = useState<Set<string>>(new Set());
   const [message, setMessage] = useState("");
   const [activeWish, setActiveWish] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   // Filter out current user from birthday display
@@ -25,6 +26,7 @@ export default function BirthdayBanner({
   if (otherBirthdays.length === 0) return null;
 
   function handleSendWish(toUserId: string) {
+    setError(null);
     startTransition(async () => {
       const result = await sendBirthdayWish(
         toUserId,
@@ -34,6 +36,8 @@ export default function BirthdayBanner({
         setSentWishes((prev) => new Set([...prev, toUserId]));
         setActiveWish(null);
         setMessage("");
+      } else {
+        setError(result.error ?? "Une erreur est survenue");
       }
     });
   }
@@ -91,7 +95,11 @@ export default function BirthdayBanner({
 
               {/* Wish input */}
               {activeWish === person.id && !hasSent && (
-                <div className="mt-2 flex gap-2 pl-10">
+                <div className="mt-2 pl-10">
+                  {error && (
+                    <p className="mb-1.5 text-[11px] text-red-500">{error}</p>
+                  )}
+                <div className="flex gap-2">
                   <input
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
@@ -105,6 +113,7 @@ export default function BirthdayBanner({
                   >
                     <Send className="h-3.5 w-3.5" />
                   </button>
+                </div>
                 </div>
               )}
             </div>
