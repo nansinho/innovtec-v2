@@ -17,11 +17,11 @@ export default async function TableauSsePage() {
 
   return (
     <div className="p-6 pb-20 md:pb-6">
-      <div className="mb-6">
+      <div className="mb-4">
         <h1 className="text-base font-semibold text-[var(--heading)]">
           Tableau de Bord SSE
         </h1>
-        <p className="mt-1 text-[13px] text-[var(--text-secondary)]">
+        <p className="mt-0.5 text-[13px] text-[var(--text-secondary)]">
           Visualisez les indicateurs Santé, Sécurité et Environnement.
         </p>
       </div>

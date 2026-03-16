@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import RexList from "@/components/qse/rex-list";
 import RexForm from "@/components/qse/rex-form";
 import type { Rex } from "@/lib/types/database";
@@ -24,13 +25,10 @@ export default function RexPageClient({ rexList }: Props) {
       <RexList
         rexList={rexList}
         headerAction={
-          <button
-            onClick={() => setShowForm(true)}
-            className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-3 py-1.5 text-sm font-medium text-white transition-all duration-200 hover:bg-[var(--yellow-hover)] active:scale-[0.97]"
-          >
-            <Plus className="h-4 w-4" />
+          <Button size="sm" onClick={() => setShowForm(true)}>
+            <Plus className="h-3.5 w-3.5" />
             Nouveau REX
-          </button>
+          </Button>
         }
       />
 

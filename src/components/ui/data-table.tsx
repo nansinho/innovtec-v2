@@ -269,8 +269,8 @@ export function DataTable<T>({
             })}
             {headerAction}
             {onAdd && (
-              <Button onClick={onAdd}>
-                <Plus className="h-4 w-4" />
+              <Button size="sm" onClick={onAdd}>
+                <Plus className="h-3.5 w-3.5" />
                 {addLabel}
               </Button>
             )}

@@ -48,7 +48,7 @@ export default function ProfileTabs({
 
   return (
     <div>
-      <div className="mb-6 flex gap-0 overflow-x-auto border-b border-[var(--border-1)]">
+      <div className="mb-4 flex gap-0 overflow-x-auto border-b border-[var(--border-1)]">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = active === tab.id;
@@ -57,7 +57,7 @@ export default function ProfileTabs({
               key={tab.id}
               onClick={() => setActive(tab.id)}
               className={cn(
-                "relative flex shrink-0 items-center gap-2 px-4 py-3 text-xs font-medium transition-colors duration-200",
+                "relative flex shrink-0 items-center gap-1.5 px-3 py-2 text-xs font-medium transition-colors duration-200",
                 isActive
                   ? "text-[var(--heading)]"
                   : "text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
