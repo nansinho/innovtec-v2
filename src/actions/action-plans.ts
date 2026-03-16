@@ -74,11 +74,11 @@ export async function getActionPlans(): Promise<ActionPlan[]> {
     .in("action_plan_id", planIds);
 
   // Group signalements by plan
-  const sigByPlan: Record<string, ActionPlan["signalements"]> = {};
+  const sigByPlan: Record<string, NonNullable<ActionPlan["signalements"]>> = {};
   for (const s of (allSignalements ?? []) as Array<Record<string, unknown>>) {
     const pid = s.action_plan_id as string;
     if (!sigByPlan[pid]) sigByPlan[pid] = [];
-    sigByPlan[pid].push(s as unknown as ActionPlan["signalements"][number]);
+    sigByPlan[pid].push(s as unknown as NonNullable<ActionPlan["signalements"]>[number]);
   }
 
   for (const plan of plans) {
