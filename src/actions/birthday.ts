@@ -154,6 +154,20 @@ export async function getMyBirthdayWishes(): Promise<BirthdayWish[]> {
   return (data as unknown as BirthdayWish[]) ?? [];
 }
 
+export async function getBirthdayWishesFor(userId: string): Promise<BirthdayWish[]> {
+  const supabase = await createClient();
+  const year = new Date().getFullYear();
+
+  const { data } = await supabase
+    .from("birthday_wishes")
+    .select("*, from_user:profiles!birthday_wishes_from_user_id_fkey(first_name, last_name, avatar_url)")
+    .eq("to_user_id", userId)
+    .eq("year", year)
+    .order("created_at", { ascending: true });
+
+  return (data as unknown as BirthdayWish[]) ?? [];
+}
+
 export async function isMyBirthday(): Promise<boolean> {
   const supabase = await createClient();
   const {

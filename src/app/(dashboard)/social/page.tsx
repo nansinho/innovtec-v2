@@ -1,24 +1,31 @@
 import { Rss } from "lucide-react";
 import { Card, CardHeader } from "@/components/ui/card";
 import { getFeedPosts } from "@/actions/feed";
-import { getTodayBirthdays, getUpcomingBirthdays, getMyBirthdayWishes } from "@/actions/birthday";
+import { getTodayBirthdays, getUpcomingBirthdays, getBirthdayWishesFor } from "@/actions/birthday";
 import { getProfile } from "@/actions/auth";
 import FeedList from "@/components/dashboard/feed-list";
 import UpcomingBirthdays from "@/components/social/upcoming-birthdays";
-import MyBirthdayWishes from "@/components/social/my-birthday-wishes";
 import BirthdayFeedCard from "@/components/social/birthday-feed-card";
 import CreatePost from "@/components/social/create-post";
 
 export const dynamic = "force-dynamic";
 
 export default async function SocialPage() {
-  const [posts, birthdays, upcomingBirthdays, myWishes, profile] = await Promise.all([
+  const [posts, birthdays, upcomingBirthdays, profile] = await Promise.all([
     getFeedPosts(),
     getTodayBirthdays(),
     getUpcomingBirthdays(30),
-    getMyBirthdayWishes(),
     getProfile(),
   ]);
+
+  // Fetch wishes for each birthday person
+  const birthdayWishesMap = new Map<string, Awaited<ReturnType<typeof getBirthdayWishesFor>>>();
+  await Promise.all(
+    birthdays.map(async (person) => {
+      const wishes = await getBirthdayWishesFor(person.id);
+      birthdayWishesMap.set(person.id, wishes);
+    })
+  );
 
   return (
     <div className="p-6 pb-20 md:pb-6">
@@ -42,6 +49,7 @@ export default async function SocialPage() {
               key={person.id}
               person={person}
               currentUserId={profile?.id ?? ""}
+              initialWishes={birthdayWishesMap.get(person.id) ?? []}
             />
           ))}
 
@@ -75,9 +83,6 @@ export default async function SocialPage() {
 
         {/* Right column */}
         <div className="flex flex-col gap-6">
-          {myWishes.length > 0 && (
-            <MyBirthdayWishes wishes={myWishes} />
-          )}
           <UpcomingBirthdays birthdays={upcomingBirthdays} />
         </div>
       </div>
