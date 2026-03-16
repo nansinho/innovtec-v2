@@ -194,7 +194,7 @@ export default function UserFormModal({ open, onClose, user }: UserFormModalProp
                     value={form.first_name}
                     onChange={(e) => handleChange("first_name", e.target.value)}
                     required
-                    className="w-full rounded-xl border border-[var(--border-1)] bg-white px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                    className="w-full rounded-xl border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
                   />
                 </div>
                 <div>
@@ -204,14 +204,14 @@ export default function UserFormModal({ open, onClose, user }: UserFormModalProp
                     value={form.last_name}
                     onChange={(e) => handleChange("last_name", e.target.value)}
                     required
-                    className="w-full rounded-xl border border-[var(--border-1)] bg-white px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                    className="w-full rounded-xl border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
                   />
                 </div>
               </div>
               <select
                 value={form.gender}
                 onChange={(e) => handleChange("gender", e.target.value)}
-                className="mt-3 w-full rounded-xl border border-[var(--border-1)] bg-white px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                className="mt-3 w-full rounded-xl border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
               >
                 <option value="">Genre</option>
                 <option value="M">Homme</option>
@@ -232,7 +232,7 @@ export default function UserFormModal({ open, onClose, user }: UserFormModalProp
                   onChange={(e) => handleChange("email", e.target.value)}
                   required
                   disabled={isEdit}
-                  className="w-full rounded-xl border border-[var(--border-1)] bg-white px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)] disabled:bg-[var(--hover)] disabled:text-[var(--text-muted)]"
+                  className="w-full rounded-xl border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)] disabled:bg-[var(--hover)] disabled:text-[var(--text-muted)]"
                 />
                 {!isEdit && (
                   <input
@@ -242,7 +242,7 @@ export default function UserFormModal({ open, onClose, user }: UserFormModalProp
                     onChange={(e) => handleChange("password", e.target.value)}
                     required
                     minLength={6}
-                    className="w-full rounded-xl border border-[var(--border-1)] bg-white px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                    className="w-full rounded-xl border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
                   />
                 )}
               </div>
@@ -259,12 +259,12 @@ export default function UserFormModal({ open, onClose, user }: UserFormModalProp
                   placeholder="Intitulé du poste"
                   value={form.job_title}
                   onChange={(e) => handleChange("job_title", e.target.value)}
-                  className="w-full rounded-xl border border-[var(--border-1)] bg-white px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                  className="w-full rounded-xl border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
                 />
                 <select
                   value={form.role}
                   onChange={(e) => handleChange("role", e.target.value)}
-                  className="w-full rounded-xl border border-[var(--border-1)] bg-white px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                  className="w-full rounded-xl border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
                 >
                   {roleOptions.map((opt) => (
                     <option key={opt.value} value={opt.value}>
@@ -285,7 +285,7 @@ export default function UserFormModal({ open, onClose, user }: UserFormModalProp
                 placeholder="Téléphone"
                 value={form.phone}
                 onChange={(e) => handleChange("phone", e.target.value)}
-                className="w-full rounded-xl border border-[var(--border-1)] bg-white px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                className="w-full rounded-xl border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
               />
             </div>
 
@@ -300,21 +300,21 @@ export default function UserFormModal({ open, onClose, user }: UserFormModalProp
                   placeholder="Département"
                   value={form.department}
                   onChange={(e) => handleChange("department", e.target.value)}
-                  className="w-full rounded-xl border border-[var(--border-1)] bg-white px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                  className="w-full rounded-xl border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
                 />
                 <input
                   type="text"
                   placeholder="Équipe"
                   value={form.team}
                   onChange={(e) => handleChange("team", e.target.value)}
-                  className="w-full rounded-xl border border-[var(--border-1)] bg-white px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                  className="w-full rounded-xl border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
                 />
                 <input
                   type="text"
                   placeholder="Agence"
                   value={form.agency}
                   onChange={(e) => handleChange("agency", e.target.value)}
-                  className="w-full rounded-xl border border-[var(--border-1)] bg-white px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                  className="w-full rounded-xl border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
                 />
               </div>
             </div>
@@ -333,7 +333,7 @@ export default function UserFormModal({ open, onClose, user }: UserFormModalProp
                     type="date"
                     value={form.date_of_birth}
                     onChange={(e) => handleChange("date_of_birth", e.target.value)}
-                    className="w-full rounded-xl border border-[var(--border-1)] bg-white px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                    className="w-full rounded-xl border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
                   />
                 </div>
                 <div>
@@ -344,7 +344,7 @@ export default function UserFormModal({ open, onClose, user }: UserFormModalProp
                     type="date"
                     value={form.hire_date}
                     onChange={(e) => handleChange("hire_date", e.target.value)}
-                    className="w-full rounded-xl border border-[var(--border-1)] bg-white px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                    className="w-full rounded-xl border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
                   />
                 </div>
               </div>
