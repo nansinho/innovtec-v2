@@ -79,6 +79,7 @@ export default function FileUploadAi({
       const promptByType: Record<string, string> = {
         politique: "Analyse ce document de politique QSE et extrais toutes les sections avec leur contenu.",
         rex: "Analyse cette fiche REX (Retour d'Expérience) et extrais toutes les informations structurées : faits, causes, actions engagées, vigilance, type d'événement, etc.",
+        bonne_pratique: "Analyse ce document de bonne pratique et extrais toutes les informations : titre, description, pilier QSE, catégorie, difficulté, priorité, impacts (coûts, environnemental, sécurité), chantier.",
       };
       formData.append("prompt", promptByType[type] || "Analyse ce document et extrais les informations pertinentes.");
 

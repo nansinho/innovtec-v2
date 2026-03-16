@@ -23,6 +23,12 @@ export async function createBonnePratique(bp: {
   description: string;
   chantier: string;
   photos: string[];
+  difficulty?: string;
+  priority?: string;
+  cost_impact?: string;
+  environmental_impact?: string;
+  safety_impact?: string;
+  source_file_url?: string;
 }): Promise<{ success: boolean; error?: string }> {
   const supabase = await createClient();
   const {
@@ -37,6 +43,12 @@ export async function createBonnePratique(bp: {
     description: bp.description,
     chantier: bp.chantier,
     photos: bp.photos,
+    difficulty: bp.difficulty || "",
+    priority: bp.priority || "",
+    cost_impact: bp.cost_impact || "",
+    environmental_impact: bp.environmental_impact || "",
+    safety_impact: bp.safety_impact || "",
+    source_file_url: bp.source_file_url || "",
     author_id: user.id,
   });
 
