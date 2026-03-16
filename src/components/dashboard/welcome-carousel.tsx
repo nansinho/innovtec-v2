@@ -3,10 +3,12 @@
 import { useState, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import type { News } from "@/lib/types/database";
 import { getCarouselNews } from "@/actions/news";
 
 interface Slide {
+  id: string | null;
   badge: string;
   title: string;
   description: string;
@@ -17,6 +19,7 @@ interface Slide {
 
 const fallbackSlides: Slide[] = [
   {
+    id: null,
     badge: "Bienvenue",
     title: "Bienvenue sur l'intranet INNOVTEC Réseaux",
     description: "Retrouvez toutes les informations de l'entreprise, les actualités et vos outils au quotidien.",
@@ -25,6 +28,10 @@ const fallbackSlides: Slide[] = [
     gradient: "from-[#1E3A5F] via-[#1a3355] to-[#0F2035]",
   },
 ];
+
+function stripHtml(html: string): string {
+  return html.replace(/<[^>]*>/g, "").trim();
+}
 
 const categoryGradients: Record<string, string> = {
   securite: "from-amber-600 via-amber-500 to-yellow-500",
@@ -40,10 +47,13 @@ function newsToSlide(news: News): Slide {
     ? `Urgent · ${news.category}`
     : news.category.charAt(0).toUpperCase() + news.category.slice(1);
 
+  const rawDescription = news.excerpt || news.content.slice(0, 120);
+
   return {
+    id: news.id,
     badge,
     title: news.title,
-    description: news.excerpt || news.content.slice(0, 120),
+    description: stripHtml(rawDescription),
     cta: "Lire la suite",
     image: news.image_url || "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=500&q=80",
     gradient: categoryGradients[news.category] ?? categoryGradients.entreprise,
@@ -81,39 +91,46 @@ export default function WelcomeCarousel() {
         className="flex h-full transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] will-change-transform"
         style={{ transform: `translateX(-${current * 100}%)` }}
       >
-        {slides.map((slide, i) => (
-          <div
-            key={i}
-            className={`flex min-w-full bg-gradient-to-br ${slide.gradient}`}
-          >
-            <div className="z-[2] flex flex-1 flex-col justify-center px-10 py-8">
-              <span className="mb-3 inline-block w-fit rounded-full bg-white/15 px-3 py-1 text-xs font-bold uppercase tracking-wider text-white/90 backdrop-blur-sm">
-                {slide.badge}
-              </span>
-              <h2 className="mb-2 text-2xl font-bold leading-snug tracking-tight text-white">
-                {slide.title}
-              </h2>
-              <p className="max-w-[400px] text-[15px] leading-relaxed text-white/80">
-                {slide.description}
-              </p>
-              <button className="mt-4 inline-flex w-fit items-center gap-1.5 rounded-lg bg-gradient-to-b from-amber-500 to-amber-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm shadow-amber-700/20 transition-all duration-200 hover:from-amber-600 hover:to-amber-700 hover:shadow-md active:scale-[0.97]">
-                {slide.cta}
-                <ChevronRight className="h-3.5 w-3.5" />
-              </button>
+        {slides.map((slide, i) => {
+          const content = (
+            <div className={`flex min-w-full bg-gradient-to-br ${slide.gradient}`}>
+              <div className="z-[2] flex flex-1 flex-col justify-center px-10 py-8">
+                <span className="mb-3 inline-block w-fit rounded-full bg-white/15 px-3 py-1 text-xs font-bold uppercase tracking-wider text-white/90 backdrop-blur-sm">
+                  {slide.badge}
+                </span>
+                <h2 className="mb-2 text-2xl font-bold leading-snug tracking-tight text-white">
+                  {slide.title}
+                </h2>
+                <p className="max-w-[400px] text-[15px] leading-relaxed text-white/80">
+                  {slide.description}
+                </p>
+                <span className="mt-4 inline-flex w-fit items-center gap-1.5 rounded-lg bg-gradient-to-b from-amber-500 to-amber-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm shadow-amber-700/20 transition-all duration-200 group-hover:from-amber-600 group-hover:to-amber-700 group-hover:shadow-md">
+                  {slide.cta}
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </span>
+              </div>
+              <div className="relative hidden w-[42%] overflow-hidden sm:block">
+                <Image
+                  src={slide.image}
+                  alt=""
+                  fill
+                  priority={i === 0}
+                  sizes="(max-width: 768px) 0vw, 38vw"
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-l from-transparent via-black/5 to-black/50" />
+              </div>
             </div>
-            <div className="relative hidden w-[42%] overflow-hidden sm:block">
-              <Image
-                src={slide.image}
-                alt=""
-                fill
-                priority={i === 0}
-                sizes="(max-width: 768px) 0vw, 38vw"
-                className="object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-l from-transparent via-black/5 to-black/50" />
-            </div>
-          </div>
-        ))}
+          );
+
+          return slide.id ? (
+            <Link key={i} href={`/actualites/${slide.id}`} className="group min-w-full">
+              {content}
+            </Link>
+          ) : (
+            <div key={i} className="min-w-full">{content}</div>
+          );
+        })}
       </div>
 
       {/* Counter */}
