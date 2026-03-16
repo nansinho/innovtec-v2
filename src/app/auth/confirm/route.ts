@@ -48,14 +48,19 @@ export async function GET(request: NextRequest) {
     });
 
     if (!error) {
+      // Recovery → page reset password
       if (type === "recovery") {
         return NextResponse.redirect(new URL("/reset-password", baseUrl));
       }
-      return NextResponse.redirect(new URL(next, baseUrl));
+      // Magiclink avec next=reset-password → page reset password
+      if (type === "magiclink" && next === "reset-password") {
+        return NextResponse.redirect(new URL("/reset-password", baseUrl));
+      }
+      return NextResponse.redirect(new URL(`/${next}`, baseUrl));
     }
 
     // Token invalide ou expiré
-    if (type === "recovery") {
+    if (type === "recovery" || next === "reset-password") {
       return NextResponse.redirect(
         new URL("/forgot-password?error=expired", baseUrl)
       );
