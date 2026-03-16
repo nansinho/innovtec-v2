@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { sendPasswordResetEmail } from "@/lib/email";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
@@ -156,19 +157,36 @@ export async function requestPasswordReset(email: string): Promise<{ success: bo
     return { success: false, error: "Veuillez saisir votre email" };
   }
 
-  const supabase = await createClient();
-
+  const supabaseAdmin = createAdminClient();
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "";
 
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${siteUrl}/auth/confirm`,
+  // Générer un lien de recovery via l'admin API
+  const { data, error } = await supabaseAdmin.auth.admin.generateLink({
+    type: "recovery",
+    email,
+    options: {
+      redirectTo: `${siteUrl}/reset-password`,
+    },
   });
 
   if (error) {
-    console.error("[requestPasswordReset]", error.message);
+    return { success: false, error: `Erreur génération lien: ${error.message}` };
   }
 
-  // Toujours retourner success pour ne pas révéler si l'email existe
+  if (!data?.properties?.hashed_token) {
+    return { success: false, error: "Aucun token généré. Vérifiez que l'email existe." };
+  }
+
+  // Construire le lien de confirmation
+  const resetLink = `${siteUrl}/auth/confirm?token_hash=${data.properties.hashed_token}&type=recovery`;
+
+  try {
+    await sendPasswordResetEmail(email, resetLink);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return { success: false, error: `Erreur envoi email: ${msg}` };
+  }
+
   return { success: true };
 }
 
