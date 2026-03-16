@@ -285,6 +285,12 @@ export interface BonnePratique {
   description: string;
   chantier: string;
   photos: string[];
+  difficulty: string;
+  priority: string;
+  cost_impact: string;
+  environmental_impact: string;
+  safety_impact: string;
+  source_file_url: string;
   author_id: string;
   created_at: string;
   updated_at: string;

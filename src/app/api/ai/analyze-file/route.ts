@@ -159,6 +159,38 @@ Retourne UNIQUEMENT un JSON valide avec ces champs :
 }
 
 Retourne UNIQUEMENT du JSON valide, sans markdown, sans backticks.`;
+    } else if (type === "bonne_pratique") {
+      systemPrompt = `Tu es un assistant IA spécialisé dans l'analyse de documents de bonnes pratiques pour INNOVTEC Réseaux.
+Analyse ce document et extrais les informations pour créer une fiche de bonne pratique structurée.
+
+Le document peut contenir des informations sur :
+- Le titre et la description de la bonne pratique
+- Le domaine/pilier QSE concerné (qualité, santé, sécurité, environnement)
+- La catégorie (ex: EPI, signalisation, procédures, etc.)
+- Le niveau de difficulté de mise en œuvre
+- La priorité de la bonne pratique
+- Les impacts (coûts, environnement, sécurité)
+- Le chantier ou contexte concerné
+
+Retourne UNIQUEMENT un JSON valide avec ces champs :
+{
+  "title": "<titre concis de la bonne pratique>",
+  "description": "<description détaillée de la bonne pratique, son contexte et ses bénéfices>",
+  "pillar": "<pilier QSE parmi: securite, qualite, sante, environnement>",
+  "category": "<catégorie libre, ex: EPI, signalisation, procédures, manutention, etc.>",
+  "chantier": "<nom du chantier si mentionné, sinon vide>",
+  "difficulty": "<difficulté de mise en œuvre parmi: facile, moyenne, difficile>",
+  "priority": "<priorité parmi: faible, moyenne, elevee>",
+  "cost_impact": "<impact sur les coûts parmi: faible, moyen, eleve>",
+  "environmental_impact": "<impact environnemental parmi: aucun, faible, moyen, eleve>",
+  "safety_impact": "<impact sécurité parmi: aucun, faible, moyen, eleve>"
+}
+
+IMPORTANT:
+- Extrais le contenu en préservant le sens et la qualité du texte.
+- Si une information n'est pas présente dans le document, déduis-la du contexte ou laisse vide.
+- Utilise les accents français corrects.
+- Retourne UNIQUEMENT du JSON valide, sans markdown, sans backticks.`;
     } else if (type === "rex") {
       systemPrompt = `Tu es un assistant IA spécialisé dans l'analyse de fiches REX (Retour d'Expérience) pour INNOVTEC Réseaux.
 Analyse cette fiche REX et extrais TOUTES les informations structurées.
