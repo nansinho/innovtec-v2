@@ -468,6 +468,7 @@ export async function updateNews(
     image_url: string;
     is_carousel: boolean;
     is_published: boolean;
+    published_at?: string | null;
   }
 ): Promise<{ success: boolean; error?: string }> {
   const supabase = await createClient();
@@ -487,8 +488,11 @@ export async function updateNews(
     ...formData,
   };
 
-  // Set published_at if being published for the first time
-  if (formData.is_published && !current?.published_at) {
+  // If a specific published_at was provided, use it
+  if (formData.published_at !== undefined) {
+    updateData.published_at = formData.published_at;
+  } else if (formData.is_published && !current?.published_at) {
+    // Set published_at if being published for the first time
     updateData.published_at = new Date().toISOString();
   } else if (!formData.is_published) {
     updateData.published_at = null;

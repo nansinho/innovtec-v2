@@ -67,6 +67,11 @@ export default function NewsEditorPage({
   );
   const [imageUrl, setImageUrl] = useState(article?.image_url || "");
   const [isCarousel, setIsCarousel] = useState(article?.is_carousel || false);
+  const [publishedAt, setPublishedAt] = useState(
+    article?.published_at
+      ? new Date(article.published_at).toISOString().slice(0, 16)
+      : ""
+  );
   const [uploadingImage, setUploadingImage] = useState(false);
   const [attachments, setAttachments] =
     useState<NewsAttachment[]>(existingAttachments);
@@ -146,6 +151,9 @@ export default function NewsEditorPage({
         image_url: imageUrl,
         is_carousel: isCarousel,
         is_published: publish,
+        ...(mode === "edit" && publishedAt
+          ? { published_at: new Date(publishedAt).toISOString() }
+          : {}),
       };
 
       let newsId: string | undefined;
@@ -322,7 +330,7 @@ export default function NewsEditorPage({
         </div>
 
         {/* Settings row */}
-        <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div>
             <label className="mb-1.5 block text-[12px] font-medium text-[var(--heading)]">
               Catégorie
@@ -356,6 +364,20 @@ export default function NewsEditorPage({
               ))}
             </select>
           </div>
+
+          {mode === "edit" && (
+            <div>
+              <label className="mb-1.5 block text-[12px] font-medium text-[var(--heading)]">
+                Date de publication
+              </label>
+              <input
+                type="datetime-local"
+                value={publishedAt}
+                onChange={(e) => setPublishedAt(e.target.value)}
+                className="w-full rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] px-3 py-2 text-[12.5px] text-[var(--heading)] outline-none focus:border-[var(--yellow)] focus:ring-1 focus:ring-[var(--yellow)]"
+              />
+            </div>
+          )}
 
           <div className="flex items-end">
             <label className="flex cursor-pointer items-center gap-2 text-[12.5px] text-[var(--heading)]">
