@@ -171,6 +171,46 @@ export async function getBirthdayWishesFor(userId: string): Promise<BirthdayWish
   return (data as unknown as BirthdayWish[]) ?? [];
 }
 
+export async function updateBirthdayWish(
+  wishId: string,
+  message: string
+): Promise<{ success: boolean; error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { success: false, error: "Non authentifié" };
+  if (!message.trim()) return { success: false, error: "Message vide" };
+
+  const { error } = await supabase
+    .from("birthday_wishes")
+    .update({ message: message.trim() })
+    .eq("id", wishId)
+    .eq("from_user_id", user.id);
+
+  if (error) return { success: false, error: error.message };
+  return { success: true };
+}
+
+export async function deleteBirthdayWish(
+  wishId: string
+): Promise<{ success: boolean; error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { success: false, error: "Non authentifié" };
+
+  const { error } = await supabase
+    .from("birthday_wishes")
+    .delete()
+    .eq("id", wishId)
+    .eq("from_user_id", user.id);
+
+  if (error) return { success: false, error: error.message };
+  return { success: true };
+}
+
 export async function isMyBirthday(): Promise<boolean> {
   const supabase = await createClient();
   const {
