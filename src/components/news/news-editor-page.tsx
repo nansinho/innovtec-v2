@@ -246,7 +246,7 @@ export default function NewsEditorPage({
       </div>
 
       <div className="mx-auto max-w-4xl">
-        <h1 className="mb-6 text-xl font-bold text-[var(--heading)]">
+        <h1 className="mb-6 text-base font-semibold text-[var(--heading)]">
           {mode === "create" ? "Créer un article" : "Modifier l'article"}
         </h1>
 

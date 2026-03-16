@@ -28,9 +28,9 @@ export function Button({
             variant === "danger",
         },
         {
-          "h-8 px-3 text-xs": size === "sm",
-          "h-9 px-4 text-sm": size === "md",
-          "h-10 px-5 text-sm": size === "lg",
+          "h-7 px-2.5 text-[11px]": size === "sm",
+          "h-8 px-3 text-xs": size === "md",
+          "h-9 px-4 text-[13px]": size === "lg",
         },
         className
       )}

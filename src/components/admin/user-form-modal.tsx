@@ -287,7 +287,7 @@ export default function UserFormModal({
           <div className="space-y-5 p-6">
             {/* Identité */}
             <div>
-              <label className="mb-2 block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+              <label className="mb-2 block text-[11px] font-semibold text-[var(--text-muted)]">
                 Identité
               </label>
               <div className="grid grid-cols-2 gap-3">
@@ -321,7 +321,7 @@ export default function UserFormModal({
 
             {/* Compte */}
             <div>
-              <label className="mb-2 block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+              <label className="mb-2 block text-[11px] font-semibold text-[var(--text-muted)]">
                 Compte
               </label>
               <div className="space-y-3">
@@ -350,7 +350,7 @@ export default function UserFormModal({
 
             {/* Poste & Rôle */}
             <div>
-              <label className="mb-2 block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+              <label className="mb-2 block text-[11px] font-semibold text-[var(--text-muted)]">
                 Poste & Rôle
               </label>
               <div className="grid grid-cols-2 gap-3">
@@ -379,7 +379,7 @@ export default function UserFormModal({
 
             {/* Contact */}
             <div>
-              <label className="mb-2 block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+              <label className="mb-2 block text-[11px] font-semibold text-[var(--text-muted)]">
                 Contact
               </label>
               <input
@@ -393,7 +393,7 @@ export default function UserFormModal({
 
             {/* Organisation */}
             <div>
-              <label className="mb-2 block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+              <label className="mb-2 block text-[11px] font-semibold text-[var(--text-muted)]">
                 Organisation
               </label>
               <div className="grid grid-cols-3 gap-3">
@@ -427,7 +427,7 @@ export default function UserFormModal({
 
             {/* Dates */}
             <div>
-              <label className="mb-2 block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+              <label className="mb-2 block text-[11px] font-semibold text-[var(--text-muted)]">
                 Dates
               </label>
               <div className="grid grid-cols-2 gap-3">

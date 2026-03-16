@@ -48,10 +48,10 @@ export default async function AdminUsersPage() {
   return (
     <div className="px-7 py-6 pb-20 md:pb-7">
       <div className="mb-6">
-        <h1 className="text-xl font-semibold text-[var(--heading)]">
+        <h1 className="text-base font-semibold text-[var(--heading)]">
           Gestion des utilisateurs
         </h1>
-        <p className="mt-1 text-sm text-[var(--text-secondary)]">
+        <p className="mt-1 text-[13px] text-[var(--text-secondary)]">
           {users.length} collaborateur{users.length > 1 ? "s" : ""} enregistré
           {users.length > 1 ? "s" : ""}
         </p>

@@ -132,7 +132,7 @@ export default function RexDetail({ rex, onExportPdf, onEdit, companyLogo }: Rex
             <div className="flex items-start gap-4">
               {/* Badge FICHE REX */}
               <div className="flex flex-col items-center rounded-lg bg-gradient-to-b from-orange-500 to-orange-600 px-3 py-2 text-white shadow-sm">
-                <span className="text-[10px] font-bold uppercase tracking-wider">
+                <span className="text-[10px] font-bold">
                   Fiche REX
                 </span>
                 <span className="text-lg font-bold leading-tight">
@@ -216,7 +216,7 @@ export default function RexDetail({ rex, onExportPdf, onEdit, companyLogo }: Rex
           <div className="grid grid-cols-2 gap-6">
             {/* Déjà arrivé */}
             <div>
-              <h3 className="mb-2 text-[12px] font-bold uppercase tracking-wider text-blue-600">
+              <h3 className="mb-2 text-[12px] font-bold text-blue-600">
                 Déjà arrivé ?
               </h3>
               {rex.deja_arrive && rex.deja_arrive.length > 0 ? (
@@ -235,7 +235,7 @@ export default function RexDetail({ rex, onExportPdf, onEdit, companyLogo }: Rex
 
             {/* Type d'événement */}
             <div>
-              <h3 className="mb-2 text-[12px] font-bold uppercase tracking-wider text-orange-600">
+              <h3 className="mb-2 text-[12px] font-bold text-orange-600">
                 Type d&apos;événement
               </h3>
               <div className="space-y-1">

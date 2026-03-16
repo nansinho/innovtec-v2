@@ -88,7 +88,7 @@ export default async function UserDetailPage({
           </div>
         )}
         <div className="flex-1">
-          <h1 className="text-xl font-semibold text-[var(--heading)]">
+          <h1 className="text-base font-semibold text-[var(--heading)]">
             {fullName}
           </h1>
           {user.job_title && (
