@@ -19,6 +19,17 @@ export async function getPublishedNews() {
   return data ?? [];
 }
 
+export async function getLatestNews(limit: number = 3) {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("news")
+    .select("*, author:profiles(first_name, last_name, avatar_url)")
+    .eq("is_published", true)
+    .order("published_at", { ascending: false })
+    .limit(limit);
+  return data ?? [];
+}
+
 export async function getCarouselNews() {
   const supabase = await createClient();
   const { data } = await supabase
@@ -363,40 +374,39 @@ export async function getNewsWithViewCounts() {
     .eq("is_published", true)
     .order("published_at", { ascending: false });
 
-  if (!news) return [];
+  if (!news || news.length === 0) return [];
 
-  const newsWithCounts = await Promise.all(
-    news.map(async (n) => {
-      const [views, comments, likes, shares] = await Promise.all([
-        supabase
-          .from("news_views")
-          .select("*", { count: "exact", head: true })
-          .eq("news_id", n.id),
-        supabase
-          .from("news_comments")
-          .select("*", { count: "exact", head: true })
-          .eq("news_id", n.id),
-        supabase
-          .from("news_likes")
-          .select("*", { count: "exact", head: true })
-          .eq("news_id", n.id),
-        supabase
-          .from("news_shares")
-          .select("*", { count: "exact", head: true })
-          .eq("news_id", n.id),
-      ]);
+  const newsIds = news.map((n: { id: string }) => n.id);
 
-      return {
-        ...n,
-        views_count: views.count ?? 0,
-        comments_count: comments.count ?? 0,
-        likes_count: likes.count ?? 0,
-        shares_count: shares.count ?? 0,
-      };
-    })
-  );
+  // Batch: 4 queries total instead of 4 × N
+  const [viewsRes, commentsRes, likesRes, sharesRes] = await Promise.all([
+    supabase.from("news_views").select("news_id").in("news_id", newsIds),
+    supabase.from("news_comments").select("news_id").in("news_id", newsIds),
+    supabase.from("news_likes").select("news_id").in("news_id", newsIds),
+    supabase.from("news_shares").select("news_id").in("news_id", newsIds),
+  ]);
 
-  return newsWithCounts;
+  // Count occurrences per news_id
+  function countByNewsId(rows: Array<{ news_id: string }> | null) {
+    const map: Record<string, number> = {};
+    for (const r of rows ?? []) {
+      map[r.news_id] = (map[r.news_id] ?? 0) + 1;
+    }
+    return map;
+  }
+
+  const viewsMap = countByNewsId(viewsRes.data as Array<{ news_id: string }> | null);
+  const commentsMap = countByNewsId(commentsRes.data as Array<{ news_id: string }> | null);
+  const likesMap = countByNewsId(likesRes.data as Array<{ news_id: string }> | null);
+  const sharesMap = countByNewsId(sharesRes.data as Array<{ news_id: string }> | null);
+
+  return news.map((n: { id: string }) => ({
+    ...n,
+    views_count: viewsMap[n.id] ?? 0,
+    comments_count: commentsMap[n.id] ?? 0,
+    likes_count: likesMap[n.id] ?? 0,
+    shares_count: sharesMap[n.id] ?? 0,
+  }));
 }
 
 // ==========================================

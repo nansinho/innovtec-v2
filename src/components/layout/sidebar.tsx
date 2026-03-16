@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   Zap,
@@ -156,14 +157,16 @@ export default function Sidebar({ profile, logos }: SidebarProps) {
       {/* Logo */}
       <div className="flex items-center gap-2.5 border-b border-white/[0.06] px-4 py-4">
         {(logos?.dark || logos?.light) ? (
-          /* eslint-disable-next-line @next/next/no-img-element */
-          <img
+          <Image
             src={(logos.dark || logos.light)!}
             alt="Logo société"
+            width={180}
+            height={36}
             className={cn(
               "object-contain transition-all duration-300",
               collapsed ? "h-9 w-9" : "h-9 max-w-[180px]"
             )}
+            unoptimized
           />
         ) : (
           <>

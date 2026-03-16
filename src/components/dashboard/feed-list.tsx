@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, memo, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -41,11 +41,7 @@ export default function FeedList({ initialPosts, currentUserId }: FeedListProps)
     setPosts(initialPosts);
   }, [initialPosts]);
 
-  function handleLikeUpdate(
-    postId: string,
-    liked: boolean,
-    count: number
-  ) {
+  const handleLikeUpdate = useCallback((postId: string, liked: boolean, count: number) => {
     setPosts((prev) =>
       prev.map((p) =>
         p.id === postId
@@ -53,9 +49,9 @@ export default function FeedList({ initialPosts, currentUserId }: FeedListProps)
           : p
       )
     );
-  }
+  }, []);
 
-  function handleCommentCountChange(postId: string, delta: number) {
+  const handleCommentCountChange = useCallback((postId: string, delta: number) => {
     setPosts((prev) =>
       prev.map((p) =>
         p.id === postId
@@ -63,19 +59,19 @@ export default function FeedList({ initialPosts, currentUserId }: FeedListProps)
           : p
       )
     );
-  }
+  }, []);
 
-  function handlePostDeleted(postId: string) {
+  const handlePostDeleted = useCallback((postId: string) => {
     setPosts((prev) => prev.filter((p) => p.id !== postId));
-  }
+  }, []);
 
-  function handlePostUpdated(postId: string, content: string, imageUrl: string) {
+  const handlePostUpdated = useCallback((postId: string, content: string, imageUrl: string) => {
     setPosts((prev) =>
       prev.map((p) =>
         p.id === postId ? { ...p, content, image_url: imageUrl } : p
       )
     );
-  }
+  }, []);
 
   return (
     <div>
@@ -98,7 +94,7 @@ export default function FeedList({ initialPosts, currentUserId }: FeedListProps)
 // Single Feed Post
 // ==========================================
 
-function FeedPost({
+const FeedPost = memo(function FeedPost({
   post,
   currentUserId,
   onLikeUpdate,
@@ -575,4 +571,4 @@ function FeedPost({
       />
     </div>
   );
-}
+});

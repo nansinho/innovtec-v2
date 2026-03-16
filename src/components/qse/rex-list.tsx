@@ -9,7 +9,6 @@ import { getStandardToolbarActions } from "@/lib/table-toolbar-actions";
 import { useRouter } from "next/navigation";
 import { deleteRex } from "@/actions/qse";
 import { toast } from "sonner";
-import { exportRexPdf } from "@/lib/export/rex-pdf";
 import type { Rex } from "@/lib/types/database";
 
 interface RexItem extends Rex {
@@ -129,6 +128,7 @@ export default function RexList({ rexList, headerAction }: RexListProps) {
           onClick: () => {
             const num = r.rex_number || "X";
             const year = r.rex_year || new Date().getFullYear();
+            const { exportRexPdf } = await import("@/lib/export/rex-pdf");
             exportRexPdf(r, `Fiche-REX-${num}-${year}.pdf`);
           },
         },

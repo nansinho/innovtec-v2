@@ -5,13 +5,11 @@ import BirthdayPopupWrapper from "@/components/birthday/birthday-popup-wrapper";
 import PasswordChangeAlert from "@/components/profil/password-change-alert";
 import NotificationProvider from "@/components/notifications/notification-provider";
 import { getProfile } from "@/actions/auth";
-import { getUnreadCount } from "@/actions/notifications";
-import { isMyBirthday, getMyBirthdayWishes } from "@/actions/birthday";
+import { getUnreadCountForUser } from "@/actions/notifications";
+import { isUserBirthday, getBirthdayWishesForUser } from "@/actions/birthday";
 import { ensureAdminExists } from "@/actions/users";
 import { getCompanyLogo } from "@/actions/settings";
 import { redirect } from "next/navigation";
-
-export const dynamic = "force-dynamic";
 
 export default async function DashboardLayout({
   children,
@@ -24,17 +22,19 @@ export default async function DashboardLayout({
   if (profile) {
     const adminCheck = await ensureAdminExists();
     if (adminCheck.promoted) {
-      // Profile role was updated — redirect to refresh the layout
       redirect("/");
     }
   }
 
+  const userId = profile?.id ?? "";
+
+  // Fetch all layout data in parallel — no extra auth calls
   const [unreadCount, isBirthday, logos] = await Promise.all([
-    getUnreadCount(),
-    isMyBirthday(),
+    userId ? getUnreadCountForUser(userId) : Promise.resolve(0),
+    userId ? isUserBirthday(userId) : Promise.resolve(false),
     getCompanyLogo(),
   ]);
-  const wishes = isBirthday ? await getMyBirthdayWishes() : [];
+  const wishes = isBirthday ? await getBirthdayWishesForUser(userId) : [];
 
   const userName = profile
     ? `${profile.first_name} ${profile.last_name}`.trim()

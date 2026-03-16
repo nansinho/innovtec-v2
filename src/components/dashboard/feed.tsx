@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Card, CardHeader } from "@/components/ui/card";
 import { getFeedPosts } from "@/actions/feed";
-import { getPublishedNews } from "@/actions/news";
+import { getLatestNews } from "@/actions/news";
 import { getProfile } from "@/actions/auth";
 import FeedList from "@/components/dashboard/feed-list";
 import { formatRelative } from "@/lib/utils";
@@ -12,13 +12,11 @@ import { ARTICLE_IMPORTANCE_MAP } from "@/lib/status-config";
 import type { NewsPriority } from "@/lib/types/database";
 
 export default async function Feed() {
-  const [posts, profile, allNews] = await Promise.all([
+  const [posts, profile, latestNews] = await Promise.all([
     getFeedPosts(),
     getProfile(),
-    getPublishedNews().catch(() => []),
+    getLatestNews(3).catch(() => []),
   ]);
-
-  const latestNews = allNews.slice(0, 3);
 
   return (
     <Card>

@@ -64,15 +64,25 @@ export async function getActionPlans(): Promise<ActionPlan[]> {
 
   if (!data) return [];
 
-  // For each plan, fetch linked signalements
   const plans = data as unknown as ActionPlan[];
+  const planIds = plans.map((p) => p.id);
+
+  // Batch: single query for all signalements instead of N sequential queries
+  const { data: allSignalements } = await supabase
+    .from("danger_reports")
+    .select("id, title, status, priority, action_plan_id")
+    .in("action_plan_id", planIds);
+
+  // Group signalements by plan
+  const sigByPlan: Record<string, ActionPlan["signalements"]> = {};
+  for (const s of (allSignalements ?? []) as Array<Record<string, unknown>>) {
+    const pid = s.action_plan_id as string;
+    if (!sigByPlan[pid]) sigByPlan[pid] = [];
+    sigByPlan[pid].push(s as unknown as ActionPlan["signalements"][number]);
+  }
+
   for (const plan of plans) {
-    const { data: signalements } = await supabase
-      .from("danger_reports")
-      .select("id, title, status, priority")
-      .eq("action_plan_id", plan.id);
-    plan.signalements = (signalements as unknown as ActionPlan["signalements"]) ?? [];
-    // Sort tasks by position
+    plan.signalements = sigByPlan[plan.id] ?? [];
     if (plan.tasks) {
       plan.tasks.sort((a, b) => a.position - b.position);
     }

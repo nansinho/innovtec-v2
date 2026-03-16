@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { Bell, MessageSquare, Settings, ChevronRight, LogOut } from "lucide-react";
 import Link from "next/link";
@@ -135,8 +136,7 @@ export default function Topbar({ profile }: TopbarProps) {
           >
             {profile?.avatar_url ? (
               <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={profile.avatar_url} alt="" className="h-full w-full object-cover" />
+                <Image src={profile.avatar_url} alt="" fill sizes="32px" className="object-cover" />
               </div>
             ) : (
               <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--navy)]/10 text-[11px] font-medium text-[var(--navy)]">
