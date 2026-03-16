@@ -37,7 +37,7 @@ export async function getFeedPosts(): Promise<FeedPostWithMeta[]> {
   const { data: posts } = await supabase
     .from("feed_posts")
     .select(
-      "*, author:profiles(first_name, last_name, avatar_url), news:news(id, title, image_url, excerpt)"
+      "*, author:profiles(first_name, last_name, avatar_url)"
     )
     .order("created_at", { ascending: false })
     .limit(20);
@@ -85,10 +85,10 @@ export async function getFeedPosts(): Promise<FeedPostWithMeta[]> {
     author_id: post.author_id,
     content: post.content,
     image_url: post.image_url,
-    news_id: post.news_id,
+    news_id: null,
     created_at: post.created_at,
     author: post.author as FeedPostWithMeta["author"],
-    news: post.news as FeedPostWithMeta["news"],
+    news: null,
     likes_count: likesMap[post.id] ?? 0,
     comments_count: commentsMap[post.id] ?? 0,
     user_has_liked: userLikedSet.has(post.id),
@@ -111,7 +111,6 @@ export async function createFeedPost(
     author_id: user.id,
     content,
     image_url: imageUrl ?? "",
-    news_id: newsId ?? null,
   });
 
   if (error) return { success: false, error: error.message };
