@@ -177,7 +177,7 @@ export default function SignalementForm({ categories, onCreated, onClose }: Sign
 
           {/* Title */}
           <div>
-            <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-[var(--text-secondary)]">
+            <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">
               Titre du signalement <span className="text-[var(--red)]">*</span>
             </label>
             <input
@@ -191,7 +191,7 @@ export default function SignalementForm({ categories, onCreated, onClose }: Sign
           {/* Category + Priority */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-[var(--text-secondary)]">
+              <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">
                 Catégorie <span className="text-[var(--red)]">*</span>
               </label>
               <select
@@ -208,7 +208,7 @@ export default function SignalementForm({ categories, onCreated, onClose }: Sign
               </select>
             </div>
             <div>
-              <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-[var(--text-secondary)]">
+              <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">
                 Priorité <span className="text-[var(--red)]">*</span>
               </label>
               <div className="flex gap-1.5">
@@ -234,7 +234,7 @@ export default function SignalementForm({ categories, onCreated, onClose }: Sign
           {/* Date + Time */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-[var(--text-secondary)]">
+              <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">
                 Date de l&apos;incident <span className="text-[var(--red)]">*</span>
               </label>
               <input
@@ -245,7 +245,7 @@ export default function SignalementForm({ categories, onCreated, onClose }: Sign
               />
             </div>
             <div>
-              <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-[var(--text-secondary)]">
+              <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">
                 Heure de l&apos;incident
               </label>
               <input
@@ -259,7 +259,7 @@ export default function SignalementForm({ categories, onCreated, onClose }: Sign
 
           {/* Location / Chantier */}
           <div>
-            <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-[var(--text-secondary)]">
+            <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">
               Lieu / Chantier <span className="text-[var(--red)]">*</span>
             </label>
             <input
@@ -272,7 +272,7 @@ export default function SignalementForm({ categories, onCreated, onClose }: Sign
 
           {/* Description */}
           <div>
-            <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-[var(--text-secondary)]">
+            <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">
               Description <span className="text-[var(--red)]">*</span>
             </label>
             <textarea
@@ -286,7 +286,7 @@ export default function SignalementForm({ categories, onCreated, onClose }: Sign
 
           {/* Photos */}
           <div>
-            <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-[var(--text-secondary)]">
+            <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">
               Photos ({photoUrls.length}/5)
             </label>
 

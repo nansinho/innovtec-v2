@@ -190,7 +190,7 @@ function PillarCard({ pillar }: { pillar: Pillar }) {
           <Icon className="h-5 w-5" style={{ color: pillar.color }} />
         </div>
         <div className="flex-1">
-          <h3 className="text-[15px] font-bold uppercase tracking-wide text-[var(--heading)]">
+          <h3 className="text-[15px] font-semibold text-[var(--heading)]">
             {pillar.label}
           </h3>
           <p className="text-[10px] text-[var(--text-muted)]">
@@ -219,7 +219,7 @@ function PillarCard({ pillar }: { pillar: Pillar }) {
               className="h-1 w-6 rounded-full"
               style={{ background: pillar.color }}
             />
-            <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[var(--text-secondary)]">
+            <span className="text-[10px] font-semibold text-[var(--text-secondary)]">
               Nos engagements
             </span>
           </div>
@@ -242,7 +242,7 @@ function PillarCard({ pillar }: { pillar: Pillar }) {
         <div className="mx-4 mb-4 overflow-hidden rounded-xl bg-gradient-to-br from-[var(--navy)] to-[#1e3a5f] px-4 py-4 shadow-inner">
           <div className="mb-2.5 flex items-center gap-2">
             <div className="h-1 w-6 rounded-full bg-[var(--yellow)]" />
-            <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-white/60">
+            <span className="text-[10px] font-semibold text-white/60">
               Nos objectifs
             </span>
             <span className="ml-auto rounded-full bg-white/10 px-2 py-0.5 text-[9px] font-bold text-white/50">
@@ -582,7 +582,7 @@ export default function PolitiqueContent({
           <div className="rounded-2xl border border-[var(--border-1)] bg-[var(--card)] shadow-sm">
             <div className="flex flex-wrap gap-4 p-5">
               <div className="w-24 shrink-0">
-                <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Année</label>
+                <label className="mb-1.5 block text-[11px] font-medium text-[var(--text-muted)]">Année</label>
                 <input
                   type="number"
                   min={2000}
@@ -593,7 +593,7 @@ export default function PolitiqueContent({
                 />
               </div>
               <div className="w-40 shrink-0">
-                <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Date signature</label>
+                <label className="mb-1.5 block text-[11px] font-medium text-[var(--text-muted)]">Date signature</label>
                 <input
                   type="date"
                   value={dateSignature ?? ""}
@@ -602,7 +602,7 @@ export default function PolitiqueContent({
                 />
               </div>
               <div className="min-w-0 flex-1">
-                <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Titre du document</label>
+                <label className="mb-1.5 block text-[11px] font-medium text-[var(--text-muted)]">Titre du document</label>
                 <input
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
@@ -650,7 +650,7 @@ export default function PolitiqueContent({
                     >
                       <Icon className="h-5 w-5" style={{ color: p.color }} />
                     </div>
-                    <h3 className="text-[15px] font-bold uppercase tracking-wide" style={{ color: p.color }}>
+                    <h3 className="text-[15px] font-semibold" style={{ color: p.color }}>
                       {p.label}
                     </h3>
                   </div>
@@ -658,7 +658,7 @@ export default function PolitiqueContent({
                   {/* Two columns: Engagements | Objectifs */}
                   <div className="grid grid-cols-2 divide-x divide-[var(--border-1)]">
                     <div className="p-5">
-                      <label className="mb-2.5 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                      <label className="mb-2.5 flex items-center gap-1.5 text-[11px] font-medium text-[var(--text-muted)]">
                         <div className="h-1 w-4 rounded-full" style={{ background: p.color }} />
                         Engagements
                       </label>
@@ -671,7 +671,7 @@ export default function PolitiqueContent({
                       />
                     </div>
                     <div className="p-5">
-                      <label className="mb-2.5 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                      <label className="mb-2.5 flex items-center gap-1.5 text-[11px] font-medium text-[var(--text-muted)]">
                         <div className="h-1 w-4 rounded-full bg-[var(--navy)]" />
                         Objectifs
                       </label>
@@ -795,7 +795,7 @@ export default function PolitiqueContent({
           </div>
           <div className="space-y-4 p-5">
             <div>
-              <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Texte d&apos;engagement</label>
+              <label className="mb-1.5 block text-[11px] font-medium text-[var(--text-muted)]">Texte d&apos;engagement</label>
               <textarea
                 value={engagementText}
                 onChange={(e) => setEngagementText(e.target.value)}
@@ -806,7 +806,7 @@ export default function PolitiqueContent({
             </div>
             <div className="flex gap-4">
               <div className="flex-1">
-                <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Lieu</label>
+                <label className="mb-1.5 block text-[11px] font-medium text-[var(--text-muted)]">Lieu</label>
                 <input
                   value={engagementLieu}
                   onChange={(e) => setEngagementLieu(e.target.value)}
@@ -815,7 +815,7 @@ export default function PolitiqueContent({
                 />
               </div>
               <div className="w-40">
-                <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Date signature</label>
+                <label className="mb-1.5 block text-[11px] font-medium text-[var(--text-muted)]">Date signature</label>
                 <input
                   type="date"
                   value={dateSignature ?? ""}
@@ -825,7 +825,7 @@ export default function PolitiqueContent({
               </div>
             </div>
             <div>
-              <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Signataires</label>
+              <label className="mb-1.5 block text-[11px] font-medium text-[var(--text-muted)]">Signataires</label>
               <div className="space-y-2">
                 {signataires.map((name, index) => (
                   <div key={index} className="flex items-center gap-2">
@@ -988,7 +988,7 @@ export default function PolitiqueContent({
               <div className="absolute -bottom-4 -left-4 h-20 w-20 rounded-full bg-[var(--yellow)]/10" />
 
               <div className="relative">
-                <span className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-[var(--yellow)]/15 px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider text-[var(--yellow)] backdrop-blur-sm">
+                <span className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-[var(--yellow)]/15 px-3.5 py-1 text-[11px] font-semibold text-[var(--yellow)] backdrop-blur-sm">
                   <Award className="h-3 w-3" />
                   Politique QSE {docYear}
                 </span>
@@ -1077,7 +1077,7 @@ export default function PolitiqueContent({
             {selected.engagement_text && (
               <div className="overflow-hidden rounded-2xl border-2 border-[var(--green)] bg-gradient-to-br from-[var(--navy)] via-[#1e3a5f] to-[#2a4a7a] shadow-lg">
                 <div className="px-8 py-8">
-                  <p className="mb-2 text-center text-[12px] font-bold uppercase tracking-[0.15em] text-[var(--green)]">
+                  <p className="mb-2 text-center text-[12px] font-semibold text-[var(--green)]">
                     Notre engagement
                   </p>
                   <h3 className="mb-6 text-center text-xl font-bold text-white">
@@ -1128,8 +1128,8 @@ export default function PolitiqueContent({
       {/* Header — style C&CO */}
       <div className="mb-5 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-[var(--heading)]">Politique QSE</h1>
-          <p className="mt-1 text-sm text-[var(--text-secondary)]">
+          <h1 className="text-base font-semibold text-[var(--heading)]">Politique QSE</h1>
+          <p className="mt-1 text-[13px] text-[var(--text-secondary)]">
             La politique Qualité, Sécurité et Environnement d&apos;INNOVTEC Réseaux.
           </p>
         </div>
@@ -1184,13 +1184,13 @@ export default function PolitiqueContent({
           <table className="w-full">
             <thead>
               <tr className="border-b border-[var(--border-2)] bg-[var(--hover)]">
-                <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Titre</th>
-                <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "80px" }}>Année</th>
-                <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "130px" }}>Signature</th>
-                <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Piliers</th>
-                <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "130px" }}>Date</th>
+                <th className="px-4 py-3 text-left text-[11px] font-medium text-[var(--text-muted)]">Titre</th>
+                <th className="px-4 py-3 text-left text-[11px] font-medium text-[var(--text-muted)]" style={{ width: "80px" }}>Année</th>
+                <th className="px-4 py-3 text-left text-[11px] font-medium text-[var(--text-muted)]" style={{ width: "130px" }}>Signature</th>
+                <th className="px-4 py-3 text-left text-[11px] font-medium text-[var(--text-muted)]">Piliers</th>
+                <th className="px-4 py-3 text-left text-[11px] font-medium text-[var(--text-muted)]" style={{ width: "130px" }}>Date</th>
                 {canEdit && (
-                  <th className="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "120px" }}>Actions</th>
+                  <th className="px-4 py-3 text-right text-[11px] font-medium text-[var(--text-muted)]" style={{ width: "120px" }}>Actions</th>
                 )}
               </tr>
             </thead>

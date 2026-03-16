@@ -102,7 +102,7 @@ export default function BirthdayPopup({ wishes, userName }: BirthdayPopupProps) 
           {/* Wishes */}
           {wishes.length > 0 && (
             <div className="mt-4">
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+              <p className="mb-2 text-xs font-semibold text-[var(--text-muted)]">
                 Messages de vos collègues
               </p>
               <div className="max-h-32 space-y-2 overflow-y-auto">

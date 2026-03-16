@@ -99,7 +99,7 @@ export default function ThemeSettings() {
 
       {/* Presets */}
       <div className="mb-5">
-        <label className="mb-2 block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+        <label className="mb-2 block text-[11px] font-semibold text-[var(--text-muted)]">
           Couleurs prédéfinies
         </label>
         <div className="flex flex-wrap gap-2">
@@ -135,7 +135,7 @@ export default function ThemeSettings() {
       <div className="space-y-4">
         <div>
           <div className="mb-2 flex items-center justify-between">
-            <label className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+            <label className="text-[11px] font-semibold text-[var(--text-muted)]">
               Teinte
             </label>
             <span className="text-[11px] font-mono text-[var(--text-muted)]">{hue}°</span>
@@ -159,7 +159,7 @@ export default function ThemeSettings() {
 
         <div>
           <div className="mb-2 flex items-center justify-between">
-            <label className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+            <label className="text-[11px] font-semibold text-[var(--text-muted)]">
               Saturation
             </label>
             <span className="text-[11px] font-mono text-[var(--text-muted)]">{sat}%</span>

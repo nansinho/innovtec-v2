@@ -180,7 +180,7 @@ export default function SearchBar() {
                     <div key={category}>
                       {/* Category header */}
                       <div className="flex items-center gap-2 px-4 pb-1 pt-3">
-                        <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+                        <span className="text-[11px] font-semibold text-[var(--text-muted)]">
                           {config.label}
                         </span>
                         <span className="rounded-full bg-black/[0.04] px-1.5 py-0.5 text-[9px] font-bold text-[var(--text-muted)]">

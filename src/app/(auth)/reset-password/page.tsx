@@ -28,10 +28,10 @@ export default function ResetPasswordPage() {
             <AlertTriangle className="h-6 w-6 text-red-500" />
           </div>
         </div>
-        <h1 className="mb-2 text-xl font-bold text-[var(--heading)]">
+        <h1 className="mb-2 text-base font-semibold text-[var(--heading)]">
           Lien invalide
         </h1>
-        <p className="mb-6 text-sm text-[var(--text-secondary)]">
+        <p className="mb-6 text-[13px] text-[var(--text-secondary)]">
           Ce lien de réinitialisation est invalide ou a expiré.
         </p>
         <Link

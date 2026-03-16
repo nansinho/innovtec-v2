@@ -245,11 +245,11 @@ export function DataTable<T>({
     <div>
       {/* ============ ROW 1: Page header ============ */}
       {title && (
-        <div className="mb-5 flex flex-wrap items-start justify-between gap-4">
+        <div className="mb-4 flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h1 className="text-xl font-bold text-[var(--heading)]">{title}</h1>
+            <h1 className="text-base font-semibold text-[var(--heading)]">{title}</h1>
             {description && (
-              <p className="mt-1 text-sm text-[var(--text-secondary)]">{description}</p>
+              <p className="mt-0.5 text-[13px] text-[var(--text-secondary)]">{description}</p>
             )}
           </div>
           <div className="flex items-center gap-2">
@@ -260,9 +260,9 @@ export function DataTable<T>({
                   key={i}
                   onClick={action.onClick}
                   disabled={action.disabled}
-                  className="inline-flex h-9 items-center gap-2 rounded-lg border border-[var(--border-1)] bg-white px-3 text-sm font-medium text-[var(--text-secondary)] shadow-xs transition-all hover:bg-zinc-50 hover:text-[var(--heading)] hover:border-zinc-300 active:scale-[0.97] disabled:opacity-40 disabled:pointer-events-none"
+                  className="inline-flex h-7 items-center gap-1.5 rounded-lg border border-[var(--border-1)] bg-white px-2.5 text-[11px] font-medium text-[var(--text-secondary)] shadow-xs transition-all hover:bg-zinc-50 hover:text-[var(--heading)] hover:border-zinc-300 active:scale-[0.97] disabled:opacity-40 disabled:pointer-events-none"
                 >
-                  <Icon className="h-4 w-4" />
+                  <Icon className="h-3.5 w-3.5" />
                   <span className="hidden sm:inline">{action.label}</span>
                 </button>
               );
@@ -283,7 +283,7 @@ export function DataTable<T>({
         <div className="mb-4 flex flex-wrap items-center gap-3">
           {searchable && (
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-muted)]" />
+              <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--text-muted)]" />
               <input
                 value={search}
                 onChange={(e) => {
@@ -291,7 +291,7 @@ export function DataTable<T>({
                   setPage(0);
                 }}
                 placeholder={searchPlaceholder}
-                className="h-10 w-72 rounded-lg border border-[var(--border-1)] bg-white pl-10 pr-8 text-sm outline-none transition-all placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                className="h-8 w-64 rounded-lg border border-[var(--border-1)] bg-white pl-9 pr-8 text-xs outline-none transition-all placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
               />
               {search && (
                 <button
@@ -309,7 +309,7 @@ export function DataTable<T>({
               <button
                 onClick={() => setFiltersOpen(!filtersOpen)}
                 className={cn(
-                  "inline-flex h-10 items-center gap-2 rounded-lg border px-3 text-sm font-medium transition-all",
+                  "inline-flex h-8 items-center gap-1.5 rounded-lg border px-2.5 text-xs font-medium transition-all",
                   activeFilterCount > 0
                     ? "border-amber-300 bg-amber-50 text-amber-700"
                     : "border-[var(--border-1)] bg-white text-[var(--text-secondary)] hover:bg-zinc-50 hover:text-[var(--heading)]"
@@ -328,7 +328,7 @@ export function DataTable<T>({
               {filtersOpen && (
                 <div className="absolute left-0 top-full z-50 mt-2 w-72 rounded-xl border border-[var(--border-1)] bg-white p-4 shadow-lg ring-1 ring-black/[0.04]">
                   <div className="mb-3 flex items-center justify-between">
-                    <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">Filtres</span>
+                    <span className="text-[11px] font-medium text-[var(--text-muted)]">Filtres</span>
                     {activeFilterCount > 0 && (
                       <button
                         onClick={() => {
@@ -357,7 +357,7 @@ export function DataTable<T>({
                               }));
                               setPage(0);
                             }}
-                            className="h-9 w-full rounded-lg border border-[var(--border-1)] bg-white px-3 text-sm text-[var(--text)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                            className="h-9 w-full rounded-lg border border-[var(--border-1)] bg-white px-3 text-[13px] text-[var(--text)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
                           >
                             <option value="">{f.placeholder ?? `Tous`}</option>
                             {f.options.map((opt) => (
@@ -456,7 +456,7 @@ export function DataTable<T>({
                 <th
                   key={col.key}
                   className={cn(
-                    "px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]",
+                    "px-4 py-2.5 text-left text-[11px] font-medium text-[var(--text-muted)]",
                     col.sortable && "cursor-pointer select-none hover:text-[var(--text)]"
                   )}
                   style={{ width: col.width }}
@@ -481,7 +481,7 @@ export function DataTable<T>({
                 </th>
               ))}
               {actions && (
-                <th className="w-14 px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+                <th className="w-14 px-4 py-2.5 text-right text-[11px] font-medium text-[var(--text-muted)]">
                   Actions
                 </th>
               )}
@@ -520,7 +520,7 @@ export function DataTable<T>({
                   {columns.map((col) => (
                     <td
                       key={col.key}
-                      className="px-4 py-3 text-sm text-[var(--text)]"
+                      className="px-4 py-3 text-[13px] text-[var(--text)]"
                     >
                       {col.render
                         ? col.render(item)
@@ -543,14 +543,14 @@ export function DataTable<T>({
 
       {/* ============ Empty state ============ */}
       {sorted.length === 0 && emptyState && (
-        <div className="flex flex-col items-center justify-center py-20 text-center">
-          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-zinc-100 ring-1 ring-zinc-200/60">
-            <emptyState.icon className="h-7 w-7 text-zinc-400" />
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-zinc-100 ring-1 ring-zinc-200/60">
+            <emptyState.icon className="h-5 w-5 text-zinc-400" />
           </div>
-          <h3 className="mb-1 text-sm font-semibold text-[var(--heading)]">
+          <h3 className="mb-0.5 text-[13px] font-medium text-[var(--heading)]">
             {emptyState.title}
           </h3>
-          <p className="max-w-xs text-sm text-[var(--text-muted)]">
+          <p className="max-w-xs text-[12px] text-[var(--text-muted)]">
             {emptyState.description}
           </p>
         </div>
@@ -559,7 +559,7 @@ export function DataTable<T>({
       {/* ============ Pagination ============ */}
       {sorted.length > 0 && (
         <div className="flex items-center justify-between border-t border-[var(--border-1)] px-4 py-3">
-          <span className="text-xs text-[var(--text-muted)]">
+          <span className="text-[11px] text-[var(--text-muted)]">
             {rangeStart}–{rangeEnd} sur {sorted.length}
           </span>
           {totalPages > 1 && (
@@ -567,7 +567,7 @@ export function DataTable<T>({
               <button
                 onClick={() => setPage((p) => Math.max(0, p - 1))}
                 disabled={page === 0}
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--text-muted)] transition-colors hover:bg-zinc-100 disabled:opacity-30"
+                className="flex h-7 w-7 items-center justify-center rounded-lg text-[var(--text-muted)] transition-colors hover:bg-zinc-100 disabled:opacity-30"
                 aria-label="Page précédente"
               >
                 <ChevronLeft className="h-4 w-4" />
@@ -580,7 +580,7 @@ export function DataTable<T>({
                     key={p}
                     onClick={() => setPage(p as number)}
                     className={cn(
-                      "flex h-8 w-8 items-center justify-center rounded-lg text-xs font-medium transition-colors",
+                      "flex h-7 w-7 items-center justify-center rounded-lg text-xs font-medium transition-colors",
                       page === p
                         ? "bg-[var(--yellow)] text-white shadow-sm"
                         : "text-[var(--text-secondary)] hover:bg-zinc-100"
@@ -593,7 +593,7 @@ export function DataTable<T>({
               <button
                 onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
                 disabled={page >= totalPages - 1}
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--text-muted)] transition-colors hover:bg-zinc-100 disabled:opacity-30"
+                className="flex h-7 w-7 items-center justify-center rounded-lg text-[var(--text-muted)] transition-colors hover:bg-zinc-100 disabled:opacity-30"
                 aria-label="Page suivante"
               >
                 <ChevronRight className="h-4 w-4" />

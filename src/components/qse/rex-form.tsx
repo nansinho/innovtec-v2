@@ -337,7 +337,7 @@ export default function RexForm({ onCreated, onClose, initialData }: RexFormProp
           {mode === "ai" && (
             <div className="mx-auto max-w-2xl space-y-4">
               <div>
-                <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-[var(--text-secondary)]">
+                <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">
                   Décrivez le contexte de l&apos;événement
                 </label>
                 <textarea
@@ -362,7 +362,7 @@ export default function RexForm({ onCreated, onClose, initialData }: RexFormProp
             <div className="space-y-6">
               {/* Header fields */}
               <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--hover)] p-4">
-                <h3 className="mb-3 text-[12px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+                <h3 className="mb-3 text-[12px] font-semibold text-[var(--text-muted)]">
                   Informations générales
                 </h3>
                 <div className="grid grid-cols-4 gap-3">
@@ -527,7 +527,7 @@ export default function RexForm({ onCreated, onClose, initialData }: RexFormProp
               <div className="grid grid-cols-2 gap-4">
                 {/* Déjà arrivé */}
                 <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--hover)] p-4">
-                  <h3 className="mb-2 text-[12px] font-semibold uppercase tracking-wider text-blue-600">
+                  <h3 className="mb-2 text-[12px] font-semibold text-blue-600">
                     Déjà arrivé ?
                   </h3>
                   <div className="space-y-2">
@@ -563,7 +563,7 @@ export default function RexForm({ onCreated, onClose, initialData }: RexFormProp
 
                 {/* Type d'événement */}
                 <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--hover)] p-4">
-                  <h3 className="mb-2 text-[12px] font-semibold uppercase tracking-wider text-orange-600">
+                  <h3 className="mb-2 text-[12px] font-semibold text-orange-600">
                     Type d&apos;événement
                   </h3>
                   <div className="space-y-1.5">

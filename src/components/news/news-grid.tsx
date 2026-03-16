@@ -107,19 +107,19 @@ export default function NewsTable({ news }: NewsTableProps) {
         <div className="overflow-hidden rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] shadow-sm">
           {/* Table header */}
           <div className="hidden border-b border-[var(--border-1)] bg-[var(--hover)] px-5 py-3 md:grid md:grid-cols-[1fr_100px_100px_80px_120px_24px] md:items-center md:gap-4">
-            <span className="text-[10.5px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+            <span className="text-[10.5px] font-medium text-[var(--text-muted)]">
               Article
             </span>
-            <span className="text-[10.5px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+            <span className="text-[10.5px] font-medium text-[var(--text-muted)]">
               Catégorie
             </span>
-            <span className="text-[10.5px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+            <span className="text-[10.5px] font-medium text-[var(--text-muted)]">
               Auteur
             </span>
-            <span className="text-[10.5px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+            <span className="text-[10.5px] font-medium text-[var(--text-muted)]">
               Date
             </span>
-            <span className="text-center text-[10.5px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+            <span className="text-center text-[10.5px] font-medium text-[var(--text-muted)]">
               Engagement
             </span>
             <span />

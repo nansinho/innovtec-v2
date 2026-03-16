@@ -139,7 +139,7 @@ export default function ActionPlanDetail({
           {/* Header card */}
           <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] p-6 shadow-xs">
             <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
-              <h1 className="text-xl font-semibold text-[var(--heading)]">{plan.title}</h1>
+              <h1 className="text-base font-semibold text-[var(--heading)]">{plan.title}</h1>
               <StatusBadge module="plans_actions" status={plan.status} />
             </div>
 
@@ -180,7 +180,7 @@ export default function ActionPlanDetail({
           {/* Tasks */}
           <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] p-6 shadow-xs">
             <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-xs font-medium uppercase tracking-wider text-[var(--text-muted)]">
+              <h3 className="text-xs font-medium text-[var(--text-muted)]">
                 Sous-tâches ({doneCount}/{tasks.length})
               </h3>
               {tasks.length > 0 && (
@@ -257,7 +257,7 @@ export default function ActionPlanDetail({
 
           {/* Linked signalements */}
           <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] p-6 shadow-xs">
-            <h3 className="mb-4 text-xs font-medium uppercase tracking-wider text-[var(--text-muted)]">
+            <h3 className="mb-4 text-xs font-medium text-[var(--text-muted)]">
               Signalements liés ({plan.signalements?.length ?? 0})
             </h3>
 
@@ -318,7 +318,7 @@ export default function ActionPlanDetail({
         {canManage && (
           <div className="space-y-4">
             <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] p-5 shadow-xs">
-              <h3 className="mb-3 text-xs font-medium uppercase tracking-wider text-[var(--text-muted)]">
+              <h3 className="mb-3 text-xs font-medium text-[var(--text-muted)]">
                 Changer le statut
               </h3>
               <select
