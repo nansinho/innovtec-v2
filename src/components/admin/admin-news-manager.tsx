@@ -25,6 +25,7 @@ import type { News, NewsCategory, NewsPriority } from "@/lib/types/database";
 import { Badge } from "@/components/ui/badge";
 import { ARTICLE_CATEGORY_MAP } from "@/lib/status-config";
 import { CategoryBadge } from "@/components/ui/status-badge";
+import { Button } from "@/components/ui/button";
 
 type NewsItem = News & {
   author?: { first_name: string; last_name: string } | null;
@@ -195,13 +196,10 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
             className="w-full rounded-xl border border-[var(--border-1)] py-2.5 pl-10 pr-4 text-sm text-[var(--heading)] outline-none transition-all placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)] focus:shadow-sm"
           />
         </div>
-        <button
-          onClick={() => setShowForm(!showForm)}
-          className="inline-flex h-9 items-center gap-2 rounded-lg bg-gradient-to-b from-amber-500 to-amber-600 px-4 text-sm font-medium text-white shadow-sm transition-all hover:from-amber-600 hover:to-amber-700 active:scale-[0.97]"
-        >
+        <Button onClick={() => setShowForm(!showForm)}>
           {showForm ? <X className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
           {showForm ? "Annuler" : "Nouvelle actualité"}
-        </button>
+        </Button>
       </div>
 
       {/* Create form */}

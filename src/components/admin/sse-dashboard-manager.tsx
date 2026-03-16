@@ -7,6 +7,7 @@ import { deleteSseDashboard } from "@/actions/sse-dashboard";
 import ConfirmDialog from "@/components/ui/confirm-dialog";
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2, Calendar } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const MONTH_NAMES = [
   "Janvier", "Fevrier", "Mars", "Avril", "Mai", "Juin",
@@ -80,13 +81,10 @@ export function SseDashboardManager({ dashboards: initialDashboards }: SseDashbo
         <p className="text-sm text-[var(--text-secondary)]">
           {dashboards.length} tableau{dashboards.length !== 1 ? "x" : ""} SSE
         </p>
-        <button
-          onClick={() => setCreating(true)}
-          className="flex items-center gap-1.5 rounded-[var(--radius-xs)] bg-[var(--yellow)] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[var(--yellow-hover)]"
-        >
+        <Button onClick={() => setCreating(true)}>
           <Plus className="h-4 w-4" />
           Nouveau tableau
-        </button>
+        </Button>
       </div>
 
       {dashboards.length === 0 ? (

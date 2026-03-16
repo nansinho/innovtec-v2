@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 import {
   Edit3,
   Save,
@@ -1141,13 +1142,10 @@ export default function PolitiqueContent({
               <Sparkles className="h-4 w-4" />
               <span className="hidden sm:inline">Importer (IA)</span>
             </button>
-            <button
-              onClick={startNew}
-              className="inline-flex h-9 items-center gap-2 rounded-lg bg-gradient-to-b from-amber-500 to-amber-600 px-4 text-sm font-medium text-white shadow-sm shadow-amber-600/20 transition-all hover:from-amber-600 hover:to-amber-700 hover:shadow-md hover:shadow-amber-600/25 active:scale-[0.97]"
-            >
+            <Button onClick={startNew}>
               <Plus className="h-4 w-4" />
               Nouvelle politique QSE
-            </button>
+            </Button>
           </div>
         )}
       </div>

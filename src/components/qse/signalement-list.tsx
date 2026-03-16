@@ -125,12 +125,10 @@ export default function SignalementList({ signalements: initial, categories, can
         return (
           <Badge
             variant="gray"
-            dot
-            className="border"
+            className="border-[1.5px] bg-transparent"
             style={{
-              backgroundColor: `${cat.color}15`,
               color: cat.color,
-              borderColor: `${cat.color}30`,
+              borderColor: cat.color,
             }}
           >
             {cat.name}

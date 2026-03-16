@@ -13,6 +13,7 @@ import {
   SlidersHorizontal,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "./button";
 import { DropdownMenu, type DropdownItem } from "./dropdown-menu";
 import { DataTableSkeleton } from "./skeleton";
 
@@ -268,13 +269,10 @@ export function DataTable<T>({
             })}
             {headerAction}
             {onAdd && (
-              <button
-                onClick={onAdd}
-                className="inline-flex h-9 items-center gap-2 rounded-lg bg-gradient-to-b from-amber-500 to-amber-600 px-4 text-sm font-medium text-white shadow-sm shadow-amber-600/20 transition-all hover:from-amber-600 hover:to-amber-700 hover:shadow-md hover:shadow-amber-600/25 active:scale-[0.97]"
-              >
+              <Button onClick={onAdd}>
                 <Plus className="h-4 w-4" />
                 {addLabel}
-              </button>
+              </Button>
             )}
           </div>
         </div>
@@ -506,7 +504,7 @@ export function DataTable<T>({
                   onClick={() => onRowClick?.(item)}
                 >
                   {selectable && (
-                    <td className="px-4 py-3.5">
+                    <td className="px-4 py-3">
                       <input
                         type="checkbox"
                         checked={isSelected}
@@ -522,7 +520,7 @@ export function DataTable<T>({
                   {columns.map((col) => (
                     <td
                       key={col.key}
-                      className="px-4 py-3.5 text-sm text-[var(--text)]"
+                      className="px-4 py-3 text-sm text-[var(--text)]"
                     >
                       {col.render
                         ? col.render(item)
@@ -532,7 +530,7 @@ export function DataTable<T>({
                     </td>
                   ))}
                   {actions && (
-                    <td className="px-4 py-3.5 text-right">
+                    <td className="px-4 py-3 text-right">
                       <DropdownMenu items={actions(item)} />
                     </td>
                   )}
