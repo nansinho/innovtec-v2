@@ -125,7 +125,7 @@ export default function RexList({ rexList, headerAction }: RexListProps) {
         {
           label: "Télécharger PDF",
           icon: Download,
-          onClick: () => {
+          onClick: async () => {
             const num = r.rex_number || "X";
             const year = r.rex_year || new Date().getFullYear();
             const { exportRexPdf } = await import("@/lib/export/rex-pdf");

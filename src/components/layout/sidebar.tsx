@@ -15,7 +15,7 @@ import {
   Calendar,
   GraduationCap,
   FileText,
-  Image,
+  Image as ImageIcon,
   HelpCircle,
   Settings,
   UserCog,
@@ -61,7 +61,7 @@ const equipeNav = [
 
 const ressourcesNav = [
   { href: "/documents", label: "Documents", icon: FileText },
-  { href: "/galerie", label: "Galerie", icon: Image },
+  { href: "/galerie", label: "Galerie", icon: ImageIcon },
 ];
 
 const adminNav = [
