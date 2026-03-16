@@ -9,6 +9,7 @@ import {
   PenLine,
   BookOpen,
   Loader2,
+  ImagePlus,
 } from "lucide-react";
 import { createBonnePratique, uploadBonnePratiquePhoto } from "@/actions/bonnes-pratiques";
 import { toast } from "sonner";
@@ -58,6 +59,7 @@ interface FormData {
   category: string;
   description: string;
   chantier: string;
+  cover_photo: string;
   photos: string[];
   difficulty: string;
   priority: string;
@@ -73,6 +75,7 @@ const emptyForm: FormData = {
   category: "",
   description: "",
   chantier: "",
+  cover_photo: "",
   photos: [],
   difficulty: "",
   priority: "",
@@ -89,6 +92,7 @@ export default function BonnePratiqueForm({ onCreated, onClose }: BonnePratiqueF
   const [aiPrompt, setAiPrompt] = useState("");
   const [aiLoading, setAiLoading] = useState(false);
   const [form, setForm] = useState<FormData>(emptyForm);
+  const [uploadingCover, setUploadingCover] = useState(false);
 
   const inputClass =
     "w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--green)] focus:ring-2 focus:ring-[var(--green-surface)]";
@@ -101,6 +105,7 @@ export default function BonnePratiqueForm({ onCreated, onClose }: BonnePratiqueF
       category: (r.category as string) || "",
       description: (r.description as string) || "",
       chantier: (r.chantier as string) || "",
+      cover_photo: "",
       photos: [],
       difficulty: (r.difficulty as string) || "",
       priority: (r.priority as string) || "",
@@ -183,6 +188,22 @@ export default function BonnePratiqueForm({ onCreated, onClose }: BonnePratiqueF
       ...prev,
       photos: prev.photos.filter((_, i) => i !== index),
     }));
+  }
+
+  async function handleCoverPhotoUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingCover(true);
+    const fd = new FormData();
+    fd.append("file", file);
+    const result = await uploadBonnePratiquePhoto(fd);
+    if (result.error) {
+      toast.error(`Erreur upload: ${result.error}`);
+    } else if (result.filePath) {
+      setForm((prev) => ({ ...prev, cover_photo: result.filePath! }));
+    }
+    setUploadingCover(false);
+    e.target.value = "";
   }
 
   function handleSubmit() {
@@ -294,6 +315,46 @@ export default function BonnePratiqueForm({ onCreated, onClose }: BonnePratiqueF
           {/* Mode: Manual (also shown after AI import/generate) */}
           {mode === "manual" && (
             <div className="space-y-5">
+              {/* Photo de couverture */}
+              <div>
+                <label className="mb-1.5 block text-[12px] font-medium text-[var(--text-secondary)]">
+                  Photo de couverture
+                </label>
+                {form.cover_photo ? (
+                  <div className="relative">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/documents/${form.cover_photo}`}
+                      alt="Photo de couverture"
+                      className="h-48 w-full rounded-[var(--radius)] object-cover"
+                    />
+                    <button
+                      onClick={() => setForm({ ...form, cover_photo: "" })}
+                      className="absolute right-2 top-2 rounded-full bg-black/60 p-1.5 text-white transition-colors hover:bg-black/80"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <label className="flex cursor-pointer flex-col items-center gap-2 rounded-[var(--radius)] border-2 border-dashed border-[var(--border-1)] bg-[var(--hover)] px-6 py-8 text-center transition-colors hover:border-[var(--green)] hover:bg-[var(--green-surface)]">
+                    <ImagePlus className="h-8 w-8 text-[var(--text-muted)]" />
+                    <span className="text-sm text-[var(--text-secondary)]">
+                      {uploadingCover ? "Envoi en cours..." : "Ajouter une photo de couverture"}
+                    </span>
+                    <span className="text-[11px] text-[var(--text-muted)]">
+                      Cette image sera affichée sur la carte de la bonne pratique
+                    </span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleCoverPhotoUpload}
+                      className="hidden"
+                      disabled={uploadingCover}
+                    />
+                  </label>
+                )}
+              </div>
+
               {/* Titre */}
               <div>
                 <label className="mb-1.5 block text-[12px] font-medium text-[var(--text-secondary)]">

@@ -1,7 +1,8 @@
 -- Migration: Add missing fields to bonnes_pratiques table
--- Fields: difficulty, priority, cost_impact, environmental_impact, safety_impact, source_file_url
+-- Fields: cover_photo, difficulty, priority, cost_impact, environmental_impact, safety_impact, source_file_url
 
 ALTER TABLE bonnes_pratiques
+  ADD COLUMN IF NOT EXISTS cover_photo TEXT DEFAULT '',
   ADD COLUMN IF NOT EXISTS difficulty TEXT DEFAULT '',
   ADD COLUMN IF NOT EXISTS priority TEXT DEFAULT '',
   ADD COLUMN IF NOT EXISTS cost_impact TEXT DEFAULT '',

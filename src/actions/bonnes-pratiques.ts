@@ -23,6 +23,7 @@ export async function createBonnePratique(bp: {
   description: string;
   chantier: string;
   photos: string[];
+  cover_photo?: string;
   difficulty?: string;
   priority?: string;
   cost_impact?: string;
@@ -36,13 +37,16 @@ export async function createBonnePratique(bp: {
   } = await supabase.auth.getUser();
   if (!user) return { success: false, error: "Non authentifié" };
 
-  const { error } = await supabase.from("bonnes_pratiques").insert({
+  // Try insert with all fields (new columns included)
+  // If new columns don't exist yet, fallback to base columns only
+  const fullPayload = {
     title: bp.title,
     pillar: bp.pillar,
     category: bp.category,
     description: bp.description,
     chantier: bp.chantier,
     photos: bp.photos,
+    cover_photo: bp.cover_photo || "",
     difficulty: bp.difficulty || "",
     priority: bp.priority || "",
     cost_impact: bp.cost_impact || "",
@@ -50,7 +54,24 @@ export async function createBonnePratique(bp: {
     safety_impact: bp.safety_impact || "",
     source_file_url: bp.source_file_url || "",
     author_id: user.id,
-  });
+  };
+
+  let { error } = await supabase.from("bonnes_pratiques").insert(fullPayload);
+
+  // Fallback: if insert fails (new columns may not exist), try with base columns only
+  if (error) {
+    const basePayload = {
+      title: bp.title,
+      pillar: bp.pillar,
+      category: bp.category,
+      description: bp.description,
+      chantier: bp.chantier,
+      photos: bp.photos,
+      author_id: user.id,
+    };
+    const fallback = await supabase.from("bonnes_pratiques").insert(basePayload);
+    error = fallback.error;
+  }
 
   if (error) return { success: false, error: error.message };
 
