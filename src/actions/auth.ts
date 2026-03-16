@@ -5,6 +5,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { sendPasswordResetEmail } from "@/lib/email";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { createHmac } from "crypto";
 
 export async function signOut() {
   const supabase = await createClient();
@@ -152,6 +153,48 @@ export async function signUp(formData: {
   }
 }
 
+// ==========================================
+// PASSWORD RESET (custom, sans GoTrue)
+// ==========================================
+
+const RESET_SECRET = process.env.SUPABASE_SERVICE_ROLE_KEY ?? "fallback-secret";
+const RESET_EXPIRY_MS = 60 * 60 * 1000; // 1 heure
+
+function generateResetToken(userId: string): string {
+  const expiry = Date.now() + RESET_EXPIRY_MS;
+  const payload = `${userId}:${expiry}`;
+  const signature = createHmac("sha256", RESET_SECRET)
+    .update(payload)
+    .digest("hex");
+  // Encode en base64url pour passer dans une URL
+  return Buffer.from(`${payload}:${signature}`).toString("base64url");
+}
+
+function verifyResetToken(token: string): { userId: string } | null {
+  try {
+    const decoded = Buffer.from(token, "base64url").toString();
+    const parts = decoded.split(":");
+    if (parts.length !== 3) return null;
+
+    const [userId, expiryStr, signature] = parts;
+    const expiry = Number(expiryStr);
+
+    // Vérifier expiration
+    if (Date.now() > expiry) return null;
+
+    // Vérifier signature
+    const expectedSig = createHmac("sha256", RESET_SECRET)
+      .update(`${userId}:${expiryStr}`)
+      .digest("hex");
+
+    if (signature !== expectedSig) return null;
+
+    return { userId };
+  } catch {
+    return null;
+  }
+}
+
 export async function requestPasswordReset(email: string): Promise<{ success: boolean; error?: string }> {
   if (!email) {
     return { success: false, error: "Veuillez saisir votre email" };
@@ -172,43 +215,41 @@ export async function requestPasswordReset(email: string): Promise<{ success: bo
     return { success: true };
   }
 
-  // Essayer recovery d'abord, fallback sur magiclink si Email provider désactivé
-  let tokenHash: string | undefined;
-  let tokenType: "recovery" | "magiclink" = "recovery";
-
-  const { data: recoveryData, error: recoveryError } = await supabaseAdmin.auth.admin.generateLink({
-    type: "recovery",
-    email,
-    options: {
-      redirectTo: `${siteUrl}/reset-password`,
-    },
-  });
-
-  if (!recoveryError && recoveryData?.properties?.hashed_token) {
-    tokenHash = recoveryData.properties.hashed_token;
-  } else {
-    // Fallback: magiclink (fonctionne même si Email provider est désactivé)
-    const { data: magicData, error: magicError } = await supabaseAdmin.auth.admin.generateLink({
-      type: "magiclink",
-      email,
-    });
-
-    if (magicError || !magicData?.properties?.hashed_token) {
-      return { success: false, error: `Erreur génération lien: ${magicError?.message ?? "Token non généré"}` };
-    }
-
-    tokenHash = magicData.properties.hashed_token;
-    tokenType = "magiclink";
-  }
-
-  // Construire le lien de confirmation
-  const resetLink = `${siteUrl}/auth/confirm?token_hash=${tokenHash}&type=${tokenType}&next=reset-password`;
+  // Générer un token signé custom (bypass GoTrue)
+  const token = generateResetToken(profile.id);
+  const resetLink = `${siteUrl}/reset-password?token=${token}`;
 
   try {
     await sendPasswordResetEmail(email, resetLink);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     return { success: false, error: `Erreur envoi email: ${msg}` };
+  }
+
+  return { success: true };
+}
+
+export async function updatePasswordWithToken(
+  token: string,
+  newPassword: string
+): Promise<{ success: boolean; error?: string }> {
+  if (!newPassword || newPassword.length < 6) {
+    return { success: false, error: "Le mot de passe doit contenir au moins 6 caractères" };
+  }
+
+  const result = verifyResetToken(token);
+  if (!result) {
+    return { success: false, error: "Lien expiré ou invalide. Veuillez en demander un nouveau." };
+  }
+
+  // Mettre à jour le mot de passe via admin API
+  const supabaseAdmin = createAdminClient();
+  const { error } = await supabaseAdmin.auth.admin.updateUserById(result.userId, {
+    password: newPassword,
+  });
+
+  if (error) {
+    return { success: false, error: "Impossible de mettre à jour le mot de passe : " + error.message };
   }
 
   return { success: true };

@@ -1,19 +1,48 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { updatePassword } from "@/actions/auth";
-import { Zap, Lock } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { updatePasswordWithToken } from "@/actions/auth";
+import { Zap, Lock, AlertTriangle } from "lucide-react";
 import { useAuthLogos } from "@/components/auth/auth-logo-provider";
+import Link from "next/link";
 
 export default function ResetPasswordPage() {
   const logos = useAuthLogos();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token");
+
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+
+  // Pas de token → lien invalide
+  if (!token) {
+    return (
+      <div className="w-full max-w-md text-center">
+        <div className="mb-4 flex justify-center">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-50">
+            <AlertTriangle className="h-6 w-6 text-red-500" />
+          </div>
+        </div>
+        <h1 className="mb-2 text-xl font-bold text-[var(--heading)]">
+          Lien invalide
+        </h1>
+        <p className="mb-6 text-sm text-[var(--text-secondary)]">
+          Ce lien de réinitialisation est invalide ou a expiré.
+        </p>
+        <Link
+          href="/forgot-password"
+          className="text-sm font-semibold text-[var(--yellow)] hover:underline"
+        >
+          Demander un nouveau lien
+        </Link>
+      </div>
+    );
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -31,10 +60,10 @@ export default function ResetPasswordPage() {
 
     setLoading(true);
 
-    const result = await updatePassword(password);
+    const result = await updatePasswordWithToken(token!, password);
     if (result.success) {
       setSuccess(true);
-      setTimeout(() => router.push("/"), 2000);
+      setTimeout(() => router.push("/login"), 2000);
     } else {
       setError(result.error ?? "Une erreur est survenue");
     }
@@ -74,7 +103,7 @@ export default function ResetPasswordPage() {
 
       {success ? (
         <div className="rounded-[var(--radius-sm)] bg-green-50 px-4 py-3 text-sm text-green-700">
-          Mot de passe mis à jour ! Redirection en cours...
+          Mot de passe mis à jour ! Redirection vers la connexion...
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
