@@ -467,57 +467,6 @@ export async function deleteUser(
 }
 
 // ==========================================
-// RESET ALL COLLABORATOR PASSWORDS
-// ==========================================
-
-export async function resetAllCollaboratorPasswords(): Promise<{
-  success: boolean;
-  total: number;
-  ok: number;
-  failed: number;
-  error?: string;
-}> {
-  const caller = await getCallerProfile();
-  if (!caller || caller.role !== "admin") {
-    return { success: false, total: 0, ok: 0, failed: 0, error: "Accès refusé — admin uniquement" };
-  }
-
-  const supabaseAdmin = createAdminClient();
-
-  const { data: profiles, error: fetchError } = await supabaseAdmin
-    .from("profiles")
-    .select("id, email")
-    .eq("role", "collaborateur");
-
-  if (fetchError || !profiles) {
-    return { success: false, total: 0, ok: 0, failed: 0, error: fetchError?.message ?? "Aucun profil trouvé" };
-  }
-
-  let ok = 0;
-  let failed = 0;
-
-  for (const profile of profiles) {
-    const { error } = await supabaseAdmin.auth.admin.updateUserById(profile.id, {
-      password: "Innovtec2025!",
-    });
-    if (error) {
-      console.error(`[resetPasswords] FAIL ${profile.email}:`, error.message);
-      failed++;
-    } else {
-      ok++;
-    }
-  }
-
-  await logActivity(caller.authId, "reset_all_passwords", "system", null, {
-    total: profiles.length,
-    ok,
-    failed,
-  });
-
-  return { success: true, total: profiles.length, ok, failed };
-}
-
-// ==========================================
 // ACTIVITY LOGS
 // ==========================================
 
