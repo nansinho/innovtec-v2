@@ -485,6 +485,8 @@ CREATE POLICY "Admin supprime les signalements" ON danger_reports FOR DELETE USI
 -- REX
 CREATE POLICY "Tout le monde lit les REX" ON rex FOR SELECT USING (true);
 CREATE POLICY "Authentifiés créent des REX" ON rex FOR INSERT WITH CHECK (author_id = auth.uid());
+CREATE POLICY "Auteur modifie ses REX" ON rex FOR UPDATE USING (author_id = auth.uid());
+CREATE POLICY "Admin supprime les REX" ON rex FOR DELETE USING (get_my_role() = 'admin');
 
 -- SSE INDICATORS
 CREATE POLICY "Tout le monde voit les indicateurs SSE" ON sse_indicators FOR SELECT USING (true);

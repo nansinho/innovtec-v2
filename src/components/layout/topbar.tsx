@@ -4,7 +4,7 @@ import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { Bell, MessageSquare, Settings, ChevronRight, LogOut } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
+
 import { signOut } from "@/actions/auth";
 import type { Profile } from "@/lib/types/database";
 import NotificationSidebar from "@/components/notifications/notification-sidebar";
@@ -133,7 +133,8 @@ export default function Topbar({ profile, unreadCount = 0 }: TopbarProps) {
           >
             {profile?.avatar_url ? (
               <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full">
-                <Image src={profile.avatar_url} alt="" fill className="object-cover" />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={profile.avatar_url} alt="" className="h-full w-full object-cover" />
               </div>
             ) : (
               <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--navy)]/10 text-[11px] font-medium text-[var(--navy)]">
