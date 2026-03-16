@@ -376,7 +376,7 @@ export async function getNewsWithViewCounts() {
 
   if (!news || news.length === 0) return [];
 
-  const newsIds = news.map((n: { id: string }) => n.id);
+  const newsIds = news.map((n) => n.id);
 
   // Batch: 4 queries total instead of 4 × N
   const [viewsRes, commentsRes, likesRes, sharesRes] = await Promise.all([
@@ -400,7 +400,7 @@ export async function getNewsWithViewCounts() {
   const likesMap = countByNewsId(likesRes.data as Array<{ news_id: string }> | null);
   const sharesMap = countByNewsId(sharesRes.data as Array<{ news_id: string }> | null);
 
-  return news.map((n: { id: string }) => ({
+  return news.map((n) => ({
     ...n,
     views_count: viewsMap[n.id] ?? 0,
     comments_count: commentsMap[n.id] ?? 0,
