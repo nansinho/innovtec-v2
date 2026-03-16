@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useTransition, useEffect } from "react";
-import { Cake, Heart, MessageSquare, Send } from "lucide-react";
+import { Heart, MessageSquare, Send, Pencil, Trash2, X, Check } from "lucide-react";
 import Image from "next/image";
-import { sendBirthdayWish, getBirthdayWishesFor } from "@/actions/birthday";
+import { sendBirthdayWish, getBirthdayWishesFor, updateBirthdayWish, deleteBirthdayWish } from "@/actions/birthday";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import type { Profile, BirthdayWish } from "@/lib/types/database";
@@ -27,6 +27,11 @@ export default function BirthdayFeedCard({
   const [wishMessage, setWishMessage] = useState("");
   const [error, setError] = useState("");
   const [isPending, startTransition] = useTransition();
+
+  // Edit state
+  const [editingWishId, setEditingWishId] = useState<string | null>(null);
+  const [editMessage, setEditMessage] = useState("");
+  const [editSaving, setEditSaving] = useState(false);
 
   useEffect(() => {
     setWishes(initialWishes);
@@ -62,11 +67,9 @@ export default function BirthdayFeedCard({
 
   function handleLike() {
     if (isMe || liked) {
-      // If already liked, just toggle comments view
       setShowComments(!showComments);
       return;
     }
-    // Quick wish with default message
     setError("");
     startTransition(async () => {
       const result = await sendBirthdayWish(person.id, "Joyeux anniversaire ! 🎂");
@@ -82,6 +85,44 @@ export default function BirthdayFeedCard({
         }
       }
     });
+  }
+
+  function startEditWish(wish: BirthdayWish) {
+    setEditingWishId(wish.id);
+    setEditMessage(wish.message);
+  }
+
+  function cancelEditWish() {
+    setEditingWishId(null);
+    setEditMessage("");
+  }
+
+  async function saveEditWish() {
+    if (!editingWishId || !editMessage.trim() || editSaving) return;
+    setEditSaving(true);
+    const result = await updateBirthdayWish(editingWishId, editMessage.trim());
+    if (result.success) {
+      setWishes((prev) =>
+        prev.map((w) =>
+          w.id === editingWishId ? { ...w, message: editMessage.trim() } : w
+        )
+      );
+      setEditingWishId(null);
+      setEditMessage("");
+    }
+    setEditSaving(false);
+  }
+
+  async function handleDeleteWish(wishId: string) {
+    const result = await deleteBirthdayWish(wishId);
+    if (result.success) {
+      setWishes((prev) => prev.filter((w) => w.id !== wishId));
+      // If the user deleted their own wish, they can send another
+      const remaining = wishes.filter((w) => w.id !== wishId);
+      if (!remaining.some((w) => w.from_user_id === currentUserId)) {
+        setLiked(false);
+      }
+    }
   }
 
   return (
@@ -123,15 +164,13 @@ export default function BirthdayFeedCard({
       {/* Engagement stats */}
       {wishes.length > 0 && (
         <div className="flex items-center gap-3 border-b border-zinc-100 px-5 py-2">
-          {wishes.length > 0 && (
-            <button
-              onClick={() => setShowComments(!showComments)}
-              className="flex items-center gap-1 text-[11px] text-zinc-400 hover:text-zinc-600"
-            >
-              <Heart className="h-3 w-3 fill-pink-400 text-pink-400" />
-              <span>{wishes.length} voeu{wishes.length > 1 ? "x" : ""}</span>
-            </button>
-          )}
+          <button
+            onClick={() => setShowComments(!showComments)}
+            className="flex items-center gap-1 text-[11px] text-zinc-400 hover:text-zinc-600"
+          >
+            <Heart className="h-3 w-3 fill-pink-400 text-pink-400" />
+            <span>{wishes.length} voeu{wishes.length > 1 ? "x" : ""}</span>
+          </button>
           <button
             onClick={() => setShowComments(!showComments)}
             className="text-[11px] text-zinc-400 hover:text-zinc-600"
@@ -193,9 +232,11 @@ export default function BirthdayFeedCard({
                     addSuffix: true,
                     locale: fr,
                   });
+                  const isOwnWish = wish.from_user_id === currentUserId;
+                  const isEditing = editingWishId === wish.id;
 
                   return (
-                    <div key={wish.id} className="flex gap-2">
+                    <div key={wish.id} className="group flex gap-2">
                       <div className="relative h-7 w-7 shrink-0 overflow-hidden rounded-full bg-zinc-200">
                         {sender?.avatar_url ? (
                           <Image
@@ -212,17 +253,73 @@ export default function BirthdayFeedCard({
                         )}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <div className="inline-block rounded-2xl bg-white px-3 py-1.5 shadow-xs ring-1 ring-black/[0.04]">
-                          <span className="text-xs font-semibold text-[var(--heading)]">
-                            {senderName}
-                          </span>
-                          <p className="text-xs leading-relaxed text-[var(--text)]">
-                            {wish.message}
-                          </p>
-                        </div>
-                        <div className="mt-0.5 pl-1">
-                          <span className="text-[10px] text-zinc-400">{timeAgo}</span>
-                        </div>
+                        {isEditing ? (
+                          <div className="flex flex-col gap-1.5">
+                            <input
+                              type="text"
+                              value={editMessage}
+                              onChange={(e) => setEditMessage(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  e.preventDefault();
+                                  saveEditWish();
+                                }
+                                if (e.key === "Escape") cancelEditWish();
+                              }}
+                              className="rounded-2xl bg-white px-3 py-1.5 text-xs text-[var(--heading)] shadow-xs ring-1 ring-pink-300 outline-none"
+                              autoFocus
+                            />
+                            <div className="flex items-center gap-1 pl-1">
+                              <button
+                                onClick={saveEditWish}
+                                disabled={editSaving || !editMessage.trim()}
+                                className="flex items-center gap-1 text-[10px] font-medium text-pink-500 hover:text-pink-600 disabled:opacity-40"
+                              >
+                                <Check className="h-3 w-3" />
+                                Enregistrer
+                              </button>
+                              <span className="text-zinc-300">·</span>
+                              <button
+                                onClick={cancelEditWish}
+                                className="text-[10px] font-medium text-zinc-400 hover:text-zinc-600"
+                              >
+                                Annuler
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <>
+                            <div className="inline-block rounded-2xl bg-white px-3 py-1.5 shadow-xs ring-1 ring-black/[0.04]">
+                              <span className="text-xs font-semibold text-[var(--heading)]">
+                                {senderName}
+                              </span>
+                              <p className="text-xs leading-relaxed text-[var(--text)]">
+                                {wish.message}
+                              </p>
+                            </div>
+                            <div className="mt-0.5 flex items-center gap-2 pl-1">
+                              <span className="text-[10px] text-zinc-400">{timeAgo}</span>
+                              {isOwnWish && (
+                                <>
+                                  <button
+                                    onClick={() => startEditWish(wish)}
+                                    className="hidden text-[10px] text-zinc-400 hover:text-pink-500 group-hover:inline-flex"
+                                    title="Modifier"
+                                  >
+                                    <Pencil className="h-3 w-3" />
+                                  </button>
+                                  <button
+                                    onClick={() => handleDeleteWish(wish.id)}
+                                    className="hidden text-[10px] text-zinc-400 hover:text-red-500 group-hover:inline-flex"
+                                    title="Supprimer"
+                                  >
+                                    <Trash2 className="h-3 w-3" />
+                                  </button>
+                                </>
+                              )}
+                            </div>
+                          </>
+                        )}
                       </div>
                     </div>
                   );
