@@ -270,9 +270,15 @@ Chaque point doit être sur sa propre ligne dans le champ content. Extrais TOUTE
     const textContent = message.content.find((c) => c.type === "text");
     const rawText = textContent ? textContent.text : "";
 
+    let cleanedText = rawText.trim();
+    // Strip markdown code blocks (```json ... ``` or ``` ... ```)
+    if (cleanedText.startsWith("```")) {
+      cleanedText = cleanedText.replace(/^```(?:json)?\s*\n?/, "").replace(/\n?```\s*$/, "");
+    }
+
     let parsed;
     try {
-      parsed = JSON.parse(rawText);
+      parsed = JSON.parse(cleanedText);
     } catch {
       parsed = { raw: rawText };
     }
