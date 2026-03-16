@@ -6,6 +6,9 @@ import {
   getUserFormations,
   getUserDocuments,
 } from "@/actions/profile";
+import { getJobTitles } from "@/actions/job-titles";
+import { getDepartments } from "@/actions/departments";
+import { getTeams } from "@/actions/teams";
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -36,13 +39,16 @@ export default async function UserDetailPage({
 
   const isAdminOrRh = ["admin", "rh"].includes(currentProfile.role);
 
-  const [user, experiences, diplomas, formations, documents] =
+  const [user, experiences, diplomas, formations, documents, jobTitles, departments, teams] =
     await Promise.all([
       getUserById(id),
       getExperiences(id),
       getDiplomas(id),
       getUserFormations(id),
       getUserDocuments(id),
+      getJobTitles(),
+      getDepartments(),
+      getTeams(),
     ]);
 
   if (!user) notFound();
@@ -124,6 +130,10 @@ export default async function UserDetailPage({
         diplomas={diplomas}
         formations={formations}
         documents={documents}
+        isAdmin={isAdminOrRh}
+        jobTitles={jobTitles}
+        departments={departments}
+        teams={teams}
       />
     </div>
   );

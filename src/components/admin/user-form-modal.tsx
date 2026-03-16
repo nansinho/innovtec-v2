@@ -1,9 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, UserPlus, Pencil } from "lucide-react";
+import { X, UserPlus, Pencil, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { createUser, updateUser } from "@/actions/users";
+import { addJobTitle, type JobTitle } from "@/actions/job-titles";
+import { addDepartment, type Department } from "@/actions/departments";
+import { addTeam, type Team } from "@/actions/teams";
 import type { Profile, UserRole } from "@/lib/types/database";
 
 const roleOptions: { value: UserRole; label: string }[] = [
@@ -15,9 +18,12 @@ interface UserFormModalProps {
   open: boolean;
   onClose: () => void;
   user?: Profile | null;
+  jobTitles?: JobTitle[];
+  departments?: Department[];
+  teams?: Team[];
 }
 
-export default function UserFormModal({ open, onClose, user }: UserFormModalProps) {
+export default function UserFormModal({ open, onClose, user, jobTitles = [], departments = [], teams = [] }: UserFormModalProps) {
   const isEdit = !!user;
   const [loading, setLoading] = useState(false);
 
@@ -36,6 +42,25 @@ export default function UserFormModal({ open, onClose, user }: UserFormModalProp
     date_of_birth: "",
     hire_date: "",
   });
+
+  // Local lists (updated optimistically when creating new items)
+  const [localJobTitles, setLocalJobTitles] = useState(jobTitles);
+  const [localDepartments, setLocalDepartments] = useState(departments);
+  const [localTeams, setLocalTeams] = useState(teams);
+
+  // Custom input states
+  const [showCustomJobTitle, setShowCustomJobTitle] = useState(false);
+  const [customJobTitle, setCustomJobTitle] = useState("");
+  const [showCustomDepartment, setShowCustomDepartment] = useState(false);
+  const [customDepartment, setCustomDepartment] = useState("");
+  const [showCustomTeam, setShowCustomTeam] = useState(false);
+  const [customTeam, setCustomTeam] = useState("");
+
+  useEffect(() => {
+    setLocalJobTitles(jobTitles);
+    setLocalDepartments(departments);
+    setLocalTeams(teams);
+  }, [jobTitles, departments, teams]);
 
   useEffect(() => {
     if (user) {
@@ -71,6 +96,12 @@ export default function UserFormModal({ open, onClose, user }: UserFormModalProp
         hire_date: "",
       });
     }
+    setShowCustomJobTitle(false);
+    setCustomJobTitle("");
+    setShowCustomDepartment(false);
+    setCustomDepartment("");
+    setShowCustomTeam(false);
+    setCustomTeam("");
   }, [user, open]);
 
   useEffect(() => {
@@ -136,7 +167,52 @@ export default function UserFormModal({ open, onClose, user }: UserFormModalProp
     setForm((prev) => ({ ...prev, [field]: value }));
   }
 
+  async function handleAddCustomJobTitle() {
+    if (!customJobTitle.trim()) return;
+    const result = await addJobTitle(customJobTitle.trim());
+    if (result.success && result.jobTitle) {
+      setLocalJobTitles((prev) => [...prev, result.jobTitle!].sort((a, b) => a.label.localeCompare(b.label)));
+      handleChange("job_title", customJobTitle.trim());
+      toast.success("Poste créé");
+    } else {
+      toast.error(result.error || "Erreur");
+    }
+    setCustomJobTitle("");
+    setShowCustomJobTitle(false);
+  }
+
+  async function handleAddCustomDepartment() {
+    if (!customDepartment.trim()) return;
+    const result = await addDepartment(customDepartment.trim());
+    if (result.success && result.department) {
+      setLocalDepartments((prev) => [...prev, result.department!].sort((a, b) => a.label.localeCompare(b.label)));
+      handleChange("department", customDepartment.trim());
+      toast.success("Département créé");
+    } else {
+      toast.error(result.error || "Erreur");
+    }
+    setCustomDepartment("");
+    setShowCustomDepartment(false);
+  }
+
+  async function handleAddCustomTeam() {
+    if (!customTeam.trim()) return;
+    const result = await addTeam(customTeam.trim());
+    if (result.success && result.team) {
+      setLocalTeams((prev) => [...prev, result.team!].sort((a, b) => a.label.localeCompare(b.label)));
+      handleChange("team", customTeam.trim());
+      toast.success("Équipe créée");
+    } else {
+      toast.error(result.error || "Erreur");
+    }
+    setCustomTeam("");
+    setShowCustomTeam(false);
+  }
+
   if (!open) return null;
+
+  const inputClass = "w-full rounded-xl border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]";
+  const selectClass = "w-full rounded-xl border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]";
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center">
@@ -194,7 +270,7 @@ export default function UserFormModal({ open, onClose, user }: UserFormModalProp
                     value={form.first_name}
                     onChange={(e) => handleChange("first_name", e.target.value)}
                     required
-                    className="w-full rounded-xl border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                    className={inputClass}
                   />
                 </div>
                 <div>
@@ -204,14 +280,14 @@ export default function UserFormModal({ open, onClose, user }: UserFormModalProp
                     value={form.last_name}
                     onChange={(e) => handleChange("last_name", e.target.value)}
                     required
-                    className="w-full rounded-xl border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                    className={inputClass}
                   />
                 </div>
               </div>
               <select
                 value={form.gender}
                 onChange={(e) => handleChange("gender", e.target.value)}
-                className="mt-3 w-full rounded-xl border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                className={`mt-3 ${selectClass}`}
               >
                 <option value="">Genre</option>
                 <option value="M">Homme</option>
@@ -232,7 +308,7 @@ export default function UserFormModal({ open, onClose, user }: UserFormModalProp
                   onChange={(e) => handleChange("email", e.target.value)}
                   required
                   disabled={isEdit}
-                  className="w-full rounded-xl border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)] disabled:bg-[var(--hover)] disabled:text-[var(--text-muted)]"
+                  className={`${inputClass} disabled:bg-[var(--hover)] disabled:text-[var(--text-muted)]`}
                 />
                 {!isEdit && (
                   <input
@@ -242,7 +318,7 @@ export default function UserFormModal({ open, onClose, user }: UserFormModalProp
                     onChange={(e) => handleChange("password", e.target.value)}
                     required
                     minLength={6}
-                    className="w-full rounded-xl border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                    className={inputClass}
                   />
                 )}
               </div>
@@ -254,17 +330,55 @@ export default function UserFormModal({ open, onClose, user }: UserFormModalProp
                 Poste & Rôle
               </label>
               <div className="grid grid-cols-2 gap-3">
-                <input
-                  type="text"
-                  placeholder="Intitulé du poste"
-                  value={form.job_title}
-                  onChange={(e) => handleChange("job_title", e.target.value)}
-                  className="w-full rounded-xl border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
-                />
+                {/* Job title select + create */}
+                <div>
+                  {showCustomJobTitle ? (
+                    <div className="flex items-center gap-1.5">
+                      <input
+                        value={customJobTitle}
+                        onChange={(e) => setCustomJobTitle(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") { e.preventDefault(); handleAddCustomJobTitle(); }
+                          if (e.key === "Escape") setShowCustomJobTitle(false);
+                        }}
+                        autoFocus
+                        placeholder="Nouveau poste..."
+                        className={inputClass}
+                      />
+                      <button
+                        type="button"
+                        onClick={handleAddCustomJobTitle}
+                        className="shrink-0 rounded-xl bg-[var(--yellow)] p-2.5 text-white hover:bg-[var(--yellow-hover)]"
+                      >
+                        <Plus className="h-4 w-4" />
+                      </button>
+                    </div>
+                  ) : (
+                    <select
+                      value={form.job_title}
+                      onChange={(e) => {
+                        if (e.target.value === "__custom__") {
+                          setShowCustomJobTitle(true);
+                        } else {
+                          handleChange("job_title", e.target.value);
+                        }
+                      }}
+                      className={selectClass}
+                    >
+                      <option value="">-- Poste --</option>
+                      {localJobTitles.map((jt) => (
+                        <option key={jt.id} value={jt.label}>
+                          {jt.label}
+                        </option>
+                      ))}
+                      <option value="__custom__">+ Ajouter un poste...</option>
+                    </select>
+                  )}
+                </div>
                 <select
                   value={form.role}
                   onChange={(e) => handleChange("role", e.target.value)}
-                  className="w-full rounded-xl border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                  className={selectClass}
                 >
                   {roleOptions.map((opt) => (
                     <option key={opt.value} value={opt.value}>
@@ -285,7 +399,7 @@ export default function UserFormModal({ open, onClose, user }: UserFormModalProp
                 placeholder="Téléphone"
                 value={form.phone}
                 onChange={(e) => handleChange("phone", e.target.value)}
-                className="w-full rounded-xl border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                className={inputClass}
               />
             </div>
 
@@ -295,26 +409,104 @@ export default function UserFormModal({ open, onClose, user }: UserFormModalProp
                 Organisation
               </label>
               <div className="grid grid-cols-3 gap-3">
-                <input
-                  type="text"
-                  placeholder="Département"
-                  value={form.department}
-                  onChange={(e) => handleChange("department", e.target.value)}
-                  className="w-full rounded-xl border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
-                />
-                <input
-                  type="text"
-                  placeholder="Équipe"
-                  value={form.team}
-                  onChange={(e) => handleChange("team", e.target.value)}
-                  className="w-full rounded-xl border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
-                />
+                {/* Department select + create */}
+                <div>
+                  {showCustomDepartment ? (
+                    <div className="flex items-center gap-1.5">
+                      <input
+                        value={customDepartment}
+                        onChange={(e) => setCustomDepartment(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") { e.preventDefault(); handleAddCustomDepartment(); }
+                          if (e.key === "Escape") setShowCustomDepartment(false);
+                        }}
+                        autoFocus
+                        placeholder="Nouveau dept..."
+                        className={inputClass}
+                      />
+                      <button
+                        type="button"
+                        onClick={handleAddCustomDepartment}
+                        className="shrink-0 rounded-xl bg-[var(--yellow)] p-2.5 text-white hover:bg-[var(--yellow-hover)]"
+                      >
+                        <Plus className="h-4 w-4" />
+                      </button>
+                    </div>
+                  ) : (
+                    <select
+                      value={form.department}
+                      onChange={(e) => {
+                        if (e.target.value === "__custom__") {
+                          setShowCustomDepartment(true);
+                        } else {
+                          handleChange("department", e.target.value);
+                        }
+                      }}
+                      className={selectClass}
+                    >
+                      <option value="">-- Département --</option>
+                      {localDepartments.map((d) => (
+                        <option key={d.id} value={d.label}>
+                          {d.label}
+                        </option>
+                      ))}
+                      <option value="__custom__">+ Ajouter...</option>
+                    </select>
+                  )}
+                </div>
+
+                {/* Team select + create */}
+                <div>
+                  {showCustomTeam ? (
+                    <div className="flex items-center gap-1.5">
+                      <input
+                        value={customTeam}
+                        onChange={(e) => setCustomTeam(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") { e.preventDefault(); handleAddCustomTeam(); }
+                          if (e.key === "Escape") setShowCustomTeam(false);
+                        }}
+                        autoFocus
+                        placeholder="Nouvelle équipe..."
+                        className={inputClass}
+                      />
+                      <button
+                        type="button"
+                        onClick={handleAddCustomTeam}
+                        className="shrink-0 rounded-xl bg-[var(--yellow)] p-2.5 text-white hover:bg-[var(--yellow-hover)]"
+                      >
+                        <Plus className="h-4 w-4" />
+                      </button>
+                    </div>
+                  ) : (
+                    <select
+                      value={form.team}
+                      onChange={(e) => {
+                        if (e.target.value === "__custom__") {
+                          setShowCustomTeam(true);
+                        } else {
+                          handleChange("team", e.target.value);
+                        }
+                      }}
+                      className={selectClass}
+                    >
+                      <option value="">-- Équipe --</option>
+                      {localTeams.map((t) => (
+                        <option key={t.id} value={t.label}>
+                          {t.label}
+                        </option>
+                      ))}
+                      <option value="__custom__">+ Ajouter...</option>
+                    </select>
+                  )}
+                </div>
+
                 <input
                   type="text"
                   placeholder="Agence"
                   value={form.agency}
                   onChange={(e) => handleChange("agency", e.target.value)}
-                  className="w-full rounded-xl border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                  className={inputClass}
                 />
               </div>
             </div>
@@ -333,7 +525,7 @@ export default function UserFormModal({ open, onClose, user }: UserFormModalProp
                     type="date"
                     value={form.date_of_birth}
                     onChange={(e) => handleChange("date_of_birth", e.target.value)}
-                    className="w-full rounded-xl border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                    className={inputClass}
                   />
                 </div>
                 <div>
@@ -344,7 +536,7 @@ export default function UserFormModal({ open, onClose, user }: UserFormModalProp
                     type="date"
                     value={form.hire_date}
                     onChange={(e) => handleChange("hire_date", e.target.value)}
-                    className="w-full rounded-xl border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                    className={inputClass}
                   />
                 </div>
               </div>

@@ -13,6 +13,7 @@ import {
   Calendar,
   Shield,
   MapPin,
+  Pencil,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ExperiencesSection from "@/components/profil/experiences-section";
@@ -20,6 +21,7 @@ import DiplomasSection from "@/components/profil/diplomas-section";
 import FormationsSection from "@/components/profil/formations-section";
 import DocumentsSection from "@/components/profil/documents-section";
 import EmergencyContactSection from "@/components/profil/emergency-contact-section";
+import UserFormModal from "@/components/admin/user-form-modal";
 import type {
   Profile,
   UserExperience,
@@ -27,6 +29,9 @@ import type {
   UserFormation,
   Document,
 } from "@/lib/types/database";
+import type { JobTitle } from "@/actions/job-titles";
+import type { Department } from "@/actions/departments";
+import type { Team } from "@/actions/teams";
 
 const tabs = [
   { id: "info", label: "Informations", icon: User },
@@ -49,6 +54,10 @@ interface UserProfileTabsProps {
   diplomas: UserDiploma[];
   formations: UserFormation[];
   documents: Document[];
+  isAdmin?: boolean;
+  jobTitles?: JobTitle[];
+  departments?: Department[];
+  teams?: Team[];
 }
 
 function InfoRow({
@@ -90,8 +99,13 @@ export default function UserProfileTabs({
   diplomas,
   formations,
   documents,
+  isAdmin = false,
+  jobTitles = [],
+  departments = [],
+  teams = [],
 }: UserProfileTabsProps) {
   const [active, setActive] = useState<TabId>("info");
+  const [editModalOpen, setEditModalOpen] = useState(false);
 
   return (
     <div>
@@ -124,6 +138,19 @@ export default function UserProfileTabs({
       {/* Tab content */}
       {active === "info" && (
         <div className="flex flex-col gap-6">
+          {/* Admin edit button */}
+          {isAdmin && (
+            <div className="flex justify-end">
+              <button
+                onClick={() => setEditModalOpen(true)}
+                className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--border-1)] bg-white px-4 py-2 text-xs font-medium text-[var(--text-secondary)] shadow-xs transition-all hover:bg-[var(--hover)] hover:shadow-sm"
+              >
+                <Pencil className="h-3.5 w-3.5" />
+                Modifier
+              </button>
+            </div>
+          )}
+
           {/* Personal info */}
           <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] p-6 shadow-sm">
             <h3 className="mb-4 text-sm font-semibold text-[var(--heading)]">
@@ -211,6 +238,18 @@ export default function UserProfileTabs({
       )}
 
       {active === "documents" && <DocumentsSection documents={documents} />}
+
+      {/* Edit Modal (admin only) */}
+      {isAdmin && (
+        <UserFormModal
+          open={editModalOpen}
+          onClose={() => setEditModalOpen(false)}
+          user={user}
+          jobTitles={jobTitles}
+          departments={departments}
+          teams={teams}
+        />
+      )}
     </div>
   );
 }
