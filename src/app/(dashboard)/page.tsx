@@ -31,11 +31,11 @@ export default async function DashboardPage() {
     : "Utilisateur";
 
   return (
-    <div className="px-8 py-6 pb-20 md:pb-6">
+    <div className="p-6 pb-20 md:pb-6">
       {/* Greeting */}
-      <div className="mb-8">
-        <p className="text-sm text-gray-500">{dateFormatted}</p>
-        <h1 className="text-2xl font-semibold tracking-tight text-gray-900">
+      <div className="mb-6">
+        <p className="text-[13px] font-medium text-zinc-400">{dateFormatted}</p>
+        <h1 className="text-2xl font-bold tracking-tight text-[var(--heading)]">
           Bonjour, {displayName}
         </h1>
       </div>

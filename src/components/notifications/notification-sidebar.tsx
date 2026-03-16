@@ -113,36 +113,36 @@ export default function NotificationSidebar({
         )}
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4">
+        <div className="flex items-center justify-between border-b border-[var(--border-1)] px-5 py-4">
           <div className="flex items-center gap-2.5">
-            <Bell className="h-5 w-5 text-gray-900" />
-            <h2 className="text-base font-semibold text-gray-900">
+            <Bell className="h-5 w-5 text-[var(--heading)]" />
+            <h2 className="text-base font-semibold text-[var(--heading)]">
               Notifications
             </h2>
             {unreadCount > 0 && (
-              <span className="rounded-full bg-orange-600 px-2 py-0.5 text-[10px] font-bold text-white">
+              <span className="rounded-full bg-[var(--yellow)] px-2 py-0.5 text-[10px] font-bold text-white">
                 {unreadCount}
               </span>
             )}
           </div>
           <button
             onClick={onClose}
-            className="rounded-full p-1.5 text-gray-500 transition-colors hover:bg-gray-100"
+            className="rounded-full p-1.5 text-[var(--text-secondary)] transition-colors hover:bg-gray-100"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
         {/* Filter tabs + Mark all */}
-        <div className="flex items-center justify-between border-b border-gray-200 px-5 py-2.5">
+        <div className="flex items-center justify-between border-b border-[var(--border-1)] px-5 py-2.5">
           <div className="flex gap-1">
             <button
               onClick={() => setFilter("all")}
               className={cn(
                 "rounded-full px-3 py-1 text-xs font-medium transition-colors",
                 filter === "all"
-                  ? "bg-gray-900 text-white"
-                  : "text-gray-500 hover:bg-gray-100"
+                  ? "bg-[var(--navy)] text-white"
+                  : "text-[var(--text-secondary)] hover:bg-gray-100"
               )}
             >
               Toutes
@@ -152,8 +152,8 @@ export default function NotificationSidebar({
               className={cn(
                 "rounded-full px-3 py-1 text-xs font-medium transition-colors",
                 filter === "unread"
-                  ? "bg-gray-900 text-white"
-                  : "text-gray-500 hover:bg-gray-100"
+                  ? "bg-[var(--navy)] text-white"
+                  : "text-[var(--text-secondary)] hover:bg-gray-100"
               )}
             >
               Non lues ({unreadCount})
@@ -163,7 +163,7 @@ export default function NotificationSidebar({
             <button
               onClick={handleMarkAllAsRead}
               disabled={isPending}
-              className="flex items-center gap-1 text-[11px] text-orange-600 transition-colors hover:text-orange-700"
+              className="flex items-center gap-1 text-[11px] text-[var(--yellow)] transition-colors hover:text-[var(--yellow-hover)]"
             >
               <CheckCheck className="h-3.5 w-3.5" />
               Tout lire
@@ -175,15 +175,15 @@ export default function NotificationSidebar({
         <div className="flex-1 overflow-y-auto">
           {filtered.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">
-              <Bell className="mb-3 h-10 w-10 text-gray-200" />
-              <p className="text-sm text-gray-500">
+              <Bell className="mb-3 h-10 w-10 text-[var(--border-1)]" />
+              <p className="text-sm text-[var(--text-secondary)]">
                 {filter === "unread"
                   ? "Aucune notification non lue"
                   : "Aucune notification"}
               </p>
             </div>
           ) : (
-            <div className="divide-y divide-gray-200">
+            <div className="divide-y divide-[var(--border-1)]">
               {filtered.map((notification) => {
                 const config = typeConfig[notification.type] || typeConfig.system;
                 const Icon = config.icon;
@@ -193,7 +193,7 @@ export default function NotificationSidebar({
                     key={notification.id}
                     className={cn(
                       "group relative flex gap-3 px-5 py-3.5 transition-colors hover:bg-gray-50/80",
-                      !notification.is_read && "bg-orange-50"
+                      !notification.is_read && "bg-[var(--yellow-surface)]"
                     )}
                   >
                     {/* Icon */}
@@ -213,22 +213,22 @@ export default function NotificationSidebar({
                           className={cn(
                             "text-[12.5px] leading-tight",
                             !notification.is_read
-                              ? "font-semibold text-gray-900"
-                              : "font-medium text-gray-900"
+                              ? "font-semibold text-[var(--heading)]"
+                              : "font-medium text-[var(--heading)]"
                           )}
                         >
                           {notification.title}
                         </p>
                         {!notification.is_read && (
-                          <div className="mt-1 h-2 w-2 shrink-0 rounded-full bg-orange-600" />
+                          <div className="mt-1 h-2 w-2 shrink-0 rounded-full bg-[var(--yellow)]" />
                         )}
                       </div>
                       {notification.message && (
-                        <p className="mt-0.5 text-[11.5px] leading-snug text-gray-500 line-clamp-2">
+                        <p className="mt-0.5 text-[11.5px] leading-snug text-[var(--text-secondary)] line-clamp-2">
                           {notification.message}
                         </p>
                       )}
-                      <p className="mt-1 text-[10px] text-gray-400">
+                      <p className="mt-1 text-[10px] text-[var(--text-muted)]">
                         {formatRelative(notification.created_at)}
                       </p>
                     </div>
@@ -238,7 +238,7 @@ export default function NotificationSidebar({
                       {!notification.is_read && (
                         <button
                           onClick={() => handleMarkAsRead(notification.id)}
-                          className="rounded p-1 text-gray-400 transition-colors hover:bg-gray-200 hover:text-gray-900"
+                          className="rounded p-1 text-[var(--text-muted)] transition-colors hover:bg-gray-200 hover:text-[var(--heading)]"
                           title="Marquer comme lu"
                         >
                           <Check className="h-3.5 w-3.5" />
@@ -246,7 +246,7 @@ export default function NotificationSidebar({
                       )}
                       <button
                         onClick={() => handleDelete(notification.id)}
-                        className="rounded p-1 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
+                        className="rounded p-1 text-[var(--text-muted)] transition-colors hover:bg-red-50 hover:text-red-500"
                         title="Supprimer"
                       >
                         <Trash2 className="h-3.5 w-3.5" />

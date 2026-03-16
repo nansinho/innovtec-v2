@@ -14,11 +14,11 @@ interface TrombinoscopeGridProps {
 }
 
 const DEPT_VARIANTS: Record<string, BadgeVariant> = {
-  "Travaux": "warning",
-  "Ingénierie": "info",
-  "Administration": "default",
-  "Ressources Humaines": "default",
-  "Direction": "accent",
+  "Travaux": "yellow",
+  "Ingénierie": "blue",
+  "Administration": "purple",
+  "Ressources Humaines": "pink",
+  "Direction": "red",
 };
 
 export default function TrombinoscopeGrid({
@@ -66,24 +66,24 @@ export default function TrombinoscopeGrid({
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           {/* Search */}
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-muted)]" />
             <input
               type="text"
               placeholder="Rechercher un collaborateur..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full rounded-lg border border-gray-200 bg-white py-2 pl-10 pr-4 text-sm text-gray-900 outline-none transition-colors placeholder:text-gray-400 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+              className="w-full rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] py-2 pl-10 pr-4 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
             />
           </div>
 
           {/* Filters */}
           <div className="flex items-center gap-2">
-            <Filter className="h-4 w-4 text-gray-400" />
+            <Filter className="h-4 w-4 text-[var(--text-muted)]" />
             {departments.length > 0 && (
               <select
                 value={deptFilter}
                 onChange={(e) => setDeptFilter(e.target.value)}
-                className="rounded-lg border border-gray-200 bg-white px-2.5 py-2 text-xs text-gray-900 outline-none transition-colors focus:border-orange-500"
+                className="rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] px-2.5 py-2 text-xs text-[var(--heading)] outline-none transition-colors focus:border-[var(--yellow)]"
               >
                 <option value="">Tous les départements</option>
                 {departments.map((d) => (
@@ -97,7 +97,7 @@ export default function TrombinoscopeGrid({
               <select
                 value={agencyFilter}
                 onChange={(e) => setAgencyFilter(e.target.value)}
-                className="rounded-lg border border-gray-200 bg-white px-2.5 py-2 text-xs text-gray-900 outline-none transition-colors focus:border-orange-500"
+                className="rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] px-2.5 py-2 text-xs text-[var(--heading)] outline-none transition-colors focus:border-[var(--yellow)]"
               >
                 <option value="">Toutes les agences</option>
                 {agencies.map((a) => (
@@ -111,7 +111,7 @@ export default function TrombinoscopeGrid({
         </div>
 
         {/* Counter */}
-        <div className="flex items-center gap-2 text-[12px] text-gray-400">
+        <div className="flex items-center gap-2 text-[12px] text-[var(--text-muted)]">
           <Users className="h-3.5 w-3.5" />
           <span>
             {filtered.length} collaborateur{filtered.length > 1 ? "s" : ""}
@@ -122,9 +122,9 @@ export default function TrombinoscopeGrid({
 
       {/* Grid */}
       {filtered.length === 0 ? (
-        <div className="rounded-xl border border-gray-200 bg-white py-16 text-center shadow-sm">
-          <Users className="mx-auto mb-3 h-10 w-10 text-gray-200" />
-          <p className="text-sm text-gray-500">
+        <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] py-16 text-center shadow-sm">
+          <Users className="mx-auto mb-3 h-10 w-10 text-[var(--border-1)]" />
+          <p className="text-sm text-[var(--text-secondary)]">
             Aucun collaborateur trouvé
           </p>
         </div>
@@ -140,7 +140,7 @@ export default function TrombinoscopeGrid({
               <button
                 key={user.id}
                 onClick={() => setSelectedUser(user)}
-                className="group relative flex flex-col items-center rounded-xl border border-gray-200 bg-white px-4 py-5 text-center shadow-sm transition-all duration-200 hover:scale-[1.02] hover:border-orange-500/40 hover:shadow-md"
+                className="group relative flex flex-col items-center rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] px-4 py-5 text-center shadow-xs transition-all duration-200 hover:scale-[1.02] hover:border-[var(--yellow)]/40 hover:shadow-md"
               >
                 {/* Birthday badge */}
                 {hasBirthday && (
@@ -154,7 +154,7 @@ export default function TrombinoscopeGrid({
                   <img
                     src={user.avatar_url}
                     alt={`${user.first_name} ${user.last_name}`}
-                    className="h-16 w-16 rounded-full border-2 border-gray-200 object-cover"
+                    className="h-16 w-16 rounded-full border-2 border-[var(--border-1)] object-cover"
                   />
                 ) : (
                   <div
@@ -166,7 +166,7 @@ export default function TrombinoscopeGrid({
                           ? "bg-gradient-to-br from-pink-400 to-pink-500"
                           : user.gender === "M"
                             ? "bg-gradient-to-br from-blue-400 to-blue-500"
-                            : "bg-gray-900"
+                            : "bg-[var(--navy)]"
                     )}
                   >
                     {initials}
@@ -174,19 +174,19 @@ export default function TrombinoscopeGrid({
                 )}
 
                 {/* Name */}
-                <p className="mt-3 text-[13px] font-semibold text-gray-900 leading-tight">
+                <p className="mt-3 text-[13px] font-semibold text-[var(--heading)] leading-tight">
                   {user.first_name}{" "}
                   <span className="uppercase">{user.last_name}</span>
                 </p>
 
                 {/* Job title */}
-                <p className="mt-0.5 text-[11px] text-gray-400 line-clamp-1">
+                <p className="mt-0.5 text-[11px] text-[var(--text-muted)] line-clamp-1">
                   {user.job_title || "Collaborateur"}
                 </p>
 
                 {/* Department badge */}
                 {user.department && (
-                  <Badge variant={deptVariant} className="mt-2 text-[9px]">
+                  <Badge variant={deptVariant} dot={false} className="mt-2 text-[9px]">
                     {user.department}
                   </Badge>
                 )}
@@ -199,7 +199,7 @@ export default function TrombinoscopeGrid({
                         e.stopPropagation();
                         window.location.href = `mailto:${user.email}`;
                       }}
-                      className="rounded-full bg-gray-50 p-1.5 text-gray-400 transition-colors hover:bg-orange-50 hover:text-orange-600"
+                      className="rounded-full bg-[var(--hover)] p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--yellow-surface)] hover:text-[var(--yellow)]"
                     >
                       <Mail className="h-3 w-3" />
                     </span>
@@ -210,7 +210,7 @@ export default function TrombinoscopeGrid({
                         e.stopPropagation();
                         window.location.href = `tel:${user.phone}`;
                       }}
-                      className="rounded-full bg-gray-50 p-1.5 text-gray-400 transition-colors hover:bg-orange-50 hover:text-orange-600"
+                      className="rounded-full bg-[var(--hover)] p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--yellow-surface)] hover:text-[var(--yellow)]"
                     >
                       <Phone className="h-3 w-3" />
                     </span>

@@ -27,53 +27,55 @@ export default function SignalementPageClient({
   const router = useRouter();
 
   return (
-    <div className="px-8 py-6 pb-20 md:pb-6">
-      {/* Tabs — pill style */}
-      <div className="mb-6 flex items-center gap-2">
+    <div className="p-6 pb-20 md:pb-6">
+      {/* Tabs */}
+      <div className="mb-6 flex gap-0 border-b border-[var(--border-1)]">
         {canManage && (
           <button
             onClick={() => setTab("all")}
             className={cn(
-              "flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-medium transition-colors",
+              "relative flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors",
               tab === "all"
-                ? "bg-gray-900 text-white"
-                : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                ? "text-[var(--heading)]"
+                : "text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
             )}
           >
-            <List className="h-3.5 w-3.5" />
+            <List className="h-4 w-4" />
             Tous les signalements
-            {signalements.length > 0 && (
-              <span className={cn(
-                "rounded-full px-1.5 py-0.5 text-[10px] font-semibold",
-                tab === "all"
-                  ? "bg-white/20 text-white"
-                  : "bg-gray-200 text-gray-600"
-              )}>
-                {signalements.length}
-              </span>
+            <span className={cn(
+              "rounded-full px-2 py-0.5 text-[11px] font-semibold",
+              tab === "all"
+                ? "bg-gradient-to-b from-amber-400 to-amber-500 text-white shadow-sm"
+                : "bg-zinc-100 text-zinc-500"
+            )}>
+              {signalements.length}
+            </span>
+            {tab === "all" && (
+              <span className="absolute bottom-0 left-0 right-0 h-[2px] rounded-full bg-[var(--yellow)]" />
             )}
           </button>
         )}
         <button
           onClick={() => setTab("mine")}
           className={cn(
-            "flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-medium transition-colors",
+            "relative flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors",
             tab === "mine"
-              ? "bg-gray-900 text-white"
-              : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+              ? "text-[var(--heading)]"
+              : "text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
           )}
         >
-          <User className="h-3.5 w-3.5" />
+          <User className="h-4 w-4" />
           Mes signalements
-          {mySignalements.length > 0 && (
-            <span className={cn(
-              "rounded-full px-1.5 py-0.5 text-[10px] font-semibold",
-              tab === "mine"
-                ? "bg-white/20 text-white"
-                : "bg-gray-200 text-gray-600"
-            )}>
-              {mySignalements.length}
-            </span>
+          <span className={cn(
+            "rounded-full px-2 py-0.5 text-[11px] font-semibold",
+            tab === "mine"
+              ? "bg-gradient-to-b from-blue-500 to-blue-600 text-white shadow-sm"
+              : "bg-zinc-100 text-zinc-500"
+          )}>
+            {mySignalements.length}
+          </span>
+          {tab === "mine" && (
+            <span className="absolute bottom-0 left-0 right-0 h-[2px] rounded-full bg-[var(--yellow)]" />
           )}
         </button>
       </div>

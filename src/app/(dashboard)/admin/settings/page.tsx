@@ -21,10 +21,10 @@ export default async function AdminSettingsPage() {
 
   return (
     <div className="px-7 py-6">
-      <h1 className="mb-1 text-xl font-semibold text-gray-900">
+      <h1 className="mb-1 text-xl font-semibold text-[var(--heading)]">
         Paramètres
       </h1>
-      <p className="mb-8 text-sm text-gray-500">
+      <p className="mb-8 text-sm text-[var(--text-secondary)]">
         Configuration générale de l&apos;intranet.
       </p>
 

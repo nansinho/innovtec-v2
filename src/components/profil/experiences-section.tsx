@@ -80,20 +80,20 @@ export default function ExperiencesSection({
   }
 
   return (
-    <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+    <section className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] p-6 shadow-sm">
       <div className="mb-5 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50">
             <Briefcase className="h-[18px] w-[18px] text-blue-600" />
           </div>
-          <h2 className="text-sm font-semibold text-gray-900">
+          <h2 className="text-sm font-semibold text-[var(--heading)]">
             Expériences professionnelles
           </h2>
         </div>
         {!editing && (
           <button
             onClick={() => setEditing({ ...emptyForm })}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3.5 py-2 text-xs font-medium text-gray-500 shadow-sm transition-all duration-200 hover:bg-gray-50 hover:shadow-sm"
+            className="inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] px-3.5 py-2 text-xs font-medium text-[var(--text-secondary)] shadow-xs transition-all duration-200 hover:bg-[var(--hover)] hover:shadow-sm"
           >
             <Plus className="h-3.5 w-3.5" />
             Ajouter
@@ -104,7 +104,7 @@ export default function ExperiencesSection({
       {editing && (
         <form
           onSubmit={handleSubmit}
-          className="mb-5 rounded-lg border border-gray-200 bg-gray-50 p-5"
+          className="mb-5 rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--hover)] p-5"
         >
           <div className="mb-4 flex flex-col gap-3">
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -116,7 +116,7 @@ export default function ExperiencesSection({
                 onChange={(e) =>
                   setEditing({ ...editing, company: e.target.value })
                 }
-                className="rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm outline-none transition-colors focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+                className="rounded-[var(--radius-xs)] border border-[var(--border-1)] bg-white px-3 py-2.5 text-sm outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
               />
               <input
                 type="text"
@@ -126,7 +126,7 @@ export default function ExperiencesSection({
                 onChange={(e) =>
                   setEditing({ ...editing, job_title: e.target.value })
                 }
-                className="rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm outline-none transition-colors focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+                className="rounded-[var(--radius-xs)] border border-[var(--border-1)] bg-white px-3 py-2.5 text-sm outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
               />
             </div>
             <input
@@ -136,11 +136,11 @@ export default function ExperiencesSection({
               onChange={(e) =>
                 setEditing({ ...editing, location: e.target.value })
               }
-              className="rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm outline-none transition-colors focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+              className="rounded-[var(--radius-xs)] border border-[var(--border-1)] bg-white px-3 py-2.5 text-sm outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
             />
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div>
-                <label className="mb-1.5 block text-xs font-medium text-gray-500">
+                <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">
                   Date de début
                 </label>
                 <input
@@ -150,11 +150,11 @@ export default function ExperiencesSection({
                   onChange={(e) =>
                     setEditing({ ...editing, date_start: e.target.value })
                   }
-                  className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm outline-none transition-colors focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+                  className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] bg-white px-3 py-2.5 text-sm outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
                 />
               </div>
               <div>
-                <label className="mb-1.5 block text-xs font-medium text-gray-500">
+                <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">
                   Date de fin (vide = en cours)
                 </label>
                 <input
@@ -163,7 +163,7 @@ export default function ExperiencesSection({
                   onChange={(e) =>
                     setEditing({ ...editing, date_end: e.target.value })
                   }
-                  className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm outline-none transition-colors focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+                  className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] bg-white px-3 py-2.5 text-sm outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
                 />
               </div>
             </div>
@@ -174,14 +174,14 @@ export default function ExperiencesSection({
               onChange={(e) =>
                 setEditing({ ...editing, description: e.target.value })
               }
-              className="rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm outline-none transition-colors focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+              className="rounded-[var(--radius-xs)] border border-[var(--border-1)] bg-white px-3 py-2.5 text-sm outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
             />
           </div>
           <div className="flex items-center gap-2">
             <button
               type="submit"
               disabled={saving}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-orange-600 px-4 py-2 text-xs font-medium text-white shadow-sm transition-all duration-200 hover:bg-orange-700 hover:shadow-sm disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-4 py-2 text-xs font-medium text-white shadow-xs transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-sm disabled:opacity-50"
             >
               <Save className="h-3.5 w-3.5" />
               {saving ? "Enregistrement..." : "Enregistrer"}
@@ -189,7 +189,7 @@ export default function ExperiencesSection({
             <button
               type="button"
               onClick={() => setEditing(null)}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-4 py-2 text-xs text-gray-500 shadow-sm transition-all duration-200 hover:bg-gray-50"
+              className="inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-white px-4 py-2 text-xs text-[var(--text-secondary)] shadow-xs transition-all duration-200 hover:bg-[var(--hover)]"
             >
               <X className="h-3.5 w-3.5" />
               Annuler
@@ -199,7 +199,7 @@ export default function ExperiencesSection({
       )}
 
       {experiences.length === 0 && !editing ? (
-        <p className="py-4 text-center text-xs text-gray-500">
+        <p className="py-4 text-center text-xs text-[var(--text-secondary)]">
           Aucune expérience renseignée.
         </p>
       ) : (
@@ -207,13 +207,13 @@ export default function ExperiencesSection({
           {experiences.map((exp) => (
             <div
               key={exp.id}
-              className="group flex items-start justify-between rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-all duration-200 hover:shadow-sm"
+              className="group flex items-start justify-between rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] p-4 shadow-xs transition-all duration-200 hover:shadow-sm"
             >
               <div className="flex-1">
-                <div className="text-sm font-medium text-gray-900">
+                <div className="text-sm font-medium text-[var(--heading)]">
                   {exp.job_title}
                 </div>
-                <div className="mt-0.5 text-xs text-gray-500">
+                <div className="mt-0.5 text-xs text-[var(--text-secondary)]">
                   {exp.company}
                   {exp.location && (
                     <span className="inline-flex items-center gap-0.5">
@@ -222,12 +222,12 @@ export default function ExperiencesSection({
                     </span>
                   )}
                 </div>
-                <div className="mt-1 text-xs text-gray-400">
+                <div className="mt-1 text-xs text-[var(--text-muted)]">
                   {formatDate(exp.date_start)} —{" "}
                   {exp.date_end ? formatDate(exp.date_end) : "En cours"}
                 </div>
                 {exp.description && (
-                  <p className="mt-2 text-xs leading-relaxed text-gray-500">
+                  <p className="mt-2 text-xs leading-relaxed text-[var(--text-secondary)]">
                     {exp.description}
                   </p>
                 )}
@@ -245,13 +245,13 @@ export default function ExperiencesSection({
                       description: exp.description,
                     })
                   }
-                  className="rounded-lg p-1.5 text-gray-500 transition-colors duration-200 hover:bg-gray-50"
+                  className="rounded-[var(--radius-xs)] p-1.5 text-[var(--text-secondary)] transition-colors duration-200 hover:bg-[var(--hover)]"
                 >
                   <Pencil className="h-3.5 w-3.5" />
                 </button>
                 <button
                   onClick={() => handleDelete(exp.id)}
-                  className="rounded-lg p-1.5 text-gray-400 transition-colors duration-200 hover:bg-red-50 hover:text-red-600"
+                  className="rounded-[var(--radius-xs)] p-1.5 text-[var(--text-muted)] transition-colors duration-200 hover:bg-[var(--red-surface)] hover:text-[var(--red)]"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                 </button>

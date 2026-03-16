@@ -36,9 +36,9 @@ const roleOptions: { value: UserRole; label: string }[] = [
   { value: "collaborateur", label: "Collaborateur" },
 ];
 
-const roleBadgeVariants: Record<string, "error" | "success" | "default"> = {
-  admin: "error",
-  collaborateur: "success",
+const roleBadgeVariants: Record<string, "red" | "green" | "default"> = {
+  admin: "red",
+  collaborateur: "green",
 };
 
 interface UsersTableProps {
@@ -205,24 +205,24 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
         <div className="flex flex-1 items-center gap-3">
           {/* Search */}
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-muted)]" />
             <input
               type="text"
               placeholder="Rechercher un collaborateur..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="h-9 w-full rounded-xl border border-gray-200 bg-white pl-9 pr-8 text-sm text-gray-900 outline-none transition-all placeholder:text-gray-400 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 focus:shadow-sm"
+              className="h-9 w-full rounded-xl border border-[var(--border-1)] bg-white pl-9 pr-8 text-sm text-[var(--heading)] outline-none transition-all placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)] focus:shadow-sm"
             />
           </div>
 
           {/* Filters */}
           <div className="flex items-center gap-2">
             <div className="relative">
-              <Filter className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-400" />
+              <Filter className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--text-muted)]" />
               <select
                 value={roleFilter}
                 onChange={(e) => setRoleFilter(e.target.value)}
-                className="h-9 rounded-xl border border-gray-200 bg-white pl-8 pr-8 text-sm text-gray-700 outline-none transition-all focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 focus:shadow-sm"
+                className="h-9 rounded-xl border border-[var(--border-1)] bg-white pl-8 pr-8 text-sm text-[var(--text)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)] focus:shadow-sm"
               >
                 <option value="all">Tous les rôles</option>
                 {roleOptions.map((opt) => (
@@ -236,7 +236,7 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="h-9 rounded-xl border border-gray-200 bg-white px-3 text-sm text-gray-700 outline-none transition-all focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 focus:shadow-sm"
+              className="h-9 rounded-xl border border-[var(--border-1)] bg-white px-3 text-sm text-[var(--text)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)] focus:shadow-sm"
             >
               <option value="all">Tous ({users.length})</option>
               <option value="active">Actifs ({activeCount})</option>
@@ -248,7 +248,7 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
         {/* Add button */}
         <button
           onClick={() => setFormModal({ open: true, user: null })}
-          className="inline-flex h-9 items-center gap-2 rounded-lg bg-orange-600 px-4 text-sm font-medium text-white shadow-sm transition-colors hover:bg-orange-700"
+          className="inline-flex h-9 items-center gap-2 rounded-lg bg-gradient-to-b from-amber-500 to-amber-600 px-4 text-sm font-medium text-white shadow-sm transition-all hover:from-amber-600 hover:to-amber-700 active:scale-[0.97]"
         >
           <UserPlus className="h-4 w-4" />
           Ajouter
@@ -256,23 +256,23 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
       </div>
 
       {/* Stats */}
-      <div className="mb-4 flex gap-2 text-[11px] text-gray-400">
+      <div className="mb-4 flex gap-2 text-[11px] text-[var(--text-muted)]">
         <span>{filtered.length} résultat{filtered.length > 1 ? "s" : ""}</span>
         {search && <span>pour « {search} »</span>}
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto rounded-2xl border border-gray-200 bg-white shadow-sm ring-1 ring-black/[0.03]">
+      <div className="overflow-x-auto rounded-2xl border border-[var(--border-1)] bg-white shadow-sm ring-1 ring-black/[0.03]">
         {/* Batch actions bar */}
         {selectedIds.size > 0 && (
-          <div className="flex items-center gap-3 border-b border-orange-200 bg-orange-50 px-4 py-2 text-sm">
-            <span className="font-medium text-orange-800">
+          <div className="flex items-center gap-3 border-b border-amber-200 bg-amber-50 px-4 py-2 text-sm">
+            <span className="font-medium text-amber-800">
               {selectedIds.size} sélectionné{selectedIds.size > 1 ? "s" : ""}
             </span>
-            <span className="text-orange-300">—</span>
+            <span className="text-amber-300">—</span>
             <button
               onClick={() => setSelectedIds(new Set())}
-              className="ml-auto text-orange-500 hover:text-orange-700"
+              className="ml-auto text-amber-500 hover:text-amber-700"
             >
               <X className="h-4 w-4" />
             </button>
@@ -280,35 +280,35 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
         )}
 
         <table className="w-full text-left text-sm">
-          <thead className="border-b border-gray-200 bg-gray-50">
+          <thead className="border-b border-[var(--border-1)] bg-[var(--hover)]">
             <tr>
               <th className="w-10 px-4 py-3.5">
                 <input
                   type="checkbox"
                   checked={allPageSelected}
                   onChange={toggleAll}
-                  className="h-4 w-4 rounded border-gray-300 accent-orange-600"
+                  className="h-4 w-4 rounded border-zinc-300 accent-[var(--yellow)]"
                   aria-label="Sélectionner tout"
                 />
               </th>
-              <th className="px-4 py-3.5 text-xs font-medium text-gray-500">
+              <th className="px-4 py-3.5 text-xs font-medium text-[var(--text-secondary)]">
                 Collaborateur
               </th>
-              <th className="hidden px-4 py-3.5 text-xs font-medium text-gray-500 md:table-cell">
+              <th className="hidden px-4 py-3.5 text-xs font-medium text-[var(--text-secondary)] md:table-cell">
                 Poste
               </th>
-              <th className="px-4 py-3.5 text-xs font-medium text-gray-500">
+              <th className="px-4 py-3.5 text-xs font-medium text-[var(--text-secondary)]">
                 Rôle
               </th>
-              <th className="px-4 py-3.5 text-xs font-medium text-gray-500">
+              <th className="px-4 py-3.5 text-xs font-medium text-[var(--text-secondary)]">
                 Statut
               </th>
-              <th className="w-14 px-4 py-3.5 text-right text-xs font-medium text-gray-500">
+              <th className="w-14 px-4 py-3.5 text-right text-xs font-medium text-[var(--text-secondary)]">
                 Actions
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-[var(--border-1)]">
             {filtered.map((user) => {
               const isMe = user.id === currentUserId;
               const initials =
@@ -318,7 +318,7 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
                 <tr
                   key={user.id}
                   className={`transition-colors duration-200 ${
-                    selectedIds.has(user.id) ? "bg-orange-50/50" : "hover:bg-gray-50"
+                    selectedIds.has(user.id) ? "bg-amber-50/50" : "hover:bg-[var(--hover)]"
                   } ${!user.is_active ? "opacity-50" : ""}`}
                 >
                   {/* Checkbox */}
@@ -327,27 +327,27 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
                       type="checkbox"
                       checked={selectedIds.has(user.id)}
                       onChange={() => toggleOne(user.id)}
-                      className="h-4 w-4 rounded border-gray-300 accent-orange-600"
+                      className="h-4 w-4 rounded border-zinc-300 accent-[var(--yellow)]"
                     />
                   </td>
                   {/* User info */}
                   <td className="px-4 py-3.5">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gray-900 text-[10px] font-medium text-white">
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--navy)] text-[10px] font-medium text-white">
                         {initials}
                       </div>
                       <div className="min-w-0">
                         <div className="flex items-center gap-1.5">
-                          <span className="truncate font-medium text-gray-900">
+                          <span className="truncate font-medium text-[var(--heading)]">
                             {user.first_name} {user.last_name}
                           </span>
                           {isMe && (
-                            <span className="shrink-0 text-[10px] text-gray-400">
+                            <span className="shrink-0 text-[10px] text-[var(--text-muted)]">
                               (vous)
                             </span>
                           )}
                         </div>
-                        <div className="truncate text-xs text-gray-500">
+                        <div className="truncate text-xs text-[var(--text-secondary)]">
                           {user.email}
                         </div>
                       </div>
@@ -372,11 +372,11 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
                               }}
                               autoFocus
                               placeholder="Nouveau poste..."
-                              className="w-full rounded-lg border border-gray-200 px-2 py-1.5 text-xs outline-none focus:border-orange-500"
+                              className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-2 py-1.5 text-xs outline-none focus:border-[var(--yellow)]"
                             />
                             <button
                               onClick={() => handleAddCustomJobTitle(user.id)}
-                              className="shrink-0 rounded-lg bg-orange-600 p-1.5 text-white hover:bg-orange-700"
+                              className="shrink-0 rounded-[var(--radius-xs)] bg-[var(--yellow)] p-1.5 text-white hover:bg-[var(--yellow-hover)]"
                             >
                               <Plus className="h-3 w-3" />
                             </button>
@@ -389,7 +389,7 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
                               if (!showCustomInput) setEditingJobTitle(null);
                             }}
                             autoFocus
-                            className="w-full rounded-xl border border-gray-200 px-2 py-1.5 text-xs outline-none transition-colors focus:border-orange-500"
+                            className="w-full rounded-xl border border-[var(--border-1)] px-2 py-1.5 text-xs outline-none transition-colors focus:border-[var(--yellow)]"
                           >
                             <option value="">— Aucun poste —</option>
                             {jobTitles.map((jt) => (
@@ -404,7 +404,7 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
                     ) : (
                       <button
                         onClick={() => setEditingJobTitle(user.id)}
-                        className="text-xs text-gray-500 transition-colors hover:text-gray-900"
+                        className="text-xs text-[var(--text-secondary)] transition-colors hover:text-[var(--heading)]"
                         title="Cliquer pour modifier le poste"
                       >
                         {user.job_title || "—"}
@@ -422,7 +422,7 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
                         }
                         onBlur={() => setEditingRole(null)}
                         autoFocus
-                        className="rounded-xl border border-gray-200 px-2 py-1.5 text-xs outline-none transition-colors focus:border-orange-500"
+                        className="rounded-xl border border-[var(--border-1)] px-2 py-1.5 text-xs outline-none transition-colors focus:border-[var(--yellow)]"
                       >
                         {roleOptions.map((opt) => (
                           <option key={opt.value} value={opt.value}>
@@ -431,7 +431,7 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
                         ))}
                       </select>
                     ) : (
-                      <Badge variant={roleBadgeVariants[user.role] ?? "default"}>
+                      <Badge variant={roleBadgeVariants[user.role] ?? "default"} dot={false}>
                         {roleLabels[user.role] ?? user.role}
                       </Badge>
                     )}
@@ -439,7 +439,7 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
 
                   {/* Status */}
                   <td className="px-4 py-3.5">
-                    <Badge variant={user.is_active ? "success" : "default"}>
+                    <Badge variant={user.is_active ? "green" : "default"}>
                       {user.is_active ? "Actif" : "Inactif"}
                     </Badge>
                   </td>
@@ -508,7 +508,7 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
         </table>
 
         {filtered.length === 0 && (
-          <div className="py-12 text-center text-sm text-gray-500">
+          <div className="py-12 text-center text-sm text-[var(--text-secondary)]">
             Aucun collaborateur trouvé.
           </div>
         )}

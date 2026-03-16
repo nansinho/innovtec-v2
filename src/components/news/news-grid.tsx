@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { cn, formatRelative } from "@/lib/utils";
 import type { NewsCategory, NewsPriority } from "@/lib/types/database";
+import { Badge, type BadgeVariant } from "@/components/ui/badge";
 
 const categoryLabels: Record<NewsCategory, string> = {
   entreprise: "Entreprise",
@@ -24,6 +25,21 @@ const categoryLabels: Record<NewsCategory, string> = {
   chantier: "Chantier",
   social: "Social",
   rh: "RH",
+};
+
+const categoryVariants: Record<NewsCategory, BadgeVariant> = {
+  entreprise: "blue",
+  securite: "red",
+  formation: "green",
+  chantier: "yellow",
+  social: "purple",
+  rh: "indigo",
+};
+
+const priorityVariants: Record<NewsPriority, { label: string; variant: BadgeVariant }> = {
+  normal: { label: "", variant: "default" },
+  important: { label: "Important", variant: "yellow" },
+  urgent: { label: "Urgent", variant: "red" },
 };
 
 interface NewsItem {
@@ -67,16 +83,16 @@ export default function NewsTable({ news }: NewsTableProps) {
 
   return (
     <div>
-      {/* Filters — pill tabs */}
+      {/* Filters */}
       <div className="mb-5 flex flex-wrap items-center gap-2">
-        <Filter className="h-4 w-4 text-gray-400" />
+        <Filter className="h-4 w-4 text-[var(--text-muted)]" />
         <button
           onClick={() => setSelectedCategory("all")}
           className={cn(
-            "rounded-full px-4 py-1.5 text-xs font-medium transition-colors",
+            "rounded-full px-3 py-1 text-[11px] font-medium transition-colors",
             selectedCategory === "all"
-              ? "bg-gray-900 text-white"
-              : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+              ? "bg-[var(--navy)] text-white"
+              : "bg-[var(--hover)] text-[var(--text-secondary)] hover:bg-[var(--border-1)]"
           )}
         >
           Toutes ({news.length})
@@ -89,10 +105,10 @@ export default function NewsTable({ news }: NewsTableProps) {
               key={cat}
               onClick={() => setSelectedCategory(cat)}
               className={cn(
-                "rounded-full px-4 py-1.5 text-xs font-medium transition-colors",
+                "rounded-full px-3 py-1 text-[11px] font-medium transition-colors",
                 selectedCategory === cat
-                  ? "bg-gray-900 text-white"
-                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                  ? "bg-[var(--navy)] text-white"
+                  : "bg-[var(--hover)] text-[var(--text-secondary)] hover:bg-[var(--border-1)]"
               )}
             >
               {categoryLabels[cat]} ({count})
@@ -101,42 +117,40 @@ export default function NewsTable({ news }: NewsTableProps) {
         })}
       </div>
 
-      {/* List */}
+      {/* Table */}
       {filtered.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-xl border border-gray-200 bg-white py-16 text-center">
-          <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100">
-            <AlertCircle className="h-6 w-6 text-gray-400" />
-          </div>
-          <p className="text-sm font-medium text-gray-900">Aucune actualité</p>
-          <p className="mt-1 text-sm text-gray-500">
-            Les actualités apparaîtront ici.
+        <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] py-16 text-center shadow-sm">
+          <AlertCircle className="mx-auto mb-3 h-10 w-10 text-[var(--border-1)]" />
+          <p className="text-sm text-[var(--text-secondary)]">
+            Aucune actualité pour le moment.
           </p>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
+        <div className="overflow-hidden rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] shadow-sm">
           {/* Table header */}
-          <div className="hidden border-b border-gray-200 bg-gray-50/50 px-6 py-3 md:grid md:grid-cols-[1fr_100px_100px_80px_120px_24px] md:items-center md:gap-4">
-            <span className="text-xs font-medium uppercase tracking-wider text-gray-500">
+          <div className="hidden border-b border-[var(--border-1)] bg-[var(--hover)] px-5 py-3 md:grid md:grid-cols-[1fr_100px_100px_80px_120px_24px] md:items-center md:gap-4">
+            <span className="text-[10.5px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
               Article
             </span>
-            <span className="text-xs font-medium uppercase tracking-wider text-gray-500">
+            <span className="text-[10.5px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
               Catégorie
             </span>
-            <span className="text-xs font-medium uppercase tracking-wider text-gray-500">
+            <span className="text-[10.5px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
               Auteur
             </span>
-            <span className="text-xs font-medium uppercase tracking-wider text-gray-500">
+            <span className="text-[10.5px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
               Date
             </span>
-            <span className="text-center text-xs font-medium uppercase tracking-wider text-gray-500">
+            <span className="text-center text-[10.5px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
               Engagement
             </span>
             <span />
           </div>
 
           {/* Table rows */}
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-[var(--border-1)]">
             {filtered.map((article) => {
+              const priority = priorityVariants[article.priority];
               const authorName = article.author
                 ? `${article.author.first_name} ${article.author.last_name}`
                 : "Rédaction";
@@ -145,12 +159,12 @@ export default function NewsTable({ news }: NewsTableProps) {
                 <div
                   key={article.id}
                   onClick={() => router.push(`/actualites/${article.id}`)}
-                  className="group cursor-pointer px-6 py-3.5 transition-colors hover:bg-gray-50/50 md:grid md:grid-cols-[1fr_100px_100px_80px_120px_24px] md:items-center md:gap-4"
+                  className="group cursor-pointer px-5 py-4 transition-colors hover:bg-[var(--hover)] md:grid md:grid-cols-[1fr_100px_100px_80px_120px_24px] md:items-center md:gap-4"
                 >
                   {/* Article info */}
                   <div className="flex items-center gap-3.5">
                     {/* Thumbnail */}
-                    <div className="relative hidden h-12 w-18 shrink-0 overflow-hidden rounded-lg bg-gray-100 sm:block">
+                    <div className="relative hidden h-12 w-18 shrink-0 overflow-hidden rounded-[var(--radius-xs)] bg-[var(--hover)] sm:block">
                       {article.image_url ? (
                         <Image
                           src={article.image_url}
@@ -161,41 +175,46 @@ export default function NewsTable({ news }: NewsTableProps) {
                         />
                       ) : (
                         <div className="flex h-full w-full items-center justify-center">
-                          <Tag className="h-4 w-4 text-gray-300" />
+                          <Tag className="h-4 w-4 text-[var(--border-1)]" />
                         </div>
                       )}
                     </div>
 
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
-                        {/* Priority dot instead of badge */}
                         {article.priority !== "normal" && (
-                          <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-orange-500" />
+                          <Badge variant={priority.variant}>
+                            {priority.label}
+                          </Badge>
                         )}
-                        <h3 className="truncate text-sm font-semibold text-gray-900">
+                        <h3 className="truncate text-[13px] font-semibold text-[var(--heading)] group-hover:text-[var(--yellow)]">
                           {article.title}
                         </h3>
                       </div>
-                      <p className="mt-0.5 truncate text-xs text-gray-500">
+                      <p className="mt-0.5 truncate text-[11.5px] text-[var(--text-secondary)]">
                         {article.excerpt}
                       </p>
 
                       {/* Mobile meta */}
                       <div className="mt-2 flex flex-wrap items-center gap-3 md:hidden">
-                        <span className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700">
+                        <Badge variant={categoryVariants[article.category]} dot={false}>
                           {categoryLabels[article.category]}
-                        </span>
-                        <span className="text-xs text-gray-400">
+                        </Badge>
+                        <span className="text-[10px] text-[var(--text-muted)]">
                           {authorName}
                         </span>
                         {article.published_at && (
-                          <span className="text-xs text-gray-400">
+                          <span className="text-[10px] text-[var(--text-muted)]">
                             {formatRelative(article.published_at)}
                           </span>
                         )}
-                        <span className="flex items-center gap-1 text-xs text-gray-400">
+                        <span className="flex items-center gap-1 text-[10px] text-[var(--text-muted)]">
                           <Eye className="h-3 w-3" />
                           {article.views_count}
+                        </span>
+                        <span className="flex items-center gap-1 text-[10px] text-[var(--text-muted)]">
+                          <Heart className="h-3 w-3" />
+                          {article.likes_count ?? 0}
                         </span>
                       </div>
                     </div>
@@ -203,14 +222,14 @@ export default function NewsTable({ news }: NewsTableProps) {
 
                   {/* Category - desktop */}
                   <div className="hidden md:block">
-                    <span className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700">
+                    <Badge variant={categoryVariants[article.category]} dot={false}>
                       {categoryLabels[article.category]}
-                    </span>
+                    </Badge>
                   </div>
 
                   {/* Author - desktop */}
                   <div className="hidden md:block">
-                    <span className="text-xs text-gray-500">
+                    <span className="text-[11.5px] text-[var(--text-secondary)]">
                       {authorName}
                     </span>
                   </div>
@@ -218,7 +237,7 @@ export default function NewsTable({ news }: NewsTableProps) {
                   {/* Date - desktop */}
                   <div className="hidden md:block">
                     {article.published_at && (
-                      <span className="flex items-center gap-1 text-xs text-gray-400">
+                      <span className="flex items-center gap-1 text-[10.5px] text-[var(--text-muted)]">
                         <Clock className="h-3 w-3" />
                         {formatRelative(article.published_at)}
                       </span>
@@ -227,19 +246,31 @@ export default function NewsTable({ news }: NewsTableProps) {
 
                   {/* Engagement - desktop */}
                   <div className="hidden md:flex md:items-center md:justify-center md:gap-3">
-                    <span className="flex items-center gap-1 text-xs text-gray-400" title="Vues">
+                    <span
+                      className="flex items-center gap-1 text-[10.5px] text-[var(--text-muted)]"
+                      title="Vues"
+                    >
                       <Eye className="h-3 w-3" />
                       {article.views_count}
                     </span>
-                    <span className="flex items-center gap-1 text-xs text-gray-400" title="Likes">
+                    <span
+                      className="flex items-center gap-1 text-[10.5px] text-[var(--text-muted)]"
+                      title="Likes"
+                    >
                       <Heart className="h-3 w-3" />
                       {article.likes_count ?? 0}
                     </span>
-                    <span className="flex items-center gap-1 text-xs text-gray-400" title="Commentaires">
+                    <span
+                      className="flex items-center gap-1 text-[10.5px] text-[var(--text-muted)]"
+                      title="Commentaires"
+                    >
                       <MessageSquare className="h-3 w-3" />
                       {article.comments_count}
                     </span>
-                    <span className="flex items-center gap-1 text-xs text-gray-400" title="Partages">
+                    <span
+                      className="flex items-center gap-1 text-[10.5px] text-[var(--text-muted)]"
+                      title="Partages"
+                    >
                       <Share2 className="h-3 w-3" />
                       {article.shares_count ?? 0}
                     </span>
@@ -247,7 +278,7 @@ export default function NewsTable({ news }: NewsTableProps) {
 
                   {/* Arrow */}
                   <div className="hidden md:block">
-                    <ChevronRight className="h-4 w-4 text-gray-400 transition-transform group-hover:translate-x-0.5 group-hover:text-gray-600" />
+                    <ChevronRight className="h-4 w-4 text-[var(--text-muted)] transition-transform group-hover:translate-x-0.5 group-hover:text-[var(--yellow)]" />
                   </div>
                 </div>
               );

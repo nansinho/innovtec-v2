@@ -77,12 +77,12 @@ export function SseDashboardManager({ dashboards: initialDashboards }: SseDashbo
   return (
     <div>
       <div className="mb-4 flex items-center justify-between">
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-[var(--text-secondary)]">
           {dashboards.length} tableau{dashboards.length !== 1 ? "x" : ""} SSE
         </p>
         <button
           onClick={() => setCreating(true)}
-          className="flex items-center gap-1.5 rounded-lg bg-orange-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-orange-700"
+          className="flex items-center gap-1.5 rounded-[var(--radius-xs)] bg-[var(--yellow)] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[var(--yellow-hover)]"
         >
           <Plus className="h-4 w-4" />
           Nouveau tableau
@@ -90,54 +90,54 @@ export function SseDashboardManager({ dashboards: initialDashboards }: SseDashbo
       </div>
 
       {dashboards.length === 0 ? (
-        <div className="flex flex-col items-center rounded-xl border border-gray-200 bg-white py-16 text-center shadow-sm">
+        <div className="flex flex-col items-center rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] py-16 text-center shadow-xs">
           <div className="flex h-14 w-14 items-center justify-center rounded-2xl" style={{ background: "rgba(26, 45, 78, 0.06)" }}>
-            <Calendar className="h-7 w-7 text-gray-900" />
+            <Calendar className="h-7 w-7 text-[var(--navy)]" />
           </div>
-          <p className="mt-4 text-sm font-medium text-gray-900">
+          <p className="mt-4 text-sm font-medium text-[var(--heading)]">
             Aucun tableau SSE
           </p>
-          <p className="mx-auto mt-1 max-w-xs text-[13px] text-gray-400">
+          <p className="mx-auto mt-1 max-w-xs text-[13px] text-[var(--text-muted)]">
             Creez votre premier tableau de bord SSE mensuel.
           </p>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+        <div className="overflow-hidden rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] shadow-xs">
           <table className="w-full text-left text-sm">
-            <thead className="border-b border-gray-200 bg-gray-50">
+            <thead className="border-b border-[var(--border-1)] bg-[var(--hover)]">
               <tr>
-                <th className="px-4 py-3 text-xs font-medium text-gray-500">Periode</th>
-                <th className="px-4 py-3 text-xs font-medium text-gray-500">ASAA</th>
-                <th className="px-4 py-3 text-xs font-medium text-gray-500">Taux SST</th>
-                <th className="px-4 py-3 text-xs font-medium text-gray-500">Visites terrain</th>
-                <th className="px-4 py-3 text-xs font-medium text-gray-500">Cree le</th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500">Actions</th>
+                <th className="px-4 py-3 text-xs font-medium text-[var(--text-secondary)]">Periode</th>
+                <th className="px-4 py-3 text-xs font-medium text-[var(--text-secondary)]">ASAA</th>
+                <th className="px-4 py-3 text-xs font-medium text-[var(--text-secondary)]">Taux SST</th>
+                <th className="px-4 py-3 text-xs font-medium text-[var(--text-secondary)]">Visites terrain</th>
+                <th className="px-4 py-3 text-xs font-medium text-[var(--text-secondary)]">Cree le</th>
+                <th className="px-4 py-3 text-right text-xs font-medium text-[var(--text-secondary)]">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-[var(--border-1)]">
               {dashboards.map((d) => (
-                <tr key={d.id} className="transition-colors hover:bg-gray-50">
-                  <td className="px-4 py-3 font-medium text-gray-900">
+                <tr key={d.id} className="transition-colors hover:bg-[var(--hover)]">
+                  <td className="px-4 py-3 font-medium text-[var(--heading)]">
                     {MONTH_NAMES[d.month - 1]} {d.year}
                   </td>
-                  <td className="px-4 py-3 text-gray-700">{d.accidents_with_leave}</td>
-                  <td className="px-4 py-3 text-gray-700">{d.sst_rate}%</td>
-                  <td className="px-4 py-3 text-gray-700">{d.field_visits_count}</td>
-                  <td className="px-4 py-3 text-gray-500">
+                  <td className="px-4 py-3 text-[var(--text)]">{d.accidents_with_leave}</td>
+                  <td className="px-4 py-3 text-[var(--text)]">{d.sst_rate}%</td>
+                  <td className="px-4 py-3 text-[var(--text)]">{d.field_visits_count}</td>
+                  <td className="px-4 py-3 text-[var(--text-secondary)]">
                     {new Date(d.created_at).toLocaleDateString("fr-FR")}
                   </td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex items-center justify-end gap-1">
                       <button
                         onClick={() => setEditing(d)}
-                        className="rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-gray-50 hover:text-gray-900"
+                        className="rounded-[var(--radius-xs)] p-1.5 text-[var(--text-secondary)] transition-colors hover:bg-[var(--hover)] hover:text-[var(--heading)]"
                         title="Modifier"
                       >
                         <Pencil className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => setDeleteTarget(d)}
-                        className="rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600"
+                        className="rounded-[var(--radius-xs)] p-1.5 text-[var(--text-secondary)] transition-colors hover:bg-red-50 hover:text-red-600"
                         title="Supprimer"
                       >
                         <Trash2 className="h-4 w-4" />

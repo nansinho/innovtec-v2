@@ -84,21 +84,17 @@ function NavItem({ href, label, icon: Icon, badge, isActive, collapsed }: NavIte
       href={href}
       title={collapsed ? label : undefined}
       className={cn(
-        "relative group flex items-center gap-3 rounded-lg mx-3 px-3 py-2 text-[13px] transition-colors duration-150",
-        collapsed && "justify-center mx-2 px-0",
+        "group flex items-center gap-2.5 rounded-xl px-3 py-2 text-[13px] transition-all duration-200",
+        collapsed && "justify-center px-0",
         isActive
-          ? "bg-white/10 font-medium text-white"
-          : "text-gray-400 hover:text-gray-200 hover:bg-white/5"
+          ? "bg-white/15 font-medium text-white shadow-sm backdrop-blur-sm"
+          : "text-white/55 hover:bg-white/[0.08] hover:text-white/90"
       )}
     >
-      {/* Active indicator */}
-      {isActive && !collapsed && (
-        <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-[3px] bg-orange-500 rounded-full" />
-      )}
       <Icon
         className={cn(
-          "h-[18px] w-[18px] shrink-0 transition-colors duration-150",
-          isActive ? "text-white" : "text-gray-500 group-hover:text-gray-300"
+          "h-[18px] w-[18px] shrink-0 transition-colors duration-200",
+          isActive ? "text-[var(--yellow)]" : "text-white/50 group-hover:text-white/80"
         )}
       />
       {!collapsed && (
@@ -110,7 +106,7 @@ function NavItem({ href, label, icon: Icon, badge, isActive, collapsed }: NavIte
                 "ml-auto rounded-full px-[7px] py-0.5 text-[9px] font-semibold",
                 isActive
                   ? "bg-white/20 text-white"
-                  : "bg-white/10 text-gray-400"
+                  : "bg-[var(--yellow)]/20 text-[var(--yellow)]"
               )}
             >
               {badge}
@@ -127,7 +123,7 @@ function SectionLabel({ label, collapsed }: { label: string; collapsed: boolean 
     return <div className="my-2 border-t border-white/[0.06]" />;
   }
   return (
-    <div className="px-5 pb-2 pt-6 text-[11px] font-semibold uppercase tracking-widest text-gray-500">
+    <div className="px-3 pb-1.5 pt-5 text-[10px] font-semibold uppercase tracking-[1.5px] text-white/25">
       {label}
     </div>
   );
@@ -153,12 +149,12 @@ export default function Sidebar({ profile, logos }: SidebarProps) {
   return (
     <aside
       className={cn(
-        "fixed bottom-0 left-0 top-0 z-[100] hidden flex-col bg-[#1A1D23] text-white transition-all duration-300 ease-out md:flex",
+        "fixed bottom-0 left-0 top-0 z-[100] hidden flex-col bg-[#0F2035]/95 text-white backdrop-blur-2xl transition-all duration-300 ease-out md:flex",
         collapsed ? "w-[72px]" : "w-[260px]"
       )}
     >
       {/* Logo */}
-      <div className="flex h-16 items-center gap-2.5 border-b border-white/5 px-5">
+      <div className="flex items-center gap-2.5 border-b border-white/[0.06] px-4 py-4">
         {(logos?.dark || logos?.light) ? (
           /* eslint-disable-next-line @next/next/no-img-element */
           <img
@@ -171,7 +167,7 @@ export default function Sidebar({ profile, logos }: SidebarProps) {
           />
         ) : (
           <>
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-orange-600">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-b from-[var(--yellow)] to-[var(--yellow-hover)] shadow-sm shadow-amber-600/20">
               <Zap className="h-4 w-4 text-white" />
             </div>
             {!collapsed && (
@@ -185,7 +181,7 @@ export default function Sidebar({ profile, logos }: SidebarProps) {
       </div>
 
       {/* Navigation */}
-      <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto px-0 py-3">
+      <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto px-2.5 py-3">
         {mainNav.map((item) => (
           <NavItem
             key={item.href}
@@ -251,10 +247,10 @@ export default function Sidebar({ profile, logos }: SidebarProps) {
       </nav>
 
       {/* Collapse toggle */}
-      <div className="border-t border-white/5 px-2.5 py-2">
+      <div className="border-t border-white/[0.06] px-2.5 py-2">
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="flex w-full items-center justify-center gap-2 rounded-lg px-2 py-2 text-[11px] text-gray-500 transition-colors duration-150 hover:bg-white/5 hover:text-gray-300"
+          className="flex w-full items-center justify-center gap-2 rounded-xl px-2 py-2 text-[11px] text-white/30 transition-all duration-200 hover:bg-white/[0.06] hover:text-white/55"
           aria-label={collapsed ? "Agrandir le menu" : "Réduire le menu"}
         >
           {collapsed ? (
@@ -269,16 +265,16 @@ export default function Sidebar({ profile, logos }: SidebarProps) {
       </div>
 
       {/* Support */}
-      <div className="border-t border-white/5 px-2.5 py-1.5">
+      <div className="border-t border-white/[0.06] px-2.5 py-1.5">
         <Link
           href="#"
           title={collapsed ? "Support" : undefined}
           className={cn(
-            "flex items-center gap-3 rounded-lg mx-3 px-3 py-2 text-[12px] text-gray-500 transition-colors duration-150 hover:bg-white/5 hover:text-gray-300",
-            collapsed && "justify-center mx-2 px-0"
+            "flex items-center gap-2.5 rounded-xl px-3 py-2 text-[12px] text-white/30 transition-all duration-200 hover:bg-white/[0.06] hover:text-white/55",
+            collapsed && "justify-center px-0"
           )}
         >
-          <HelpCircle className="h-4 w-4 shrink-0" strokeWidth={1.75} />
+          <HelpCircle className="h-4 w-4 shrink-0 opacity-50" />
           {!collapsed && "Support"}
         </Link>
       </div>

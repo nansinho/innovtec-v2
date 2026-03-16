@@ -175,7 +175,7 @@ function PillarCard({ pillar }: { pillar: Pillar }) {
   return (
     <div
       className={cn(
-        "group/pillar overflow-hidden rounded-xl border bg-white shadow-sm",
+        "group/pillar overflow-hidden rounded-[var(--radius)] border bg-[var(--card)] shadow-sm",
         "transition-all duration-300 hover:shadow-md hover:-translate-y-0.5"
       )}
       style={{ borderColor: pillar.border }}
@@ -189,10 +189,10 @@ function PillarCard({ pillar }: { pillar: Pillar }) {
           <Icon className="h-5 w-5" style={{ color: pillar.color }} />
         </div>
         <div className="flex-1">
-          <h3 className="text-[15px] font-bold uppercase tracking-wide text-gray-900">
+          <h3 className="text-[15px] font-bold uppercase tracking-wide text-[var(--heading)]">
             {pillar.label}
           </h3>
-          <p className="text-[10px] text-gray-400">
+          <p className="text-[10px] text-[var(--text-muted)]">
             {pillar.engagements.length} engagement{pillar.engagements.length > 1 ? "s" : ""}
             {pillar.objectifs.length > 0 && ` · ${pillar.objectifs.length} objectif${pillar.objectifs.length > 1 ? "s" : ""}`}
           </p>
@@ -218,13 +218,13 @@ function PillarCard({ pillar }: { pillar: Pillar }) {
               className="h-1 w-6 rounded-full"
               style={{ background: pillar.color }}
             />
-            <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-gray-500">
+            <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-[var(--text-secondary)]">
               Nos engagements
             </span>
           </div>
           <ul className="space-y-2.5">
             {pillar.engagements.map((item, i) => (
-              <li key={i} className="flex gap-2.5 text-[12.5px] leading-relaxed text-gray-700">
+              <li key={i} className="flex gap-2.5 text-[12.5px] leading-relaxed text-[var(--text)]">
                 <span
                   className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full transition-transform duration-200"
                   style={{ background: pillar.color }}
@@ -238,9 +238,9 @@ function PillarCard({ pillar }: { pillar: Pillar }) {
 
       {/* Objectifs */}
       {pillar.objectifs.length > 0 && (
-        <div className="mx-4 mb-4 overflow-hidden rounded-xl bg-gradient-to-br from-gray-900 to-[#1e3a5f] px-4 py-4 shadow-inner">
+        <div className="mx-4 mb-4 overflow-hidden rounded-xl bg-gradient-to-br from-[var(--navy)] to-[#1e3a5f] px-4 py-4 shadow-inner">
           <div className="mb-2.5 flex items-center gap-2">
-            <div className="h-1 w-6 rounded-full bg-orange-600" />
+            <div className="h-1 w-6 rounded-full bg-[var(--yellow)]" />
             <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-white/60">
               Nos objectifs
             </span>
@@ -251,7 +251,7 @@ function PillarCard({ pillar }: { pillar: Pillar }) {
           <ul className="space-y-2">
             {pillar.objectifs.map((item, i) => (
               <li key={i} className="flex gap-2.5 text-[12.5px] leading-relaxed text-white/90">
-                <span className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full bg-orange-600" />
+                <span className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--yellow)]" />
                 <span>{item}</span>
               </li>
             ))}
@@ -539,23 +539,23 @@ export default function PolitiqueContent({
           <button
             onClick={handleSave}
             disabled={isPending}
-            className="inline-flex items-center gap-2 rounded-xl bg-orange-600 px-4 py-2 text-[13px] font-semibold text-white shadow-sm transition-all duration-200 hover:bg-orange-700 hover:shadow-md disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-xl bg-[var(--yellow)] px-4 py-2 text-[13px] font-semibold text-white shadow-sm transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-md active:scale-[0.97] disabled:opacity-50"
           >
             <Save className="h-4 w-4" />
             {isPending ? "Enregistrement..." : "Enregistrer"}
           </button>
           <button
             onClick={() => { setEditing(false); setEditingId(null); setShowUpload(false); }}
-            className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2 text-[13px] font-medium text-gray-500 shadow-sm transition-all duration-200 hover:bg-gray-50 hover:shadow-sm"
+            className="inline-flex items-center gap-2 rounded-xl border border-[var(--border-1)] bg-[var(--card)] px-4 py-2 text-[13px] font-medium text-[var(--text-secondary)] shadow-xs transition-all duration-200 hover:bg-[var(--hover)] hover:shadow-sm active:scale-[0.97]"
           >
             Annuler
           </button>
           {!showUpload && (
             <button
               onClick={() => setShowUpload(true)}
-              className="inline-flex items-center gap-2 rounded-xl border border-gray-900/20 bg-gray-900/5 px-4 py-2 text-[13px] font-medium text-gray-900 transition-all duration-200 hover:bg-gray-950 hover:text-white hover:shadow-sm"
+              className="inline-flex items-center gap-2 rounded-xl border border-[var(--navy)]/20 bg-[var(--navy)]/5 px-4 py-2 text-[13px] font-medium text-[var(--navy)] transition-all duration-200 hover:bg-[var(--navy)] hover:text-white hover:shadow-sm active:scale-[0.97]"
             >
-              <Sparkles className="h-4 w-4 text-orange-600" />
+              <Sparkles className="h-4 w-4 text-[var(--yellow)]" />
               Importer un PDF / Image (IA)
             </button>
           )}
@@ -563,12 +563,12 @@ export default function PolitiqueContent({
 
         {/* Upload zone */}
         {showUpload && (
-          <div className="rounded-2xl border border-gray-200 bg-gradient-to-b from-white to-gray-50 p-6 shadow-sm">
+          <div className="rounded-2xl border border-[var(--border-1)] bg-gradient-to-b from-[var(--card)] to-[var(--hover)] p-6 shadow-sm">
             <div className="mb-1 flex items-center gap-2">
-              <Upload className="h-4 w-4 text-orange-600" />
-              <h3 className="text-sm font-semibold text-gray-900">Import IA</h3>
+              <Upload className="h-4 w-4 text-[var(--yellow)]" />
+              <h3 className="text-sm font-semibold text-[var(--heading)]">Import IA</h3>
             </div>
-            <p className="mb-4 text-[12px] text-gray-400">
+            <p className="mb-4 text-[12px] text-[var(--text-muted)]">
               L&apos;IA va analyser votre document et générer automatiquement le contenu structuré.
             </p>
             <FileUploadAi onAnalysisComplete={handleAiResult} type="politique" label="Importer votre politique QSE (PDF ou image)" />
@@ -578,44 +578,44 @@ export default function PolitiqueContent({
         {/* Form */}
         <div className="space-y-5">
           {/* Year + Date signature + Title header */}
-          <div className="rounded-2xl border border-gray-200 bg-white shadow-sm">
+          <div className="rounded-2xl border border-[var(--border-1)] bg-[var(--card)] shadow-sm">
             <div className="flex flex-wrap gap-4 p-5">
               <div className="w-24 shrink-0">
-                <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-gray-400">Année</label>
+                <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Année</label>
                 <input
                   type="number"
                   min={2000}
                   max={2100}
                   value={year ?? new Date().getFullYear()}
                   onChange={(e) => setYear(parseInt(e.target.value) || null)}
-                  className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm font-semibold text-gray-900 outline-none transition-all focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+                  className="w-full rounded-lg border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2 text-sm font-semibold text-[var(--heading)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
                 />
               </div>
               <div className="w-40 shrink-0">
-                <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-gray-400">Date signature</label>
+                <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Date signature</label>
                 <input
                   type="date"
                   value={dateSignature ?? ""}
                   onChange={(e) => setDateSignature(e.target.value || null)}
-                  className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-900 outline-none transition-all focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+                  className="w-full rounded-lg border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--heading)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
                 />
               </div>
               <div className="min-w-0 flex-1">
-                <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-gray-400">Titre du document</label>
+                <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Titre du document</label>
                 <input
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm font-semibold text-gray-900 outline-none transition-all focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+                  className="w-full rounded-lg border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2 text-sm font-semibold text-[var(--heading)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
                 />
               </div>
             </div>
           </div>
 
           {/* Présentation générale */}
-          <div className="rounded-2xl border border-gray-200 bg-white shadow-sm">
-            <div className="flex items-center gap-3 border-b border-gray-200 px-5 py-4">
-              <FileText className="h-5 w-5 text-gray-400" />
-              <h3 className="text-[14px] font-semibold text-gray-900">Présentation générale</h3>
+          <div className="rounded-2xl border border-[var(--border-1)] bg-[var(--card)] shadow-sm">
+            <div className="flex items-center gap-3 border-b border-[var(--border-1)] px-5 py-4">
+              <FileText className="h-5 w-5 text-[var(--text-muted)]" />
+              <h3 className="text-[14px] font-semibold text-[var(--heading)]">Présentation générale</h3>
             </div>
             <div className="p-5">
               <textarea
@@ -623,7 +623,7 @@ export default function PolitiqueContent({
                 onChange={(e) => setIntroText(e.target.value)}
                 placeholder="Décrivez la politique générale de l'entreprise en matière de Qualité, Sécurité et Environnement..."
                 rows={4}
-                className="w-full resize-none rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-[12.5px] leading-relaxed text-gray-700 outline-none transition-all focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+                className="w-full resize-none rounded-lg border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-[12.5px] leading-relaxed text-[var(--text)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
               />
             </div>
           </div>
@@ -636,7 +636,7 @@ export default function PolitiqueContent({
               return (
                 <div
                   key={p.key}
-                  className="overflow-hidden rounded-2xl border bg-white shadow-sm"
+                  className="overflow-hidden rounded-2xl border bg-[var(--card)] shadow-sm"
                   style={{ borderColor: p.border }}
                 >
                   {/* Pillar header */}
@@ -655,9 +655,9 @@ export default function PolitiqueContent({
                   </div>
 
                   {/* Two columns: Engagements | Objectifs */}
-                  <div className="grid grid-cols-2 divide-x divide-gray-200">
+                  <div className="grid grid-cols-2 divide-x divide-[var(--border-1)]">
                     <div className="p-5">
-                      <label className="mb-2.5 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-gray-400">
+                      <label className="mb-2.5 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
                         <div className="h-1 w-4 rounded-full" style={{ background: p.color }} />
                         Engagements
                       </label>
@@ -666,12 +666,12 @@ export default function PolitiqueContent({
                         onChange={(e) => updatePillar(p.key, "engagements", e.target.value)}
                         placeholder={"Un engagement par ligne..."}
                         rows={6}
-                        className="w-full resize-none rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-[12.5px] leading-relaxed text-gray-700 outline-none transition-all focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+                        className="w-full resize-none rounded-lg border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-[12.5px] leading-relaxed text-[var(--text)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
                       />
                     </div>
                     <div className="p-5">
-                      <label className="mb-2.5 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-gray-400">
-                        <div className="h-1 w-4 rounded-full bg-gray-900" />
+                      <label className="mb-2.5 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[var(--text-muted)]">
+                        <div className="h-1 w-4 rounded-full bg-[var(--navy)]" />
                         Objectifs
                       </label>
                       <textarea
@@ -679,7 +679,7 @@ export default function PolitiqueContent({
                         onChange={(e) => updatePillar(p.key, "objectifs", e.target.value)}
                         placeholder={"Un objectif par ligne..."}
                         rows={6}
-                        className="w-full resize-none rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-[12.5px] leading-relaxed text-gray-700 outline-none transition-all focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+                        className="w-full resize-none rounded-lg border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-[12.5px] leading-relaxed text-[var(--text)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
                       />
                     </div>
                   </div>
@@ -690,12 +690,12 @@ export default function PolitiqueContent({
         </div>
 
         {/* Documents Obligatoires */}
-        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm">
-          <div className="flex items-center gap-3 border-b border-gray-200 px-5 py-4">
-            <FileText className="h-5 w-5 text-orange-600" />
-            <h3 className="text-[14px] font-semibold text-gray-900">Documents obligatoires</h3>
+        <div className="rounded-2xl border border-[var(--border-1)] bg-[var(--card)] shadow-sm">
+          <div className="flex items-center gap-3 border-b border-[var(--border-1)] px-5 py-4">
+            <FileText className="h-5 w-5 text-[var(--yellow)]" />
+            <h3 className="text-[14px] font-semibold text-[var(--heading)]">Documents obligatoires</h3>
           </div>
-          <div className="divide-y divide-gray-200">
+          <div className="divide-y divide-[var(--border-1)]">
             {documents.map((doc, index) => (
               <div key={index} className="flex items-center gap-3 px-5 py-3">
                 <div className="min-w-0 flex-1">
@@ -707,7 +707,7 @@ export default function PolitiqueContent({
                       setDocuments(updated);
                     }}
                     placeholder="Titre du document"
-                    className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-900 outline-none transition-all focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+                    className="w-full rounded-lg border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--heading)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
                   />
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
@@ -717,7 +717,7 @@ export default function PolitiqueContent({
                     </span>
                   ) : (
                     <label className={cn(
-                      "inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-1.5 text-[12px] font-medium text-gray-500 transition-all hover:bg-gray-50",
+                      "inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-[var(--border-1)] px-3 py-1.5 text-[12px] font-medium text-[var(--text-secondary)] transition-all hover:bg-[var(--hover)]",
                       uploadingDocIndex === index && "pointer-events-none opacity-50"
                     )}>
                       <Upload className="h-3.5 w-3.5" />
@@ -756,7 +756,7 @@ export default function PolitiqueContent({
                         updated[index] = { ...updated[index], file_url: "" };
                         setDocuments(updated);
                       }}
-                      className="rounded-lg p-1.5 text-gray-400 transition-all hover:bg-orange-50 hover:text-orange-500"
+                      className="rounded-lg p-1.5 text-[var(--text-muted)] transition-all hover:bg-orange-50 hover:text-orange-500"
                       title="Retirer le fichier"
                     >
                       <Upload className="h-3.5 w-3.5" />
@@ -767,7 +767,7 @@ export default function PolitiqueContent({
                       if (doc.file_url) deleteQseDocumentFile(doc.file_url);
                       setDocuments(documents.filter((_, i) => i !== index));
                     }}
-                    className="rounded-lg p-1.5 text-gray-400 transition-all hover:bg-red-50 hover:text-red-500"
+                    className="rounded-lg p-1.5 text-[var(--text-muted)] transition-all hover:bg-red-50 hover:text-red-500"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
@@ -778,7 +778,7 @@ export default function PolitiqueContent({
           <div className="p-4">
             <button
               onClick={() => setDocuments([...documents, { title: "", file_url: "" }])}
-              className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-200 py-3 text-[13px] font-medium text-gray-400 transition-all duration-200 hover:border-orange-500 hover:bg-orange-50 hover:text-orange-600"
+              className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-[var(--border-1)] py-3 text-[13px] font-medium text-[var(--text-muted)] transition-all duration-200 hover:border-[var(--yellow)] hover:bg-[var(--yellow-surface)] hover:text-[var(--yellow)]"
             >
               <Plus className="h-4 w-4" />
               Ajouter un document
@@ -787,44 +787,44 @@ export default function PolitiqueContent({
         </div>
 
         {/* Engagement de la direction */}
-        <div className="rounded-2xl border border-gray-200 bg-white shadow-sm">
-          <div className="flex items-center gap-3 border-b border-gray-200 px-5 py-4">
-            <Award className="h-5 w-5 text-emerald-600" />
-            <h3 className="text-[14px] font-semibold text-gray-900">Engagement de la direction</h3>
+        <div className="rounded-2xl border border-[var(--border-1)] bg-[var(--card)] shadow-sm">
+          <div className="flex items-center gap-3 border-b border-[var(--border-1)] px-5 py-4">
+            <Award className="h-5 w-5 text-[var(--green)]" />
+            <h3 className="text-[14px] font-semibold text-[var(--heading)]">Engagement de la direction</h3>
           </div>
           <div className="space-y-4 p-5">
             <div>
-              <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-gray-400">Texte d&apos;engagement</label>
+              <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Texte d&apos;engagement</label>
               <textarea
                 value={engagementText}
                 onChange={(e) => setEngagementText(e.target.value)}
                 placeholder="La direction s'engage à mettre en œuvre les moyens nécessaires..."
                 rows={4}
-                className="w-full resize-none rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-[12.5px] leading-relaxed text-gray-700 outline-none transition-all focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+                className="w-full resize-none rounded-lg border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-[12.5px] leading-relaxed text-[var(--text)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
               />
             </div>
             <div className="flex gap-4">
               <div className="flex-1">
-                <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-gray-400">Lieu</label>
+                <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Lieu</label>
                 <input
                   value={engagementLieu}
                   onChange={(e) => setEngagementLieu(e.target.value)}
                   placeholder="Gardanne"
-                  className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-900 outline-none transition-all focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+                  className="w-full rounded-lg border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--heading)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
                 />
               </div>
               <div className="w-40">
-                <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-gray-400">Date signature</label>
+                <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Date signature</label>
                 <input
                   type="date"
                   value={dateSignature ?? ""}
                   onChange={(e) => setDateSignature(e.target.value || null)}
-                  className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-900 outline-none transition-all focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+                  className="w-full rounded-lg border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--heading)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
                 />
               </div>
             </div>
             <div>
-              <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-gray-400">Signataires</label>
+              <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Signataires</label>
               <div className="space-y-2">
                 {signataires.map((name, index) => (
                   <div key={index} className="flex items-center gap-2">
@@ -836,11 +836,11 @@ export default function PolitiqueContent({
                         setSignataires(updated);
                       }}
                       placeholder="Nom du signataire"
-                      className="flex-1 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-900 outline-none transition-all focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+                      className="flex-1 rounded-lg border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2 text-sm text-[var(--heading)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
                     />
                     <button
                       onClick={() => setSignataires(signataires.filter((_, i) => i !== index))}
-                      className="rounded-lg p-1.5 text-gray-400 transition-all hover:bg-red-50 hover:text-red-500"
+                      className="rounded-lg p-1.5 text-[var(--text-muted)] transition-all hover:bg-red-50 hover:text-red-500"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                     </button>
@@ -848,7 +848,7 @@ export default function PolitiqueContent({
                 ))}
                 <button
                   onClick={() => setSignataires([...signataires, ""])}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-dashed border-gray-200 px-3 py-1.5 text-[12px] font-medium text-gray-400 transition-all hover:border-orange-500 hover:text-orange-600"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-dashed border-[var(--border-1)] px-3 py-1.5 text-[12px] font-medium text-[var(--text-muted)] transition-all hover:border-[var(--yellow)] hover:text-[var(--yellow)]"
                 >
                   <Plus className="h-3.5 w-3.5" />
                   Ajouter un signataire
@@ -877,7 +877,7 @@ export default function PolitiqueContent({
         <div className="flex flex-wrap items-center justify-between gap-3">
           <button
             onClick={() => setSelectedId(null)}
-            className="inline-flex items-center gap-2 rounded-xl px-3 py-1.5 text-[13px] font-medium text-gray-500 transition-all duration-200 hover:bg-gray-50 hover:text-gray-900"
+            className="inline-flex items-center gap-2 rounded-xl px-3 py-1.5 text-[13px] font-medium text-[var(--text-secondary)] transition-all duration-200 hover:bg-[var(--hover)] hover:text-[var(--heading)]"
           >
             <ArrowLeft className="h-4 w-4" />
             Retour
@@ -887,21 +887,21 @@ export default function PolitiqueContent({
             <div className="flex items-center gap-2">
               <button
                 onClick={() => startEditing(selected)}
-                className="inline-flex items-center gap-2 rounded-xl bg-orange-600 px-3.5 py-1.5 text-[13px] font-semibold text-white shadow-sm transition-all duration-200 hover:bg-orange-700 hover:shadow-md"
+                className="inline-flex items-center gap-2 rounded-xl bg-[var(--yellow)] px-3.5 py-1.5 text-[13px] font-semibold text-white shadow-sm transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-md active:scale-[0.97]"
               >
                 <Edit3 className="h-3.5 w-3.5" />
                 Modifier
               </button>
               <button
                 onClick={() => duplicateDoc(selected)}
-                className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-3.5 py-1.5 text-[13px] font-medium text-gray-500 transition-all duration-200 hover:bg-gray-50"
+                className="inline-flex items-center gap-2 rounded-xl border border-[var(--border-1)] bg-[var(--card)] px-3.5 py-1.5 text-[13px] font-medium text-[var(--text-secondary)] transition-all duration-200 hover:bg-[var(--hover)] active:scale-[0.97]"
               >
                 <Copy className="h-3.5 w-3.5" />
                 Dupliquer
               </button>
               <button
                 onClick={() => setShowUpload(!showUpload)}
-                className="inline-flex items-center gap-2 rounded-xl border border-gray-900/20 bg-gray-900/5 px-3.5 py-1.5 text-[13px] font-medium text-gray-900 transition-all duration-200 hover:bg-gray-950 hover:text-white"
+                className="inline-flex items-center gap-2 rounded-xl border border-[var(--navy)]/20 bg-[var(--navy)]/5 px-3.5 py-1.5 text-[13px] font-medium text-[var(--navy)] transition-all duration-200 hover:bg-[var(--navy)] hover:text-white active:scale-[0.97]"
               >
                 <Sparkles className="h-3.5 w-3.5" />
                 Réimporter
@@ -909,7 +909,7 @@ export default function PolitiqueContent({
               <button
                 onClick={() => handleDelete(selected.id, selected.title)}
                 disabled={isPending}
-                className="inline-flex items-center gap-2 rounded-xl border border-red-100 px-3.5 py-1.5 text-[13px] font-medium text-red-500 transition-all duration-200 hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
+                className="inline-flex items-center gap-2 rounded-xl border border-red-100 px-3.5 py-1.5 text-[13px] font-medium text-red-500 transition-all duration-200 hover:bg-red-50 hover:text-red-600 active:scale-[0.97] disabled:opacity-50"
               >
                 <Trash2 className="h-3.5 w-3.5" />
                 Supprimer
@@ -919,7 +919,7 @@ export default function PolitiqueContent({
         </div>
 
         {showUpload && (
-          <div className="rounded-2xl border border-gray-200 bg-gradient-to-b from-white to-gray-50 p-6 shadow-sm">
+          <div className="rounded-2xl border border-[var(--border-1)] bg-gradient-to-b from-[var(--card)] to-[var(--hover)] p-6 shadow-sm">
             <FileUploadAi
               onAnalysisComplete={(result, fileUrl) => { handleAiResult(result, fileUrl); setEditingId(selected.id); }}
               type="politique"
@@ -932,7 +932,7 @@ export default function PolitiqueContent({
         {imageUrl ? (
           <div className="space-y-4">
             {/* Original imported image */}
-            <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-lg transition-shadow duration-300 hover:shadow-xl">
+            <div className="overflow-hidden rounded-2xl border border-[var(--border-1)] bg-[var(--card)] shadow-lg transition-shadow duration-300 hover:shadow-xl">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={imageUrl} alt={selected.title} className="w-full h-auto" />
             </div>
@@ -942,12 +942,12 @@ export default function PolitiqueContent({
               <button
                 onClick={() => handleDownloadFile(selected.source_file_url)}
                 disabled={isDownloading}
-                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-gray-900 to-[#2a4a7a] px-5 py-2.5 text-[13px] font-semibold text-white shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 disabled:opacity-50"
+                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[var(--navy)] to-[#2a4a7a] px-5 py-2.5 text-[13px] font-semibold text-white shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.97] disabled:opacity-50"
               >
                 <Download className="h-4 w-4" />
                 {isDownloading ? "Chargement..." : "Télécharger le document"}
               </button>
-              <span className="flex items-center gap-1.5 text-[11px] text-gray-400">
+              <span className="flex items-center gap-1.5 text-[11px] text-[var(--text-muted)]">
                 <Calendar className="h-3 w-3" />
                 {selected.date_signature
                   ? `Signé le ${formatDate(selected.date_signature, "d MMMM yyyy")}`
@@ -959,11 +959,11 @@ export default function PolitiqueContent({
           <>
             {/* Download button for non-image files (PDF, etc.) */}
             {hasFile && !isImageFile && (
-              <div className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-                <Download className="h-5 w-5 text-gray-900" />
+              <div className="flex items-center gap-3 rounded-[var(--radius)] border border-[var(--border-1)] bg-white p-4 shadow-xs">
+                <Download className="h-5 w-5 text-[var(--navy)]" />
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-900">Document source disponible</p>
-                  <p className="text-xs text-gray-400">
+                  <p className="text-sm font-medium text-[var(--heading)]">Document source disponible</p>
+                  <p className="text-xs text-[var(--text-muted)]">
                     {selected.date_signature
                       ? `Signé le ${formatDate(selected.date_signature, "d MMMM yyyy")}`
                       : `Mis à jour le ${formatDate(selected.updated_at, "d MMMM yyyy")}`}
@@ -972,7 +972,7 @@ export default function PolitiqueContent({
                 <button
                   onClick={() => handleDownloadFile(selected.source_file_url)}
                   disabled={isDownloading}
-                  className="inline-flex items-center gap-2 rounded-xl bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-950 disabled:opacity-50"
+                  className="inline-flex items-center gap-2 rounded-[var(--radius)] bg-[var(--navy)] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[var(--navy-dark)] disabled:opacity-50"
                 >
                   <Download className="h-4 w-4" />
                   {isDownloading ? "Chargement..." : "Télécharger"}
@@ -981,13 +981,13 @@ export default function PolitiqueContent({
             )}
 
             {/* Hero Banner */}
-            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-900 via-[#1e3a5f] to-[#2a4a7a] px-8 py-10 shadow-lg">
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[var(--navy)] via-[#1e3a5f] to-[#2a4a7a] px-8 py-10 shadow-lg">
               {/* Decorative circles */}
               <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-white/5" />
-              <div className="absolute -bottom-4 -left-4 h-20 w-20 rounded-full bg-orange-600/10" />
+              <div className="absolute -bottom-4 -left-4 h-20 w-20 rounded-full bg-[var(--yellow)]/10" />
 
               <div className="relative">
-                <span className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-orange-600/15 px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider text-orange-600 backdrop-blur-sm">
+                <span className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-[var(--yellow)]/15 px-3.5 py-1 text-[11px] font-bold uppercase tracking-wider text-[var(--yellow)] backdrop-blur-sm">
                   <Award className="h-3 w-3" />
                   Politique QSE {docYear}
                 </span>
@@ -1011,8 +1011,8 @@ export default function PolitiqueContent({
 
             {/* Introduction */}
             {intro && (
-              <div className="rounded-2xl border border-gray-200 bg-white px-6 py-5 shadow-sm">
-                <p className="text-[13px] leading-[1.7] text-gray-700">
+              <div className="rounded-2xl border border-[var(--border-1)] bg-[var(--card)] px-6 py-5 shadow-sm">
+                <p className="text-[13px] leading-[1.7] text-[var(--text)]">
                   {intro}
                 </p>
               </div>
@@ -1030,10 +1030,10 @@ export default function PolitiqueContent({
                 {selected.sections.map((section, index) => (
                   <div
                     key={index}
-                    className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-sm"
+                    className="rounded-2xl border border-[var(--border-1)] bg-[var(--card)] p-5 shadow-xs transition-shadow hover:shadow-sm"
                   >
-                    <h3 className="mb-2 text-[13px] font-semibold text-gray-900">{section.title}</h3>
-                    <p className="whitespace-pre-wrap text-[12.5px] leading-relaxed text-gray-700">{section.content}</p>
+                    <h3 className="mb-2 text-[13px] font-semibold text-[var(--heading)]">{section.title}</h3>
+                    <p className="whitespace-pre-wrap text-[12.5px] leading-relaxed text-[var(--text)]">{section.content}</p>
                   </div>
                 ))}
               </div>
@@ -1041,9 +1041,9 @@ export default function PolitiqueContent({
 
             {/* Documents Obligatoires */}
             {selected.documents && selected.documents.length > 0 && (
-              <div className="overflow-hidden rounded-2xl border border-gray-200 bg-gradient-to-br from-gray-900 via-[#1e3a5f] to-[#2a4a7a] shadow-lg">
+              <div className="overflow-hidden rounded-2xl border border-[var(--border-1)] bg-gradient-to-br from-[var(--navy)] via-[#1e3a5f] to-[#2a4a7a] shadow-lg">
                 <div className="flex items-center gap-3 border-b border-white/10 px-6 py-4">
-                  <FileText className="h-5 w-5 text-orange-600" />
+                  <FileText className="h-5 w-5 text-[var(--yellow)]" />
                   <h3 className="text-[15px] font-bold text-white">Documents Obligatoires</h3>
                 </div>
                 <div className="divide-y divide-white/10">
@@ -1052,16 +1052,16 @@ export default function PolitiqueContent({
                       <div className="flex-1">
                         <p className="text-[13px] font-medium text-white">{doc.title || "Document sans titre"}</p>
                         {doc.file_url ? (
-                          <p className="mt-0.5 text-[11px] text-orange-600">Télécharger le document</p>
+                          <p className="mt-0.5 text-[11px] text-[var(--yellow)]">Télécharger le document</p>
                         ) : (
-                          <p className="mt-0.5 text-[11px] text-orange-600">Aucun document</p>
+                          <p className="mt-0.5 text-[11px] text-[var(--yellow)]">Aucun document</p>
                         )}
                       </div>
                       {doc.file_url && (
                         <button
                           onClick={() => handleDownloadFile(doc.file_url)}
                           disabled={isDownloading}
-                          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange-600/20 text-orange-600 transition-all hover:bg-orange-600/30 disabled:opacity-50"
+                          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[var(--yellow)]/20 text-[var(--yellow)] transition-all hover:bg-[var(--yellow)]/30 disabled:opacity-50"
                         >
                           <Download className="h-4 w-4" />
                         </button>
@@ -1074,9 +1074,9 @@ export default function PolitiqueContent({
 
             {/* Engagement de la direction */}
             {selected.engagement_text && (
-              <div className="overflow-hidden rounded-2xl border-2 border-emerald-600 bg-gradient-to-br from-gray-900 via-[#1e3a5f] to-[#2a4a7a] shadow-lg">
+              <div className="overflow-hidden rounded-2xl border-2 border-[var(--green)] bg-gradient-to-br from-[var(--navy)] via-[#1e3a5f] to-[#2a4a7a] shadow-lg">
                 <div className="px-8 py-8">
-                  <p className="mb-2 text-center text-[12px] font-bold uppercase tracking-[0.15em] text-emerald-600">
+                  <p className="mb-2 text-center text-[12px] font-bold uppercase tracking-[0.15em] text-[var(--green)]">
                     Notre engagement
                   </p>
                   <h3 className="mb-6 text-center text-xl font-bold text-white">
@@ -1109,7 +1109,7 @@ export default function PolitiqueContent({
             )}
 
             {/* Footer */}
-            <div className="border-t border-gray-200 pt-4 text-center text-[11px] text-gray-400">
+            <div className="border-t border-[var(--border-1)] pt-4 text-center text-[11px] text-[var(--text-muted)]">
               Document mis à jour le {formatDate(selected.updated_at, "d MMMM yyyy")}
               {selected.date_signature && ` · Signé le ${formatDate(selected.date_signature, "d MMMM yyyy")}`}
             </div>
@@ -1127,8 +1127,8 @@ export default function PolitiqueContent({
       {/* Header — style C&CO */}
       <div className="mb-5 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-gray-900">Politique QSE</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-xl font-bold text-[var(--heading)]">Politique QSE</h1>
+          <p className="mt-1 text-sm text-[var(--text-secondary)]">
             La politique Qualité, Sécurité et Environnement d&apos;INNOVTEC Réseaux.
           </p>
         </div>
@@ -1136,14 +1136,14 @@ export default function PolitiqueContent({
           <div className="flex items-center gap-2">
             <button
               onClick={() => { setShowUpload(!showUpload); setEditingId(null); }}
-              className="inline-flex h-9 items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 text-sm font-medium text-gray-500 shadow-sm transition-all hover:bg-gray-50 hover:text-gray-900 hover:border-gray-300"
+              className="inline-flex h-9 items-center gap-2 rounded-lg border border-[var(--border-1)] bg-white px-3 text-sm font-medium text-[var(--text-secondary)] shadow-xs transition-all hover:bg-zinc-50 hover:text-[var(--heading)] hover:border-zinc-300 active:scale-[0.97]"
             >
               <Sparkles className="h-4 w-4" />
               <span className="hidden sm:inline">Importer (IA)</span>
             </button>
             <button
               onClick={startNew}
-              className="inline-flex h-9 items-center gap-2 rounded-lg bg-gradient-to-b from-amber-500 to-amber-600 px-4 text-sm font-medium text-white shadow-sm shadow-amber-600/20 transition-all hover:from-amber-600 hover:to-amber-700 hover:shadow-md hover:shadow-amber-600/25"
+              className="inline-flex h-9 items-center gap-2 rounded-lg bg-gradient-to-b from-amber-500 to-amber-600 px-4 text-sm font-medium text-white shadow-sm shadow-amber-600/20 transition-all hover:from-amber-600 hover:to-amber-700 hover:shadow-md hover:shadow-amber-600/25 active:scale-[0.97]"
             >
               <Plus className="h-4 w-4" />
               Nouvelle politique QSE
@@ -1153,12 +1153,12 @@ export default function PolitiqueContent({
       </div>
 
       {showUpload && (
-        <div className="mb-5 rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <div className="mb-5 rounded-lg border border-[var(--border-1)] bg-white p-6 shadow-xs">
           <div className="mb-1 flex items-center gap-2">
-            <Upload className="h-4 w-4 text-orange-600" />
-            <h3 className="text-sm font-semibold text-gray-900">Import IA</h3>
+            <Upload className="h-4 w-4 text-[var(--yellow)]" />
+            <h3 className="text-sm font-semibold text-[var(--heading)]">Import IA</h3>
           </div>
-          <p className="mb-4 text-xs text-gray-400">
+          <p className="mb-4 text-xs text-[var(--text-muted)]">
             L&apos;IA va analyser votre document et générer automatiquement le contenu structuré.
           </p>
           <FileUploadAi onAnalysisComplete={handleAiResult} type="politique" label="Importer votre politique QSE (PDF ou image)" />
@@ -1168,35 +1168,35 @@ export default function PolitiqueContent({
       {/* Table view */}
       {allContent.length === 0 ? (
         <div className="flex flex-col items-center py-20 text-center">
-          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-100 ring-1 ring-gray-200/60">
-            <FileText className="h-7 w-7 text-gray-400" />
+          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-zinc-100 ring-1 ring-zinc-200/60">
+            <FileText className="h-7 w-7 text-zinc-400" />
           </div>
-          <p className="text-sm font-semibold text-gray-900">
+          <p className="text-sm font-semibold text-[var(--heading)]">
             Aucune politique QSE
           </p>
           {canEdit && (
-            <p className="mx-auto mt-1 max-w-xs text-sm text-gray-400">
+            <p className="mx-auto mt-1 max-w-xs text-sm text-[var(--text-muted)]">
               Créez une nouvelle politique ou importez un PDF/image pour commencer.
             </p>
           )}
         </div>
       ) : (
-        <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+        <div className="overflow-hidden rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-100 bg-gray-50">
-                <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-400">Titre</th>
-                <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-400" style={{ width: "80px" }}>Année</th>
-                <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-400" style={{ width: "130px" }}>Signature</th>
-                <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-400">Piliers</th>
-                <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-gray-400" style={{ width: "130px" }}>Date</th>
+              <tr className="border-b border-[var(--border-2)] bg-[var(--hover)]">
+                <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Titre</th>
+                <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "80px" }}>Année</th>
+                <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "130px" }}>Signature</th>
+                <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">Piliers</th>
+                <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "130px" }}>Date</th>
                 {canEdit && (
-                  <th className="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-gray-400" style={{ width: "120px" }}>Actions</th>
+                  <th className="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "120px" }}>Actions</th>
                 )}
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-[var(--border-1)]">
               {allContent.map((doc) => {
                 const docYear = getDocYear(doc);
                 const docPillars = parsePillars(doc.sections).pillars;
@@ -1205,22 +1205,22 @@ export default function PolitiqueContent({
                   <tr
                     key={doc.id}
                     onClick={() => setSelectedId(doc.id)}
-                    className="cursor-pointer transition-colors duration-150 hover:bg-gray-50"
+                    className="cursor-pointer transition-colors duration-150 hover:bg-[var(--hover)]"
                   >
                     <td className="px-4 py-3.5">
-                      <span className="text-sm font-medium text-gray-900">
+                      <span className="text-sm font-medium text-[var(--heading)]">
                         {doc.title}
                       </span>
                     </td>
                     <td className="px-4 py-3.5">
-                      <Badge variant="warning">
+                      <Badge variant="yellow">
                         {docYear}
                       </Badge>
                     </td>
-                    <td className="px-4 py-3.5 text-sm text-gray-400">
+                    <td className="px-4 py-3.5 text-sm text-[var(--text-muted)]">
                       {doc.date_signature
                         ? formatDate(doc.date_signature)
-                        : <span className="text-gray-400/50">—</span>}
+                        : <span className="text-[var(--text-muted)]/50">—</span>}
                     </td>
                     <td className="px-4 py-3.5">
                       <div className="flex flex-wrap gap-1.5">
@@ -1229,7 +1229,8 @@ export default function PolitiqueContent({
                           return (
                             <Badge
                               key={p.key}
-                                                           className="border"
+                              dot={false}
+                              className="border"
                               style={{
                                 backgroundColor: `${p.color}15`,
                                 color: p.color,
@@ -1243,7 +1244,7 @@ export default function PolitiqueContent({
                         })}
                       </div>
                     </td>
-                    <td className="px-4 py-3.5 text-sm text-gray-400">
+                    <td className="px-4 py-3.5 text-sm text-[var(--text-muted)]">
                       {formatDate(doc.updated_at)}
                     </td>
                     {canEdit && (
@@ -1262,7 +1263,7 @@ export default function PolitiqueContent({
               })}
             </tbody>
           </table>
-          <div className="border-t border-gray-200 px-4 py-3 text-xs text-gray-400">
+          <div className="border-t border-[var(--border-1)] px-4 py-3 text-xs text-[var(--text-muted)]">
             {allContent.length} politique{allContent.length > 1 ? "s" : ""} QSE
           </div>
         </div>

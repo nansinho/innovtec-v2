@@ -11,26 +11,48 @@ import { getCarouselNews } from "@/actions/news";
 interface Slide {
   id: string | null;
   badge: string;
+  badgeColor: string;
   title: string;
   description: string;
   cta: string;
   image: string;
+  gradient: string;
 }
 
 const fallbackSlides: Slide[] = [
   {
     id: null,
     badge: "Bienvenue",
+    badgeColor: "bg-white/10 text-white/90",
     title: "Bienvenue sur l'intranet INNOVTEC Réseaux",
     description: "Retrouvez toutes les informations de l'entreprise, les actualités et vos outils au quotidien.",
     cta: "Découvrir",
     image: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=500&q=80",
+    gradient: "from-[#1E3A5F] via-[#1a3355] to-[#0F2035]",
   },
 ];
 
 function stripHtml(html: string): string {
   return html.replace(/<[^>]*>/g, "").trim();
 }
+
+const categoryGradients: Record<string, string> = {
+  securite: "from-[#1a2e44] via-[#1E3A5F] to-[#2a4a6b]",
+  entreprise: "from-[#1E3A5F] via-[#1a3355] to-[#0F2035]",
+  formation: "from-[#0F2035] via-[#1a3350] to-[#1e4d5e]",
+  chantier: "from-[#0F2035] via-[#1a3355] to-[#2a4570]",
+  social: "from-[#1a2440] via-[#252050] to-[#1E3A5F]",
+  rh: "from-[#2a1a30] via-[#1E3A5F] to-[#1a2e44]",
+};
+
+const categoryBadgeColors: Record<string, string> = {
+  securite: "bg-amber-500/20 text-amber-200",
+  entreprise: "bg-white/10 text-white/90",
+  formation: "bg-emerald-500/20 text-emerald-200",
+  chantier: "bg-blue-500/20 text-blue-200",
+  social: "bg-violet-500/20 text-violet-200",
+  rh: "bg-pink-500/20 text-pink-200",
+};
 
 function newsToSlide(news: News): Slide {
   const badge = news.priority === "urgent"
@@ -42,10 +64,12 @@ function newsToSlide(news: News): Slide {
   return {
     id: news.id,
     badge,
+    badgeColor: categoryBadgeColors[news.category] ?? categoryBadgeColors.entreprise,
     title: news.title,
     description: stripHtml(rawDescription),
     cta: "Lire la suite",
     image: news.image_url || "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=500&q=80",
+    gradient: categoryGradients[news.category] ?? categoryGradients.entreprise,
   };
 }
 
@@ -90,40 +114,37 @@ export default function WelcomeCarousel() {
   const next = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
 
   return (
-    <div className="relative overflow-hidden rounded-xl bg-gray-900">
+    <div className="relative overflow-hidden rounded-2xl bg-[#0F2035] shadow-lg ring-1 ring-black/5">
       <div ref={emblaRef} className="overflow-hidden">
         <div className="flex">
           {slides.map((slide, i) => {
             const inner = (
-              <div className="relative flex h-[220px] w-full sm:h-[260px]">
-                {/* Background image */}
-                <div className="absolute inset-0">
+              <div className={`flex h-[220px] sm:h-[260px] w-full bg-gradient-to-br ${slide.gradient}`}>
+                <div className="z-[2] flex flex-1 flex-col justify-center px-6 py-6 sm:px-10 sm:py-8">
+                  <span className={`mb-2 sm:mb-3 inline-block w-fit rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-[1.5px] backdrop-blur-sm ${slide.badgeColor}`}>
+                    {slide.badge}
+                  </span>
+                  <h2 className="mb-1.5 sm:mb-2 text-lg sm:text-[22px] font-bold leading-snug tracking-tight text-white line-clamp-2">
+                    {slide.title}
+                  </h2>
+                  <p className="hidden sm:block max-w-[420px] text-[14px] leading-relaxed text-white/60 line-clamp-2">
+                    {slide.description}
+                  </p>
+                  <span className="mt-3 sm:mt-5 inline-flex w-fit items-center gap-2 text-[13px] font-medium text-white/80 transition-all duration-200 group-hover:text-white group-hover:gap-3">
+                    {slide.cta}
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </span>
+                </div>
+                <div className="relative hidden w-[42%] shrink-0 overflow-hidden sm:block">
                   <Image
                     src={slide.image}
                     alt=""
                     fill
                     priority={i === 0}
-                    sizes="(max-width: 768px) 100vw, 70vw"
+                    sizes="(max-width: 768px) 0vw, 38vw"
                     className="object-cover"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent" />
-                </div>
-
-                {/* Content */}
-                <div className="relative z-[2] flex flex-1 flex-col justify-center px-6 py-6 sm:px-10 sm:py-8">
-                  <span className="mb-2 inline-block w-fit rounded-full bg-white/20 px-3 py-1 text-[10px] font-semibold uppercase tracking-[1.5px] text-white backdrop-blur-sm sm:mb-3">
-                    {slide.badge}
-                  </span>
-                  <h2 className="mb-1.5 line-clamp-2 text-lg font-bold leading-snug tracking-tight text-white sm:mb-2 sm:text-[22px]">
-                    {slide.title}
-                  </h2>
-                  <p className="hidden max-w-[420px] text-[14px] leading-relaxed text-white/60 line-clamp-2 sm:block">
-                    {slide.description}
-                  </p>
-                  <span className="mt-3 inline-flex w-fit items-center gap-2 text-[13px] font-medium text-white/80 transition-all duration-200 group-hover:gap-3 group-hover:text-white sm:mt-5">
-                    {slide.cta}
-                    <ArrowRight className="h-3.5 w-3.5" />
-                  </span>
+                  <div className="absolute inset-0 bg-gradient-to-l from-transparent via-black/5 to-black/50" />
                 </div>
               </div>
             );
@@ -150,7 +171,7 @@ export default function WelcomeCarousel() {
             {String(current + 1).padStart(2, "0")} / {String(slides.length).padStart(2, "0")}
           </div>
 
-          {/* Arrows */}
+          {/* Arrows — hidden on mobile, swipe replaces them */}
           <div className="absolute bottom-3 right-4 z-[5] hidden gap-1.5 sm:flex">
             <button
               onClick={prev}
@@ -169,7 +190,7 @@ export default function WelcomeCarousel() {
           </div>
 
           {/* Dots */}
-          <div className="absolute bottom-3 left-6 z-[5] flex gap-1.5 sm:bottom-3.5 sm:left-8">
+          <div className="absolute bottom-3 left-6 z-[5] flex gap-1.5 sm:left-8 sm:bottom-3.5">
             {slides.map((_, i) => (
               <button
                 key={i}

@@ -23,20 +23,20 @@ export default function AdminBootstrap() {
 
   return (
     <div className="mx-auto max-w-md py-16 text-center">
-      <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-orange-50">
-        <AlertCircle className="h-8 w-8 text-orange-600" />
+      <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--yellow-surface)]">
+        <AlertCircle className="h-8 w-8 text-[var(--yellow)]" />
       </div>
-      <h1 className="mb-2 text-xl font-semibold text-gray-900">
+      <h1 className="mb-2 text-xl font-semibold text-[var(--heading)]">
         Aucun administrateur configuré
       </h1>
-      <p className="mb-6 text-sm text-gray-500">
+      <p className="mb-6 text-sm text-[var(--text-secondary)]">
         Il n&apos;y a actuellement aucun administrateur dans le système. Vous pouvez vous définir comme administrateur pour accéder à toutes les fonctionnalités.
       </p>
 
       <button
         onClick={handlePromote}
         disabled={isPending}
-        className="inline-flex items-center gap-2 rounded-lg bg-orange-600 px-4 py-2 text-sm font-semibold text-white transition-all duration-200 hover:bg-orange-700 disabled:opacity-50"
+        className="inline-flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-4 py-2 text-sm font-semibold text-white transition-all duration-200 hover:bg-[var(--yellow-hover)] active:scale-[0.97] disabled:opacity-50"
       >
         <Shield className="h-4 w-4" />
         {isPending ? "Configuration..." : "Devenir administrateur"}

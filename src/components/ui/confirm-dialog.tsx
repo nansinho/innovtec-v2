@@ -19,20 +19,20 @@ const variantConfig = {
   danger: {
     icon: Trash2,
     iconBg: "bg-red-50",
-    iconColor: "text-red-600",
-    buttonBg: "bg-red-600 hover:bg-red-700",
+    iconColor: "text-red-500",
+    buttonBg: "bg-red-500 hover:bg-red-600",
   },
   warning: {
     icon: AlertTriangle,
     iconBg: "bg-amber-50",
-    iconColor: "text-amber-600",
-    buttonBg: "bg-amber-600 hover:bg-amber-700",
+    iconColor: "text-amber-500",
+    buttonBg: "bg-amber-500 hover:bg-amber-600",
   },
   info: {
     icon: UserX,
     iconBg: "bg-blue-50",
-    iconColor: "text-blue-600",
-    buttonBg: "bg-blue-600 hover:bg-blue-700",
+    iconColor: "text-blue-500",
+    buttonBg: "bg-blue-500 hover:bg-blue-600",
   },
 };
 
@@ -85,30 +85,30 @@ export default function ConfirmDialog({
       {/* Dialog */}
       <div
         ref={dialogRef}
-        className="relative mx-4 w-full max-w-[400px] animate-scale-in rounded-xl border border-gray-200 bg-white p-6 shadow-xl"
+        className="relative mx-4 w-full max-w-[400px] animate-scale-in rounded-2xl bg-white p-6 shadow-xl ring-1 ring-black/[0.05]"
       >
         {/* Close button */}
         <button
           onClick={onClose}
           disabled={loading}
-          className="absolute right-4 top-4 rounded-lg p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 disabled:opacity-50"
+          className="absolute right-4 top-4 rounded-full p-1 text-[var(--text-muted)] transition-colors hover:bg-black/[0.04] hover:text-[var(--heading)] disabled:opacity-50"
         >
           <X className="h-4 w-4" />
         </button>
 
         {/* Icon */}
         <div className="mb-4 flex justify-center">
-          <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${config.iconBg}`}>
+          <div className={`flex h-12 w-12 items-center justify-center rounded-full ${config.iconBg}`}>
             <Icon className={`h-5 w-5 ${config.iconColor}`} />
           </div>
         </div>
 
         {/* Content */}
         <div className="mb-6 text-center">
-          <h3 className="mb-2 text-base font-semibold text-gray-900">
+          <h3 className="mb-2 text-base font-semibold text-[var(--heading)]">
             {title}
           </h3>
-          <p className="text-sm leading-relaxed text-gray-500">
+          <p className="text-sm leading-relaxed text-[var(--text-secondary)]">
             {message}
           </p>
         </div>
@@ -118,14 +118,14 @@ export default function ConfirmDialog({
           <button
             onClick={onClose}
             disabled={loading}
-            className="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-all hover:bg-gray-50 disabled:opacity-50"
+            className="flex-1 rounded-xl border border-[var(--border-1)] px-4 py-2.5 text-sm font-medium text-[var(--text)] transition-all hover:bg-black/[0.03] disabled:opacity-50"
           >
             {cancelLabel}
           </button>
           <button
             onClick={onConfirm}
             disabled={loading}
-            className={`flex-1 rounded-lg px-4 py-2.5 text-sm font-medium text-white transition-all disabled:opacity-50 ${config.buttonBg}`}
+            className={`flex-1 rounded-xl px-4 py-2.5 text-sm font-medium text-white transition-all active:scale-[0.97] disabled:opacity-50 ${config.buttonBg}`}
           >
             {loading ? (
               <span className="flex items-center justify-center gap-2">

@@ -89,7 +89,7 @@ export default function RexDetail({ rex, onExportPdf, onEdit, companyLogo }: Rex
       <div className="mb-4 flex items-center justify-between">
         <Link
           href="/qse/rex"
-          className="inline-flex items-center gap-1.5 text-sm text-gray-500 transition-colors hover:text-gray-900"
+          className="inline-flex items-center gap-1.5 text-sm text-[var(--text-secondary)] transition-colors hover:text-[var(--heading)]"
         >
           <ArrowLeft className="h-4 w-4" />
           Retour aux REX
@@ -98,7 +98,7 @@ export default function RexDetail({ rex, onExportPdf, onEdit, companyLogo }: Rex
           {onEdit && (
             <button
               onClick={onEdit}
-              className="flex items-center gap-1.5 rounded-lg bg-orange-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-orange-700"
+              className="flex items-center gap-1.5 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[var(--yellow-hover)]"
             >
               <Pencil className="h-4 w-4" />
               Modifier
@@ -107,7 +107,7 @@ export default function RexDetail({ rex, onExportPdf, onEdit, companyLogo }: Rex
           {onExportPdf && (
             <button
               onClick={onExportPdf}
-              className="flex items-center gap-1.5 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-950"
+              className="flex items-center gap-1.5 rounded-[var(--radius-sm)] bg-[var(--navy)] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[var(--navy)]/90"
             >
               <Download className="h-4 w-4" />
               Télécharger PDF
@@ -116,7 +116,7 @@ export default function RexDetail({ rex, onExportPdf, onEdit, companyLogo }: Rex
           <button
             onClick={handleDelete}
             disabled={deleting}
-            className="flex items-center gap-1.5 rounded-lg bg-red-50 px-3 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-100 disabled:opacity-50"
+            className="flex items-center gap-1.5 rounded-[var(--radius-sm)] bg-red-50 px-3 py-2 text-sm font-medium text-red-600 transition-colors hover:bg-red-100 disabled:opacity-50"
           >
             <Trash2 className="h-4 w-4" />
           </button>
@@ -124,7 +124,7 @@ export default function RexDetail({ rex, onExportPdf, onEdit, companyLogo }: Rex
       </div>
 
       {/* Fiche REX Card */}
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+      <div className="overflow-hidden rounded-[var(--radius)] border border-[var(--border-1)] bg-white shadow-sm">
         {/* Header */}
         <div className="p-6 pb-4">
           <div className="flex items-start justify-between">
@@ -141,12 +141,12 @@ export default function RexDetail({ rex, onExportPdf, onEdit, companyLogo }: Rex
               </div>
               {/* Info */}
               <div>
-                <h1 className="text-base font-bold text-gray-900">
+                <h1 className="text-base font-bold text-[var(--heading)]">
                   <span className="text-orange-500">TITRE DE L&apos;ÉVÉNEMENT</span>
                   {" — "}
                   {rex.title}
                 </h1>
-                <div className="mt-1.5 space-y-0.5 text-sm text-gray-500">
+                <div className="mt-1.5 space-y-0.5 text-sm text-[var(--text-secondary)]">
                   {rex.lieu && (
                     <p>
                       <span className="font-semibold text-blue-600">Lieu</span> : {rex.lieu}
@@ -191,7 +191,7 @@ export default function RexDetail({ rex, onExportPdf, onEdit, companyLogo }: Rex
                 {/* Content: 2/3 text + 1/3 photo */}
                 <div className={`grid ${photo ? "grid-cols-3" : "grid-cols-1"} gap-4`}>
                   <div className={`${photo ? "col-span-2" : ""} rounded-lg border ${borderColor} bg-white p-4`}>
-                    <p className="whitespace-pre-line text-sm leading-relaxed text-gray-900">
+                    <p className="whitespace-pre-line text-sm leading-relaxed text-[var(--heading)]">
                       {text}
                     </p>
                   </div>
@@ -201,7 +201,7 @@ export default function RexDetail({ rex, onExportPdf, onEdit, companyLogo }: Rex
                       <img
                         src={photo}
                         alt={key}
-                        className="w-full rounded-xl border border-gray-200 object-cover shadow-sm"
+                        className="w-full rounded-[var(--radius)] border border-[var(--border-1)] object-cover shadow-sm"
                       />
                     </div>
                   )}
@@ -212,7 +212,7 @@ export default function RexDetail({ rex, onExportPdf, onEdit, companyLogo }: Rex
         </div>
 
         {/* Footer */}
-        <div className="border-t border-gray-200 bg-gray-50/50 p-6">
+        <div className="border-t border-[var(--border-1)] bg-gray-50/50 p-6">
           <div className="grid grid-cols-2 gap-6">
             {/* Déjà arrivé */}
             <div>
@@ -222,14 +222,14 @@ export default function RexDetail({ rex, onExportPdf, onEdit, companyLogo }: Rex
               {rex.deja_arrive && rex.deja_arrive.length > 0 ? (
                 <ul className="space-y-1">
                   {rex.deja_arrive.map((item, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm text-gray-900">
-                      <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-gray-400" />
+                    <li key={i} className="flex items-start gap-2 text-sm text-[var(--heading)]">
+                      <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[var(--text-muted)]" />
                       {item}
                     </li>
                   ))}
                 </ul>
               ) : (
-                <p className="text-sm italic text-gray-400">Non renseigné</p>
+                <p className="text-sm italic text-[var(--text-muted)]">Non renseigné</p>
               )}
             </div>
 
@@ -245,7 +245,7 @@ export default function RexDetail({ rex, onExportPdf, onEdit, companyLogo }: Rex
                     className={`rounded px-2.5 py-1 text-sm font-medium ${
                       rex.type_evenement === t.value
                         ? `${t.bg} ${t.color} font-bold`
-                        : "text-gray-400"
+                        : "text-[var(--text-muted)]"
                     }`}
                   >
                     {t.label}

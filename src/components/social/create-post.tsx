@@ -63,13 +63,13 @@ export default function CreatePost() {
   }
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+    <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-white p-4 shadow-xs">
       <textarea
         value={content}
         onChange={(e) => setContent(e.target.value)}
         placeholder="Quoi de neuf ? Partagez avec vos collègues..."
         rows={3}
-        className="w-full resize-none rounded-xl bg-gray-50 px-4 py-3 text-sm text-gray-900 outline-none placeholder:text-gray-400 focus:bg-gray-100"
+        className="w-full resize-none rounded-xl bg-zinc-50 px-4 py-3 text-sm text-[var(--heading)] outline-none placeholder:text-zinc-400 focus:bg-zinc-100/80"
       />
 
       {imageUrl && (
@@ -105,7 +105,7 @@ export default function CreatePost() {
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading}
-            className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 disabled:opacity-50"
+            className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-600 disabled:opacity-50"
           >
             <ImagePlus className="h-4 w-4" />
             {uploading ? "Envoi..." : "Photo"}
@@ -115,7 +115,7 @@ export default function CreatePost() {
         <button
           onClick={handleSubmit}
           disabled={!content.trim() || isPending}
-          className="flex items-center gap-1.5 rounded-full bg-orange-600 px-4 py-1.5 text-xs font-medium text-white shadow-sm transition-all hover:bg-orange-700 disabled:opacity-40"
+          className="flex items-center gap-1.5 rounded-full bg-[var(--yellow)] px-4 py-1.5 text-xs font-medium text-white shadow-xs transition-all hover:bg-[var(--yellow-hover)] disabled:opacity-40"
         >
           <Send className="h-3.5 w-3.5" />
           {isPending ? "Publication..." : "Publier"}

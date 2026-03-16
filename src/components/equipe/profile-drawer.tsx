@@ -75,7 +75,7 @@ export default function ProfileDrawer({
         )}
       >
         {/* Header */}
-        <div className="relative bg-gradient-to-br from-gray-900 to-[#2a4a7a] px-6 pb-8 pt-5">
+        <div className="relative bg-gradient-to-br from-[var(--navy)] to-[#2a4a7a] px-6 pb-8 pt-5">
           <button
             onClick={onClose}
             className="absolute right-4 top-4 rounded-full bg-white/10 p-1.5 text-white/70 transition-colors hover:bg-white/20 hover:text-white"
@@ -119,13 +119,13 @@ export default function ProfileDrawer({
           {/* Info cards */}
           <div className="space-y-3">
             {profile.department && (
-              <div className="flex items-center gap-3 rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
-                <Building2 className="h-4 w-4 shrink-0 text-gray-900" />
+              <div className="flex items-center gap-3 rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--hover)] px-4 py-3">
+                <Building2 className="h-4 w-4 shrink-0 text-[var(--navy)]" />
                 <div>
-                  <p className="text-[10px] font-medium uppercase tracking-wider text-gray-400">
+                  <p className="text-[10px] font-medium uppercase tracking-wider text-[var(--text-muted)]">
                     Département
                   </p>
-                  <p className="text-[13px] font-medium text-gray-900">
+                  <p className="text-[13px] font-medium text-[var(--heading)]">
                     {profile.department}
                   </p>
                 </div>
@@ -133,13 +133,13 @@ export default function ProfileDrawer({
             )}
 
             {profile.team && (
-              <div className="flex items-center gap-3 rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
-                <Users className="h-4 w-4 shrink-0 text-gray-900" />
+              <div className="flex items-center gap-3 rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--hover)] px-4 py-3">
+                <Users className="h-4 w-4 shrink-0 text-[var(--navy)]" />
                 <div>
-                  <p className="text-[10px] font-medium uppercase tracking-wider text-gray-400">
+                  <p className="text-[10px] font-medium uppercase tracking-wider text-[var(--text-muted)]">
                     Équipe
                   </p>
-                  <p className="text-[13px] font-medium text-gray-900">
+                  <p className="text-[13px] font-medium text-[var(--heading)]">
                     {profile.team}
                   </p>
                 </div>
@@ -147,13 +147,13 @@ export default function ProfileDrawer({
             )}
 
             {profile.agency && (
-              <div className="flex items-center gap-3 rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
-                <MapPin className="h-4 w-4 shrink-0 text-gray-900" />
+              <div className="flex items-center gap-3 rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--hover)] px-4 py-3">
+                <MapPin className="h-4 w-4 shrink-0 text-[var(--navy)]" />
                 <div>
-                  <p className="text-[10px] font-medium uppercase tracking-wider text-gray-400">
+                  <p className="text-[10px] font-medium uppercase tracking-wider text-[var(--text-muted)]">
                     Agence
                   </p>
-                  <p className="text-[13px] font-medium text-gray-900">
+                  <p className="text-[13px] font-medium text-[var(--heading)]">
                     {profile.agency}
                   </p>
                 </div>
@@ -161,13 +161,13 @@ export default function ProfileDrawer({
             )}
 
             {profile.hire_date && (
-              <div className="flex items-center gap-3 rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
-                <Calendar className="h-4 w-4 shrink-0 text-gray-900" />
+              <div className="flex items-center gap-3 rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--hover)] px-4 py-3">
+                <Calendar className="h-4 w-4 shrink-0 text-[var(--navy)]" />
                 <div>
-                  <p className="text-[10px] font-medium uppercase tracking-wider text-gray-400">
+                  <p className="text-[10px] font-medium uppercase tracking-wider text-[var(--text-muted)]">
                     Date d&apos;arrivée
                   </p>
-                  <p className="text-[13px] font-medium text-gray-900">
+                  <p className="text-[13px] font-medium text-[var(--heading)]">
                     {new Date(profile.hire_date).toLocaleDateString("fr-FR", {
                       day: "numeric",
                       month: "long",
@@ -181,25 +181,25 @@ export default function ProfileDrawer({
 
           {/* Contact */}
           <div className="mt-5">
-            <p className="mb-2.5 text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+            <p className="mb-2.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
               Contact
             </p>
             <div className="space-y-2">
               {profile.email && (
                 <a
                   href={`mailto:${profile.email}`}
-                  className="flex items-center gap-3 rounded-lg border border-gray-200 px-4 py-3 text-[13px] text-gray-900 transition-all duration-200 hover:border-orange-500/40 hover:bg-orange-50"
+                  className="flex items-center gap-3 rounded-[var(--radius-sm)] border border-[var(--border-1)] px-4 py-3 text-[13px] text-[var(--heading)] transition-all duration-200 hover:border-[var(--yellow)]/40 hover:bg-[var(--yellow-surface)]"
                 >
-                  <Mail className="h-4 w-4 shrink-0 text-orange-600" />
+                  <Mail className="h-4 w-4 shrink-0 text-[var(--yellow)]" />
                   <span className="truncate">{profile.email}</span>
                 </a>
               )}
               {profile.phone && (
                 <a
                   href={`tel:${profile.phone}`}
-                  className="flex items-center gap-3 rounded-lg border border-gray-200 px-4 py-3 text-[13px] text-gray-900 transition-all duration-200 hover:border-orange-500/40 hover:bg-orange-50"
+                  className="flex items-center gap-3 rounded-[var(--radius-sm)] border border-[var(--border-1)] px-4 py-3 text-[13px] text-[var(--heading)] transition-all duration-200 hover:border-[var(--yellow)]/40 hover:bg-[var(--yellow-surface)]"
                 >
-                  <Phone className="h-4 w-4 shrink-0 text-orange-600" />
+                  <Phone className="h-4 w-4 shrink-0 text-[var(--yellow)]" />
                   {profile.phone}
                 </a>
               )}
@@ -208,10 +208,10 @@ export default function ProfileDrawer({
 
           {/* Birthday wish */}
           {isBirthday && !isOwnProfile && (
-            <div className="mt-5 rounded-xl border border-pink-200 bg-gradient-to-r from-pink-50 to-orange-50 p-4">
+            <div className="mt-5 rounded-[var(--radius)] border border-pink-200 bg-gradient-to-r from-pink-50 to-orange-50 p-4">
               <div className="mb-2 flex items-center gap-2">
                 <Cake className="h-4 w-4 text-pink-500" />
-                <p className="text-xs font-semibold text-gray-900">
+                <p className="text-xs font-semibold text-[var(--heading)]">
                   C&apos;est son anniversaire !
                 </p>
               </div>
@@ -226,12 +226,12 @@ export default function ProfileDrawer({
                     value={wishMessage}
                     onChange={(e) => setWishMessage(e.target.value)}
                     placeholder="Joyeux anniversaire !"
-                    className="flex-1 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-[12px] text-gray-900 outline-none placeholder:text-gray-400 focus:border-orange-500"
+                    className="flex-1 rounded-lg border border-[var(--border-1)] bg-white px-3 py-1.5 text-[12px] text-[var(--heading)] outline-none placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)]"
                   />
                   <button
                     onClick={handleSendWish}
                     disabled={isPending}
-                    className="rounded-lg bg-orange-600 px-3 py-1.5 text-white transition-all duration-200 hover:bg-orange-700  disabled:opacity-50"
+                    className="rounded-lg bg-[var(--yellow)] px-3 py-1.5 text-white transition-all duration-200 hover:bg-[var(--yellow-hover)] active:scale-[0.97] disabled:opacity-50"
                   >
                     <Send className="h-3.5 w-3.5" />
                   </button>
@@ -239,7 +239,7 @@ export default function ProfileDrawer({
               ) : (
                 <button
                   onClick={() => setShowWishInput(true)}
-                  className="rounded-full bg-orange-600 px-3 py-1 text-[11px] font-medium text-white transition-all duration-200 hover:bg-orange-700 "
+                  className="rounded-full bg-[var(--yellow)] px-3 py-1 text-[11px] font-medium text-white transition-all duration-200 hover:bg-[var(--yellow-hover)] active:scale-[0.97]"
                 >
                   Souhaiter son anniversaire
                 </button>
