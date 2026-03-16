@@ -495,6 +495,7 @@ export async function resetAllCollaboratorPasswords(): Promise<{
 
   let ok = 0;
   let failed = 0;
+  const errors: string[] = [];
 
   for (const profile of profiles) {
     const { error } = await supabaseAdmin.auth.admin.updateUserById(profile.id, {
@@ -502,6 +503,7 @@ export async function resetAllCollaboratorPasswords(): Promise<{
     });
     if (error) {
       console.error(`[resetPasswords] FAIL ${profile.email}:`, error.message);
+      if (errors.length < 3) errors.push(`${profile.email}: ${error.message}`);
       failed++;
     } else {
       ok++;
@@ -514,7 +516,13 @@ export async function resetAllCollaboratorPasswords(): Promise<{
     failed,
   });
 
-  return { success: true, total: profiles.length, ok, failed };
+  return {
+    success: true,
+    total: profiles.length,
+    ok,
+    failed,
+    error: errors.length > 0 ? errors.join(" | ") : undefined,
+  };
 }
 
 // ==========================================
