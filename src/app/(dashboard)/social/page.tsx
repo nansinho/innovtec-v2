@@ -1,20 +1,22 @@
 import { Cake, Rss } from "lucide-react";
 import { Card, CardHeader } from "@/components/ui/card";
 import { getFeedPosts } from "@/actions/feed";
-import { getTodayBirthdays, getUpcomingBirthdays } from "@/actions/birthday";
+import { getTodayBirthdays, getUpcomingBirthdays, getMyBirthdayWishes } from "@/actions/birthday";
 import { getProfile } from "@/actions/auth";
 import FeedList from "@/components/dashboard/feed-list";
 import BirthdayBanner from "@/components/birthday/birthday-banner";
 import UpcomingBirthdays from "@/components/social/upcoming-birthdays";
+import MyBirthdayWishes from "@/components/social/my-birthday-wishes";
 import CreatePost from "@/components/social/create-post";
 
 export const dynamic = "force-dynamic";
 
 export default async function SocialPage() {
-  const [posts, birthdays, upcomingBirthdays, profile] = await Promise.all([
+  const [posts, birthdays, upcomingBirthdays, myWishes, profile] = await Promise.all([
     getFeedPosts(),
     getTodayBirthdays(),
     getUpcomingBirthdays(30),
+    getMyBirthdayWishes(),
     getProfile(),
   ]);
 
@@ -66,6 +68,9 @@ export default async function SocialPage() {
 
         {/* Right column */}
         <div className="flex flex-col gap-6">
+          {myWishes.length > 0 && (
+            <MyBirthdayWishes wishes={myWishes} />
+          )}
           <UpcomingBirthdays birthdays={upcomingBirthdays} />
         </div>
       </div>

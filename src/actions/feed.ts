@@ -99,23 +99,26 @@ export async function createFeedPost(
   content: string,
   imageUrl?: string,
   newsId?: string
-) {
+): Promise<{ success: boolean; error?: string }> {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) return;
+  if (!user) return { success: false, error: "Non authentifié" };
 
-  await supabase.from("feed_posts").insert({
+  const { error } = await supabase.from("feed_posts").insert({
     author_id: user.id,
     content,
     image_url: imageUrl ?? "",
     news_id: newsId ?? null,
   });
 
+  if (error) return { success: false, error: error.message };
+
   revalidatePath("/");
   revalidatePath("/social");
+  return { success: true };
 }
 
 // ==========================================

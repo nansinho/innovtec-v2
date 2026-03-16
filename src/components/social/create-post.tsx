@@ -49,13 +49,13 @@ export default function CreatePost() {
     setError("");
 
     startTransition(async () => {
-      try {
-        await createFeedPost(content.trim(), imageUrl || undefined);
+      const result = await createFeedPost(content.trim(), imageUrl || undefined);
+      if (result.success) {
         setContent("");
         setImageUrl("");
         router.refresh();
-      } catch {
-        setError("Erreur lors de la publication. Réessayez.");
+      } else {
+        setError(result.error ?? "Erreur lors de la publication. Réessayez.");
       }
     });
   }
