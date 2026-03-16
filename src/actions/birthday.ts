@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { createNotificationForUser } from "@/actions/notifications";
 import type { Profile, BirthdayWish } from "@/lib/types/database";
 
 export async function getTodayBirthdays(): Promise<Profile[]> {
@@ -95,6 +96,25 @@ export async function sendBirthdayWish(
     }
     return { success: false, error: error.message };
   }
+
+  // Récupérer le nom de l'expéditeur pour la notification
+  const { data: senderProfile } = await supabase
+    .from("profiles")
+    .select("first_name, last_name")
+    .eq("id", user.id)
+    .single();
+
+  const senderName = senderProfile
+    ? `${senderProfile.first_name} ${senderProfile.last_name}`
+    : "Un collègue";
+
+  await createNotificationForUser({
+    user_id: toUserId,
+    type: "birthday",
+    title: `${senderName} vous souhaite un joyeux anniversaire !`,
+    message,
+    link: "/",
+  });
 
   return { success: true };
 }

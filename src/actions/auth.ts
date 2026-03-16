@@ -17,14 +17,55 @@ export async function signIn(formData: {
 }): Promise<{ error: string }> {
   const supabase = await createClient();
 
+  // 1. Essai normal via GoTrue
   const { error } = await supabase.auth.signInWithPassword({
     email: formData.email,
     password: formData.password,
   });
 
-  if (error) {
+  if (!error) {
+    revalidatePath("/", "layout");
+    redirect("/");
+  }
+
+  // 2. Fallback : vérifier le mot de passe via crypt() PostgreSQL
+  //    (pour les utilisateurs créés par migration SQL)
+  const supabaseAdmin = createAdminClient();
+
+  const { data: userId } = await supabaseAdmin.rpc("verify_user_password", {
+    p_email: formData.email,
+    p_password: formData.password,
+  });
+
+  if (!userId) {
     return { error: "Email ou mot de passe incorrect" };
   }
+
+  // 3. Mot de passe crypt() valide → générer un magic link pour connecter l'utilisateur
+  const { data: linkData, error: linkError } =
+    await supabaseAdmin.auth.admin.generateLink({
+      type: "magiclink",
+      email: formData.email,
+    });
+
+  if (linkError || !linkData?.properties?.hashed_token) {
+    return { error: "Email ou mot de passe incorrect" };
+  }
+
+  // 4. Utiliser le token pour créer la session
+  const { error: verifyError } = await supabase.auth.verifyOtp({
+    token_hash: linkData.properties.hashed_token,
+    type: "magiclink",
+  });
+
+  if (verifyError) {
+    return { error: "Email ou mot de passe incorrect" };
+  }
+
+  // 5. Corriger le mot de passe dans GoTrue pour les prochaines connexions
+  await supabaseAdmin.auth.admin.updateUserById(userId, {
+    password: formData.password,
+  });
 
   revalidatePath("/", "layout");
   redirect("/");
@@ -108,6 +149,45 @@ export async function signUp(formData: {
       error: "Erreur serveur lors de la création du compte. Vérifiez la configuration.",
     };
   }
+}
+
+export async function requestPasswordReset(email: string): Promise<{ success: boolean; error?: string }> {
+  if (!email) {
+    return { success: false, error: "Veuillez saisir votre email" };
+  }
+
+  const supabase = await createClient();
+
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "";
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${siteUrl}/auth/confirm`,
+  });
+
+  if (error) {
+    console.error("[requestPasswordReset]", error.message);
+  }
+
+  // Toujours retourner success pour ne pas révéler si l'email existe
+  return { success: true };
+}
+
+export async function updatePassword(newPassword: string): Promise<{ success: boolean; error?: string }> {
+  if (!newPassword || newPassword.length < 6) {
+    return { success: false, error: "Le mot de passe doit contenir au moins 6 caractères" };
+  }
+
+  const supabase = await createClient();
+
+  const { error } = await supabase.auth.updateUser({
+    password: newPassword,
+  });
+
+  if (error) {
+    return { success: false, error: "Impossible de mettre à jour le mot de passe : " + error.message };
+  }
+
+  return { success: true };
 }
 
 export async function getProfile() {
