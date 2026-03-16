@@ -1,9 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
-import { ArrowLeft, Send, X, Upload } from "lucide-react";
-import Link from "next/link";
+import { X, Send, Upload, BookOpen } from "lucide-react";
 import { createBonnePratique, uploadBonnePratiquePhoto } from "@/actions/bonnes-pratiques";
 import { toast } from "sonner";
 
@@ -14,8 +12,12 @@ const PILLARS = [
   { key: "environnement", label: "Environnement" },
 ];
 
-export default function BonnePratiqueForm() {
-  const router = useRouter();
+interface BonnePratiqueFormProps {
+  onCreated: () => void;
+  onClose: () => void;
+}
+
+export default function BonnePratiqueForm({ onCreated, onClose }: BonnePratiqueFormProps) {
   const [isPending, startTransition] = useTransition();
   const [uploading, setUploading] = useState(false);
 
@@ -77,8 +79,7 @@ export default function BonnePratiqueForm() {
       const result = await createBonnePratique(form);
       if (result.success) {
         toast.success("Bonne pratique enregistrée");
-        router.push("/qse/bonnes-pratiques");
-        router.refresh();
+        onCreated();
       } else {
         toast.error(result.error || "Erreur lors de l'enregistrement");
       }
@@ -86,21 +87,25 @@ export default function BonnePratiqueForm() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl">
-      <Link
-        href="/qse/bonnes-pratiques"
-        className="mb-6 inline-flex items-center gap-1.5 text-sm text-[var(--text-secondary)] transition-colors hover:text-[var(--heading)]"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Retour aux bonnes pratiques
-      </Link>
+    <div className="fixed inset-0 z-[200] flex flex-col bg-[var(--card)] md:left-[var(--sidebar-width)]">
+      <div className="relative flex h-full w-full flex-col bg-[var(--card)]">
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-[var(--border-1)] px-6 py-4">
+          <div className="flex items-center gap-2">
+            <BookOpen className="h-5 w-5 text-[var(--green)]" />
+            <h2 className="text-lg font-semibold text-[var(--heading)]">
+              Nouvelle bonne pratique
+            </h2>
+          </div>
+          <button
+            onClick={onClose}
+            className="rounded-lg p-1 text-[var(--text-muted)] transition-colors hover:bg-[var(--hover)] hover:text-[var(--heading)]"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
 
-      <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] p-6 shadow-sm">
-        <h2 className="mb-6 text-lg font-semibold text-[var(--heading)]">
-          Nouvelle bonne pratique
-        </h2>
-
-        <div className="space-y-5">
+        <div className="flex-1 space-y-5 overflow-y-auto px-6 py-5">
           {/* Titre */}
           <div>
             <label className="mb-1.5 block text-[12px] font-medium text-[var(--text-secondary)]">
@@ -214,18 +219,18 @@ export default function BonnePratiqueForm() {
               </label>
             )}
           </div>
+        </div>
 
-          {/* Submit */}
-          <div className="flex justify-end border-t border-[var(--border-1)] pt-5">
-            <button
-              onClick={handleSubmit}
-              disabled={isPending || uploading}
-              className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--green)] px-6 py-2.5 text-sm font-medium text-white transition-colors hover:opacity-90 disabled:opacity-50"
-            >
-              <Send className="h-4 w-4" />
-              {isPending ? "Enregistrement..." : "Enregistrer"}
-            </button>
-          </div>
+        {/* Footer */}
+        <div className="flex justify-end border-t border-[var(--border-1)] px-6 py-4">
+          <button
+            onClick={handleSubmit}
+            disabled={isPending || uploading}
+            className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--green)] px-6 py-2.5 text-sm font-medium text-white transition-colors hover:opacity-90 disabled:opacity-50"
+          >
+            <Send className="h-4 w-4" />
+            {isPending ? "Enregistrement..." : "Enregistrer"}
+          </button>
         </div>
       </div>
     </div>
