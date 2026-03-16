@@ -135,13 +135,17 @@ export default function SignalementList({ signalements: initial, categories, can
         const cat = d.category as { name: string; color: string } | null;
         if (!cat) return <span className="text-[var(--text-muted)]">—</span>;
         return (
-          <span
-            className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide text-white shadow-sm"
-            style={{ background: `linear-gradient(to bottom, ${cat.color}, ${cat.color}dd)` }}
+          <Badge
+            dot
+            className="border"
+            style={{
+              backgroundColor: `${cat.color}15`,
+              color: cat.color,
+              borderColor: `${cat.color}30`,
+            }}
           >
-            <span className="h-1.5 w-1.5 rounded-full bg-white/80" />
             {cat.name}
-          </span>
+          </Badge>
         );
       },
     },

@@ -5,6 +5,7 @@ import { Search, Users, Filter, Cake, Mail, Phone } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ProfileDrawer from "./profile-drawer";
 import type { Profile } from "@/lib/types/database";
+import { Badge, type BadgeVariant } from "@/components/ui/badge";
 
 interface TrombinoscopeGridProps {
   users: Profile[];
@@ -12,17 +13,13 @@ interface TrombinoscopeGridProps {
   currentUserId: string;
 }
 
-const DEPT_COLORS: Record<string, { bg: string; text: string }> = {
-  "Travaux": { bg: "bg-gradient-to-b from-amber-400 to-amber-500 shadow-sm", text: "text-white" },
-  "Ingénierie": { bg: "bg-gradient-to-b from-blue-500 to-blue-600 shadow-sm", text: "text-white" },
-  "Administration": { bg: "bg-gradient-to-b from-purple-500 to-purple-600 shadow-sm", text: "text-white" },
-  "Ressources Humaines": { bg: "bg-gradient-to-b from-pink-500 to-pink-600 shadow-sm", text: "text-white" },
-  "Direction": { bg: "bg-gradient-to-b from-red-500 to-red-600 shadow-sm", text: "text-white" },
+const DEPT_VARIANTS: Record<string, BadgeVariant> = {
+  "Travaux": "yellow",
+  "Ingénierie": "blue",
+  "Administration": "purple",
+  "Ressources Humaines": "pink",
+  "Direction": "red",
 };
-
-function getDeptColor(dept: string) {
-  return DEPT_COLORS[dept] ?? { bg: "bg-[var(--hover)]", text: "text-[var(--text-secondary)]" };
-}
 
 export default function TrombinoscopeGrid({
   users,
@@ -137,7 +134,7 @@ export default function TrombinoscopeGrid({
             const initials =
               `${user.first_name?.[0] ?? ""}${user.last_name?.[0] ?? ""}`.toUpperCase() || "?";
             const hasBirthday = birthdaySet.has(user.id);
-            const deptColor = getDeptColor(user.department);
+            const deptVariant = DEPT_VARIANTS[user.department] ?? "default";
 
             return (
               <button
@@ -189,15 +186,9 @@ export default function TrombinoscopeGrid({
 
                 {/* Department badge */}
                 {user.department && (
-                  <span
-                    className={cn(
-                      "mt-2 rounded-full px-2 py-0.5 text-[9px] font-medium",
-                      deptColor.bg,
-                      deptColor.text
-                    )}
-                  >
+                  <Badge variant={deptVariant} dot={false} className="mt-2 text-[9px]">
                     {user.department}
-                  </span>
+                  </Badge>
                 )}
 
                 {/* Contact icons on hover */}

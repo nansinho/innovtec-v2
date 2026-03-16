@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { cn, formatRelative } from "@/lib/utils";
 import type { NewsCategory, NewsPriority } from "@/lib/types/database";
+import { Badge, type BadgeVariant } from "@/components/ui/badge";
 
 const categoryLabels: Record<NewsCategory, string> = {
   entreprise: "Entreprise",
@@ -26,30 +27,19 @@ const categoryLabels: Record<NewsCategory, string> = {
   rh: "RH",
 };
 
-const categoryColors: Record<NewsCategory, string> = {
-  entreprise: "bg-blue-50 text-blue-600 ring-1 ring-blue-200/60",
-  securite: "bg-red-50 text-red-600 ring-1 ring-red-200/60",
-  formation: "bg-emerald-50 text-emerald-600 ring-1 ring-emerald-200/60",
-  chantier: "bg-amber-50 text-amber-600 ring-1 ring-amber-200/60",
-  social: "bg-purple-50 text-purple-600 ring-1 ring-purple-200/60",
-  rh: "bg-indigo-50 text-indigo-600 ring-1 ring-indigo-200/60",
+const categoryVariants: Record<NewsCategory, BadgeVariant> = {
+  entreprise: "blue",
+  securite: "red",
+  formation: "green",
+  chantier: "yellow",
+  social: "purple",
+  rh: "indigo",
 };
 
-const priorityConfig: Record<
-  NewsPriority,
-  { label: string; className: string; dot: string }
-> = {
-  normal: { label: "", className: "", dot: "" },
-  important: {
-    label: "Important",
-    className: "bg-amber-50 text-amber-600 ring-1 ring-amber-200/60",
-    dot: "bg-amber-400",
-  },
-  urgent: {
-    label: "Urgent",
-    className: "bg-red-50 text-red-600 ring-1 ring-red-200/60",
-    dot: "bg-red-500",
-  },
+const priorityVariants: Record<NewsPriority, { label: string; variant: BadgeVariant }> = {
+  normal: { label: "", variant: "default" },
+  important: { label: "Important", variant: "yellow" },
+  urgent: { label: "Urgent", variant: "red" },
 };
 
 interface NewsItem {
@@ -160,7 +150,7 @@ export default function NewsTable({ news }: NewsTableProps) {
           {/* Table rows */}
           <div className="divide-y divide-[var(--border-1)]">
             {filtered.map((article) => {
-              const priority = priorityConfig[article.priority];
+              const priority = priorityVariants[article.priority];
               const authorName = article.author
                 ? `${article.author.first_name} ${article.author.last_name}`
                 : "Rédaction";
@@ -193,20 +183,9 @@ export default function NewsTable({ news }: NewsTableProps) {
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
                         {article.priority !== "normal" && (
-                          <span
-                            className={cn(
-                              "inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide",
-                              priority.className
-                            )}
-                          >
-                            <span
-                              className={cn(
-                                "h-1.5 w-1.5 rounded-full",
-                                priority.dot
-                              )}
-                            />
+                          <Badge variant={priority.variant}>
                             {priority.label}
-                          </span>
+                          </Badge>
                         )}
                         <h3 className="truncate text-[13px] font-semibold text-[var(--heading)] group-hover:text-[var(--yellow)]">
                           {article.title}
@@ -218,14 +197,9 @@ export default function NewsTable({ news }: NewsTableProps) {
 
                       {/* Mobile meta */}
                       <div className="mt-2 flex flex-wrap items-center gap-3 md:hidden">
-                        <span
-                          className={cn(
-                            "rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide",
-                            categoryColors[article.category]
-                          )}
-                        >
+                        <Badge variant={categoryVariants[article.category]} dot={false}>
                           {categoryLabels[article.category]}
-                        </span>
+                        </Badge>
                         <span className="text-[10px] text-[var(--text-muted)]">
                           {authorName}
                         </span>
@@ -248,14 +222,9 @@ export default function NewsTable({ news }: NewsTableProps) {
 
                   {/* Category - desktop */}
                   <div className="hidden md:block">
-                    <span
-                      className={cn(
-                        "rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide",
-                        categoryColors[article.category]
-                      )}
-                    >
+                    <Badge variant={categoryVariants[article.category]} dot={false}>
                       {categoryLabels[article.category]}
-                    </span>
+                    </Badge>
                   </div>
 
                   {/* Author - desktop */}

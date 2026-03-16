@@ -22,6 +22,7 @@ import {
 } from "@/actions/news";
 import { DropdownMenu } from "@/components/ui/dropdown-menu";
 import type { News, NewsCategory, NewsPriority } from "@/lib/types/database";
+import { Badge, type BadgeVariant } from "@/components/ui/badge";
 
 const categoryLabels: Record<NewsCategory, string> = {
   entreprise: "Entreprise",
@@ -32,13 +33,13 @@ const categoryLabels: Record<NewsCategory, string> = {
   rh: "RH",
 };
 
-const categoryColors: Record<NewsCategory, string> = {
-  entreprise: "bg-blue-50 text-blue-600 ring-1 ring-blue-200/60",
-  securite: "bg-red-50 text-red-600 ring-1 ring-red-200/60",
-  formation: "bg-emerald-50 text-emerald-600 ring-1 ring-emerald-200/60",
-  chantier: "bg-amber-50 text-amber-600 ring-1 ring-amber-200/60",
-  social: "bg-purple-50 text-purple-600 ring-1 ring-purple-200/60",
-  rh: "bg-indigo-50 text-indigo-600 ring-1 ring-indigo-200/60",
+const categoryVariants: Record<NewsCategory, BadgeVariant> = {
+  entreprise: "blue",
+  securite: "red",
+  formation: "green",
+  chantier: "yellow",
+  social: "purple",
+  rh: "indigo",
 };
 
 type NewsItem = News & {
@@ -476,26 +477,14 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
                     </div>
                   </td>
                   <td className="px-4 py-3.5">
-                    <span
-                      className={cn(
-                        "rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide",
-                        categoryColors[article.category]
-                      )}
-                    >
+                    <Badge variant={categoryVariants[article.category]} dot={false}>
                       {categoryLabels[article.category]}
-                    </span>
+                    </Badge>
                   </td>
                   <td className="px-4 py-3.5">
-                    <span
-                      className={cn(
-                        "inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide",
-                        article.is_published
-                          ? "bg-emerald-50 text-emerald-600 ring-1 ring-emerald-200/60"
-                          : "bg-zinc-100 text-zinc-500 ring-1 ring-zinc-200/60"
-                      )}
-                    >
+                    <Badge variant={article.is_published ? "green" : "default"} dot={false}>
                       {article.is_published ? "Publié" : "Brouillon"}
-                    </span>
+                    </Badge>
                   </td>
                   <td className="px-4 py-3.5 text-xs text-[var(--text-muted)]">
                     {article.published_at

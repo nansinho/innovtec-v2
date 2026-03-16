@@ -8,6 +8,7 @@ import { deleteSseDashboard } from "@/actions/sse-dashboard";
 import ConfirmDialog from "@/components/ui/confirm-dialog";
 import { toast } from "sonner";
 import { DropdownMenu } from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
 import {
   ArrowLeft, Download, FileSpreadsheet, Plus, Pencil, Trash2,
   Calendar, BarChart3, Eye, Edit3,
@@ -487,9 +488,9 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
                       <span className="text-sm font-medium text-[var(--heading)]">{MONTH_NAMES[d.month - 1]}</span>
                     </td>
                     <td className="px-4 py-3.5">
-                      <span className="inline-flex items-center rounded-[var(--radius-xs)] bg-amber-500/10 px-2 py-0.5 text-xs font-semibold text-amber-700">
+                      <Badge variant="yellow" dot={false}>
                         {d.year}
-                      </span>
+                      </Badge>
                     </td>
                     <td className="px-4 py-3.5 text-center text-sm font-semibold text-[var(--heading)]">
                       {d.accidents_with_leave}
@@ -505,13 +506,9 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
                     </td>
                     <td className="px-4 py-3.5 text-center">
                       {hasIssues ? (
-                        <span className="inline-flex items-center gap-1 rounded-[var(--radius-xs)] bg-red-50 px-2 py-0.5 text-[11px] font-medium text-red-700">
-                          Alerte
-                        </span>
+                        <Badge variant="red" dot={false}>Alerte</Badge>
                       ) : (
-                        <span className="inline-flex items-center gap-1 rounded-[var(--radius-xs)] bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-700">
-                          OK
-                        </span>
+                        <Badge variant="green" dot={false}>OK</Badge>
                       )}
                     </td>
                     <td className="px-4 py-3.5 text-sm text-[var(--text-muted)]">
