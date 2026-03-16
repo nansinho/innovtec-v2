@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { requestPasswordReset } from "@/actions/auth";
 import { Zap, Mail, ArrowLeft } from "lucide-react";
@@ -8,10 +9,17 @@ import { useAuthLogos } from "@/components/auth/auth-logo-provider";
 
 export default function ForgotPasswordPage() {
   const logos = useAuthLogos();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (searchParams.get("error") === "expired") {
+      setError("Le lien a expiré ou a déjà été utilisé. Veuillez en demander un nouveau.");
+    }
+  }, [searchParams]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
