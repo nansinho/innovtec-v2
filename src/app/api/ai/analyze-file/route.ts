@@ -175,7 +175,7 @@ Le document peut contenir des informations sur :
 Retourne UNIQUEMENT un JSON valide avec ces champs :
 {
   "title": "<titre concis de la bonne pratique>",
-  "description": "<description détaillée de la bonne pratique, son contexte et ses bénéfices>",
+  "description": "<description en HTML avec des balises <p> pour chaque paragraphe, <ul>/<li> pour les listes, <strong> pour le gras, <em> pour l'italique. Respecte les sauts de ligne et la mise en forme du document original. Chaque idée ou section doit être dans son propre paragraphe <p>.>",
   "pillar": "<pilier QSE parmi: securite, qualite, sante, environnement>",
   "category": "<catégorie libre, ex: EPI, signalisation, procédures, manutention, etc.>",
   "chantier": "<nom du chantier si mentionné, sinon vide>",
@@ -187,7 +187,8 @@ Retourne UNIQUEMENT un JSON valide avec ces champs :
 }
 
 IMPORTANT:
-- Extrais le contenu en préservant le sens et la qualité du texte.
+- La description DOIT être en HTML. Utilise <p> pour chaque paragraphe, <ul>/<li> pour les listes, <strong> pour le gras. Ne mets JAMAIS tout le texte dans un seul bloc.
+- Extrais le contenu en préservant le sens, la structure et la qualité du texte.
 - Si une information n'est pas présente dans le document, déduis-la du contexte ou laisse vide.
 - Utilise les accents français corrects.
 - Retourne UNIQUEMENT du JSON valide, sans markdown, sans backticks.`;
