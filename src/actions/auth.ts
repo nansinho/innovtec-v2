@@ -256,24 +256,6 @@ export async function updatePasswordWithToken(
   return { success: true };
 }
 
-export async function updatePassword(newPassword: string): Promise<{ success: boolean; error?: string }> {
-  if (!newPassword || newPassword.length < 6) {
-    return { success: false, error: "Le mot de passe doit contenir au moins 6 caractères" };
-  }
-
-  const supabase = await createClient();
-
-  const { error } = await supabase.auth.updateUser({
-    password: newPassword,
-  });
-
-  if (error) {
-    return { success: false, error: "Impossible de mettre à jour le mot de passe : " + error.message };
-  }
-
-  return { success: true };
-}
-
 export async function getProfile() {
   const supabase = await createClient();
   const {
