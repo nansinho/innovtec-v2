@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useLayoutEffect } from "react";
 import { createPortal } from "react-dom";
 import { ChevronDown, Search, Plus, Trash2, X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -43,21 +43,40 @@ export default function SearchableSelect({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
   const addInputRef = useRef<HTMLInputElement>(null);
-  const [pos, setPos] = useState({ top: 0, left: 0, width: 0 });
+  const [pos, setPos] = useState({ top: 0, left: 0, width: 0, openAbove: false });
+
+  const filtered = options.filter((o) =>
+    o.label.toLowerCase().includes(search.toLowerCase())
+  );
 
   const updatePosition = useCallback(() => {
     if (!triggerRef.current) return;
     const rect = triggerRef.current.getBoundingClientRect();
-    const spaceBelow = window.innerHeight - rect.bottom;
-    const dropdownHeight = 280;
-    const showAbove = spaceBelow < dropdownHeight && rect.top > dropdownHeight;
+    const spaceBelow = window.innerHeight - rect.bottom - 8;
+    const spaceAbove = rect.top - 8;
+    const openAbove = spaceBelow < 200 && spaceAbove > spaceBelow;
 
     setPos({
-      top: showAbove ? rect.top - dropdownHeight : rect.bottom + 4,
+      top: openAbove ? 0 : rect.bottom + 4,
       left: rect.left,
       width: rect.width,
+      openAbove,
     });
   }, []);
+
+  // Reposition after render to measure actual dropdown height
+  useLayoutEffect(() => {
+    if (!open || !dropdownRef.current || !triggerRef.current) return;
+    const rect = triggerRef.current.getBoundingClientRect();
+    const dropdownHeight = dropdownRef.current.offsetHeight;
+
+    if (pos.openAbove) {
+      setPos((prev) => ({ ...prev, top: rect.top - dropdownHeight - 4 }));
+    } else {
+      setPos((prev) => ({ ...prev, top: rect.bottom + 4 }));
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, filtered.length, adding, pos.openAbove]);
 
   useEffect(() => {
     if (!open) return;
@@ -98,10 +117,6 @@ export default function SearchableSelect({
       setTimeout(() => addInputRef.current?.focus(), 50);
     }
   }, [adding]);
-
-  const filtered = options.filter((o) =>
-    o.label.toLowerCase().includes(search.toLowerCase())
-  );
 
   const selectedLabel = options.find((o) => o.label === value)?.label || value;
 
@@ -258,9 +273,9 @@ export default function SearchableSelect({
                 </div>
               ))}
 
-              {filtered.length === 0 && (
+              {filtered.length === 0 && search && (
                 <div className="px-3 py-4 text-center text-xs text-[var(--text-muted)]">
-                  Aucun résultat
+                  Aucun résultat pour « {search} »
                 </div>
               )}
             </div>
