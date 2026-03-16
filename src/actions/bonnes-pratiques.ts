@@ -31,36 +31,15 @@ export async function createBonnePratique(bp: {
   safety_impact?: string;
   source_file_url?: string;
 }): Promise<{ success: boolean; error?: string }> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { success: false, error: "Non authentifié" };
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return { success: false, error: "Non authentifié" };
 
-  // Try insert with all fields (new columns included)
-  // If new columns don't exist yet, fallback to base columns only
-  const fullPayload = {
-    title: bp.title,
-    pillar: bp.pillar,
-    category: bp.category,
-    description: bp.description,
-    chantier: bp.chantier,
-    photos: bp.photos,
-    cover_photo: bp.cover_photo || "",
-    difficulty: bp.difficulty || "",
-    priority: bp.priority || "",
-    cost_impact: bp.cost_impact || "",
-    environmental_impact: bp.environmental_impact || "",
-    safety_impact: bp.safety_impact || "",
-    source_file_url: bp.source_file_url || "",
-    author_id: user.id,
-  };
-
-  let { error } = await supabase.from("bonnes_pratiques").insert(fullPayload);
-
-  // Fallback: if insert fails (new columns may not exist), try with base columns only
-  if (error) {
-    const basePayload = {
+    // Base payload (always works with original schema)
+    const payload: Record<string, unknown> = {
       title: bp.title,
       pillar: bp.pillar,
       category: bp.category,
@@ -69,24 +48,55 @@ export async function createBonnePratique(bp: {
       photos: bp.photos,
       author_id: user.id,
     };
-    const fallback = await supabase.from("bonnes_pratiques").insert(basePayload);
-    error = fallback.error;
+
+    // Try with extended fields first (requires migration)
+    if (bp.cover_photo) payload.cover_photo = bp.cover_photo;
+    if (bp.difficulty) payload.difficulty = bp.difficulty;
+    if (bp.priority) payload.priority = bp.priority;
+    if (bp.cost_impact) payload.cost_impact = bp.cost_impact;
+    if (bp.environmental_impact) payload.environmental_impact = bp.environmental_impact;
+    if (bp.safety_impact) payload.safety_impact = bp.safety_impact;
+    if (bp.source_file_url) payload.source_file_url = bp.source_file_url;
+
+    let { error } = await supabase.from("bonnes_pratiques").insert(payload);
+
+    // Fallback: if extended fields cause error, retry with base fields only
+    if (error) {
+      console.error("Insert with extended fields failed:", error.message);
+      const basePayload = {
+        title: bp.title,
+        pillar: bp.pillar,
+        category: bp.category,
+        description: bp.description,
+        chantier: bp.chantier,
+        photos: bp.photos,
+        author_id: user.id,
+      };
+      const fallback = await supabase.from("bonnes_pratiques").insert(basePayload);
+      error = fallback.error;
+      if (error) {
+        console.error("Fallback insert also failed:", error.message);
+      }
+    }
+
+    if (error) return { success: false, error: error.message };
+
+    // Notify all users about new bonne pratique
+    await createNotificationForAll({
+      type: "system",
+      title: "Nouvelle bonne pratique",
+      message: bp.title,
+      link: "/qse/bonnes-pratiques",
+      excludeUserId: user.id,
+    });
+
+    revalidatePath("/qse/bonnes-pratiques");
+    revalidatePath("/qse");
+    return { success: true };
+  } catch (err) {
+    console.error("createBonnePratique exception:", err);
+    return { success: false, error: "Erreur inattendue lors de l'enregistrement" };
   }
-
-  if (error) return { success: false, error: error.message };
-
-  // Notify all users about new bonne pratique
-  await createNotificationForAll({
-    type: "system",
-    title: "Nouvelle bonne pratique",
-    message: bp.title,
-    link: "/qse/bonnes-pratiques",
-    excludeUserId: user.id,
-  });
-
-  revalidatePath("/qse/bonnes-pratiques");
-  revalidatePath("/qse");
-  return { success: true };
 }
 
 export async function deleteBonnePratique(

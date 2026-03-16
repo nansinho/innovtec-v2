@@ -218,12 +218,17 @@ export default function BonnePratiqueForm({ onCreated, onClose }: BonnePratiqueF
     }
 
     startTransition(async () => {
-      const result = await createBonnePratique(form);
-      if (result.success) {
-        toast.success("Bonne pratique enregistrée");
-        onCreated();
-      } else {
-        toast.error(result.error || "Erreur lors de l'enregistrement");
+      try {
+        const result = await createBonnePratique(form);
+        if (result.success) {
+          toast.success("Bonne pratique enregistrée");
+          onCreated();
+        } else {
+          toast.error(result.error || "Erreur lors de l'enregistrement");
+        }
+      } catch (err) {
+        console.error("handleSubmit error:", err);
+        toast.error("Erreur lors de l'enregistrement");
       }
     });
   }
