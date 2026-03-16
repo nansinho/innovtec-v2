@@ -105,7 +105,7 @@ export default function WelcomeCarousel() {
       >
         {slides.map((slide, i) => {
           const content = (
-            <div className={`flex min-w-full bg-gradient-to-br ${slide.gradient}`}>
+            <div className={`flex h-full min-w-full bg-gradient-to-br ${slide.gradient}`}>
               <div className="z-[2] flex flex-1 flex-col justify-center px-10 py-8">
                 <span className={`mb-3 inline-block w-fit rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-[1.5px] backdrop-blur-sm ${slide.badgeColor}`}>
                   {slide.badge}
@@ -136,11 +136,11 @@ export default function WelcomeCarousel() {
           );
 
           return slide.id ? (
-            <Link key={i} href={`/actualites/${slide.id}`} className="group min-w-full">
+            <Link key={i} href={`/actualites/${slide.id}`} className="group min-w-full h-full">
               {content}
             </Link>
           ) : (
-            <div key={i} className="min-w-full">{content}</div>
+            <div key={i} className="min-w-full h-full">{content}</div>
           );
         })}
       </div>
