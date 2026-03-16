@@ -209,7 +209,7 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
               placeholder="Rechercher un collaborateur..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="h-9 w-full rounded-xl border border-[var(--border-1)] bg-white pl-9 pr-8 text-sm text-[var(--heading)] outline-none transition-all placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)] focus:shadow-sm"
+              className="h-8 w-full rounded-lg border border-[var(--border-1)] bg-white pl-9 pr-7 text-xs text-[var(--heading)] outline-none transition-all placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
             />
           </div>
 
@@ -220,7 +220,7 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
               <select
                 value={roleFilter}
                 onChange={(e) => setRoleFilter(e.target.value)}
-                className="h-9 rounded-xl border border-[var(--border-1)] bg-white pl-8 pr-8 text-sm text-[var(--text)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)] focus:shadow-sm"
+                className="h-8 rounded-lg border border-[var(--border-1)] bg-white pl-8 pr-8 text-xs text-[var(--text)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
               >
                 <option value="all">Tous les rôles</option>
                 {roleOptions.map((opt) => (
@@ -234,7 +234,7 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="h-9 rounded-xl border border-[var(--border-1)] bg-white px-3 text-sm text-[var(--text)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)] focus:shadow-sm"
+              className="h-8 rounded-lg border border-[var(--border-1)] bg-white px-3 text-xs text-[var(--text)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
             >
               <option value="all">Tous ({users.length})</option>
               <option value="active">Actifs ({activeCount})</option>
@@ -244,8 +244,8 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
         </div>
 
         {/* Add button */}
-        <Button onClick={() => setFormModal({ open: true, user: null })}>
-          <UserPlus className="h-4 w-4" />
+        <Button size="sm" onClick={() => setFormModal({ open: true, user: null })}>
+          <UserPlus className="h-3.5 w-3.5" />
           Ajouter
         </Button>
       </div>
@@ -277,7 +277,7 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
         <table className="w-full text-left text-sm">
           <thead className="border-b border-[var(--border-1)] bg-[var(--hover)]">
             <tr>
-              <th className="w-10 px-4 py-3.5">
+              <th className="w-10 px-3 py-2">
                 <input
                   type="checkbox"
                   checked={allPageSelected}
@@ -286,19 +286,19 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
                   aria-label="Sélectionner tout"
                 />
               </th>
-              <th className="px-4 py-3.5 text-xs font-medium text-[var(--text-secondary)]">
+              <th className="px-3 py-2 text-xs font-medium text-[var(--text-secondary)]">
                 Collaborateur
               </th>
-              <th className="hidden px-4 py-3.5 text-xs font-medium text-[var(--text-secondary)] md:table-cell">
+              <th className="hidden px-3 py-2 text-xs font-medium text-[var(--text-secondary)] md:table-cell">
                 Poste
               </th>
-              <th className="px-4 py-3.5 text-xs font-medium text-[var(--text-secondary)]">
+              <th className="px-3 py-2 text-xs font-medium text-[var(--text-secondary)]">
                 Rôle
               </th>
-              <th className="px-4 py-3.5 text-xs font-medium text-[var(--text-secondary)]">
+              <th className="px-3 py-2 text-xs font-medium text-[var(--text-secondary)]">
                 Statut
               </th>
-              <th className="w-14 px-4 py-3.5 text-right text-xs font-medium text-[var(--text-secondary)]">
+              <th className="w-14 px-3 py-2 text-right text-xs font-medium text-[var(--text-secondary)]">
                 Actions
               </th>
             </tr>
@@ -317,7 +317,7 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
                   } ${!user.is_active ? "opacity-50" : ""}`}
                 >
                   {/* Checkbox */}
-                  <td className="px-4 py-3.5">
+                  <td className="px-3 py-2">
                     <input
                       type="checkbox"
                       checked={selectedIds.has(user.id)}
@@ -326,7 +326,7 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
                     />
                   </td>
                   {/* User info */}
-                  <td className="px-4 py-3.5">
+                  <td className="px-3 py-2">
                     <div className="flex items-center gap-3">
                       <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--navy)] text-[10px] font-medium text-white">
                         {initials}
@@ -350,7 +350,7 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
                   </td>
 
                   {/* Job title - editable with select */}
-                  <td className="hidden px-4 py-3.5 md:table-cell">
+                  <td className="hidden px-3 py-2 md:table-cell">
                     {editingJobTitle === user.id ? (
                       <div className="flex flex-col gap-1.5">
                         {showCustomInput ? (
@@ -408,7 +408,7 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
                   </td>
 
                   {/* Role */}
-                  <td className="px-4 py-3.5">
+                  <td className="px-3 py-2">
                     {editingRole === user.id ? (
                       <select
                         value={user.role}
@@ -431,14 +431,14 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
                   </td>
 
                   {/* Status */}
-                  <td className="px-4 py-3.5">
+                  <td className="px-3 py-2">
                     <Badge variant={user.is_active ? "green" : "gray"} dot>
                       {user.is_active ? "Actif" : "Inactif"}
                     </Badge>
                   </td>
 
                   {/* Actions — 3-dot dropdown menu */}
-                  <td className="px-4 py-3.5 text-right">
+                  <td className="px-3 py-2 text-right">
                     <DropdownMenu
                       items={[
                         {

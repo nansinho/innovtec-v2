@@ -193,7 +193,7 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
             placeholder="Rechercher une actualité..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-xl border border-[var(--border-1)] py-2.5 pl-10 pr-4 text-sm text-[var(--heading)] outline-none transition-all placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)] focus:shadow-sm"
+            className="h-8 w-full rounded-lg border border-[var(--border-1)] pl-9 pr-4 text-xs text-[var(--heading)] outline-none transition-all placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
           />
         </div>
         <Button onClick={() => setShowForm(!showForm)}>
@@ -400,7 +400,7 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
         <table className="w-full text-left text-sm">
           <thead className="border-b border-[var(--border-1)] bg-[var(--hover)]">
             <tr>
-              <th className="w-10 px-4 py-3.5">
+              <th className="w-10 px-3 py-2">
                 <input
                   type="checkbox"
                   checked={allPageSelected}
@@ -409,19 +409,19 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
                   aria-label="Sélectionner tout"
                 />
               </th>
-              <th className="px-4 py-3.5 text-xs font-medium text-[var(--text-secondary)]">
+              <th className="px-3 py-2 text-xs font-medium text-[var(--text-secondary)]">
                 Titre
               </th>
-              <th className="px-4 py-3.5 text-xs font-medium text-[var(--text-secondary)]">
+              <th className="px-3 py-2 text-xs font-medium text-[var(--text-secondary)]">
                 Catégorie
               </th>
-              <th className="px-4 py-3.5 text-xs font-medium text-[var(--text-secondary)]">
+              <th className="px-3 py-2 text-xs font-medium text-[var(--text-secondary)]">
                 Statut
               </th>
-              <th className="px-4 py-3.5 text-xs font-medium text-[var(--text-secondary)]">
+              <th className="px-3 py-2 text-xs font-medium text-[var(--text-secondary)]">
                 Date
               </th>
-              <th className="px-4 py-3.5 text-right text-xs font-medium text-[var(--text-secondary)]">
+              <th className="px-3 py-2 text-right text-xs font-medium text-[var(--text-secondary)]">
                 Actions
               </th>
             </tr>
@@ -440,7 +440,7 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
                     selectedIds.has(article.id) ? "bg-amber-50/50" : "hover:bg-[var(--hover)]"
                   )}
                 >
-                  <td className="px-4 py-3.5">
+                  <td className="px-3 py-2">
                     <input
                       type="checkbox"
                       checked={selectedIds.has(article.id)}
@@ -448,7 +448,7 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
                       className="h-4 w-4 rounded border-zinc-300 accent-[var(--yellow)]"
                     />
                   </td>
-                  <td className="px-4 py-3.5">
+                  <td className="px-3 py-2">
                     <div>
                       <div className="font-medium text-[var(--heading)]">
                         {article.title}
@@ -458,20 +458,20 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
                       </div>
                     </div>
                   </td>
-                  <td className="px-4 py-3.5">
+                  <td className="px-3 py-2">
                     <CategoryBadge module="articles" category={article.category} />
                   </td>
-                  <td className="px-4 py-3.5">
+                  <td className="px-3 py-2">
                     <Badge variant={article.is_published ? "green" : "gray"} dot={false}>
                       {article.is_published ? "Publié" : "Brouillon"}
                     </Badge>
                   </td>
-                  <td className="px-4 py-3.5 text-xs text-[var(--text-muted)]">
+                  <td className="px-3 py-2 text-xs text-[var(--text-muted)]">
                     {article.published_at
                       ? formatDate(article.published_at)
                       : formatDate(article.created_at)}
                   </td>
-                  <td className="px-4 py-3.5 text-right">
+                  <td className="px-3 py-2 text-right">
                     <DropdownMenu
                       items={[
                         {

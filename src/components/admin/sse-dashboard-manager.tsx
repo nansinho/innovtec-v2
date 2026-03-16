@@ -100,31 +100,31 @@ export function SseDashboardManager({ dashboards: initialDashboards }: SseDashbo
           </p>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] shadow-xs">
+        <div className="overflow-hidden rounded-xl border border-[var(--border-1)] bg-[var(--card)] shadow-sm">
           <table className="w-full text-left text-sm">
             <thead className="border-b border-[var(--border-1)] bg-[var(--hover)]">
               <tr>
-                <th className="px-4 py-3 text-xs font-medium text-[var(--text-secondary)]">Periode</th>
-                <th className="px-4 py-3 text-xs font-medium text-[var(--text-secondary)]">ASAA</th>
-                <th className="px-4 py-3 text-xs font-medium text-[var(--text-secondary)]">Taux SST</th>
-                <th className="px-4 py-3 text-xs font-medium text-[var(--text-secondary)]">Visites terrain</th>
-                <th className="px-4 py-3 text-xs font-medium text-[var(--text-secondary)]">Cree le</th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-[var(--text-secondary)]">Actions</th>
+                <th className="px-3 py-2 text-[11px] font-medium text-[var(--text-muted)]">Periode</th>
+                <th className="px-3 py-2 text-[11px] font-medium text-[var(--text-muted)]">ASAA</th>
+                <th className="px-3 py-2 text-[11px] font-medium text-[var(--text-muted)]">Taux SST</th>
+                <th className="px-3 py-2 text-[11px] font-medium text-[var(--text-muted)]">Visites terrain</th>
+                <th className="px-3 py-2 text-[11px] font-medium text-[var(--text-muted)]">Cree le</th>
+                <th className="px-3 py-2 text-right text-[11px] font-medium text-[var(--text-muted)]">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--border-1)]">
               {dashboards.map((d) => (
                 <tr key={d.id} className="transition-colors hover:bg-[var(--hover)]">
-                  <td className="px-4 py-3 font-medium text-[var(--heading)]">
+                  <td className="px-3 py-2 font-medium text-[var(--heading)]">
                     {MONTH_NAMES[d.month - 1]} {d.year}
                   </td>
-                  <td className="px-4 py-3 text-[var(--text)]">{d.accidents_with_leave}</td>
-                  <td className="px-4 py-3 text-[var(--text)]">{d.sst_rate}%</td>
-                  <td className="px-4 py-3 text-[var(--text)]">{d.field_visits_count}</td>
-                  <td className="px-4 py-3 text-[var(--text-secondary)]">
+                  <td className="px-3 py-2 text-[var(--text)]">{d.accidents_with_leave}</td>
+                  <td className="px-3 py-2 text-[var(--text)]">{d.sst_rate}%</td>
+                  <td className="px-3 py-2 text-[var(--text)]">{d.field_visits_count}</td>
+                  <td className="px-3 py-2 text-[var(--text-secondary)]">
                     {new Date(d.created_at).toLocaleDateString("fr-FR")}
                   </td>
-                  <td className="px-4 py-3 text-right">
+                  <td className="px-3 py-2 text-right">
                     <div className="flex items-center justify-end gap-1">
                       <button
                         onClick={() => setEditing(d)}
