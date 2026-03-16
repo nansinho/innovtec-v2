@@ -441,12 +441,21 @@ export async function updateRex(
   if (rex.type_evenement !== undefined) updateData.type_evenement = rex.type_evenement;
   if (rex.source_file_url !== undefined) updateData.source_file_url = rex.source_file_url;
 
-  const { error } = await supabase
+  if (Object.keys(updateData).length === 0) {
+    return { success: false, error: "Aucune donnée à mettre à jour" };
+  }
+
+  const { data, error } = await supabase
     .from("rex")
     .update(updateData)
-    .eq("id", id);
+    .eq("id", id)
+    .select("id");
 
   if (error) return { success: false, error: error.message };
+
+  if (!data || data.length === 0) {
+    return { success: false, error: "Mise à jour impossible — vous n'avez pas les droits ou la fiche n'existe pas" };
+  }
 
   revalidatePath("/qse/rex");
   revalidatePath(`/qse/rex/${id}`);
