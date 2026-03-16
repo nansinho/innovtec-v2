@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import WelcomeCarousel from "@/components/dashboard/welcome-carousel";
 import KpiCards from "@/components/dashboard/kpi-cards";
 import TodoList from "@/components/dashboard/todo-list";
@@ -15,6 +16,12 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 
 export const dynamic = "force-dynamic";
+
+function CardSkeleton({ className = "h-[200px]" }: { className?: string }) {
+  return (
+    <div className={`animate-pulse rounded-xl border border-[var(--border-1)] bg-[var(--card)] ${className}`} />
+  );
+}
 
 export default async function DashboardPage() {
   const [birthdays, profile] = await Promise.all([
@@ -52,22 +59,34 @@ export default async function DashboardPage() {
             />
           )}
 
-          <KpiCards />
+          <Suspense fallback={<div className="grid grid-cols-2 gap-4 sm:grid-cols-4">{Array.from({ length: 4 }, (_, i) => <CardSkeleton key={i} className="h-[100px]" />)}</div>}>
+            <KpiCards />
+          </Suspense>
 
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
             <TodoList />
-            <RecentDocs />
+            <Suspense fallback={<CardSkeleton />}>
+              <RecentDocs />
+            </Suspense>
           </div>
 
-          <Feed />
-          <GalleryGrid />
+          <Suspense fallback={<CardSkeleton className="h-[300px]" />}>
+            <Feed />
+          </Suspense>
+          <Suspense fallback={<CardSkeleton className="h-[200px]" />}>
+            <GalleryGrid />
+          </Suspense>
         </div>
 
         {/* Right column */}
         <div className="flex flex-col gap-6">
           <QuickLinks />
-          <EventsList />
-          <Meetings />
+          <Suspense fallback={<CardSkeleton />}>
+            <EventsList />
+          </Suspense>
+          <Suspense fallback={<CardSkeleton />}>
+            <Meetings />
+          </Suspense>
           <Timebit />
         </div>
       </div>

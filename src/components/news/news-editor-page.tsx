@@ -15,7 +15,14 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
-import RichTextEditor from "./rich-text-editor";
+import dynamic from "next/dynamic";
+
+const RichTextEditor = dynamic(() => import("./rich-text-editor"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-64 animate-pulse rounded-xl border border-[var(--border-1)] bg-zinc-50" />
+  ),
+});
 import NewsAttachmentsManager from "./news-attachments";
 import {
   createNews,

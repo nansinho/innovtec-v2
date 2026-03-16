@@ -145,12 +145,18 @@ export async function getMyBirthdayWishes(): Promise<BirthdayWish[]> {
   } = await supabase.auth.getUser();
   if (!user) return [];
 
+  return getBirthdayWishesForUser(user.id);
+}
+
+/** Optimized: skips auth lookup when userId is already known */
+export async function getBirthdayWishesForUser(userId: string): Promise<BirthdayWish[]> {
+  const supabase = await createClient();
   const year = new Date().getFullYear();
 
   const { data } = await supabase
     .from("birthday_wishes")
     .select("*, from_user:profiles!birthday_wishes_from_user_id_fkey(first_name, last_name, avatar_url)")
-    .eq("to_user_id", user.id)
+    .eq("to_user_id", userId)
     .eq("year", year)
     .order("created_at", { ascending: false });
 
@@ -218,10 +224,16 @@ export async function isMyBirthday(): Promise<boolean> {
   } = await supabase.auth.getUser();
   if (!user) return false;
 
+  return isUserBirthday(user.id);
+}
+
+/** Optimized: skips auth lookup when userId is already known */
+export async function isUserBirthday(userId: string): Promise<boolean> {
+  const supabase = await createClient();
   const { data: profile } = await supabase
     .from("profiles")
     .select("date_of_birth")
-    .eq("id", user.id)
+    .eq("id", userId)
     .single();
 
   if (!profile?.date_of_birth) return false;

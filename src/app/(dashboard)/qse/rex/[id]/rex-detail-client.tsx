@@ -6,8 +6,6 @@ import type { Rex } from "@/lib/types/database";
 import type { CompanyLogos } from "@/actions/settings";
 import RexDetail from "@/components/qse/rex-detail";
 import RexForm from "@/components/qse/rex-form";
-import { exportRexPdf } from "@/lib/export/rex-pdf";
-
 interface Props {
   rex: Rex;
   companyLogo: CompanyLogos;
@@ -17,7 +15,8 @@ export default function RexDetailClient({ rex, companyLogo }: Props) {
   const [editing, setEditing] = useState(false);
   const router = useRouter();
 
-  function handleExportPdf() {
+  async function handleExportPdf() {
+    const { exportRexPdf } = await import("@/lib/export/rex-pdf");
     const rexNumber = rex.rex_number || "X";
     const rexYear = rex.rex_year || new Date().getFullYear();
     const filename = `Fiche-REX-${rexNumber}-${rexYear}.pdf`;
