@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import ApiKeySettings from "@/components/admin/api-key-settings";
 import ThemeSettings from "@/components/admin/theme-settings";
 import LogoSettings from "@/components/admin/logo-settings";
+import ResetPasswordsButton from "@/components/admin/reset-passwords-button";
 
 export const dynamic = "force-dynamic";
 
@@ -35,6 +36,7 @@ export default async function AdminSettingsPage() {
           hasKey={apiSettings?.hasKey ?? false}
           maskedKey={apiSettings?.maskedKey ?? ""}
         />
+        <ResetPasswordsButton />
       </div>
     </div>
   );
