@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import {
   X,
   Bell,
@@ -60,6 +61,7 @@ export default function NotificationSidebar({
   } = useNotifications();
   const [filter, setFilter] = useState<"all" | "unread">("all");
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
   useEffect(() => {
     if (isOpen) {
@@ -253,15 +255,16 @@ export default function NotificationSidebar({
 
                     {/* Clickable link overlay */}
                     {notification.link && (
-                      <a
-                        href={notification.link}
-                        onClick={() => {
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
                           if (!notification.is_read) {
                             handleMarkAsRead(notification.id);
                           }
                           onClose();
+                          router.push(notification.link);
                         }}
-                        className="absolute inset-0 z-10"
+                        className="absolute inset-0 z-10 cursor-pointer"
                       />
                     )}
                   </div>

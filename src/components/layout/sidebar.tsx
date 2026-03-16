@@ -6,6 +6,7 @@ import {
   Zap,
   LayoutGrid,
   BookOpen,
+  Heart,
   Shield,
   AlertCircle,
   Eye,
@@ -39,6 +40,7 @@ const roleLabels: Record<string, string> = {
 const mainNav = [
   { href: "/", label: "Tableau de bord", icon: LayoutGrid },
   { href: "/actualites", label: "Actualités", icon: BookOpen },
+  { href: "/social", label: "Vie sociale", icon: Heart },
 ];
 
 const qseNav = [
