@@ -92,25 +92,25 @@ export default function PlanningView({ events }: PlanningViewProps) {
           <div className="flex items-center gap-2">
             <button
               onClick={() => navigate("prev")}
-              className="flex h-8 w-8 items-center justify-center rounded-[var(--radius)] border border-[var(--border-1)] text-[var(--text-muted)] hover:bg-zinc-50"
+              className="flex h-8 w-8 items-center justify-center rounded-xl border border-gray-200 text-gray-400 hover:bg-gray-50"
               aria-label="Précédent"
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
             <button
               onClick={() => navigate("next")}
-              className="flex h-8 w-8 items-center justify-center rounded-[var(--radius)] border border-[var(--border-1)] text-[var(--text-muted)] hover:bg-zinc-50"
+              className="flex h-8 w-8 items-center justify-center rounded-xl border border-gray-200 text-gray-400 hover:bg-gray-50"
               aria-label="Suivant"
             >
               <ChevronRight className="h-4 w-4" />
             </button>
-            <h2 className="ml-2 text-lg font-semibold capitalize text-[var(--heading)]">
+            <h2 className="ml-2 text-lg font-semibold capitalize text-gray-900">
               {headerLabel}
             </h2>
           </div>
           <div className="flex items-center gap-2">
             {/* View switcher */}
-            <div className="flex rounded-[var(--radius)] border border-[var(--border-1)] bg-white">
+            <div className="flex rounded-xl border border-gray-200 bg-white">
               {(["day", "week", "month"] as ViewMode[]).map((v) => (
                 <button
                   key={v}
@@ -118,17 +118,17 @@ export default function PlanningView({ events }: PlanningViewProps) {
                   className={cn(
                     "px-3 py-1.5 text-xs font-medium transition-colors",
                     view === v
-                      ? "bg-[var(--navy)] text-white"
-                      : "text-[var(--text-secondary)] hover:bg-zinc-50",
-                    v === "day" && "rounded-l-[var(--radius)]",
-                    v === "month" && "rounded-r-[var(--radius)]"
+                      ? "bg-gray-900 text-white"
+                      : "text-gray-500 hover:bg-gray-50",
+                    v === "day" && "rounded-l-xl",
+                    v === "month" && "rounded-r-xl"
                   )}
                 >
                   {v === "day" ? "Jour" : v === "week" ? "Semaine" : "Mois"}
                 </button>
               ))}
             </div>
-            <button className="inline-flex h-9 items-center gap-2 rounded-[var(--radius)] bg-[var(--yellow)] px-4 text-sm font-medium text-white transition-colors hover:bg-[var(--yellow-hover)]">
+            <button className="inline-flex h-9 items-center gap-2 rounded-xl bg-orange-600 px-4 text-sm font-medium text-white transition-colors hover:bg-orange-700">
               <Plus className="h-4 w-4" />
               Nouveau
             </button>
@@ -136,7 +136,7 @@ export default function PlanningView({ events }: PlanningViewProps) {
         </div>
 
         {/* Calendar grid */}
-        <div className="overflow-hidden rounded-[var(--radius)] border border-[var(--border-1)] bg-white shadow-xs">
+        <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
           {view === "week" && (
             <div className="grid grid-cols-7">
               {weekDays.map((day) => {
@@ -148,21 +148,21 @@ export default function PlanningView({ events }: PlanningViewProps) {
                     key={day.toISOString()}
                     onClick={() => setSelectedDay(day)}
                     className={cn(
-                      "flex min-h-[120px] flex-col border-r border-b border-[var(--border-1)] p-2 text-left last:border-r-0 transition-colors",
+                      "flex min-h-[120px] flex-col border-r border-b border-gray-200 p-2 text-left last:border-r-0 transition-colors",
                       isSelected && "bg-amber-50/50",
-                      !isSelected && "hover:bg-zinc-50"
+                      !isSelected && "hover:bg-gray-50"
                     )}
                   >
                     <div className="mb-1 flex items-center justify-between">
-                      <span className="text-xs font-medium uppercase text-[var(--text-muted)]">
+                      <span className="text-xs font-medium uppercase text-gray-400">
                         {format(day, "EEE", { locale: fr })}
                       </span>
                       <span
                         className={cn(
                           "flex h-6 w-6 items-center justify-center rounded-full text-xs",
                           isToday
-                            ? "bg-[var(--yellow)] font-semibold text-white"
-                            : "text-[var(--heading)]"
+                            ? "bg-orange-600 font-semibold text-white"
+                            : "text-gray-900"
                         )}
                       >
                         {format(day, "d")}
@@ -173,7 +173,7 @@ export default function PlanningView({ events }: PlanningViewProps) {
                         <div
                           key={evt.id}
                           className={cn(
-                            "truncate rounded-[var(--radius-xs)] border px-1.5 py-0.5 text-[10px] font-medium",
+                            "truncate rounded-lg border px-1.5 py-0.5 text-[10px] font-medium",
                             colorClasses[evt.color] ?? colorClasses.blue
                           )}
                         >
@@ -181,7 +181,7 @@ export default function PlanningView({ events }: PlanningViewProps) {
                         </div>
                       ))}
                       {dayEvents.length > 3 && (
-                        <span className="text-[10px] text-[var(--text-muted)]">
+                        <span className="text-[10px] text-gray-400">
                           +{dayEvents.length - 3} de plus
                         </span>
                       )}
@@ -194,16 +194,16 @@ export default function PlanningView({ events }: PlanningViewProps) {
 
           {view === "month" && (
             <>
-              <div className="grid grid-cols-7 border-b border-[var(--border-1)]">
+              <div className="grid grid-cols-7 border-b border-gray-200">
                 {["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"].map((d) => (
-                  <div key={d} className="px-2 py-2 text-center text-xs font-medium text-[var(--text-muted)]">
+                  <div key={d} className="px-2 py-2 text-center text-xs font-medium text-gray-400">
                     {d}
                   </div>
                 ))}
               </div>
               <div className="grid grid-cols-7">
                 {Array.from({ length: firstDayOfWeek }).map((_, i) => (
-                  <div key={`empty-${i}`} className="min-h-[80px] border-r border-b border-[var(--border-1)]" />
+                  <div key={`empty-${i}`} className="min-h-[80px] border-r border-b border-gray-200" />
                 ))}
                 {monthDays.map((day) => {
                   const dayEvents = getEventsForDay(day);
@@ -212,14 +212,14 @@ export default function PlanningView({ events }: PlanningViewProps) {
                     <button
                       key={day.toISOString()}
                       onClick={() => { setSelectedDay(day); setView("week"); }}
-                      className="flex min-h-[80px] flex-col border-r border-b border-[var(--border-1)] p-1.5 text-left transition-colors hover:bg-zinc-50"
+                      className="flex min-h-[80px] flex-col border-r border-b border-gray-200 p-1.5 text-left transition-colors hover:bg-gray-50"
                     >
                       <span
                         className={cn(
                           "mb-1 flex h-5 w-5 items-center justify-center self-end rounded-full text-[11px]",
                           isToday
-                            ? "bg-[var(--yellow)] font-semibold text-white"
-                            : "text-[var(--text-secondary)]"
+                            ? "bg-orange-600 font-semibold text-white"
+                            : "text-gray-500"
                         )}
                       >
                         {format(day, "d")}
@@ -228,7 +228,7 @@ export default function PlanningView({ events }: PlanningViewProps) {
                         <div
                           key={evt.id}
                           className={cn(
-                            "mb-0.5 truncate rounded-[var(--radius-xs)] px-1 py-0.5 text-[9px] font-medium",
+                            "mb-0.5 truncate rounded-lg px-1 py-0.5 text-[9px] font-medium",
                             colorClasses[evt.color] ?? colorClasses.blue
                           )}
                         >
@@ -246,8 +246,8 @@ export default function PlanningView({ events }: PlanningViewProps) {
             <div className="p-4">
               {getEventsForDay(currentDate).length === 0 ? (
                 <div className="flex flex-col items-center py-12 text-center">
-                  <CalendarDays className="mb-2 h-10 w-10 text-zinc-300" />
-                  <p className="text-sm text-[var(--text-muted)]">
+                  <CalendarDays className="mb-2 h-10 w-10 text-gray-300" />
+                  <p className="text-sm text-gray-400">
                     Aucun événement ce jour
                   </p>
                 </div>
@@ -257,7 +257,7 @@ export default function PlanningView({ events }: PlanningViewProps) {
                     <div
                       key={evt.id}
                       className={cn(
-                        "rounded-[var(--radius)] border p-3",
+                        "rounded-xl border p-3",
                         colorClasses[evt.color] ?? colorClasses.blue
                       )}
                     >
@@ -278,34 +278,34 @@ export default function PlanningView({ events }: PlanningViewProps) {
 
       {/* Right sidebar — selected day events */}
       <div className="hidden w-[280px] shrink-0 lg:block">
-        <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-white shadow-xs">
-          <div className="border-b border-[var(--border-1)] px-4 py-3">
-            <h3 className="text-sm font-semibold capitalize text-[var(--heading)]">
+        <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
+          <div className="border-b border-gray-200 px-4 py-3">
+            <h3 className="text-sm font-semibold capitalize text-gray-900">
               {format(selectedDay, "EEEE d MMMM", { locale: fr })}
             </h3>
           </div>
           <div className="p-3">
             {selectedDayEvents.length === 0 ? (
               <div className="py-6 text-center">
-                <CalendarDays className="mx-auto mb-2 h-8 w-8 text-zinc-300" />
-                <p className="text-xs text-[var(--text-muted)]">Aucun événement</p>
+                <CalendarDays className="mx-auto mb-2 h-8 w-8 text-gray-300" />
+                <p className="text-xs text-gray-400">Aucun événement</p>
               </div>
             ) : (
               <div className="space-y-2">
                 {selectedDayEvents.map((evt) => (
                   <div
                     key={evt.id}
-                    className="rounded-[var(--radius)] border border-[var(--border-1)] p-3"
+                    className="rounded-xl border border-gray-200 p-3"
                   >
-                    <div className="mb-1 text-xs text-[var(--text-muted)]">
+                    <div className="mb-1 text-xs text-gray-400">
                       {format(new Date(evt.start_at), "HH:mm", { locale: fr })}
                       {evt.end_at && ` — ${format(new Date(evt.end_at), "HH:mm", { locale: fr })}`}
                     </div>
-                    <div className="text-sm font-medium text-[var(--heading)]">
+                    <div className="text-sm font-medium text-gray-900">
                       {evt.title}
                     </div>
                     {evt.location && (
-                      <div className="mt-1 text-xs text-[var(--text-muted)]">
+                      <div className="mt-1 text-xs text-gray-400">
                         {evt.location}
                       </div>
                     )}

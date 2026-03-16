@@ -8,19 +8,19 @@ import { DataTable, type ColumnDef, type FilterDef } from "@/components/ui/data-
 import { Badge } from "@/components/ui/badge";
 import { getStandardToolbarActions } from "@/lib/table-toolbar-actions";
 
-const statusConfig: Record<string, { label: string; variant: "red" | "yellow" | "green" | "default" }> = {
-  signale: { label: "Signalé", variant: "red" },
-  en_cours: { label: "En cours", variant: "yellow" },
-  resolu: { label: "Résolu", variant: "green" },
+const statusConfig: Record<string, { label: string; variant: "error" | "warning" | "success" | "default" }> = {
+  signale: { label: "Signalé", variant: "error" },
+  en_cours: { label: "En cours", variant: "warning" },
+  resolu: { label: "Résolu", variant: "success" },
   cloture: { label: "Clôturé", variant: "default" },
 };
 
-const severityConfig: Record<number, { label: string; variant: "green" | "yellow" | "red" | "default" }> = {
-  1: { label: "Faible", variant: "green" },
-  2: { label: "Modérée", variant: "yellow" },
-  3: { label: "Sérieuse", variant: "yellow" },
-  4: { label: "Grave", variant: "red" },
-  5: { label: "Critique", variant: "red" },
+const severityConfig: Record<number, { label: string; variant: "success" | "warning" | "error" | "default" }> = {
+  1: { label: "Faible", variant: "success" },
+  2: { label: "Modérée", variant: "warning" },
+  3: { label: "Sérieuse", variant: "warning" },
+  4: { label: "Grave", variant: "error" },
+  5: { label: "Critique", variant: "error" },
 };
 
 interface DangerItem {
@@ -87,7 +87,7 @@ export default function DangerList({ dangers: initialDangers, canManage }: Dange
       width: "50px",
       render: (_, ) => {
         const idx = dangers.indexOf(_);
-        return <span className="text-[var(--text-muted)]">{idx + 1}</span>;
+        return <span className="text-gray-400">{idx + 1}</span>;
       },
     },
     {
@@ -97,7 +97,7 @@ export default function DangerList({ dangers: initialDangers, canManage }: Dange
       width: "110px",
       accessor: (d) => d.created_at,
       render: (d) => (
-        <span className="text-[var(--text-secondary)]">
+        <span className="text-gray-500">
           {new Date(d.created_at).toLocaleDateString("fr-FR")}
         </span>
       ),
@@ -108,8 +108,8 @@ export default function DangerList({ dangers: initialDangers, canManage }: Dange
       sortable: true,
       render: (d) => (
         <div>
-          <div className="font-medium text-[var(--heading)]">{d.title}</div>
-          <div className="mt-0.5 line-clamp-1 text-xs text-[var(--text-muted)]">
+          <div className="font-medium text-gray-900">{d.title}</div>
+          <div className="mt-0.5 line-clamp-1 text-xs text-gray-400">
             {d.description}
           </div>
         </div>
@@ -120,7 +120,7 @@ export default function DangerList({ dangers: initialDangers, canManage }: Dange
       header: "Lieu",
       sortable: true,
       render: (d) => (
-        <span className="text-[var(--text-secondary)]">
+        <span className="text-gray-500">
           {d.location || "—"}
         </span>
       ),
@@ -142,7 +142,7 @@ export default function DangerList({ dangers: initialDangers, canManage }: Dange
       render: (d) => {
         const reporter = d.reporter as unknown as { first_name: string; last_name: string } | null;
         return (
-          <span className="text-[var(--text-secondary)]">
+          <span className="text-gray-500">
             {reporter ? `${reporter.first_name} ${reporter.last_name}` : "—"}
           </span>
         );
@@ -165,7 +165,7 @@ export default function DangerList({ dangers: initialDangers, canManage }: Dange
               }}
               onClick={(e) => e.stopPropagation()}
               disabled={isPending}
-              className="rounded-lg border border-[var(--border-1)] bg-white px-2 py-1 text-xs outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+              className="rounded-lg border border-gray-200 bg-white px-2 py-1 text-xs outline-none transition-all focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
             >
               <option value="signale">Signalé</option>
               <option value="en_cours">En cours</option>

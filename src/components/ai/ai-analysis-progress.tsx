@@ -124,19 +124,19 @@ export default function AiAnalysisProgress({
       : Math.max(0, ((completedSteps.size + (currentStep >= 0 ? 0.5 : 0)) / STEPS.length) * 100);
 
   return (
-    <div className="animate-scale-in overflow-hidden rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] shadow-[var(--shadow-sm)]">
+    <div className="animate-scale-in overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
       {/* Progress bar */}
-      <div className="h-1 w-full bg-[var(--border-1)]">
+      <div className="h-1 w-full bg-gray-200">
         <div
-          className="h-full rounded-r-full bg-[var(--navy)] transition-all duration-700 ease-out"
+          className="h-full rounded-r-full bg-gray-900 transition-all duration-700 ease-out"
           style={{ width: `${progress}%` }}
         />
       </div>
 
       {/* Header */}
-      <div className="flex items-center gap-2 border-b border-[var(--border-1)] px-4 py-3">
-        <Sparkles className="h-4 w-4 text-[var(--yellow)]" />
-        <span className="text-sm font-medium text-[var(--heading)]">
+      <div className="flex items-center gap-2 border-b border-gray-200 px-4 py-3">
+        <Sparkles className="h-4 w-4 text-orange-600" />
+        <span className="text-sm font-medium text-gray-900">
           {currentStep >= STEPS.length ? "Analyse terminée !" : "Analyse IA en cours"}
         </span>
       </div>
@@ -159,11 +159,11 @@ export default function AiAnalysisProgress({
                     className={cn(
                       "flex h-7 w-7 shrink-0 items-center justify-center rounded-full transition-all duration-500",
                       isCompleted &&
-                        "bg-[var(--green)] text-white",
+                        "bg-emerald-600 text-white",
                       isCurrentStep &&
-                        "border-2 border-[var(--navy)] bg-[var(--navy)]/10 text-[var(--navy)]",
+                        "border-2 border-gray-900 bg-gray-900/10 text-gray-900",
                       isPending &&
-                        "border border-[var(--border-1)] bg-[var(--hover)] text-[var(--text-muted)]"
+                        "border border-gray-200 bg-gray-50 text-gray-400"
                     )}
                   >
                     {isCompleted ? (
@@ -183,8 +183,8 @@ export default function AiAnalysisProgress({
                       className={cn(
                         "w-0.5 grow transition-colors duration-500",
                         isCompleted
-                          ? "bg-[var(--green)]"
-                          : "bg-[var(--border-1)]"
+                          ? "bg-emerald-600"
+                          : "bg-gray-200"
                       )}
                       style={{ minHeight: "12px" }}
                     />
@@ -201,9 +201,9 @@ export default function AiAnalysisProgress({
                   <span
                     className={cn(
                       "text-[13px] transition-colors duration-300",
-                      isCompleted && "font-medium text-[var(--green)]",
-                      isCurrentStep && "font-medium text-[var(--heading)]",
-                      isPending && "text-[var(--text-muted)]"
+                      isCompleted && "font-medium text-emerald-600",
+                      isCurrentStep && "font-medium text-gray-900",
+                      isPending && "text-gray-400"
                     )}
                   >
                     {isCompleted
@@ -211,7 +211,7 @@ export default function AiAnalysisProgress({
                       : step.label}
                   </span>
                   {isCurrentStep && (
-                    <Loader2 className="h-3.5 w-3.5 animate-spin text-[var(--navy)]" />
+                    <Loader2 className="h-3.5 w-3.5 animate-spin text-gray-900" />
                   )}
                 </div>
               </div>

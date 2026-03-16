@@ -64,7 +64,7 @@ export function DropdownMenu({ items, className }: DropdownMenuProps) {
       <button
         ref={btnRef}
         onClick={toggle}
-        className="flex h-8 w-8 items-center justify-center rounded-[var(--radius)] text-[var(--text-muted)] transition-colors hover:bg-zinc-100 hover:text-[var(--text)]"
+        className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
         aria-label="Actions"
       >
         <MoreVertical className="h-4 w-4" />
@@ -74,7 +74,7 @@ export function DropdownMenu({ items, className }: DropdownMenuProps) {
         createPortal(
           <div
             ref={menuRef}
-            className="fixed z-[201] min-w-[160px] rounded-[var(--radius)] border border-[var(--border-1)] bg-white py-1 shadow-md"
+            className="fixed z-[201] min-w-[160px] rounded-xl border border-gray-200 bg-white py-1 shadow-lg"
             style={{ top: pos.top, left: pos.left, transform: "translateX(-100%)" }}
           >
             {items.map((item, i) => {
@@ -91,7 +91,7 @@ export function DropdownMenu({ items, className }: DropdownMenuProps) {
                     "flex w-full items-center gap-2 px-3 py-2 text-left text-sm transition-colors",
                     item.variant === "danger"
                       ? "text-red-600 hover:bg-red-50"
-                      : "text-[var(--text)] hover:bg-zinc-50"
+                      : "text-gray-700 hover:bg-gray-50"
                   )}
                 >
                   {Icon && <Icon className="h-4 w-4 shrink-0" />}

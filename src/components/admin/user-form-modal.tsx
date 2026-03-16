@@ -237,9 +237,9 @@ export default function UserFormModal({
   if (!open) return null;
 
   const inputClass =
-    "w-full rounded-xl border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]";
+    "w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none transition-colors placeholder:text-gray-400 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20";
   const selectClass =
-    "w-full rounded-xl border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]";
+    "w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none transition-colors focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20";
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center">
@@ -252,20 +252,20 @@ export default function UserFormModal({
       {/* Modal */}
       <div className="relative mx-4 w-full max-w-[560px] max-h-[90vh] animate-scale-in overflow-hidden rounded-2xl bg-white shadow-xl ring-1 ring-black/[0.05]">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-[var(--border-1)] px-6 py-4">
+        <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--yellow-surface)]">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-50">
               {isEdit ? (
-                <Pencil className="h-4 w-4 text-[var(--yellow)]" />
+                <Pencil className="h-4 w-4 text-orange-600" />
               ) : (
-                <UserPlus className="h-4 w-4 text-[var(--yellow)]" />
+                <UserPlus className="h-4 w-4 text-orange-600" />
               )}
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-[var(--heading)]">
+              <h3 className="text-sm font-semibold text-gray-900">
                 {isEdit ? "Modifier l'utilisateur" : "Nouvel utilisateur"}
               </h3>
-              <p className="text-[11px] text-[var(--text-muted)]">
+              <p className="text-[11px] text-gray-400">
                 {isEdit
                   ? "Modifiez les informations du collaborateur"
                   : "Remplissez les informations du collaborateur"}
@@ -275,7 +275,7 @@ export default function UserFormModal({
           <button
             onClick={onClose}
             disabled={loading}
-            className="rounded-full p-1.5 text-[var(--text-muted)] transition-colors hover:bg-black/[0.04] hover:text-[var(--heading)]"
+            className="rounded-full p-1.5 text-gray-400 transition-colors hover:bg-black/[0.04] hover:text-gray-900"
           >
             <X className="h-4 w-4" />
           </button>
@@ -286,7 +286,7 @@ export default function UserFormModal({
           <div className="space-y-5 p-6">
             {/* Identité */}
             <div>
-              <label className="mb-2 block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+              <label className="mb-2 block text-[11px] font-semibold uppercase tracking-wider text-gray-400">
                 Identité
               </label>
               <div className="grid grid-cols-2 gap-3">
@@ -320,7 +320,7 @@ export default function UserFormModal({
 
             {/* Compte */}
             <div>
-              <label className="mb-2 block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+              <label className="mb-2 block text-[11px] font-semibold uppercase tracking-wider text-gray-400">
                 Compte
               </label>
               <div className="space-y-3">
@@ -331,7 +331,7 @@ export default function UserFormModal({
                   onChange={(e) => handleChange("email", e.target.value)}
                   required
                   disabled={isEdit}
-                  className={`${inputClass} disabled:bg-[var(--hover)] disabled:text-[var(--text-muted)]`}
+                  className={`${inputClass} disabled:bg-gray-50 disabled:text-gray-400`}
                 />
                 {!isEdit && (
                   <input
@@ -349,7 +349,7 @@ export default function UserFormModal({
 
             {/* Poste & Rôle */}
             <div>
-              <label className="mb-2 block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+              <label className="mb-2 block text-[11px] font-semibold uppercase tracking-wider text-gray-400">
                 Poste & Rôle
               </label>
               <div className="grid grid-cols-2 gap-3">
@@ -378,7 +378,7 @@ export default function UserFormModal({
 
             {/* Contact */}
             <div>
-              <label className="mb-2 block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+              <label className="mb-2 block text-[11px] font-semibold uppercase tracking-wider text-gray-400">
                 Contact
               </label>
               <input
@@ -392,7 +392,7 @@ export default function UserFormModal({
 
             {/* Organisation */}
             <div>
-              <label className="mb-2 block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+              <label className="mb-2 block text-[11px] font-semibold uppercase tracking-wider text-gray-400">
                 Organisation
               </label>
               <div className="grid grid-cols-3 gap-3">
@@ -426,12 +426,12 @@ export default function UserFormModal({
 
             {/* Dates */}
             <div>
-              <label className="mb-2 block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+              <label className="mb-2 block text-[11px] font-semibold uppercase tracking-wider text-gray-400">
                 Dates
               </label>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="mb-1 block text-xs text-[var(--text-secondary)]">
+                  <label className="mb-1 block text-xs text-gray-500">
                     Date de naissance
                   </label>
                   <input
@@ -442,7 +442,7 @@ export default function UserFormModal({
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-xs text-[var(--text-secondary)]">
+                  <label className="mb-1 block text-xs text-gray-500">
                     Date d&apos;embauche
                   </label>
                   <input
@@ -457,19 +457,19 @@ export default function UserFormModal({
           </div>
 
           {/* Footer */}
-          <div className="flex items-center justify-end gap-3 border-t border-[var(--border-1)] px-6 py-4">
+          <div className="flex items-center justify-end gap-3 border-t border-gray-200 px-6 py-4">
             <button
               type="button"
               onClick={onClose}
               disabled={loading}
-              className="rounded-xl border border-[var(--border-1)] px-5 py-2.5 text-sm font-medium text-[var(--text)] transition-all hover:bg-black/[0.03] disabled:opacity-50"
+              className="rounded-xl border border-gray-200 px-5 py-2.5 text-sm font-medium text-gray-700 transition-all hover:bg-black/[0.03] disabled:opacity-50"
             >
               Annuler
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="rounded-xl bg-gradient-to-b from-amber-500 to-amber-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:from-amber-600 hover:to-amber-700 active:scale-[0.97] disabled:opacity-50"
+              className="rounded-xl bg-gradient-to-b from-amber-500 to-amber-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:from-amber-600 hover:to-amber-700  disabled:opacity-50"
             >
               {loading ? (
                 <span className="flex items-center gap-2">

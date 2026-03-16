@@ -246,9 +246,9 @@ export function DataTable<T>({
       {title && (
         <div className="mb-5 flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h1 className="text-xl font-bold text-[var(--heading)]">{title}</h1>
+            <h1 className="text-2xl font-semibold tracking-tight text-gray-900">{title}</h1>
             {description && (
-              <p className="mt-1 text-sm text-[var(--text-secondary)]">{description}</p>
+              <p className="mt-1 text-sm text-gray-500">{description}</p>
             )}
           </div>
           <div className="flex items-center gap-2">
@@ -259,7 +259,7 @@ export function DataTable<T>({
                   key={i}
                   onClick={action.onClick}
                   disabled={action.disabled}
-                  className="inline-flex h-9 items-center gap-2 rounded-lg border border-[var(--border-1)] bg-white px-3 text-sm font-medium text-[var(--text-secondary)] shadow-xs transition-all hover:bg-zinc-50 hover:text-[var(--heading)] hover:border-zinc-300 active:scale-[0.97] disabled:opacity-40 disabled:pointer-events-none"
+                  className="inline-flex h-9 items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 text-sm font-medium text-gray-700 transition-all hover:bg-gray-50 disabled:opacity-40 disabled:pointer-events-none"
                 >
                   <Icon className="h-4 w-4" />
                   <span className="hidden sm:inline">{action.label}</span>
@@ -270,7 +270,7 @@ export function DataTable<T>({
             {onAdd && (
               <button
                 onClick={onAdd}
-                className="inline-flex h-9 items-center gap-2 rounded-lg bg-gradient-to-b from-amber-500 to-amber-600 px-4 text-sm font-medium text-white shadow-sm shadow-amber-600/20 transition-all hover:from-amber-600 hover:to-amber-700 hover:shadow-md hover:shadow-amber-600/25 active:scale-[0.97]"
+                className="inline-flex h-9 items-center gap-2 rounded-lg bg-orange-600 px-4 text-sm font-medium text-white transition-all hover:bg-orange-700"
               >
                 <Plus className="h-4 w-4" />
                 {addLabel}
@@ -285,7 +285,7 @@ export function DataTable<T>({
         <div className="mb-4 flex flex-wrap items-center gap-3">
           {searchable && (
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-muted)]" />
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
               <input
                 value={search}
                 onChange={(e) => {
@@ -293,12 +293,12 @@ export function DataTable<T>({
                   setPage(0);
                 }}
                 placeholder={searchPlaceholder}
-                className="h-10 w-72 rounded-lg border border-[var(--border-1)] bg-white pl-10 pr-8 text-sm outline-none transition-all placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                className="h-9 w-72 rounded-lg border border-gray-200 bg-gray-50 pl-10 pr-8 text-sm outline-none transition-all placeholder:text-gray-400 focus:bg-white focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
               />
               {search && (
                 <button
                   onClick={() => setSearch("")}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text)]"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                 >
                   <X className="h-3.5 w-3.5" />
                 </button>
@@ -311,16 +311,16 @@ export function DataTable<T>({
               <button
                 onClick={() => setFiltersOpen(!filtersOpen)}
                 className={cn(
-                  "inline-flex h-10 items-center gap-2 rounded-lg border px-3 text-sm font-medium transition-all",
+                  "inline-flex h-9 items-center gap-2 rounded-lg border px-3 text-sm font-medium transition-all",
                   activeFilterCount > 0
-                    ? "border-amber-300 bg-amber-50 text-amber-700"
-                    : "border-[var(--border-1)] bg-white text-[var(--text-secondary)] hover:bg-zinc-50 hover:text-[var(--heading)]"
+                    ? "border-orange-300 bg-orange-50 text-orange-700"
+                    : "border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                 )}
               >
                 <SlidersHorizontal className="h-4 w-4" />
                 Filtres
                 {activeFilterCount > 0 && (
-                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-white">
+                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-orange-600 text-[10px] font-bold text-white">
                     {activeFilterCount}
                   </span>
                 )}
@@ -328,16 +328,16 @@ export function DataTable<T>({
 
               {/* Filters popover */}
               {filtersOpen && (
-                <div className="absolute left-0 top-full z-50 mt-2 w-72 rounded-xl border border-[var(--border-1)] bg-white p-4 shadow-lg ring-1 ring-black/[0.04]">
+                <div className="absolute left-0 top-full z-50 mt-2 w-72 rounded-xl border border-gray-200 bg-white p-4 shadow-lg">
                   <div className="mb-3 flex items-center justify-between">
-                    <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">Filtres</span>
+                    <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">Filtres</span>
                     {activeFilterCount > 0 && (
                       <button
                         onClick={() => {
                           setFilterValues({});
                           setPage(0);
                         }}
-                        className="text-xs font-medium text-amber-600 hover:text-amber-800"
+                        className="text-xs font-medium text-orange-600 hover:text-orange-800"
                       >
                         Réinitialiser
                       </button>
@@ -346,7 +346,7 @@ export function DataTable<T>({
                   <div className="space-y-3">
                     {filters.map((f) => (
                       <div key={f.key}>
-                        <label className="mb-1 block text-xs font-medium text-[var(--text-secondary)]">
+                        <label className="mb-1 block text-xs font-medium text-gray-500">
                           {f.label}
                         </label>
                         {f.type === "select" && f.options && (
@@ -359,7 +359,7 @@ export function DataTable<T>({
                               }));
                               setPage(0);
                             }}
-                            className="h-9 w-full rounded-lg border border-[var(--border-1)] bg-white px-3 text-sm text-[var(--text)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                            className="h-9 w-full rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-900 outline-none transition-all focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
                           >
                             <option value="">{f.placeholder ?? `Tous`}</option>
                             {f.options.map((opt) => (
@@ -380,7 +380,7 @@ export function DataTable<T>({
                               setPage(0);
                             }}
                             placeholder={f.placeholder ?? f.label}
-                            className="h-9 w-full rounded-lg border border-[var(--border-1)] bg-white px-3 text-sm outline-none transition-all placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                            className="h-9 w-full rounded-lg border border-gray-200 bg-white px-3 text-sm outline-none transition-all placeholder:text-gray-400 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
                           />
                         )}
                         {f.type === "date" && (
@@ -394,7 +394,7 @@ export function DataTable<T>({
                               }));
                               setPage(0);
                             }}
-                            className="h-9 w-full rounded-lg border border-[var(--border-1)] bg-white px-3 text-sm outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                            className="h-9 w-full rounded-lg border border-gray-200 bg-white px-3 text-sm outline-none transition-all focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
                           />
                         )}
                       </div>
@@ -409,11 +409,11 @@ export function DataTable<T>({
 
       {/* ============ Batch actions bar ============ */}
       {selectable && selectedIds.size > 0 && batchActions && (
-        <div className="mb-0.5 flex items-center gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-2.5 text-sm">
-          <span className="font-medium text-amber-800">
+        <div className="mb-0.5 flex items-center gap-3 rounded-lg border border-orange-200 bg-orange-50 px-4 py-2.5 text-sm">
+          <span className="font-medium text-orange-800">
             {selectedIds.size} sélectionné{selectedIds.size > 1 ? "s" : ""}
           </span>
-          <span className="text-amber-300">—</span>
+          <span className="text-orange-300">—</span>
           {batchActions.map((action, i) => (
             <button
               key={i}
@@ -422,7 +422,7 @@ export function DataTable<T>({
                 "font-medium transition-colors",
                 action.variant === "danger"
                   ? "text-red-600 hover:text-red-800"
-                  : "text-[var(--navy)] hover:text-[var(--navy-dark)]"
+                  : "text-gray-900 hover:text-gray-700"
               )}
             >
               {action.label}
@@ -430,7 +430,7 @@ export function DataTable<T>({
           ))}
           <button
             onClick={() => setSelectedIds(new Set())}
-            className="ml-auto text-amber-500 hover:text-amber-700"
+            className="ml-auto text-orange-500 hover:text-orange-700"
           >
             <X className="h-4 w-4" />
           </button>
@@ -438,18 +438,18 @@ export function DataTable<T>({
       )}
 
       {/* ============ TABLE ============ */}
-      <div className="overflow-hidden rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] shadow-sm">
+      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-[var(--border-2)] bg-[var(--hover)]">
+            <tr className="border-b border-gray-200 bg-gray-50/50">
               {selectable && (
-                <th className="w-10 px-4 py-3">
+                <th className="w-10 px-6 py-3">
                   <input
                     type="checkbox"
                     checked={allPageSelected}
                     onChange={toggleAll}
-                    className="h-4 w-4 rounded border-zinc-300 accent-[var(--yellow)]"
+                    className="h-4 w-4 rounded border-gray-300 accent-orange-600"
                     aria-label="Sélectionner tout"
                   />
                 </th>
@@ -458,8 +458,8 @@ export function DataTable<T>({
                 <th
                   key={col.key}
                   className={cn(
-                    "px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]",
-                    col.sortable && "cursor-pointer select-none hover:text-[var(--text)]"
+                    "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider",
+                    col.sortable && "cursor-pointer select-none hover:text-gray-700"
                   )}
                   style={{ width: col.width }}
                   onClick={() => col.sortable && handleSort(col.key)}
@@ -483,13 +483,11 @@ export function DataTable<T>({
                 </th>
               ))}
               {actions && (
-                <th className="w-14 px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
-                  Actions
-                </th>
+                <th className="w-14 px-6 py-3" />
               )}
             </tr>
           </thead>
-          <tbody className="divide-y divide-[var(--border-1)]">
+          <tbody className="divide-y divide-gray-100">
             {paged.map((item) => {
               const id = item[keyField];
               const isSelected = selectedIds.has(id);
@@ -497,16 +495,16 @@ export function DataTable<T>({
                 <tr
                   key={String(id)}
                   className={cn(
-                    "transition-colors duration-150",
+                    "group transition-colors duration-150",
                     isSelected
-                      ? "bg-amber-50/60"
-                      : "hover:bg-[var(--hover)]",
+                      ? "bg-orange-50/60"
+                      : "hover:bg-gray-50/50",
                     onRowClick && "cursor-pointer"
                   )}
                   onClick={() => onRowClick?.(item)}
                 >
                   {selectable && (
-                    <td className="px-4 py-3.5">
+                    <td className="px-6 py-3.5">
                       <input
                         type="checkbox"
                         checked={isSelected}
@@ -515,14 +513,14 @@ export function DataTable<T>({
                           toggleOne(id);
                         }}
                         onClick={(e) => e.stopPropagation()}
-                        className="h-4 w-4 rounded border-zinc-300 accent-[var(--yellow)]"
+                        className="h-4 w-4 rounded border-gray-300 accent-orange-600"
                       />
                     </td>
                   )}
                   {columns.map((col) => (
                     <td
                       key={col.key}
-                      className="px-4 py-3.5 text-sm text-[var(--text)]"
+                      className="px-6 py-3.5 text-sm text-gray-900"
                     >
                       {col.render
                         ? col.render(item)
@@ -532,7 +530,7 @@ export function DataTable<T>({
                     </td>
                   ))}
                   {actions && (
-                    <td className="px-4 py-3.5 text-right">
+                    <td className="px-6 py-3.5 text-right opacity-0 group-hover:opacity-100 transition-opacity">
                       <DropdownMenu items={actions(item)} />
                     </td>
                   )}
@@ -545,14 +543,14 @@ export function DataTable<T>({
 
       {/* ============ Empty state ============ */}
       {sorted.length === 0 && emptyState && (
-        <div className="flex flex-col items-center justify-center py-20 text-center">
-          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-zinc-100 ring-1 ring-zinc-200/60">
-            <emptyState.icon className="h-7 w-7 text-zinc-400" />
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100">
+            <emptyState.icon className="h-6 w-6 text-gray-400" />
           </div>
-          <h3 className="mb-1 text-sm font-semibold text-[var(--heading)]">
+          <p className="text-sm font-medium text-gray-900">
             {emptyState.title}
-          </h3>
-          <p className="max-w-xs text-sm text-[var(--text-muted)]">
+          </p>
+          <p className="mt-1 max-w-xs text-sm text-gray-500">
             {emptyState.description}
           </p>
         </div>
@@ -560,8 +558,8 @@ export function DataTable<T>({
 
       {/* ============ Pagination ============ */}
       {sorted.length > 0 && (
-        <div className="flex items-center justify-between border-t border-[var(--border-1)] px-4 py-3">
-          <span className="text-xs text-[var(--text-muted)]">
+        <div className="flex items-center justify-between border-t border-gray-200 px-6 py-3">
+          <span className="text-xs text-gray-500">
             {rangeStart}–{rangeEnd} sur {sorted.length}
           </span>
           {totalPages > 1 && (
@@ -569,14 +567,14 @@ export function DataTable<T>({
               <button
                 onClick={() => setPage((p) => Math.max(0, p - 1))}
                 disabled={page === 0}
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--text-muted)] transition-colors hover:bg-zinc-100 disabled:opacity-30"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 disabled:opacity-30"
                 aria-label="Page précédente"
               >
                 <ChevronLeft className="h-4 w-4" />
               </button>
               {getPageNumbers().map((p, i) =>
                 p === "..." ? (
-                  <span key={`dots-${i}`} className="px-1 text-xs text-[var(--text-muted)]">...</span>
+                  <span key={`dots-${i}`} className="px-1 text-xs text-gray-400">...</span>
                 ) : (
                   <button
                     key={p}
@@ -584,8 +582,8 @@ export function DataTable<T>({
                     className={cn(
                       "flex h-8 w-8 items-center justify-center rounded-lg text-xs font-medium transition-colors",
                       page === p
-                        ? "bg-[var(--yellow)] text-white shadow-sm"
-                        : "text-[var(--text-secondary)] hover:bg-zinc-100"
+                        ? "bg-gray-900 text-white"
+                        : "text-gray-600 hover:bg-gray-100"
                     )}
                   >
                     {(p as number) + 1}
@@ -595,7 +593,7 @@ export function DataTable<T>({
               <button
                 onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
                 disabled={page >= totalPages - 1}
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--text-muted)] transition-colors hover:bg-zinc-100 disabled:opacity-30"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 disabled:opacity-30"
                 aria-label="Page suivante"
               >
                 <ChevronRight className="h-4 w-4" />

@@ -43,12 +43,12 @@ export default function EmergencyContactSection({
   }
 
   return (
-    <section className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] p-6 shadow-sm">
+    <section className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
       <div className="mb-5 flex items-center gap-3">
         <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-red-50">
           <Phone className="h-[18px] w-[18px] text-red-500" />
         </div>
-        <h2 className="text-sm font-semibold text-[var(--heading)]">
+        <h2 className="text-sm font-semibold text-gray-900">
           Contact d&apos;urgence
         </h2>
       </div>
@@ -62,7 +62,7 @@ export default function EmergencyContactSection({
             onChange={(e) =>
               setForm({ ...form, emergency_contact_name: e.target.value })
             }
-            className="rounded-[var(--radius-xs)] border border-[var(--border-1)] bg-white px-3 py-2.5 text-sm outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+            className="rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm outline-none transition-colors focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
           />
           <input
             type="tel"
@@ -71,7 +71,7 @@ export default function EmergencyContactSection({
             onChange={(e) =>
               setForm({ ...form, emergency_contact_phone: e.target.value })
             }
-            className="rounded-[var(--radius-xs)] border border-[var(--border-1)] bg-white px-3 py-2.5 text-sm outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+            className="rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm outline-none transition-colors focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
           />
         </div>
         <select
@@ -79,7 +79,7 @@ export default function EmergencyContactSection({
           onChange={(e) =>
             setForm({ ...form, emergency_contact_relation: e.target.value })
           }
-          className="rounded-[var(--radius-xs)] border border-[var(--border-1)] bg-white px-3 py-2.5 text-sm outline-none transition-colors focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+          className="rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm outline-none transition-colors focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
         >
           <option value="">Lien de parenté</option>
           {relationOptions.map((r) => (
@@ -92,7 +92,7 @@ export default function EmergencyContactSection({
           <button
             type="submit"
             disabled={saving}
-            className="inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-4 py-2 text-xs font-medium text-white shadow-xs transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-sm disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-orange-600 px-4 py-2 text-xs font-medium text-white shadow-sm transition-all duration-200 hover:bg-orange-700 hover:shadow-sm disabled:opacity-50"
           >
             <Save className="h-3.5 w-3.5" />
             {saving ? "Enregistrement..." : "Enregistrer"}

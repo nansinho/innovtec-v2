@@ -131,7 +131,7 @@ export default function RexForm({ onCreated, onClose, initialData }: RexFormProp
   const photoInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   const inputClass =
-    "w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]";
+    "w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none transition-colors placeholder:text-gray-400 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20";
 
   function handleAiImportComplete(result: unknown, fileUrl?: string) {
     const r = result as Record<string, unknown>;
@@ -280,13 +280,13 @@ export default function RexForm({ onCreated, onClose, initialData }: RexFormProp
   ];
 
   return (
-    <div className="fixed inset-0 z-[200] flex flex-col bg-[var(--card)] md:left-[var(--sidebar-width)]">
-      <div className="relative flex h-full w-full flex-col bg-[var(--card)]">
+    <div className="fixed inset-0 z-[200] flex flex-col bg-white md:left-[var(--sidebar-width)]">
+      <div className="relative flex h-full w-full flex-col bg-white">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-[var(--border-1)] px-6 py-4">
+        <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
           <div className="flex items-center gap-2">
-            <BookOpen className="h-5 w-5 text-[var(--yellow)]" />
-            <h2 className="text-lg font-semibold text-[var(--heading)]">
+            <BookOpen className="h-5 w-5 text-orange-600" />
+            <h2 className="text-lg font-semibold text-gray-900">
               {isEdit ? "Modifier la fiche REX" : "Nouvelle fiche REX"}
             </h2>
           </div>
@@ -297,10 +297,10 @@ export default function RexForm({ onCreated, onClose, initialData }: RexFormProp
                 <button
                   key={key}
                   onClick={() => setMode(key)}
-                  className={`flex items-center gap-1 rounded-[var(--radius-sm)] px-2.5 py-1.5 text-[11px] font-medium transition-all ${
+                  className={`flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-[11px] font-medium transition-all ${
                     mode === key
-                      ? "bg-[var(--navy)] text-white"
-                      : "text-[var(--text-secondary)] hover:bg-[var(--hover)]"
+                      ? "bg-gray-900 text-white"
+                      : "text-gray-500 hover:bg-gray-50"
                   }`}
                 >
                   <Icon className="h-3.5 w-3.5" />
@@ -310,7 +310,7 @@ export default function RexForm({ onCreated, onClose, initialData }: RexFormProp
             </div>
             <button
               onClick={onClose}
-              className="rounded-lg p-1 text-[var(--text-muted)] transition-colors hover:bg-[var(--hover)] hover:text-[var(--heading)]"
+              className="rounded-lg p-1 text-gray-400 transition-colors hover:bg-gray-50 hover:text-gray-900"
             >
               <X className="h-5 w-5" />
             </button>
@@ -322,7 +322,7 @@ export default function RexForm({ onCreated, onClose, initialData }: RexFormProp
           {/* Mode: Import */}
           {mode === "import" && (
             <div className="mx-auto max-w-2xl space-y-4">
-              <p className="text-sm text-[var(--text-secondary)]">
+              <p className="text-sm text-gray-500">
                 Importez une fiche REX existante (PDF ou image) et l&apos;IA extraira automatiquement toutes les informations.
               </p>
               <FileUploadAi
@@ -337,7 +337,7 @@ export default function RexForm({ onCreated, onClose, initialData }: RexFormProp
           {mode === "ai" && (
             <div className="mx-auto max-w-2xl space-y-4">
               <div>
-                <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-[var(--text-secondary)]">
+                <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-gray-500">
                   Décrivez le contexte de l&apos;événement
                 </label>
                 <textarea
@@ -361,13 +361,13 @@ export default function RexForm({ onCreated, onClose, initialData }: RexFormProp
           {mode === "manual" && (
             <div className="space-y-6">
               {/* Header fields */}
-              <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--hover)] p-4">
-                <h3 className="mb-3 text-[12px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+              <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+                <h3 className="mb-3 text-[12px] font-semibold uppercase tracking-wider text-gray-400">
                   Informations générales
                 </h3>
                 <div className="grid grid-cols-4 gap-3">
                   <div>
-                    <label className="mb-1 block text-[11px] font-medium text-[var(--text-secondary)]">
+                    <label className="mb-1 block text-[11px] font-medium text-gray-500">
                       N° Fiche
                     </label>
                     <input
@@ -378,7 +378,7 @@ export default function RexForm({ onCreated, onClose, initialData }: RexFormProp
                     />
                   </div>
                   <div>
-                    <label className="mb-1 block text-[11px] font-medium text-[var(--text-secondary)]">
+                    <label className="mb-1 block text-[11px] font-medium text-gray-500">
                       Année
                     </label>
                     <input
@@ -390,7 +390,7 @@ export default function RexForm({ onCreated, onClose, initialData }: RexFormProp
                     />
                   </div>
                   <div>
-                    <label className="mb-1 block text-[11px] font-medium text-[var(--text-secondary)]">
+                    <label className="mb-1 block text-[11px] font-medium text-gray-500">
                       Date
                     </label>
                     <input
@@ -401,7 +401,7 @@ export default function RexForm({ onCreated, onClose, initialData }: RexFormProp
                     />
                   </div>
                   <div>
-                    <label className="mb-1 block text-[11px] font-medium text-[var(--text-secondary)]">
+                    <label className="mb-1 block text-[11px] font-medium text-gray-500">
                       Horaire
                     </label>
                     <input
@@ -414,7 +414,7 @@ export default function RexForm({ onCreated, onClose, initialData }: RexFormProp
                 </div>
                 <div className="mt-3 grid grid-cols-2 gap-3">
                   <div>
-                    <label className="mb-1 block text-[11px] font-medium text-[var(--text-secondary)]">
+                    <label className="mb-1 block text-[11px] font-medium text-gray-500">
                       Titre de l&apos;événement *
                     </label>
                     <input
@@ -425,7 +425,7 @@ export default function RexForm({ onCreated, onClose, initialData }: RexFormProp
                     />
                   </div>
                   <div>
-                    <label className="mb-1 block text-[11px] font-medium text-[var(--text-secondary)]">
+                    <label className="mb-1 block text-[11px] font-medium text-gray-500">
                       Lieu
                     </label>
                     <input
@@ -437,7 +437,7 @@ export default function RexForm({ onCreated, onClose, initialData }: RexFormProp
                   </div>
                 </div>
                 <div className="mt-3">
-                  <label className="mb-1 block text-[11px] font-medium text-[var(--text-secondary)]">
+                  <label className="mb-1 block text-[11px] font-medium text-gray-500">
                     Chantier
                   </label>
                   <input
@@ -458,7 +458,7 @@ export default function RexForm({ onCreated, onClose, initialData }: RexFormProp
                 return (
                   <div
                     key={key}
-                    className={`rounded-[var(--radius)] border-l-4 p-4 ${bgClass}`}
+                    className={`rounded-xl border-l-4 p-4 ${bgClass}`}
                   >
                     <div className="mb-3">
                       <Badge />
@@ -475,7 +475,7 @@ export default function RexForm({ onCreated, onClose, initialData }: RexFormProp
                           placeholder={`Contenu de la section "${label}"...`}
                         />
                       </div>
-                      <div className="flex flex-col items-center justify-center rounded-[var(--radius-xs)] border border-dashed border-[var(--border-1)] bg-white p-2">
+                      <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-200 bg-white p-2">
                         {photoValue ? (
                           <div className="relative w-full">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -497,7 +497,7 @@ export default function RexForm({ onCreated, onClose, initialData }: RexFormProp
                           <button
                             onClick={() => photoInputRefs.current[key]?.click()}
                             disabled={uploadingSection === key}
-                            className="flex flex-col items-center gap-1 text-[var(--text-muted)] transition-colors hover:text-[var(--text-secondary)]"
+                            className="flex flex-col items-center gap-1 text-gray-400 transition-colors hover:text-gray-500"
                           >
                             {uploadingSection === key ? (
                               <Loader2 className="h-6 w-6 animate-spin" />
@@ -526,18 +526,18 @@ export default function RexForm({ onCreated, onClose, initialData }: RexFormProp
               {/* Footer: Déjà arrivé + Type d'événement */}
               <div className="grid grid-cols-2 gap-4">
                 {/* Déjà arrivé */}
-                <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--hover)] p-4">
+                <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
                   <h3 className="mb-2 text-[12px] font-semibold uppercase tracking-wider text-blue-600">
                     Déjà arrivé ?
                   </h3>
                   <div className="space-y-2">
                     {form.deja_arrive.map((item, i) => (
                       <div key={i} className="flex items-center gap-1.5">
-                        <span className="h-1.5 w-1.5 rounded-full bg-[var(--text-muted)]" />
-                        <span className="flex-1 text-sm text-[var(--heading)]">{item}</span>
+                        <span className="h-1.5 w-1.5 rounded-full bg-gray-400" />
+                        <span className="flex-1 text-sm text-gray-900">{item}</span>
                         <button
                           onClick={() => removeDejaArrive(i)}
-                          className="rounded p-0.5 text-[var(--text-muted)] hover:bg-red-50 hover:text-red-500"
+                          className="rounded p-0.5 text-gray-400 hover:bg-red-50 hover:text-red-500"
                         >
                           <X className="h-3 w-3" />
                         </button>
@@ -548,12 +548,12 @@ export default function RexForm({ onCreated, onClose, initialData }: RexFormProp
                         value={dejaArriveInput}
                         onChange={(e) => setDejaArriveInput(e.target.value)}
                         onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addDejaArrive())}
-                        className="flex-1 rounded-[var(--radius-xs)] border border-[var(--border-1)] px-2 py-1.5 text-sm outline-none focus:border-[var(--yellow)]"
+                        className="flex-1 rounded-lg border border-gray-200 px-2 py-1.5 text-sm outline-none focus:border-orange-500"
                         placeholder="Ajouter un précédent..."
                       />
                       <button
                         onClick={addDejaArrive}
-                        className="rounded-[var(--radius-xs)] bg-[var(--navy)] p-1.5 text-white hover:bg-[var(--navy)]/90"
+                        className="rounded-lg bg-gray-900 p-1.5 text-white hover:bg-gray-950"
                       >
                         <Plus className="h-3.5 w-3.5" />
                       </button>
@@ -562,7 +562,7 @@ export default function RexForm({ onCreated, onClose, initialData }: RexFormProp
                 </div>
 
                 {/* Type d'événement */}
-                <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--hover)] p-4">
+                <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
                   <h3 className="mb-2 text-[12px] font-semibold uppercase tracking-wider text-orange-600">
                     Type d&apos;événement
                   </h3>
@@ -577,10 +577,10 @@ export default function RexForm({ onCreated, onClose, initialData }: RexFormProp
                               form.type_evenement === t.value ? "" : t.value,
                           })
                         }
-                        className={`w-full rounded-[var(--radius-xs)] border px-3 py-2 text-left text-sm font-medium transition-all ${
+                        className={`w-full rounded-lg border px-3 py-2 text-left text-sm font-medium transition-all ${
                           form.type_evenement === t.value
                             ? t.color + " ring-1 ring-current"
-                            : "border-transparent bg-white text-[var(--text-secondary)] hover:bg-gray-50"
+                            : "border-transparent bg-white text-gray-500 hover:bg-gray-50"
                         }`}
                       >
                         <span className="font-semibold">{t.label}</span>
@@ -597,17 +597,17 @@ export default function RexForm({ onCreated, onClose, initialData }: RexFormProp
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 border-t border-[var(--border-1)] px-6 py-4">
+        <div className="flex items-center justify-end gap-3 border-t border-gray-200 px-6 py-4">
           <button
             onClick={onClose}
-            className="rounded-[var(--radius-sm)] px-4 py-2 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--hover)]"
+            className="rounded-lg px-4 py-2 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-50"
           >
             Annuler
           </button>
           <button
             onClick={handleSubmit}
             disabled={isPending || aiLoading}
-            className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-5 py-2 text-sm font-medium text-white shadow-xs transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-sm active:scale-[0.97] disabled:opacity-50"
+            className="flex items-center gap-2 rounded-lg bg-orange-600 px-5 py-2 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:bg-orange-700 hover:shadow-sm disabled:opacity-50"
           >
             {isPending ? (
               <Loader2 className="h-4 w-4 animate-spin" />

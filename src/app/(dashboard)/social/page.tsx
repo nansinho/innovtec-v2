@@ -30,10 +30,10 @@ export default async function SocialPage() {
   return (
     <div className="p-6 pb-20 md:pb-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold tracking-tight text-[var(--heading)]">
+        <h1 className="text-2xl font-bold tracking-tight text-gray-900">
           Vie sociale
         </h1>
-        <p className="mt-1 text-sm text-[var(--text-muted)]">
+        <p className="mt-1 text-sm text-gray-400">
           Partagez, échangez et célébrez avec vos collègues
         </p>
       </div>
@@ -64,15 +64,15 @@ export default async function SocialPage() {
                 <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-zinc-100">
                   <Rss className="h-6 w-6 text-zinc-400" />
                 </div>
-                <p className="text-sm font-medium text-[var(--text-muted)]">
+                <p className="text-sm font-medium text-gray-400">
                   Aucune publication pour le moment
                 </p>
-                <p className="mt-1 text-xs text-[var(--text-muted)]">
+                <p className="mt-1 text-xs text-gray-400">
                   Soyez le premier à publier !
                 </p>
               </div>
             ) : posts.length === 0 ? (
-              <div className="px-5 py-6 text-center text-sm text-[var(--text-muted)]">
+              <div className="px-5 py-6 text-center text-sm text-gray-400">
                 Aucune publication pour le moment
               </div>
             ) : (

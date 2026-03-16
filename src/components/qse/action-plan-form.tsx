@@ -96,22 +96,22 @@ export default function ActionPlanForm({
   }
 
   const inputClass =
-    "w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]";
+    "w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none transition-colors placeholder:text-gray-400 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20";
 
   return (
-    <div className="fixed inset-0 z-[200] flex flex-col bg-[var(--card)] md:left-[var(--sidebar-width)]">
-      <div className="relative flex h-full w-full flex-col bg-[var(--card)]">
+    <div className="fixed inset-0 z-[200] flex flex-col bg-white md:left-[var(--sidebar-width)]">
+      <div className="relative flex h-full w-full flex-col bg-white">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-[var(--border-1)] px-6 py-4">
+        <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
           <div className="flex items-center gap-2">
-            <ClipboardList className="h-5 w-5 text-[var(--blue)]" />
-            <h2 className="text-lg font-semibold text-[var(--heading)]">
+            <ClipboardList className="h-5 w-5 text-blue-600" />
+            <h2 className="text-lg font-semibold text-gray-900">
               {isEdit ? "Modifier le plan d'action" : "Nouveau plan d'action"}
             </h2>
           </div>
           <button
             onClick={onClose}
-            className="rounded-lg p-1 text-[var(--text-muted)] transition-colors hover:bg-[var(--hover)] hover:text-[var(--heading)]"
+            className="rounded-lg p-1 text-gray-400 transition-colors hover:bg-gray-50 hover:text-gray-900"
           >
             <X className="h-5 w-5" />
           </button>
@@ -120,8 +120,8 @@ export default function ActionPlanForm({
         <div className="flex-1 space-y-4 overflow-y-auto px-6 py-5">
           {/* Title */}
           <div>
-            <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-[var(--text-secondary)]">
-              Titre <span className="text-[var(--red)]">*</span>
+            <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-gray-500">
+              Titre <span className="text-red-600">*</span>
             </label>
             <input
               value={form.title}
@@ -133,7 +133,7 @@ export default function ActionPlanForm({
 
           {/* Description */}
           <div>
-            <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-[var(--text-secondary)]">
+            <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-gray-500">
               Description
             </label>
             <textarea
@@ -148,7 +148,7 @@ export default function ActionPlanForm({
           {/* Type + Priority */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-[var(--text-secondary)]">
+              <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-gray-500">
                 Type
               </label>
               <select
@@ -164,8 +164,8 @@ export default function ActionPlanForm({
               </select>
             </div>
             <div>
-              <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-[var(--text-secondary)]">
-                Priorité <span className="text-[var(--red)]">*</span>
+              <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-gray-500">
+                Priorité <span className="text-red-600">*</span>
               </label>
               <select
                 value={form.priority}
@@ -184,7 +184,7 @@ export default function ActionPlanForm({
           {/* Responsible + Due date */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-[var(--text-secondary)]">
+              <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-gray-500">
                 Responsable
               </label>
               <select
@@ -201,8 +201,8 @@ export default function ActionPlanForm({
               </select>
             </div>
             <div>
-              <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-[var(--text-secondary)]">
-                Échéance <span className="text-[var(--red)]">*</span>
+              <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-gray-500">
+                Échéance <span className="text-red-600">*</span>
               </label>
               <input
                 type="date"
@@ -216,7 +216,7 @@ export default function ActionPlanForm({
           {/* Link signalement (only on create) */}
           {!isEdit && unresolvedSignalements.length > 0 && (
             <div>
-              <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-[var(--text-secondary)]">
+              <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-gray-500">
                 Lier un signalement (optionnel)
               </label>
               <select
@@ -231,27 +231,27 @@ export default function ActionPlanForm({
                   </option>
                 ))}
               </select>
-              <p className="mt-1 text-[11px] text-[var(--text-muted)]">
+              <p className="mt-1 text-[11px] text-gray-400">
                 Le signalement lié passera automatiquement en &quot;Résolu&quot;
               </p>
             </div>
           )}
 
-          {error && <p className="text-[12px] text-[var(--red)]">{error}</p>}
+          {error && <p className="text-[12px] text-red-600">{error}</p>}
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 border-t border-[var(--border-1)] px-6 py-4">
+        <div className="flex items-center justify-end gap-3 border-t border-gray-200 px-6 py-4">
           <button
             onClick={onClose}
-            className="rounded-[var(--radius-sm)] px-4 py-2 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--hover)]"
+            className="rounded-lg px-4 py-2 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-50"
           >
             Annuler
           </button>
           <button
             onClick={handleSubmit}
             disabled={isPending}
-            className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-5 py-2 text-sm font-medium text-white shadow-xs transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-sm active:scale-[0.97] disabled:opacity-50"
+            className="flex items-center gap-2 rounded-lg bg-orange-600 px-5 py-2 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:bg-orange-700 hover:shadow-sm disabled:opacity-50"
           >
             {isPending ? (
               <Loader2 className="h-4 w-4 animate-spin" />

@@ -139,13 +139,13 @@ export default function ActivityLogsTable() {
     <div>
       {/* Toolbar */}
       <div className="mb-4 flex items-center justify-between">
-        <p className="text-xs text-[var(--text-muted)]">
+        <p className="text-xs text-gray-400">
           {total} action{total > 1 ? "s" : ""} enregistrée{total > 1 ? "s" : ""}
         </p>
         <button
           onClick={fetchLogs}
           disabled={loading}
-          className="flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-medium text-[var(--text-muted)] transition-all hover:bg-black/[0.04] hover:text-[var(--heading)] disabled:opacity-50"
+          className="flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-medium text-gray-400 transition-all hover:bg-black/[0.04] hover:text-gray-900 disabled:opacity-50"
         >
           <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
           Actualiser
@@ -153,18 +153,18 @@ export default function ActivityLogsTable() {
       </div>
 
       {/* Logs list */}
-      <div className="rounded-2xl border border-[var(--border-1)] bg-white shadow-sm ring-1 ring-black/[0.03]">
+      <div className="rounded-2xl border border-gray-200 bg-white shadow-sm ring-1 ring-black/[0.03]">
         {loading && logs.length === 0 ? (
           <div className="flex items-center justify-center py-16">
-            <div className="h-6 w-6 animate-spin rounded-full border-2 border-[var(--border-1)] border-t-[var(--yellow)]" />
+            <div className="h-6 w-6 animate-spin rounded-full border-2 border-gray-200 border-t-orange-600" />
           </div>
         ) : logs.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16">
-            <Activity className="mb-3 h-8 w-8 text-[var(--text-muted)]" />
-            <p className="text-sm text-[var(--text-secondary)]">Aucune activité enregistrée</p>
+            <Activity className="mb-3 h-8 w-8 text-gray-400" />
+            <p className="text-sm text-gray-500">Aucune activité enregistrée</p>
           </div>
         ) : (
-          <div className="divide-y divide-[var(--border-1)]">
+          <div className="divide-y divide-gray-200">
             {logs.map((log) => {
               const config = actionConfig[log.action] || {
                 label: log.action,
@@ -179,7 +179,7 @@ export default function ActivityLogsTable() {
               return (
                 <div
                   key={log.id}
-                  className="flex items-start gap-3 px-5 py-4 transition-colors duration-200 hover:bg-[var(--hover)]"
+                  className="flex items-start gap-3 px-5 py-4 transition-colors duration-200 hover:bg-gray-50"
                 >
                   <div
                     className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${config.color}`}
@@ -188,10 +188,10 @@ export default function ActivityLogsTable() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-baseline gap-1.5">
-                      <span className="text-sm font-medium text-[var(--heading)]">
+                      <span className="text-sm font-medium text-gray-900">
                         {actor}
                       </span>
-                      <span className="text-sm text-[var(--text-secondary)]">
+                      <span className="text-sm text-gray-500">
                         {getActionDescription(log)}
                       </span>
                     </div>
@@ -199,7 +199,7 @@ export default function ActivityLogsTable() {
                       <span className={`inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-medium ${config.color}`}>
                         {config.label}
                       </span>
-                      <span className="text-[11px] text-[var(--text-muted)]">
+                      <span className="text-[11px] text-gray-400">
                         {formatDate(log.created_at)}
                       </span>
                     </div>
@@ -212,22 +212,22 @@ export default function ActivityLogsTable() {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between border-t border-[var(--border-1)] px-5 py-3">
-            <span className="text-xs text-[var(--text-muted)]">
+          <div className="flex items-center justify-between border-t border-gray-200 px-5 py-3">
+            <span className="text-xs text-gray-400">
               Page {page + 1} sur {totalPages}
             </span>
             <div className="flex items-center gap-1">
               <button
                 onClick={() => setPage((p) => Math.max(0, p - 1))}
                 disabled={page === 0 || loading}
-                className="rounded-lg p-1.5 text-[var(--text-muted)] transition-colors hover:bg-black/[0.04] hover:text-[var(--heading)] disabled:opacity-30"
+                className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-black/[0.04] hover:text-gray-900 disabled:opacity-30"
               >
                 <ChevronLeft className="h-4 w-4" />
               </button>
               <button
                 onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
                 disabled={page >= totalPages - 1 || loading}
-                className="rounded-lg p-1.5 text-[var(--text-muted)] transition-colors hover:bg-black/[0.04] hover:text-[var(--heading)] disabled:opacity-30"
+                className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-black/[0.04] hover:text-gray-900 disabled:opacity-30"
               >
                 <ChevronRight className="h-4 w-4" />
               </button>

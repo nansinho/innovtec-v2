@@ -23,10 +23,10 @@ interface SignalementFormProps {
 }
 
 const priorityOptions: { value: SignalementPriority; label: string; color: string }[] = [
-  { value: "faible", label: "Faible", color: "text-[var(--green)] border-[var(--green)] bg-[var(--green-surface)]" },
-  { value: "moyenne", label: "Moyenne", color: "text-[var(--yellow)] border-[var(--yellow)] bg-[var(--yellow-surface)]" },
-  { value: "haute", label: "Haute", color: "text-orange-600 border-orange-400 bg-orange-50" },
-  { value: "critique", label: "Critique", color: "text-[var(--red)] border-[var(--red)] bg-[var(--red-surface)]" },
+  { value: "faible", label: "Faible", color: "text-gray-600 border-gray-300 bg-gray-50" },
+  { value: "moyenne", label: "Moyenne", color: "text-blue-700 border-blue-300 bg-blue-50" },
+  { value: "haute", label: "Haute", color: "text-amber-700 border-amber-300 bg-amber-50" },
+  { value: "critique", label: "Critique", color: "text-red-700 border-red-300 bg-red-50" },
 ];
 
 export default function SignalementForm({ categories, onCreated, onClose }: SignalementFormProps) {
@@ -127,22 +127,22 @@ export default function SignalementForm({ categories, onCreated, onClose }: Sign
   }
 
   const inputClass =
-    "w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]";
+    "w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm text-gray-900 outline-none transition-colors placeholder:text-gray-400 focus:border-orange-500 focus:bg-white focus:ring-2 focus:ring-orange-500/20";
 
   return (
-    <div className="fixed inset-0 z-[200] flex flex-col bg-[var(--card)] md:left-[var(--sidebar-width)]">
-      <div className="relative flex h-full w-full flex-col bg-[var(--card)]">
+    <div className="fixed inset-0 z-[200] flex flex-col bg-white md:left-[var(--sidebar-width)]">
+      <div className="relative flex h-full w-full flex-col bg-white">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-[var(--border-1)] px-6 py-4">
+        <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
           <div className="flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5 text-[var(--yellow)]" />
-            <h2 className="text-lg font-semibold text-[var(--heading)]">
+            <AlertTriangle className="h-5 w-5 text-gray-400" />
+            <h2 className="text-lg font-semibold text-gray-900">
               Déclarer une situation dangereuse
             </h2>
           </div>
           <button
             onClick={onClose}
-            className="rounded-lg p-1 text-[var(--text-muted)] transition-colors hover:bg-[var(--hover)] hover:text-[var(--heading)]"
+            className="rounded-lg p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-900"
           >
             <X className="h-5 w-5" />
           </button>
@@ -152,12 +152,12 @@ export default function SignalementForm({ categories, onCreated, onClose }: Sign
           {/* Anonymous toggle */}
           <label
             onClick={() => setForm({ ...form, is_anonymous: !form.is_anonymous })}
-            className="flex cursor-pointer items-center gap-3 rounded-[var(--radius-sm)] border border-[var(--border-1)] p-3 transition-colors hover:bg-[var(--hover)]"
+            className="flex cursor-pointer items-center gap-3 rounded-lg border border-gray-200 p-3 transition-colors hover:bg-gray-50"
           >
             <div
               className={cn(
                 "flex h-5 w-9 items-center rounded-full transition-colors",
-                form.is_anonymous ? "bg-[var(--yellow)]" : "bg-zinc-300"
+                form.is_anonymous ? "bg-orange-600" : "bg-gray-300"
               )}
             >
               <div
@@ -168,8 +168,8 @@ export default function SignalementForm({ categories, onCreated, onClose }: Sign
               />
             </div>
             <div className="flex items-center gap-2">
-              <EyeOff className="h-4 w-4 text-[var(--text-muted)]" />
-              <span className="text-sm font-medium text-[var(--heading)]">
+              <EyeOff className="h-4 w-4 text-gray-400" />
+              <span className="text-sm font-medium text-gray-900">
                 Signaler de manière anonyme
               </span>
             </div>
@@ -177,8 +177,8 @@ export default function SignalementForm({ categories, onCreated, onClose }: Sign
 
           {/* Title */}
           <div>
-            <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-[var(--text-secondary)]">
-              Titre du signalement <span className="text-[var(--red)]">*</span>
+            <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-gray-500">
+              Titre du signalement <span className="text-red-600">*</span>
             </label>
             <input
               value={form.title}
@@ -191,8 +191,8 @@ export default function SignalementForm({ categories, onCreated, onClose }: Sign
           {/* Category + Priority */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-[var(--text-secondary)]">
-                Catégorie <span className="text-[var(--red)]">*</span>
+              <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-gray-500">
+                Catégorie <span className="text-red-600">*</span>
               </label>
               <select
                 value={form.category_id}
@@ -208,8 +208,8 @@ export default function SignalementForm({ categories, onCreated, onClose }: Sign
               </select>
             </div>
             <div>
-              <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-[var(--text-secondary)]">
-                Priorité <span className="text-[var(--red)]">*</span>
+              <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-gray-500">
+                Priorité <span className="text-red-600">*</span>
               </label>
               <div className="flex gap-1.5">
                 {priorityOptions.map((opt) => (
@@ -218,10 +218,10 @@ export default function SignalementForm({ categories, onCreated, onClose }: Sign
                     type="button"
                     onClick={() => setForm({ ...form, priority: opt.value })}
                     className={cn(
-                      "flex-1 rounded-[var(--radius-xs)] border px-2 py-2 text-xs font-semibold transition-all",
+                      "flex-1 rounded-lg border px-2 py-2 text-xs font-semibold transition-all",
                       form.priority === opt.value
                         ? opt.color
-                        : "border-[var(--border-1)] text-[var(--text-muted)] hover:bg-[var(--hover)]"
+                        : "border-gray-200 text-gray-400 hover:bg-gray-50"
                     )}
                   >
                     {opt.label}
@@ -234,8 +234,8 @@ export default function SignalementForm({ categories, onCreated, onClose }: Sign
           {/* Date + Time */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-[var(--text-secondary)]">
-                Date de l&apos;incident <span className="text-[var(--red)]">*</span>
+              <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-gray-500">
+                Date de l&apos;incident <span className="text-red-600">*</span>
               </label>
               <input
                 type="date"
@@ -245,7 +245,7 @@ export default function SignalementForm({ categories, onCreated, onClose }: Sign
               />
             </div>
             <div>
-              <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-[var(--text-secondary)]">
+              <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-gray-500">
                 Heure de l&apos;incident
               </label>
               <input
@@ -259,8 +259,8 @@ export default function SignalementForm({ categories, onCreated, onClose }: Sign
 
           {/* Location / Chantier */}
           <div>
-            <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-[var(--text-secondary)]">
-              Lieu / Chantier <span className="text-[var(--red)]">*</span>
+            <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-gray-500">
+              Lieu / Chantier <span className="text-red-600">*</span>
             </label>
             <input
               value={form.chantier}
@@ -272,8 +272,8 @@ export default function SignalementForm({ categories, onCreated, onClose }: Sign
 
           {/* Description */}
           <div>
-            <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-[var(--text-secondary)]">
-              Description <span className="text-[var(--red)]">*</span>
+            <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-gray-500">
+              Description <span className="text-red-600">*</span>
             </label>
             <textarea
               value={form.description}
@@ -286,7 +286,7 @@ export default function SignalementForm({ categories, onCreated, onClose }: Sign
 
           {/* Photos */}
           <div>
-            <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-[var(--text-secondary)]">
+            <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-gray-500">
               Photos ({photoUrls.length}/5)
             </label>
 
@@ -298,12 +298,12 @@ export default function SignalementForm({ categories, onCreated, onClose }: Sign
                     <img
                       src={previewUrl}
                       alt={`Photo ${i + 1}`}
-                      className="h-20 w-20 rounded-[var(--radius-xs)] border border-[var(--border-1)] object-cover"
+                      className="h-20 w-20 rounded-lg border border-gray-200 object-cover"
                     />
                     <button
                       type="button"
                       onClick={() => removePhoto(i)}
-                      className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--red)] text-white opacity-0 transition-opacity group-hover:opacity-100"
+                      className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-white opacity-0 transition-opacity group-hover:opacity-100"
                     >
                       <Trash2 className="h-3 w-3" />
                     </button>
@@ -326,7 +326,7 @@ export default function SignalementForm({ categories, onCreated, onClose }: Sign
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploading}
-                  className="flex items-center gap-2 rounded-[var(--radius-sm)] border border-dashed border-[var(--border-1)] px-4 py-3 text-sm text-[var(--text-muted)] transition-colors hover:border-[var(--yellow)] hover:bg-[var(--yellow-surface)] hover:text-[var(--yellow)]"
+                  className="flex items-center gap-2 rounded-lg border border-dashed border-gray-300 px-4 py-3 text-sm text-gray-400 transition-colors hover:border-orange-500 hover:bg-orange-50 hover:text-orange-600"
                 >
                   {uploading ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -342,14 +342,14 @@ export default function SignalementForm({ categories, onCreated, onClose }: Sign
           {/* Certification */}
           <label
             onClick={() => setForm({ ...form, certified: !form.certified })}
-            className="flex cursor-pointer items-start gap-3 rounded-[var(--radius-sm)] border border-[var(--border-1)] p-3 transition-colors hover:bg-[var(--hover)]"
+            className="flex cursor-pointer items-start gap-3 rounded-lg border border-gray-200 p-3 transition-colors hover:bg-gray-50"
           >
             <div
               className={cn(
                 "mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-colors",
                 form.certified
-                  ? "border-[var(--yellow)] bg-[var(--yellow)] text-white"
-                  : "border-zinc-300"
+                  ? "border-orange-500 bg-orange-500 text-white"
+                  : "border-gray-300"
               )}
             >
               {form.certified && (
@@ -358,21 +358,21 @@ export default function SignalementForm({ categories, onCreated, onClose }: Sign
                 </svg>
               )}
             </div>
-            <span className="text-sm text-[var(--text-secondary)]">
+            <span className="text-sm text-gray-500">
               Je certifie sur l&apos;honneur l&apos;exactitude des faits décrits dans ce signalement.
             </span>
           </label>
 
           {/* Error */}
           {error && (
-            <p className="text-[12px] text-[var(--red)]">{error}</p>
+            <p className="text-[12px] text-red-600">{error}</p>
           )}
         </div>
 
         {/* Footer */}
-        <div className="flex items-center gap-3 border-t border-[var(--border-1)] px-6 py-4">
+        <div className="flex items-center gap-3 border-t border-gray-200 px-6 py-4">
           {/* Rappel mode anonyme/public */}
-          <div className="mr-auto flex items-center gap-2 text-sm text-[var(--text-muted)]">
+          <div className="mr-auto flex items-center gap-2 text-sm text-gray-400">
             {form.is_anonymous ? (
               <>
                 <EyeOff className="h-4 w-4" />
@@ -387,14 +387,14 @@ export default function SignalementForm({ categories, onCreated, onClose }: Sign
           </div>
           <button
             onClick={onClose}
-            className="rounded-[var(--radius-sm)] px-4 py-2 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--hover)]"
+            className="rounded-lg px-4 py-2 text-sm font-medium text-gray-500 transition-colors hover:bg-gray-100"
           >
             Annuler
           </button>
           <button
             onClick={handleSubmit}
             disabled={isPending || uploading}
-            className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-5 py-2 text-sm font-medium text-white shadow-xs transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-sm active:scale-[0.97] disabled:opacity-50"
+            className="flex items-center gap-2 rounded-lg bg-orange-600 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-orange-700 disabled:opacity-50"
           >
             {isPending ? (
               <Loader2 className="h-4 w-4 animate-spin" />

@@ -26,7 +26,7 @@ export default function RexPageClient({ rexList }: Props) {
         headerAction={
           <button
             onClick={() => setShowForm(true)}
-            className="flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-3 py-1.5 text-sm font-medium text-white transition-all duration-200 hover:bg-[var(--yellow-hover)] active:scale-[0.97]"
+            className="flex items-center gap-2 rounded-lg bg-orange-600 px-3 py-1.5 text-sm font-medium text-white transition-all duration-200 hover:bg-orange-700"
           >
             <Plus className="h-4 w-4" />
             Nouveau REX

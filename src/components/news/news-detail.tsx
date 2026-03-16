@@ -37,15 +37,6 @@ const categoryLabels: Record<NewsCategory, string> = {
   rh: "RH",
 };
 
-const categoryColors: Record<NewsCategory, string> = {
-  entreprise: "bg-gradient-to-b from-blue-500 to-blue-600 text-white shadow-sm",
-  securite: "bg-gradient-to-b from-red-500 to-red-600 text-white shadow-sm",
-  formation: "bg-gradient-to-b from-emerald-500 to-emerald-600 text-white shadow-sm",
-  chantier: "bg-gradient-to-b from-amber-400 to-amber-500 text-white shadow-sm",
-  social: "bg-gradient-to-b from-purple-500 to-purple-600 text-white shadow-sm",
-  rh: "bg-gradient-to-b from-indigo-500 to-indigo-600 text-white shadow-sm",
-};
-
 interface NewsDetailProps {
   article: {
     id: string;
@@ -117,14 +108,12 @@ export default function NewsDetail({
   }
 
   function handleLike() {
-    // Optimistic update
     setLiked(!liked);
     setLikesCount((prev) => (liked ? prev - 1 : prev + 1));
 
     startTransition(async () => {
       const result = await toggleNewsLike(article.id);
       if (!result.success) {
-        // Revert on failure
         setLiked(liked);
         setLikesCount((prev) => (liked ? prev + 1 : prev - 1));
       }
@@ -140,16 +129,15 @@ export default function NewsDetail({
     });
   }
 
-  // Check if content contains HTML tags (from rich text editor)
   const isHtml = /<[a-z][\s\S]*>/i.test(article.content);
 
   return (
-    <div className="px-7 py-6 pb-20 md:pb-7">
+    <div className="px-8 py-6 pb-20 md:pb-6">
       {/* Back button & edit */}
       <div className="mb-5 flex items-center justify-between">
         <Link
           href="/actualites"
-          className="inline-flex items-center gap-1.5 text-[12px] text-[var(--text-secondary)] transition-colors hover:text-[var(--heading)]"
+          className="inline-flex items-center gap-1.5 text-sm text-gray-500 transition-colors hover:text-gray-900"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
           Retour aux actualités
@@ -157,7 +145,7 @@ export default function NewsDetail({
         {canEdit && (
           <Link
             href={`/actualites/${article.id}/modifier`}
-            className="inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] px-3 py-1.5 text-[11.5px] font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--hover)]"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-50"
           >
             <Pencil className="h-3 w-3" />
             Modifier
@@ -168,7 +156,7 @@ export default function NewsDetail({
       <div className="mx-auto max-w-3xl">
         {/* Hero image */}
         {article.image_url && (
-          <div className="relative -mx-7 mb-6 aspect-[16/7] overflow-hidden bg-[var(--hover)] md:mx-0 md:rounded-[var(--radius)]">
+          <div className="relative mb-6 aspect-[16/7] overflow-hidden rounded-xl bg-gray-100">
             <Image
               src={article.image_url}
               alt={article.title}
@@ -183,21 +171,18 @@ export default function NewsDetail({
         {/* Header */}
         <div className="mb-6">
           <div className="mb-3 flex flex-wrap items-center gap-2">
-            <span
-              className={cn(
-                "rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide",
-                categoryColors[article.category]
-              )}
-            >
+            {/* Category badge — always gray */}
+            <span className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700">
               {categoryLabels[article.category]}
             </span>
+            {/* Priority badge — semantic color */}
             {article.priority !== "normal" && (
               <span
                 className={cn(
-                  "rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide text-white shadow-sm",
+                  "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium",
                   article.priority === "urgent"
-                    ? "bg-gradient-to-b from-red-500 to-red-600"
-                    : "bg-gradient-to-b from-amber-400 to-amber-500"
+                    ? "bg-red-50 text-red-700"
+                    : "bg-amber-50 text-amber-700"
                 )}
               >
                 {article.priority === "urgent" ? "Urgent" : "Important"}
@@ -205,20 +190,20 @@ export default function NewsDetail({
             )}
           </div>
 
-          <h1 className="mb-3 text-2xl font-bold leading-tight text-[var(--heading)]">
+          <h1 className="mb-3 text-2xl font-bold leading-tight text-gray-900">
             {article.title}
           </h1>
 
           {article.excerpt && (
-            <p className="mb-4 text-[14px] leading-relaxed text-[var(--text-secondary)]">
+            <p className="mb-4 text-sm leading-relaxed text-gray-500">
               {article.excerpt}
             </p>
           )}
 
           {/* Author & meta */}
-          <div className="flex flex-wrap items-center gap-4 text-[11.5px] text-[var(--text-muted)]">
+          <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
             <div className="flex items-center gap-1.5">
-              <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--navy)] text-[8px] font-medium text-white">
+              <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-200 text-[8px] font-medium text-gray-600">
                 {authorName
                   .split(" ")
                   .map((n) => n[0])
@@ -241,59 +226,62 @@ export default function NewsDetail({
           </div>
         </div>
 
-        {/* Content */}
-        <div className="mb-6 rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] p-6 shadow-sm">
+        {/* Divider */}
+        <div className="border-t border-gray-200 mb-6 pt-6">
+          {/* Content — directly on white, no card wrapper */}
           {isHtml ? (
             <div
-              className="prose-news text-[13.5px] leading-relaxed text-[var(--text)]"
+              className="prose-news text-sm leading-relaxed text-gray-700"
               dangerouslySetInnerHTML={{
                 __html: article.content,
               }}
             />
           ) : (
-            <div className="whitespace-pre-wrap text-[13.5px] leading-relaxed text-[var(--text)]">
+            <div className="whitespace-pre-wrap text-sm leading-relaxed text-gray-700">
               {article.content || article.excerpt}
             </div>
           )}
         </div>
 
         {/* Social actions bar */}
-        <div className="mb-6 flex items-center gap-1 rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] px-4 py-2.5 shadow-sm">
-          <button
-            onClick={handleLike}
-            disabled={!currentUserId}
-            className={cn(
-              "flex items-center gap-1.5 rounded-[var(--radius-sm)] px-3 py-2 text-[12px] font-medium transition-colors",
-              liked
-                ? "bg-[var(--red-surface)] text-[var(--red)]"
-                : "text-[var(--text-secondary)] hover:bg-[var(--hover)]"
-            )}
-          >
-            <Heart
-              className={cn("h-4 w-4", liked && "fill-current")}
-            />
-            {likesCount > 0 && likesCount}
-            <span className="hidden sm:inline">
-              {liked ? "Aimé" : "J'aime"}
-            </span>
-          </button>
+        <div className="mb-6 border-t border-gray-200 pt-6">
+          <div className="flex items-center gap-1">
+            <button
+              onClick={handleLike}
+              disabled={!currentUserId}
+              className={cn(
+                "flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                liked
+                  ? "bg-red-50 text-red-600"
+                  : "text-gray-600 hover:bg-gray-100"
+              )}
+            >
+              <Heart
+                className={cn("h-4 w-4", liked && "fill-current")}
+              />
+              {likesCount > 0 && likesCount}
+              <span className="hidden sm:inline">
+                {liked ? "Aimé" : "J'aime"}
+              </span>
+            </button>
 
-          <button
-            onClick={handleShare}
-            disabled={isPending || !currentUserId}
-            className="flex items-center gap-1.5 rounded-[var(--radius-sm)] px-3 py-2 text-[12px] font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--hover)]"
-          >
-            <Share2 className="h-4 w-4" />
-            {sharesCount > 0 && sharesCount}
-            <span className="hidden sm:inline">Partager</span>
-          </button>
+            <button
+              onClick={handleShare}
+              disabled={isPending || !currentUserId}
+              className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100"
+            >
+              <Share2 className="h-4 w-4" />
+              {sharesCount > 0 && sharesCount}
+              <span className="hidden sm:inline">Partager</span>
+            </button>
 
-          <div className="flex items-center gap-1.5 px-3 py-2 text-[12px] text-[var(--text-muted)]">
-            <MessageSquare className="h-4 w-4" />
-            {comments.length}
-            <span className="hidden sm:inline">
-              commentaire{comments.length > 1 ? "s" : ""}
-            </span>
+            <div className="flex items-center gap-1.5 px-3 py-2 text-sm text-gray-400">
+              <MessageSquare className="h-4 w-4" />
+              {comments.length}
+              <span className="hidden sm:inline">
+                commentaire{comments.length > 1 ? "s" : ""}
+              </span>
+            </div>
           </div>
         </div>
 
@@ -305,9 +293,9 @@ export default function NewsDetail({
         )}
 
         {/* Comments section */}
-        <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] shadow-sm">
-          <div className="border-b border-[var(--border-1)] px-5 py-3.5">
-            <h3 className="flex items-center gap-2 text-sm font-semibold text-[var(--heading)]">
+        <div className="rounded-xl border border-gray-200 bg-white">
+          <div className="border-b border-gray-200 px-6 py-4">
+            <h3 className="flex items-center gap-2 text-sm font-semibold text-gray-900">
               <MessageSquare className="h-4 w-4" />
               Commentaires ({comments.length})
             </h3>
@@ -315,19 +303,19 @@ export default function NewsDetail({
 
           {/* Comment form */}
           {currentUserId && (
-            <div className="border-b border-[var(--border-1)] px-5 py-4">
+            <div className="border-b border-gray-100 px-6 py-4">
               <div className="flex gap-3">
                 <textarea
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
                   placeholder="Écrire un commentaire..."
                   rows={2}
-                  className="flex-1 resize-none rounded-[var(--radius-sm)] border border-[var(--border-1)] px-3 py-2 text-[12.5px] text-[var(--heading)] outline-none placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-1 focus:ring-[var(--yellow)]"
+                  className="flex-1 resize-none rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-900 outline-none placeholder:text-gray-400 focus:border-orange-500 focus:ring-1 focus:ring-orange-500/20"
                 />
                 <button
                   onClick={handleSubmitComment}
                   disabled={isPending || !newComment.trim()}
-                  className="self-end rounded-[var(--radius-sm)] bg-[var(--yellow)] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[var(--yellow-hover)] disabled:opacity-50"
+                  className="self-end rounded-lg bg-orange-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-orange-700 disabled:opacity-50"
                 >
                   <Send className="h-4 w-4" />
                 </button>
@@ -337,11 +325,11 @@ export default function NewsDetail({
 
           {/* Comments list */}
           {comments.length === 0 ? (
-            <div className="py-8 text-center text-[12.5px] text-[var(--text-muted)]">
+            <div className="py-8 text-center text-sm text-gray-400">
               Aucun commentaire. Soyez le premier à réagir !
             </div>
           ) : (
-            <div className="divide-y divide-[var(--border-1)]">
+            <div className="divide-y divide-gray-100">
               {comments.map((comment) => {
                 const commentAuthor = comment.author as unknown as {
                   first_name: string;
@@ -354,10 +342,10 @@ export default function NewsDetail({
                 const isOwn = comment.author_id === currentUserId;
 
                 return (
-                  <div key={comment.id} className="px-5 py-3.5">
+                  <div key={comment.id} className="px-6 py-3.5">
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-2.5">
-                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-[var(--navy)] text-[8px] font-medium text-white">
+                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gray-200 text-[8px] font-medium text-gray-600">
                           {commentAuthorName
                             .split(" ")
                             .map((n) => n[0])
@@ -366,10 +354,10 @@ export default function NewsDetail({
                             .toUpperCase()}
                         </div>
                         <div>
-                          <span className="text-[12px] font-semibold text-[var(--heading)]">
+                          <span className="text-sm font-semibold text-gray-900">
                             {commentAuthorName}
                           </span>
-                          <span className="ml-2 text-[10px] text-[var(--text-muted)]">
+                          <span className="ml-2 text-xs text-gray-400">
                             {formatRelative(comment.created_at)}
                           </span>
                         </div>
@@ -377,14 +365,14 @@ export default function NewsDetail({
                       {isOwn && (
                         <button
                           onClick={() => handleDeleteComment(comment.id)}
-                          className="rounded-[var(--radius-xs)] p-1 text-[var(--text-muted)] transition-colors hover:bg-[var(--red-surface)] hover:text-[var(--red)]"
+                          className="rounded-lg p-1 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
                           title="Supprimer"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
                         </button>
                       )}
                     </div>
-                    <p className="mt-1.5 pl-[38px] text-[12.5px] leading-relaxed text-[var(--text)]">
+                    <p className="mt-1.5 pl-[38px] text-sm leading-relaxed text-gray-700">
                       {comment.content}
                     </p>
                   </div>

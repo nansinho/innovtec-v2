@@ -21,9 +21,9 @@ const qseCards = [
     label: "Politique QSE",
     description: "Consultez et gérez les politiques Qualité, Sécurité et Environnement.",
     icon: Shield,
-    color: "var(--yellow)",
-    surface: "var(--yellow-surface)",
-    border: "var(--yellow-border)",
+    color: "#ea580c",
+    surface: "rgba(234, 88, 12, 0.08)",
+    border: "rgba(234, 88, 12, 0.14)",
     countKey: "politique" as const,
   },
   {
@@ -31,8 +31,8 @@ const qseCards = [
     label: "Signalements",
     description: "Signalez et suivez les situations dangereuses sur les chantiers.",
     icon: AlertCircle,
-    color: "var(--red)",
-    surface: "var(--red-surface)",
+    color: "#dc2626",
+    surface: "rgba(220, 38, 38, 0.08)",
     border: "rgba(255, 59, 48, 0.14)",
     countKey: "dangers" as const,
   },
@@ -41,8 +41,8 @@ const qseCards = [
     label: "Plans d'actions",
     description: "Suivez les plans d'actions correctives et préventives.",
     icon: ClipboardList,
-    color: "var(--blue)",
-    surface: "var(--blue-surface)",
+    color: "#2563eb",
+    surface: "rgba(37, 99, 235, 0.08)",
     border: "rgba(0, 122, 255, 0.14)",
     countKey: "plans" as const,
   },
@@ -51,8 +51,8 @@ const qseCards = [
     label: "Fiches REX",
     description: "Partagez et consultez les retours d'expérience des chantiers.",
     icon: Eye,
-    color: "var(--purple)",
-    surface: "var(--purple-surface)",
+    color: "#9333ea",
+    surface: "rgba(147, 51, 234, 0.08)",
     border: "rgba(175, 82, 222, 0.14)",
     countKey: "rex" as const,
   },
@@ -61,8 +61,8 @@ const qseCards = [
     label: "Bonnes pratiques",
     description: "Documentez et partagez les bonnes pratiques QSE.",
     icon: BookOpen,
-    color: "var(--green)",
-    surface: "var(--green-surface)",
+    color: "#059669",
+    surface: "rgba(5, 150, 105, 0.08)",
     border: "rgba(52, 199, 89, 0.14)",
     countKey: "bonnes_pratiques" as const,
   },
@@ -71,7 +71,7 @@ const qseCards = [
     label: "Tableau de Bord SSE",
     description: "Visualisez les indicateurs Santé, Sécurité et Environnement.",
     icon: BarChart3,
-    color: "var(--navy)",
+    color: "#111827",
     surface: "rgba(26, 45, 78, 0.06)",
     border: "rgba(26, 45, 78, 0.14)",
     countKey: "sse" as const,
@@ -100,10 +100,10 @@ export default async function QseHubPage() {
   return (
     <div className="p-6 pb-20 md:pb-6">
       <div className="mb-8">
-        <h1 className="text-xl font-semibold text-[var(--heading)]">
+        <h1 className="text-xl font-semibold text-gray-900">
           Qualité, Sécurité &amp; Environnement
         </h1>
-        <p className="mt-1 text-sm text-[var(--text-secondary)]">
+        <p className="mt-1 text-sm text-gray-500">
           Accédez à l&apos;ensemble des outils QSE d&apos;INNOVTEC Réseaux.
         </p>
       </div>
@@ -117,7 +117,7 @@ export default async function QseHubPage() {
             <Link
               key={card.href}
               href={card.href}
-              className="group relative flex flex-col overflow-hidden rounded-[var(--radius)] border bg-[var(--card)] p-5 shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5"
+              className="group relative flex flex-col overflow-hidden rounded-xl border bg-white p-5 shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5"
               style={{ borderColor: card.border }}
             >
               <div className="flex items-start justify-between">
@@ -137,14 +137,14 @@ export default async function QseHubPage() {
                 ) : null}
               </div>
 
-              <h2 className="mt-4 text-[15px] font-semibold text-[var(--heading)]">
+              <h2 className="mt-4 text-[15px] font-semibold text-gray-900">
                 {card.label}
               </h2>
-              <p className="mt-1 flex-1 text-[12.5px] leading-relaxed text-[var(--text-muted)]">
+              <p className="mt-1 flex-1 text-[12.5px] leading-relaxed text-gray-400">
                 {card.description}
               </p>
 
-              <div className="mt-4 flex items-center gap-1 text-[12px] font-medium transition-colors group-hover:text-[var(--heading)]" style={{ color: card.color }}>
+              <div className="mt-4 flex items-center gap-1 text-[12px] font-medium transition-colors group-hover:text-gray-900" style={{ color: card.color }}>
                 Accéder
                 <ChevronRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
               </div>

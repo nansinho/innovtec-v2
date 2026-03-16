@@ -53,12 +53,12 @@ export default function RichTextEditor({
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
-          class: "text-[var(--blue)] underline cursor-pointer",
+          class: "text-blue-600 underline cursor-pointer",
         },
       }),
       ImageExtension.configure({
         HTMLAttributes: {
-          class: "rounded-[var(--radius-sm)] max-w-full mx-auto my-4",
+          class: "rounded-lg max-w-full mx-auto my-4",
         },
       }),
       Underline,
@@ -81,7 +81,7 @@ export default function RichTextEditor({
     editorProps: {
       attributes: {
         class:
-          "prose-news min-h-[400px] outline-none px-6 py-5 text-[14px] leading-relaxed text-[var(--text)]",
+          "prose-news min-h-[400px] outline-none px-6 py-5 text-[14px] leading-relaxed text-gray-700",
       },
     },
   });
@@ -155,10 +155,10 @@ export default function RichTextEditor({
       type="button"
       onClick={onClick}
       title={title}
-      className={`rounded-[var(--radius-xs)] p-1.5 transition-colors ${
+      className={`rounded-md p-1.5 transition-colors ${
         isActive
-          ? "bg-[var(--navy)] text-white"
-          : "text-[var(--text-secondary)] hover:bg-[var(--hover)] hover:text-[var(--heading)]"
+          ? "bg-gray-900 text-white"
+          : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
       }`}
     >
       {children}
@@ -166,13 +166,13 @@ export default function RichTextEditor({
   );
 
   const Separator = () => (
-    <div className="mx-1 h-6 w-px bg-[var(--border-1)]" />
+    <div className="mx-1 h-6 w-px bg-gray-200" />
   );
 
   return (
-    <div className="overflow-hidden rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)]">
+    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-0.5 border-b border-[var(--border-1)] bg-[var(--hover)] px-3 py-2">
+      <div className="flex flex-wrap items-center gap-0.5 border-b border-gray-200 bg-gray-50 px-3 py-2">
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleBold().run()}
           isActive={editor.isActive("bold")}

@@ -79,7 +79,7 @@ function getStatusColorClass(status: "green" | "orange" | "red" | null): string 
     case "green": return "text-emerald-600";
     case "orange": return "text-orange-500";
     case "red": return "text-red-600";
-    default: return "text-[var(--heading)]";
+    default: return "text-gray-900";
   }
 }
 
@@ -222,7 +222,7 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
           <button
             onClick={backToList}
-            className="flex items-center gap-1.5 text-sm font-medium text-[var(--text-secondary)] transition-colors hover:text-[var(--heading)]"
+            className="flex items-center gap-1.5 text-sm font-medium text-gray-500 transition-colors hover:text-gray-900"
           >
             <ArrowLeft className="h-4 w-4" />
             Tous les tableaux
@@ -232,14 +232,14 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
               <>
                 <button
                   onClick={() => setMode("edit")}
-                  className="flex items-center gap-1.5 rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-3 py-1.5 text-xs font-medium text-[var(--heading)] transition-colors hover:bg-[var(--hover)]"
+                  className="flex items-center gap-1.5 rounded-lg border border-gray-100 bg-white px-3 py-1.5 text-xs font-medium text-gray-900 transition-colors hover:bg-gray-50"
                 >
                   <Pencil className="h-3.5 w-3.5" />
                   Modifier
                 </button>
                 <button
                   onClick={() => setDeleteTarget(d)}
-                  className="flex items-center gap-1.5 rounded-[var(--radius-xs)] border border-red-200 bg-white px-3 py-1.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-50"
+                  className="flex items-center gap-1.5 rounded-lg border border-red-200 bg-white px-3 py-1.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-50"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                   Supprimer
@@ -249,7 +249,7 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
             <button
               onClick={handleExportPdf}
               disabled={exporting !== null}
-              className="flex items-center gap-1.5 rounded-[var(--radius-xs)] bg-[var(--navy)] px-3 py-1.5 text-xs font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+              className="flex items-center gap-1.5 rounded-lg bg-gray-900 px-3 py-1.5 text-xs font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50"
             >
               <Download className="h-3.5 w-3.5" />
               {exporting === "pdf" ? "Export..." : "PDF"}
@@ -257,7 +257,7 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
             <button
               onClick={handleExportExcel}
               disabled={exporting !== null}
-              className="flex items-center gap-1.5 rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-3 py-1.5 text-xs font-medium text-[var(--heading)] transition-colors hover:bg-[var(--hover)] disabled:opacity-50"
+              className="flex items-center gap-1.5 rounded-lg border border-gray-100 bg-white px-3 py-1.5 text-xs font-medium text-gray-900 transition-colors hover:bg-gray-50 disabled:opacity-50"
             >
               <FileSpreadsheet className="h-3.5 w-3.5" />
               {exporting === "excel" ? "Export..." : "Excel"}
@@ -268,25 +268,25 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
         {/* Dashboard card for PDF capture */}
         <div
           ref={printRef}
-          className="overflow-hidden rounded-[var(--radius)] border border-[var(--border-1)] bg-white shadow-sm"
+          className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm"
         >
           {/* Header */}
-          <div className="flex items-start justify-between border-b border-[var(--border-1)] bg-white px-8 py-6">
+          <div className="flex items-start justify-between border-b border-gray-200 bg-white px-8 py-6">
             <div className="flex items-center gap-6">
               <CompanyLogo logoUrl={logos} variant="light" width={140} height={44} />
               <div>
-                <p className="text-lg font-bold text-[var(--navy)]">INNOVTEC</p>
-                <p className="text-sm font-semibold text-[var(--navy)]">{monthLabel} {d.year}</p>
+                <p className="text-lg font-bold text-gray-900">INNOVTEC</p>
+                <p className="text-sm font-semibold text-gray-900">{monthLabel} {d.year}</p>
               </div>
             </div>
-            <h1 className="text-right text-xl font-bold text-[var(--navy)]">
+            <h1 className="text-right text-xl font-bold text-gray-900">
               Tableau de bord santé-sécurité-environnement
             </h1>
           </div>
 
           {/* Quote */}
-          <div className="border-b border-[var(--border-1)] bg-[#f8f9fb] px-8 py-3">
-            <p className="text-xs italic text-[var(--navy)]" style={{ opacity: 0.7 }}>
+          <div className="border-b border-gray-200 bg-[#f8f9fb] px-8 py-3">
+            <p className="text-xs italic text-gray-900" style={{ opacity: 0.7 }}>
               &laquo; {d.quote} &raquo;
             </p>
           </div>
@@ -294,100 +294,100 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
           {/* Tables */}
           <div className="grid grid-cols-1 gap-6 px-8 py-6 lg:grid-cols-2">
             {/* Left table */}
-            <div className="overflow-hidden rounded-[var(--radius-sm)] border border-[var(--border-1)]">
+            <div className="overflow-hidden rounded-lg border border-gray-200">
               <table className="w-full text-left text-sm">
                 <thead>
-                  <tr className="bg-[var(--navy)]">
+                  <tr className="bg-gray-900">
                     <th className="px-4 py-2.5 text-xs font-semibold text-white">Indicateurs</th>
                     <th className="px-4 py-2.5 text-center text-xs font-semibold text-white">Réalisé</th>
                     <th className="px-4 py-2.5 text-center text-xs font-semibold text-white">Objectif {d.year}</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[var(--border-1)]">
-                  <tr><td className="px-4 py-2.5 text-sm text-[var(--heading)]">Nombre d&apos;Accidents en Service Avec Arrêts (ASAA)</td><ValueCell value={d.accidents_with_leave} objective={d.accidents_with_leave_objective} /><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.accidents_with_leave_objective}</td></tr>
-                  <tr><td className="px-4 py-2.5 text-sm text-[var(--heading)]">Suivi des formations réglementaires</td><ValueCell value={d.regulatory_training_completion} objective={d.regulatory_training_objective} /><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.regulatory_training_objective}</td></tr>
-                  <tr><td className="px-4 py-2.5 text-sm text-[var(--heading)]">Taux de conformité réglementaire</td><ValueCell value={d.regulatory_compliance_rate} objective={d.regulatory_compliance_objective} /><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.regulatory_compliance_objective}</td></tr>
-                  <tr><td className="px-4 py-2.5 text-sm text-[var(--heading)]">Taux de réalisation de la vérification périodique</td><ValueCell value={d.periodic_verification_rate} objective={d.periodic_verification_objective} isPercentage /><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.periodic_verification_objective}</td></tr>
-                  <tr><td className="px-4 py-2.5 text-sm font-medium text-emerald-600">Suivi des déchets</td><ValueCell value={d.waste_monitoring} objective={d.waste_monitoring_objective} isPercentage /><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.waste_monitoring_objective}</td></tr>
-                  <tr><td className={`px-4 py-2.5 text-sm font-medium ${getSstColorClass(d.sst_rate)}`}>Taux de SST</td><ValueCell value={d.sst_rate} objective={d.sst_rate_objective} isPercentage colorClass={getSstColorClass(d.sst_rate)} /><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.sst_rate_objective}</td></tr>
-                  <tr><td className="px-4 py-2.5 text-sm text-[var(--heading)]">{d.downgraded_bins} Bennes déclassées</td><td className="px-4 py-2.5 text-center text-sm text-[var(--heading)]">{d.downgraded_bins}</td><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.downgraded_bins_objective}</td></tr>
+                <tbody className="divide-y divide-gray-200">
+                  <tr><td className="px-4 py-2.5 text-sm text-gray-900">Nombre d&apos;Accidents en Service Avec Arrêts (ASAA)</td><ValueCell value={d.accidents_with_leave} objective={d.accidents_with_leave_objective} /><td className="px-4 py-2.5 text-center text-sm text-gray-500">{d.accidents_with_leave_objective}</td></tr>
+                  <tr><td className="px-4 py-2.5 text-sm text-gray-900">Suivi des formations réglementaires</td><ValueCell value={d.regulatory_training_completion} objective={d.regulatory_training_objective} /><td className="px-4 py-2.5 text-center text-sm text-gray-500">{d.regulatory_training_objective}</td></tr>
+                  <tr><td className="px-4 py-2.5 text-sm text-gray-900">Taux de conformité réglementaire</td><ValueCell value={d.regulatory_compliance_rate} objective={d.regulatory_compliance_objective} /><td className="px-4 py-2.5 text-center text-sm text-gray-500">{d.regulatory_compliance_objective}</td></tr>
+                  <tr><td className="px-4 py-2.5 text-sm text-gray-900">Taux de réalisation de la vérification périodique</td><ValueCell value={d.periodic_verification_rate} objective={d.periodic_verification_objective} isPercentage /><td className="px-4 py-2.5 text-center text-sm text-gray-500">{d.periodic_verification_objective}</td></tr>
+                  <tr><td className="px-4 py-2.5 text-sm font-medium text-emerald-600">Suivi des déchets</td><ValueCell value={d.waste_monitoring} objective={d.waste_monitoring_objective} isPercentage /><td className="px-4 py-2.5 text-center text-sm text-gray-500">{d.waste_monitoring_objective}</td></tr>
+                  <tr><td className={`px-4 py-2.5 text-sm font-medium ${getSstColorClass(d.sst_rate)}`}>Taux de SST</td><ValueCell value={d.sst_rate} objective={d.sst_rate_objective} isPercentage colorClass={getSstColorClass(d.sst_rate)} /><td className="px-4 py-2.5 text-center text-sm text-gray-500">{d.sst_rate_objective}</td></tr>
+                  <tr><td className="px-4 py-2.5 text-sm text-gray-900">{d.downgraded_bins} Bennes déclassées</td><td className="px-4 py-2.5 text-center text-sm text-gray-900">{d.downgraded_bins}</td><td className="px-4 py-2.5 text-center text-sm text-gray-500">{d.downgraded_bins_objective}</td></tr>
                 </tbody>
               </table>
             </div>
 
             {/* Right table */}
-            <div className="overflow-hidden rounded-[var(--radius-sm)] border border-[var(--border-1)]">
+            <div className="overflow-hidden rounded-lg border border-gray-200">
               <table className="w-full text-left text-sm">
                 <thead>
-                  <tr className="bg-[var(--navy)]">
+                  <tr className="bg-gray-900">
                     <th className="px-4 py-2.5 text-xs font-semibold text-white">Indicateurs de suivi</th>
                     <th className="px-4 py-2.5 text-center text-xs font-semibold text-white">Objectif</th>
                     <th className="px-4 py-2.5 text-center text-xs font-semibold text-white">Réalisé</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[var(--border-1)]">
-                  <tr><td className="px-4 py-2.5 text-sm text-[var(--heading)]">Nombre d&apos;accidents en service sans arrêt (ASSA)</td><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.accidents_without_leave_objective}</td><td className="px-4 py-2.5 text-center text-sm font-semibold text-[var(--heading)]">{d.accidents_without_leave}</td></tr>
-                  <tr><td className="px-4 py-2.5 text-sm text-[var(--heading)]">Nombre de visites croisées</td><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.cross_visits_objective}</td><td className="px-4 py-2.5 text-center text-sm font-semibold text-[var(--heading)]">{d.cross_visits}</td></tr>
-                  <tr><td className="px-4 py-2.5 text-sm text-[var(--heading)]">Nombre de visites managériales</td><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.managerial_visits_objective}</td><td className="px-4 py-2.5 text-center text-sm font-semibold text-[var(--heading)]">{d.managerial_visits}</td></tr>
-                  <tr><td className="px-4 py-2.5 text-sm text-[var(--heading)]">% de déclarants de SD (salariés)</td><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{formatFr(d.sd_declarants_objective)}</td><td className="px-4 py-2.5 text-center text-sm font-semibold text-[var(--heading)]">{formatFr(d.sd_declarants_percentage)}</td></tr>
-                  <tr><td className="px-4 py-2.5 text-sm text-[var(--heading)]">Nombres de SD déclarés</td><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.sd_declared_objective}</td><td className="px-4 py-2.5 text-center text-sm font-semibold text-[var(--heading)]">{d.sd_declared_count}</td></tr>
-                  <tr><td className="px-4 py-2.5 text-sm text-[var(--heading)]">Nombre de salariés sensibilisés au tri des déchets</td><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.waste_awareness_objective}</td><td className="px-4 py-2.5 text-center text-sm font-semibold text-[var(--heading)]">{d.waste_awareness_employees}</td></tr>
-                  <tr><td className="px-4 py-2.5 text-sm text-[var(--heading)]">Taux de suivi du plan de formation</td><td className="px-4 py-2.5 text-center text-sm text-[var(--text-secondary)]">{d.training_plan_objective}</td><td className="px-4 py-2.5 text-center text-sm font-semibold text-emerald-600">{formatFr(d.training_plan_follow_rate)}%</td></tr>
+                <tbody className="divide-y divide-gray-200">
+                  <tr><td className="px-4 py-2.5 text-sm text-gray-900">Nombre d&apos;accidents en service sans arrêt (ASSA)</td><td className="px-4 py-2.5 text-center text-sm text-gray-500">{d.accidents_without_leave_objective}</td><td className="px-4 py-2.5 text-center text-sm font-semibold text-gray-900">{d.accidents_without_leave}</td></tr>
+                  <tr><td className="px-4 py-2.5 text-sm text-gray-900">Nombre de visites croisées</td><td className="px-4 py-2.5 text-center text-sm text-gray-500">{d.cross_visits_objective}</td><td className="px-4 py-2.5 text-center text-sm font-semibold text-gray-900">{d.cross_visits}</td></tr>
+                  <tr><td className="px-4 py-2.5 text-sm text-gray-900">Nombre de visites managériales</td><td className="px-4 py-2.5 text-center text-sm text-gray-500">{d.managerial_visits_objective}</td><td className="px-4 py-2.5 text-center text-sm font-semibold text-gray-900">{d.managerial_visits}</td></tr>
+                  <tr><td className="px-4 py-2.5 text-sm text-gray-900">% de déclarants de SD (salariés)</td><td className="px-4 py-2.5 text-center text-sm text-gray-500">{formatFr(d.sd_declarants_objective)}</td><td className="px-4 py-2.5 text-center text-sm font-semibold text-gray-900">{formatFr(d.sd_declarants_percentage)}</td></tr>
+                  <tr><td className="px-4 py-2.5 text-sm text-gray-900">Nombres de SD déclarés</td><td className="px-4 py-2.5 text-center text-sm text-gray-500">{d.sd_declared_objective}</td><td className="px-4 py-2.5 text-center text-sm font-semibold text-gray-900">{d.sd_declared_count}</td></tr>
+                  <tr><td className="px-4 py-2.5 text-sm text-gray-900">Nombre de salariés sensibilisés au tri des déchets</td><td className="px-4 py-2.5 text-center text-sm text-gray-500">{d.waste_awareness_objective}</td><td className="px-4 py-2.5 text-center text-sm font-semibold text-gray-900">{d.waste_awareness_employees}</td></tr>
+                  <tr><td className="px-4 py-2.5 text-sm text-gray-900">Taux de suivi du plan de formation</td><td className="px-4 py-2.5 text-center text-sm text-gray-500">{d.training_plan_objective}</td><td className="px-4 py-2.5 text-center text-sm font-semibold text-emerald-600">{formatFr(d.training_plan_follow_rate)}%</td></tr>
                 </tbody>
               </table>
             </div>
           </div>
 
           {/* Bottom sections */}
-          <div className="grid grid-cols-1 gap-6 border-t border-[var(--border-1)] px-8 py-6 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-6 border-t border-gray-200 px-8 py-6 lg:grid-cols-3">
             <div>
-              <div className="mb-3 inline-block rounded-[var(--radius-xs)] bg-[var(--navy)] px-4 py-1.5">
+              <div className="mb-3 inline-block rounded-lg bg-gray-900 px-4 py-1.5">
                 <h3 className="text-xs font-semibold text-white">Bilan mensuel</h3>
               </div>
-              <div className="text-sm leading-relaxed text-[var(--text)]" style={{ whiteSpace: "pre-line" }}>
+              <div className="text-sm leading-relaxed text-gray-700" style={{ whiteSpace: "pre-line" }}>
                 {d.monthly_report || "Aucun bilan renseigné."}
               </div>
             </div>
             <div className="flex flex-col items-center justify-center">
-              <div className="mb-3 inline-block rounded-[var(--radius-xs)] bg-[var(--navy)] px-4 py-1.5">
+              <div className="mb-3 inline-block rounded-lg bg-gray-900 px-4 py-1.5">
                 <h3 className="text-xs font-semibold text-white">Visites terrain</h3>
               </div>
-              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[var(--yellow)]">
+              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-orange-600">
                 <span className="text-2xl font-bold text-white">{d.field_visits_count}</span>
               </div>
             </div>
             <div>
-              <div className="mb-3 inline-block rounded-[var(--radius-xs)] bg-[var(--navy)] px-4 py-1.5">
+              <div className="mb-3 inline-block rounded-lg bg-gray-900 px-4 py-1.5">
                 <h3 className="text-xs font-semibold text-white">Priorités d&apos;action pour {getNextMonthLabel(d.month, d.year)}</h3>
               </div>
               {d.action_priorities.length > 0 ? (
-                <ul className="space-y-1.5">{d.action_priorities.map((p, i) => (<li key={i} className="flex items-start gap-2 text-sm text-[var(--text)]"><span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--navy)]" />{p}</li>))}</ul>
-              ) : (<p className="text-sm text-[var(--text-muted)]">Aucune priorité renseignée.</p>)}
+                <ul className="space-y-1.5">{d.action_priorities.map((p, i) => (<li key={i} className="flex items-start gap-2 text-sm text-gray-700"><span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-gray-900" />{p}</li>))}</ul>
+              ) : (<p className="text-sm text-gray-400">Aucune priorité renseignée.</p>)}
             </div>
           </div>
 
           {/* Vigilance + Focus */}
-          <div className="grid grid-cols-1 gap-6 border-t border-[var(--border-1)] px-8 py-6 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-6 border-t border-gray-200 px-8 py-6 lg:grid-cols-3">
             <div className="lg:col-span-2">
-              <div className="mb-3 inline-block rounded-[var(--radius-xs)] bg-[var(--yellow)] px-4 py-1.5">
+              <div className="mb-3 inline-block rounded-lg bg-orange-600 px-4 py-1.5">
                 <h3 className="text-xs font-semibold text-white">Point de vigilance/alerte</h3>
               </div>
               {d.vigilance_points.length > 0 ? (
-                <ul className="space-y-1.5">{d.vigilance_points.map((p, i) => (<li key={i} className="flex items-start gap-2 text-sm text-[var(--text)]"><span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--yellow)]" />{p}</li>))}</ul>
-              ) : (<p className="text-sm text-[var(--text-muted)]">Aucun point de vigilance.</p>)}
+                <ul className="space-y-1.5">{d.vigilance_points.map((p, i) => (<li key={i} className="flex items-start gap-2 text-sm text-gray-700"><span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-orange-600" />{p}</li>))}</ul>
+              ) : (<p className="text-sm text-gray-400">Aucun point de vigilance.</p>)}
             </div>
             <div>
-              <div className="mb-3 inline-block rounded-[var(--radius-xs)] border-2 border-[var(--navy)] px-4 py-1.5">
-                <h3 className="text-xs font-semibold text-[var(--navy)]">Focus événement -- {d.focus_event_title}</h3>
+              <div className="mb-3 inline-block rounded-lg border-2 border-gray-900 px-4 py-1.5">
+                <h3 className="text-xs font-semibold text-gray-900">Focus événement -- {d.focus_event_title}</h3>
               </div>
               {d.focus_event_content.length > 0 ? (
-                <ul className="space-y-1.5">{d.focus_event_content.map((p, i) => (<li key={i} className="flex items-start gap-2 text-sm text-[var(--text)]"><span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--navy)]" />{p}</li>))}</ul>
-              ) : (<p className="text-sm text-[var(--text-muted)]">Aucun événement à signaler.</p>)}
+                <ul className="space-y-1.5">{d.focus_event_content.map((p, i) => (<li key={i} className="flex items-start gap-2 text-sm text-gray-700"><span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-gray-900" />{p}</li>))}</ul>
+              ) : (<p className="text-sm text-gray-400">Aucun événement à signaler.</p>)}
             </div>
           </div>
 
-          <div className="flex items-center justify-end border-t border-[var(--border-1)] px-8 py-2">
-            <span className="text-xs text-[var(--text-muted)]">1</span>
+          <div className="flex items-center justify-end border-t border-gray-200 px-8 py-2">
+            <span className="text-xs text-gray-400">1</span>
           </div>
         </div>
 
@@ -418,7 +418,7 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
         <div className="mb-6 flex items-center justify-end">
           <button
             onClick={() => setMode("create")}
-            className="flex items-center gap-1.5 rounded-[var(--radius-xs)] bg-[var(--yellow)] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[var(--yellow-hover)]"
+            className="flex items-center gap-1.5 rounded-lg bg-orange-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-orange-700"
           >
             <Plus className="h-4 w-4" />
             Nouveau tableau
@@ -427,18 +427,18 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
       )}
 
       {allSorted.length === 0 ? (
-        <div className="flex flex-col items-center rounded-2xl border border-[var(--border-1)] bg-white py-16 text-center shadow-sm ring-1 ring-black/[0.03]">
-          <BarChart3 className="mb-3 h-12 w-12 text-zinc-300" />
-          <p className="text-sm font-medium text-[var(--heading)]">
+        <div className="flex flex-col items-center rounded-2xl border border-gray-200 bg-white py-16 text-center shadow-sm ring-1 ring-black/[0.03]">
+          <BarChart3 className="mb-3 h-12 w-12 text-gray-300" />
+          <p className="text-sm font-medium text-gray-900">
             Aucun tableau SSE
           </p>
-          <p className="mx-auto mt-1 max-w-xs text-sm text-[var(--text-muted)]">
+          <p className="mx-auto mt-1 max-w-xs text-sm text-gray-400">
             Les tableaux de bord Santé-Sécurité-Environnement apparaîtront ici une fois créés.
           </p>
           {canManage && (
             <button
               onClick={() => setMode("create")}
-              className="mt-5 flex items-center gap-1.5 rounded-[var(--radius-xs)] bg-[var(--yellow)] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[var(--yellow-hover)]"
+              className="mt-5 flex items-center gap-1.5 rounded-lg bg-orange-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-orange-700"
             >
               <Plus className="h-4 w-4" />
               Créer le premier tableau
@@ -446,22 +446,22 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
           )}
         </div>
       ) : (
-        <div className="overflow-hidden rounded-2xl border border-[var(--border-1)] bg-white shadow-sm ring-1 ring-black/[0.03]">
+        <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm ring-1 ring-black/[0.03]">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-[var(--border-1)] bg-[var(--hover)]">
-                <th className="px-4 py-3.5 text-left text-xs font-medium text-[var(--text-secondary)]">Mois</th>
-                <th className="px-4 py-3.5 text-left text-xs font-medium text-[var(--text-secondary)]" style={{ width: "80px" }}>Année</th>
-                <th className="px-4 py-3.5 text-center text-xs font-medium text-[var(--text-secondary)]" style={{ width: "80px" }}>ASAA</th>
-                <th className="px-4 py-3.5 text-center text-xs font-medium text-[var(--text-secondary)]" style={{ width: "80px" }}>SST</th>
-                <th className="px-4 py-3.5 text-center text-xs font-medium text-[var(--text-secondary)]" style={{ width: "100px" }}>Conformité</th>
-                <th className="px-4 py-3.5 text-center text-xs font-medium text-[var(--text-secondary)]" style={{ width: "80px" }}>Visites</th>
-                <th className="px-4 py-3.5 text-center text-xs font-medium text-[var(--text-secondary)]" style={{ width: "80px" }}>Statut</th>
-                <th className="px-4 py-3.5 text-left text-xs font-medium text-[var(--text-secondary)]" style={{ width: "130px" }}>Date</th>
-                <th className="px-4 py-3.5 text-right text-xs font-medium text-[var(--text-secondary)]" style={{ width: "70px" }}>Actions</th>
+              <tr className="border-b border-gray-200 bg-gray-50">
+                <th className="px-4 py-3.5 text-left text-xs font-medium text-gray-500">Mois</th>
+                <th className="px-4 py-3.5 text-left text-xs font-medium text-gray-500" style={{ width: "80px" }}>Année</th>
+                <th className="px-4 py-3.5 text-center text-xs font-medium text-gray-500" style={{ width: "80px" }}>ASAA</th>
+                <th className="px-4 py-3.5 text-center text-xs font-medium text-gray-500" style={{ width: "80px" }}>SST</th>
+                <th className="px-4 py-3.5 text-center text-xs font-medium text-gray-500" style={{ width: "100px" }}>Conformité</th>
+                <th className="px-4 py-3.5 text-center text-xs font-medium text-gray-500" style={{ width: "80px" }}>Visites</th>
+                <th className="px-4 py-3.5 text-center text-xs font-medium text-gray-500" style={{ width: "80px" }}>Statut</th>
+                <th className="px-4 py-3.5 text-left text-xs font-medium text-gray-500" style={{ width: "130px" }}>Date</th>
+                <th className="px-4 py-3.5 text-right text-xs font-medium text-gray-500" style={{ width: "70px" }}>Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[var(--border-1)]">
+            <tbody className="divide-y divide-gray-200">
               {allSorted.map((d) => {
                 const sstStatus = getIndicatorStatus(d.sst_rate, d.sst_rate_objective);
                 const asaaStatus = getIndicatorStatus(d.accidents_with_leave, d.accidents_with_leave_objective);
@@ -482,17 +482,17 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
                   <tr
                     key={d.id}
                     onClick={() => openDetail(d)}
-                    className="cursor-pointer transition-colors duration-200 hover:bg-[var(--hover)]"
+                    className="cursor-pointer transition-colors duration-200 hover:bg-gray-50"
                   >
                     <td className="px-4 py-3.5">
-                      <span className="text-sm font-medium text-[var(--heading)]">{MONTH_NAMES[d.month - 1]}</span>
+                      <span className="text-sm font-medium text-gray-900">{MONTH_NAMES[d.month - 1]}</span>
                     </td>
                     <td className="px-4 py-3.5">
-                      <Badge variant="yellow" dot={false}>
+                      <Badge variant="warning">
                         {d.year}
                       </Badge>
                     </td>
-                    <td className="px-4 py-3.5 text-center text-sm font-semibold text-[var(--heading)]">
+                    <td className="px-4 py-3.5 text-center text-sm font-semibold text-gray-900">
                       {d.accidents_with_leave}
                     </td>
                     <td className={`px-4 py-3.5 text-center text-sm font-semibold ${getSstColorClass(d.sst_rate)}`}>
@@ -501,17 +501,17 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
                     <td className={`px-4 py-3.5 text-center text-sm font-semibold ${getStatusColorClass(complianceStatus)}`}>
                       {formatFr(d.regulatory_compliance_rate)}%
                     </td>
-                    <td className="px-4 py-3.5 text-center text-sm font-semibold text-[var(--heading)]">
+                    <td className="px-4 py-3.5 text-center text-sm font-semibold text-gray-900">
                       {d.field_visits_count}
                     </td>
                     <td className="px-4 py-3.5 text-center">
                       {hasIssues ? (
-                        <Badge variant="red" dot={false}>Alerte</Badge>
+                        <Badge variant="error">Alerte</Badge>
                       ) : (
-                        <Badge variant="green" dot={false}>OK</Badge>
+                        <Badge variant="success">OK</Badge>
                       )}
                     </td>
-                    <td className="px-4 py-3.5 text-sm text-[var(--text-muted)]">
+                    <td className="px-4 py-3.5 text-sm text-gray-400">
                       {new Date(d.created_at).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" })}
                     </td>
                     <td className="px-4 py-3.5 text-right" onClick={(e) => e.stopPropagation()}>
@@ -522,7 +522,7 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
               })}
             </tbody>
           </table>
-          <div className="border-t border-[var(--border-1)] px-4 py-3 text-sm text-[var(--text-muted)]">
+          <div className="border-t border-gray-200 px-4 py-3 text-sm text-gray-400">
             {allSorted.length} tableau{allSorted.length > 1 ? "x" : ""} SSE
           </div>
         </div>

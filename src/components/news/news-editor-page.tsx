@@ -211,7 +211,7 @@ export default function NewsEditorPage({
       <div className="mb-6 flex items-center justify-between">
         <Link
           href="/actualites"
-          className="inline-flex items-center gap-1.5 text-[12px] text-[var(--text-secondary)] transition-colors hover:text-[var(--heading)]"
+          className="inline-flex items-center gap-1.5 text-[12px] text-gray-500 transition-colors hover:text-gray-900"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
           Retour aux actualités
@@ -221,7 +221,7 @@ export default function NewsEditorPage({
           <button
             onClick={() => handleSubmit(false)}
             disabled={isPending}
-            className="inline-flex items-center gap-2 rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] px-4 py-2 text-[12.5px] font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--hover)] disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2 text-[12.5px] font-medium text-gray-500 transition-colors hover:bg-gray-50 disabled:opacity-50"
           >
             {isPending ? (
               <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -233,7 +233,7 @@ export default function NewsEditorPage({
           <button
             onClick={() => handleSubmit(true)}
             disabled={isPending}
-            className="inline-flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-4 py-2 text-[12.5px] font-medium text-white transition-colors hover:bg-[var(--yellow-hover)] disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-lg bg-orange-600 px-4 py-2 text-[12.5px] font-medium text-white transition-colors hover:bg-orange-700 disabled:opacity-50"
           >
             {isPending ? (
               <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -246,18 +246,18 @@ export default function NewsEditorPage({
       </div>
 
       <div className="mx-auto max-w-4xl">
-        <h1 className="mb-6 text-xl font-bold text-[var(--heading)]">
+        <h1 className="mb-6 text-xl font-bold text-gray-900">
           {mode === "create" ? "Créer un article" : "Modifier l'article"}
         </h1>
 
         {/* Cover image */}
         <div className="mb-6">
-          <label className="mb-2 block text-[12px] font-medium text-[var(--heading)]">
+          <label className="mb-2 block text-[12px] font-medium text-gray-900">
             <ImageIcon className="mr-1.5 inline h-3.5 w-3.5" />
             Image de couverture
           </label>
           {imageUrl ? (
-            <div className="relative aspect-[16/7] overflow-hidden rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--hover)]">
+            <div className="relative aspect-[16/7] overflow-hidden rounded-xl border border-gray-200 bg-gray-50">
               <Image
                 src={imageUrl}
                 alt="Couverture"
@@ -274,7 +274,7 @@ export default function NewsEditorPage({
             </div>
           ) : (
             <div
-              className="flex cursor-pointer flex-col items-center gap-3 rounded-[var(--radius)] border-2 border-dashed border-[var(--border-1)] py-12 transition-colors hover:border-[var(--yellow)] hover:bg-[var(--yellow-surface)]"
+              className="flex cursor-pointer flex-col items-center gap-3 rounded-xl border-2 border-dashed border-gray-200 py-12 transition-colors hover:border-orange-500 hover:bg-orange-50"
               onClick={() => {
                 const input = document.createElement("input");
                 input.type = "file";
@@ -287,11 +287,11 @@ export default function NewsEditorPage({
               }}
             >
               {uploadingImage ? (
-                <Loader2 className="h-8 w-8 animate-spin text-[var(--yellow)]" />
+                <Loader2 className="h-8 w-8 animate-spin text-orange-600" />
               ) : (
-                <Upload className="h-8 w-8 text-[var(--text-muted)]" />
+                <Upload className="h-8 w-8 text-gray-400" />
               )}
-              <p className="text-[12.5px] text-[var(--text-secondary)]">
+              <p className="text-[12.5px] text-gray-500">
                 Cliquez ou glissez une image de couverture
               </p>
             </div>
@@ -305,7 +305,7 @@ export default function NewsEditorPage({
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Titre de l'article"
-            className="w-full border-0 bg-transparent text-2xl font-bold text-[var(--heading)] outline-none placeholder:text-[var(--text-muted)]"
+            className="w-full border-0 bg-transparent text-2xl font-bold text-gray-900 outline-none placeholder:text-gray-400"
           />
         </div>
 
@@ -316,14 +316,14 @@ export default function NewsEditorPage({
             onChange={(e) => setExcerpt(e.target.value)}
             placeholder="Résumé / chapeau de l'article (optionnel)"
             rows={2}
-            className="w-full resize-none border-0 bg-transparent text-[14px] leading-relaxed text-[var(--text-secondary)] outline-none placeholder:text-[var(--text-muted)]"
+            className="w-full resize-none border-0 bg-transparent text-[14px] leading-relaxed text-gray-500 outline-none placeholder:text-gray-400"
           />
-          <div className="h-px bg-[var(--border-1)]" />
+          <div className="h-px bg-gray-200" />
         </div>
 
         {/* Rich text editor */}
         <div className="mb-6">
-          <label className="mb-2 block text-[12px] font-medium text-[var(--heading)]">
+          <label className="mb-2 block text-[12px] font-medium text-gray-900">
             Contenu de l'article
           </label>
           <RichTextEditor content={content} onChange={setContent} />
@@ -332,13 +332,13 @@ export default function NewsEditorPage({
         {/* Settings row */}
         <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div>
-            <label className="mb-1.5 block text-[12px] font-medium text-[var(--heading)]">
+            <label className="mb-1.5 block text-[12px] font-medium text-gray-900">
               Catégorie
             </label>
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value as NewsCategory)}
-              className="w-full rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] px-3 py-2 text-[12.5px] text-[var(--heading)] outline-none focus:border-[var(--yellow)] focus:ring-1 focus:ring-[var(--yellow)]"
+              className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-[12.5px] text-gray-900 outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/20"
             >
               {Object.entries(categoryLabels).map(([key, label]) => (
                 <option key={key} value={key}>
@@ -349,13 +349,13 @@ export default function NewsEditorPage({
           </div>
 
           <div>
-            <label className="mb-1.5 block text-[12px] font-medium text-[var(--heading)]">
+            <label className="mb-1.5 block text-[12px] font-medium text-gray-900">
               Priorité
             </label>
             <select
               value={priority}
               onChange={(e) => setPriority(e.target.value as NewsPriority)}
-              className="w-full rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] px-3 py-2 text-[12.5px] text-[var(--heading)] outline-none focus:border-[var(--yellow)] focus:ring-1 focus:ring-[var(--yellow)]"
+              className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-[12.5px] text-gray-900 outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/20"
             >
               {Object.entries(priorityLabels).map(([key, label]) => (
                 <option key={key} value={key}>
@@ -367,25 +367,25 @@ export default function NewsEditorPage({
 
           {mode === "edit" && (
             <div>
-              <label className="mb-1.5 block text-[12px] font-medium text-[var(--heading)]">
+              <label className="mb-1.5 block text-[12px] font-medium text-gray-900">
                 Date de publication
               </label>
               <input
                 type="datetime-local"
                 value={publishedAt}
                 onChange={(e) => setPublishedAt(e.target.value)}
-                className="w-full rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] px-3 py-2 text-[12.5px] text-[var(--heading)] outline-none focus:border-[var(--yellow)] focus:ring-1 focus:ring-[var(--yellow)]"
+                className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-[12.5px] text-gray-900 outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/20"
               />
             </div>
           )}
 
           <div className="flex items-end">
-            <label className="flex cursor-pointer items-center gap-2 text-[12.5px] text-[var(--heading)]">
+            <label className="flex cursor-pointer items-center gap-2 text-[12.5px] text-gray-900">
               <input
                 type="checkbox"
                 checked={isCarousel}
                 onChange={(e) => setIsCarousel(e.target.checked)}
-                className="rounded border-[var(--border-1)] accent-[var(--yellow)]"
+                className="rounded border-gray-200 accent-orange-600"
               />
               Afficher dans le carousel
             </label>
@@ -394,7 +394,7 @@ export default function NewsEditorPage({
 
         {/* Attachments */}
         <div className="mb-6">
-          <label className="mb-2 block text-[12px] font-medium text-[var(--heading)]">
+          <label className="mb-2 block text-[12px] font-medium text-gray-900">
             <Paperclip className="mr-1.5 inline h-3.5 w-3.5" />
             Pièces jointes
           </label>

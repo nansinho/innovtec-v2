@@ -205,14 +205,14 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
       <div className="mb-4 flex items-center justify-between">
         <button
           onClick={onCancel}
-          className="flex items-center gap-1.5 text-sm text-[var(--text-secondary)] transition-colors hover:text-[var(--heading)]"
+          className="flex items-center gap-1.5 text-sm text-gray-500 transition-colors hover:text-gray-900"
         >
           <ArrowLeft className="h-4 w-4" />
           Retour
         </button>
         <button
           onClick={() => setShowAiImport(true)}
-          className="flex items-center gap-1.5 rounded-[var(--radius-xs)] bg-gradient-to-r from-purple-600 to-blue-600 px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90"
+          className="flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-purple-600 to-blue-600 px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90"
         >
           <Sparkles className="h-4 w-4" />
           Import IA
@@ -222,32 +222,32 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
       {/* AI Import Modal */}
       {showAiImport && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => !aiLoading && setShowAiImport(false)}>
-          <div className="mx-4 w-full max-w-2xl rounded-[var(--radius)] border border-[var(--border-1)] bg-white p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
+          <div className="mx-4 w-full max-w-2xl rounded-xl border border-gray-200 bg-white p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
             <div className="mb-4 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Sparkles className="h-5 w-5 text-purple-600" />
-                <h3 className="text-base font-semibold text-[var(--heading)]">Import via IA</h3>
+                <h3 className="text-base font-semibold text-gray-900">Import via IA</h3>
               </div>
-              <button onClick={() => setShowAiImport(false)} disabled={aiLoading} className="rounded-[var(--radius-xs)] p-1 text-[var(--text-muted)] hover:bg-[var(--hover)]">
+              <button onClick={() => setShowAiImport(false)} disabled={aiLoading} className="rounded-lg p-1 text-gray-400 hover:bg-gray-50">
                 <X className="h-5 w-5" />
               </button>
             </div>
-            <p className="mb-3 text-sm text-[var(--text-secondary)]">
+            <p className="mb-3 text-sm text-gray-500">
               Importez une image (PNG, JPG) ou un PDF de votre tableau de bord SSE.
               L&apos;IA analysera le document et pré-remplira automatiquement tous les champs du formulaire.
             </p>
             <label
-              className={`flex cursor-pointer flex-col items-center justify-center rounded-[var(--radius-xs)] border-2 border-dashed px-6 py-10 transition-colors ${
+              className={`flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed px-6 py-10 transition-colors ${
                 aiFile
                   ? "border-purple-400 bg-purple-50"
-                  : "border-[var(--border-2)] bg-[var(--hover)] hover:border-purple-400"
+                  : "border-gray-100 bg-gray-50 hover:border-purple-400"
               } ${aiLoading ? "pointer-events-none opacity-50" : ""}`}
             >
-              <Upload className="mb-3 h-8 w-8 text-[var(--text-muted)]" />
+              <Upload className="mb-3 h-8 w-8 text-gray-400" />
               {aiFile ? (
                 <div className="text-center">
-                  <p className="text-sm font-medium text-[var(--heading)]">{aiFile.name}</p>
-                  <p className="mt-1 text-xs text-[var(--text-muted)]">
+                  <p className="text-sm font-medium text-gray-900">{aiFile.name}</p>
+                  <p className="mt-1 text-xs text-gray-400">
                     {(aiFile.size / 1024 / 1024).toFixed(2)} Mo
                   </p>
                   <button
@@ -260,10 +260,10 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
                 </div>
               ) : (
                 <div className="text-center">
-                  <p className="text-sm font-medium text-[var(--heading)]">
+                  <p className="text-sm font-medium text-gray-900">
                     Cliquez pour sélectionner un fichier
                   </p>
-                  <p className="mt-1 text-xs text-[var(--text-muted)]">
+                  <p className="mt-1 text-xs text-gray-400">
                     PNG, JPG ou PDF
                   </p>
                 </div>
@@ -284,14 +284,14 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
               <button
                 onClick={() => { setShowAiImport(false); setAiFile(null); }}
                 disabled={aiLoading}
-                className="rounded-[var(--radius-xs)] border border-[var(--border-2)] px-4 py-2 text-sm font-medium text-[var(--heading)] hover:bg-[var(--hover)] disabled:opacity-50"
+                className="rounded-lg border border-gray-100 px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50 disabled:opacity-50"
               >
                 Annuler
               </button>
               <button
                 onClick={handleAiImport}
                 disabled={aiLoading || !aiFile}
-                className="flex items-center gap-1.5 rounded-[var(--radius-xs)] bg-gradient-to-r from-purple-600 to-blue-600 px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+                className="flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-purple-600 to-blue-600 px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50"
               >
                 <Sparkles className="h-4 w-4" />
                 {aiLoading ? "Analyse en cours..." : "Analyser et importer"}
@@ -306,11 +306,11 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
         <Section title="Période">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">Mois</label>
+              <label className="mb-1.5 block text-xs font-medium text-gray-500">Mois</label>
               <select
                 value={form.month}
                 onChange={(e) => set("month", parseInt(e.target.value))}
-                className="w-full rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-3 py-2 text-sm text-[var(--heading)] outline-none focus:border-[var(--yellow)] focus:ring-1 focus:ring-[var(--yellow)]"
+                className="w-full rounded-lg border border-gray-100 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/20"
               >
                 {MONTH_NAMES.map((name, i) => (
                   <option key={i} value={i + 1}>{name}</option>
@@ -318,12 +318,12 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
               </select>
             </div>
             <div>
-              <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">Année</label>
+              <label className="mb-1.5 block text-xs font-medium text-gray-500">Année</label>
               <input
                 type="number"
                 value={form.year}
                 onChange={(e) => set("year", parseInt(e.target.value) || currentYear)}
-                className="w-full rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-3 py-2 text-sm text-[var(--heading)] outline-none focus:border-[var(--yellow)] focus:ring-1 focus:ring-[var(--yellow)]"
+                className="w-full rounded-lg border border-gray-100 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/20"
               />
             </div>
           </div>
@@ -331,16 +331,16 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
 
         {/* Indicateurs principaux */}
         <Section title="Indicateurs principaux">
-          <div className="overflow-hidden rounded-[var(--radius-xs)] border border-[var(--border-1)]">
+          <div className="overflow-hidden rounded-lg border border-gray-200">
             <table className="w-full text-sm">
-              <thead className="bg-[var(--hover)]">
+              <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-3 py-2 text-left text-xs font-medium text-[var(--text-secondary)]">Indicateur</th>
-                  <th className="px-3 py-2 text-center text-xs font-medium text-[var(--text-secondary)]">Réalisé</th>
-                  <th className="px-3 py-2 text-center text-xs font-medium text-[var(--text-secondary)]">Objectif</th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">Indicateur</th>
+                  <th className="px-3 py-2 text-center text-xs font-medium text-gray-500">Réalisé</th>
+                  <th className="px-3 py-2 text-center text-xs font-medium text-gray-500">Objectif</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[var(--border-1)]">
+              <tbody className="divide-y divide-gray-200">
                 <IndicatorRow
                   label="Nombre d'Accidents en Service Avec Arrêts (ASAA)"
                   value={form.accidents_with_leave}
@@ -393,13 +393,13 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
                   suffix="%"
                 />
                 <tr>
-                  <td className="px-3 py-2 text-sm text-[var(--heading)]">Bennes déclassées</td>
+                  <td className="px-3 py-2 text-sm text-gray-900">Bennes déclassées</td>
                   <td className="px-3 py-2">
                     <input
                       type="number"
                       value={form.downgraded_bins}
                       onChange={(e) => set("downgraded_bins", parseInt(e.target.value) || 0)}
-                      className="w-full rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-2 py-1 text-center text-sm outline-none focus:border-[var(--yellow)]"
+                      className="w-full rounded-lg border border-gray-100 bg-white px-2 py-1 text-center text-sm outline-none focus:border-orange-500"
                     />
                   </td>
                   <td className="px-3 py-2">
@@ -407,7 +407,7 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
                       type="number"
                       value={form.downgraded_bins_objective}
                       onChange={(e) => set("downgraded_bins_objective", parseInt(e.target.value) || 0)}
-                      className="w-full rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-2 py-1 text-center text-sm outline-none focus:border-[var(--yellow)]"
+                      className="w-full rounded-lg border border-gray-100 bg-white px-2 py-1 text-center text-sm outline-none focus:border-orange-500"
                     />
                   </td>
                 </tr>
@@ -418,91 +418,91 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
 
         {/* Indicateurs de suivi */}
         <Section title="Indicateurs de suivi">
-          <div className="overflow-hidden rounded-[var(--radius-xs)] border border-[var(--border-1)]">
+          <div className="overflow-hidden rounded-lg border border-gray-200">
             <table className="w-full text-sm">
-              <thead className="bg-[var(--hover)]">
+              <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-3 py-2 text-left text-xs font-medium text-[var(--text-secondary)]">Indicateur</th>
-                  <th className="px-3 py-2 text-center text-xs font-medium text-[var(--text-secondary)]">Objectif</th>
-                  <th className="px-3 py-2 text-center text-xs font-medium text-[var(--text-secondary)]">Réalisé</th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">Indicateur</th>
+                  <th className="px-3 py-2 text-center text-xs font-medium text-gray-500">Objectif</th>
+                  <th className="px-3 py-2 text-center text-xs font-medium text-gray-500">Réalisé</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[var(--border-1)]">
+              <tbody className="divide-y divide-gray-200">
                 <tr>
-                  <td className="px-3 py-2 text-sm text-[var(--heading)]">Nombre d&apos;accidents en service sans arrêt (ASSA)</td>
+                  <td className="px-3 py-2 text-sm text-gray-900">Nombre d&apos;accidents en service sans arrêt (ASSA)</td>
                   <td className="px-3 py-2">
                     <input type="number" value={form.accidents_without_leave_objective} onChange={(e) => set("accidents_without_leave_objective", parseInt(e.target.value) || 0)}
-                      className="w-full rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-2 py-1 text-center text-sm outline-none focus:border-[var(--yellow)]" />
+                      className="w-full rounded-lg border border-gray-100 bg-white px-2 py-1 text-center text-sm outline-none focus:border-orange-500" />
                   </td>
                   <td className="px-3 py-2">
                     <input type="number" value={form.accidents_without_leave} onChange={(e) => set("accidents_without_leave", parseInt(e.target.value) || 0)}
-                      className="w-full rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-2 py-1 text-center text-sm outline-none focus:border-[var(--yellow)]" />
+                      className="w-full rounded-lg border border-gray-100 bg-white px-2 py-1 text-center text-sm outline-none focus:border-orange-500" />
                   </td>
                 </tr>
                 <tr>
-                  <td className="px-3 py-2 text-sm text-[var(--heading)]">Nombre de visites croisées</td>
+                  <td className="px-3 py-2 text-sm text-gray-900">Nombre de visites croisées</td>
                   <td className="px-3 py-2">
                     <input type="text" value={form.cross_visits_objective} onChange={(e) => set("cross_visits_objective", e.target.value)}
-                      className="w-full rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-2 py-1 text-center text-sm outline-none focus:border-[var(--yellow)]" />
+                      className="w-full rounded-lg border border-gray-100 bg-white px-2 py-1 text-center text-sm outline-none focus:border-orange-500" />
                   </td>
                   <td className="px-3 py-2">
                     <input type="number" value={form.cross_visits} onChange={(e) => set("cross_visits", parseInt(e.target.value) || 0)}
-                      className="w-full rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-2 py-1 text-center text-sm outline-none focus:border-[var(--yellow)]" />
+                      className="w-full rounded-lg border border-gray-100 bg-white px-2 py-1 text-center text-sm outline-none focus:border-orange-500" />
                   </td>
                 </tr>
                 <tr>
-                  <td className="px-3 py-2 text-sm text-[var(--heading)]">Nombre de visites managériales</td>
+                  <td className="px-3 py-2 text-sm text-gray-900">Nombre de visites managériales</td>
                   <td className="px-3 py-2">
                     <input type="number" value={form.managerial_visits_objective} onChange={(e) => set("managerial_visits_objective", parseInt(e.target.value) || 0)}
-                      className="w-full rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-2 py-1 text-center text-sm outline-none focus:border-[var(--yellow)]" />
+                      className="w-full rounded-lg border border-gray-100 bg-white px-2 py-1 text-center text-sm outline-none focus:border-orange-500" />
                   </td>
                   <td className="px-3 py-2">
                     <input type="number" value={form.managerial_visits} onChange={(e) => set("managerial_visits", parseInt(e.target.value) || 0)}
-                      className="w-full rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-2 py-1 text-center text-sm outline-none focus:border-[var(--yellow)]" />
+                      className="w-full rounded-lg border border-gray-100 bg-white px-2 py-1 text-center text-sm outline-none focus:border-orange-500" />
                   </td>
                 </tr>
                 <tr>
-                  <td className="px-3 py-2 text-sm text-[var(--heading)]">% de déclarants de SD (salariés)</td>
+                  <td className="px-3 py-2 text-sm text-gray-900">% de déclarants de SD (salariés)</td>
                   <td className="px-3 py-2">
                     <input type="number" step="0.01" value={form.sd_declarants_objective} onChange={(e) => set("sd_declarants_objective", parseFloat(e.target.value) || 0)}
-                      className="w-full rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-2 py-1 text-center text-sm outline-none focus:border-[var(--yellow)]" />
+                      className="w-full rounded-lg border border-gray-100 bg-white px-2 py-1 text-center text-sm outline-none focus:border-orange-500" />
                   </td>
                   <td className="px-3 py-2">
                     <input type="number" step="0.01" value={form.sd_declarants_percentage} onChange={(e) => set("sd_declarants_percentage", parseFloat(e.target.value) || 0)}
-                      className="w-full rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-2 py-1 text-center text-sm outline-none focus:border-[var(--yellow)]" />
+                      className="w-full rounded-lg border border-gray-100 bg-white px-2 py-1 text-center text-sm outline-none focus:border-orange-500" />
                   </td>
                 </tr>
                 <tr>
-                  <td className="px-3 py-2 text-sm text-[var(--heading)]">Nombres de SD déclarés</td>
+                  <td className="px-3 py-2 text-sm text-gray-900">Nombres de SD déclarés</td>
                   <td className="px-3 py-2">
                     <input type="number" value={form.sd_declared_objective} onChange={(e) => set("sd_declared_objective", parseInt(e.target.value) || 0)}
-                      className="w-full rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-2 py-1 text-center text-sm outline-none focus:border-[var(--yellow)]" />
+                      className="w-full rounded-lg border border-gray-100 bg-white px-2 py-1 text-center text-sm outline-none focus:border-orange-500" />
                   </td>
                   <td className="px-3 py-2">
                     <input type="number" value={form.sd_declared_count} onChange={(e) => set("sd_declared_count", parseInt(e.target.value) || 0)}
-                      className="w-full rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-2 py-1 text-center text-sm outline-none focus:border-[var(--yellow)]" />
+                      className="w-full rounded-lg border border-gray-100 bg-white px-2 py-1 text-center text-sm outline-none focus:border-orange-500" />
                   </td>
                 </tr>
                 <tr>
-                  <td className="px-3 py-2 text-sm text-[var(--heading)]">Nombre de salariés sensibilisés au tri des déchets</td>
+                  <td className="px-3 py-2 text-sm text-gray-900">Nombre de salariés sensibilisés au tri des déchets</td>
                   <td className="px-3 py-2">
                     <input type="text" value={form.waste_awareness_objective} onChange={(e) => set("waste_awareness_objective", e.target.value)}
-                      className="w-full rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-2 py-1 text-center text-sm outline-none focus:border-[var(--yellow)]" />
+                      className="w-full rounded-lg border border-gray-100 bg-white px-2 py-1 text-center text-sm outline-none focus:border-orange-500" />
                   </td>
                   <td className="px-3 py-2">
                     <input type="number" value={form.waste_awareness_employees} onChange={(e) => set("waste_awareness_employees", parseInt(e.target.value) || 0)}
-                      className="w-full rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-2 py-1 text-center text-sm outline-none focus:border-[var(--yellow)]" />
+                      className="w-full rounded-lg border border-gray-100 bg-white px-2 py-1 text-center text-sm outline-none focus:border-orange-500" />
                   </td>
                 </tr>
                 <tr>
-                  <td className="px-3 py-2 text-sm text-[var(--heading)]">Taux de suivi du plan de formation</td>
+                  <td className="px-3 py-2 text-sm text-gray-900">Taux de suivi du plan de formation</td>
                   <td className="px-3 py-2">
                     <input type="text" value={form.training_plan_objective} onChange={(e) => set("training_plan_objective", e.target.value)}
-                      className="w-full rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-2 py-1 text-center text-sm outline-none focus:border-[var(--yellow)]" />
+                      className="w-full rounded-lg border border-gray-100 bg-white px-2 py-1 text-center text-sm outline-none focus:border-orange-500" />
                   </td>
                   <td className="px-3 py-2">
                     <input type="number" step="0.1" value={form.training_plan_follow_rate} onChange={(e) => set("training_plan_follow_rate", parseFloat(e.target.value) || 0)}
-                      className="w-full rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-2 py-1 text-center text-sm outline-none focus:border-[var(--yellow)]" />
+                      className="w-full rounded-lg border border-gray-100 bg-white px-2 py-1 text-center text-sm outline-none focus:border-orange-500" />
                   </td>
                 </tr>
               </tbody>
@@ -513,12 +513,12 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
         {/* Visites terrain */}
         <Section title="Visites terrain">
           <div>
-            <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">Nombre de visites terrain</label>
+            <label className="mb-1.5 block text-xs font-medium text-gray-500">Nombre de visites terrain</label>
             <input
               type="number"
               value={form.field_visits_count}
               onChange={(e) => set("field_visits_count", parseInt(e.target.value) || 0)}
-              className="w-48 rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-3 py-2 text-sm text-[var(--heading)] outline-none focus:border-[var(--yellow)] focus:ring-1 focus:ring-[var(--yellow)]"
+              className="w-48 rounded-lg border border-gray-100 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/20"
             />
           </div>
         </Section>
@@ -530,7 +530,7 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
             onChange={(e) => set("monthly_report", e.target.value)}
             rows={6}
             placeholder="Rédigez le bilan mensuel..."
-            className="w-full rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-3 py-2 text-sm text-[var(--heading)] outline-none focus:border-[var(--yellow)] focus:ring-1 focus:ring-[var(--yellow)]"
+            className="w-full rounded-lg border border-gray-100 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/20"
           />
         </Section>
 
@@ -559,12 +559,12 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
         {/* Focus evenement */}
         <Section title="Focus événement">
           <div className="mb-4">
-            <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">Titre de l&apos;événement</label>
+            <label className="mb-1.5 block text-xs font-medium text-gray-500">Titre de l&apos;événement</label>
             <input
               type="text"
               value={form.focus_event_title}
               onChange={(e) => set("focus_event_title", e.target.value)}
-              className="w-full rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-3 py-2 text-sm text-[var(--heading)] outline-none focus:border-[var(--yellow)] focus:ring-1 focus:ring-[var(--yellow)]"
+              className="w-full rounded-lg border border-gray-100 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/20"
             />
           </div>
           <DynamicList
@@ -582,22 +582,22 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
             type="text"
             value={form.quote}
             onChange={(e) => set("quote", e.target.value)}
-            className="w-full rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-3 py-2 text-sm italic text-[var(--heading)] outline-none focus:border-[var(--yellow)] focus:ring-1 focus:ring-[var(--yellow)]"
+            className="w-full rounded-lg border border-gray-100 bg-white px-3 py-2 text-sm italic text-gray-900 outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/20"
           />
         </Section>
 
         {/* Actions */}
-        <div className="flex items-center justify-end gap-3 border-t border-[var(--border-1)] pt-6">
+        <div className="flex items-center justify-end gap-3 border-t border-gray-200 pt-6">
           <button
             onClick={onCancel}
-            className="rounded-[var(--radius-xs)] border border-[var(--border-2)] px-4 py-2 text-sm font-medium text-[var(--heading)] transition-colors hover:bg-[var(--hover)]"
+            className="rounded-lg border border-gray-100 px-4 py-2 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-50"
           >
             Annuler
           </button>
           <button
             onClick={handleSubmit}
             disabled={isPending}
-            className="flex items-center gap-1.5 rounded-[var(--radius-xs)] bg-[var(--yellow)] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[var(--yellow-hover)] disabled:opacity-50"
+            className="flex items-center gap-1.5 rounded-lg bg-orange-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-orange-700 disabled:opacity-50"
           >
             <Save className="h-4 w-4" />
             {isPending ? "Enregistrement..." : isEditing ? "Mettre à jour" : "Créer le tableau"}
@@ -610,8 +610,8 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] p-5 shadow-xs">
-      <h3 className="mb-4 text-sm font-semibold text-[var(--heading)]">{title}</h3>
+    <div className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
+      <h3 className="mb-4 text-sm font-semibold text-gray-900">{title}</h3>
       {children}
     </div>
   );
@@ -636,7 +636,7 @@ function IndicatorRow({
 }) {
   return (
     <tr>
-      <td className="px-3 py-2 text-sm text-[var(--heading)]">{label}</td>
+      <td className="px-3 py-2 text-sm text-gray-900">{label}</td>
       <td className="px-3 py-2">
         <div className="flex items-center justify-center gap-1">
           <input
@@ -644,9 +644,9 @@ function IndicatorRow({
             step={type === "decimal" ? "0.1" : "1"}
             value={value}
             onChange={(e) => onValueChange(type === "decimal" ? parseFloat(e.target.value) || 0 : parseInt(e.target.value) || 0)}
-            className="w-20 rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-2 py-1 text-center text-sm outline-none focus:border-[var(--yellow)]"
+            className="w-20 rounded-lg border border-gray-100 bg-white px-2 py-1 text-center text-sm outline-none focus:border-orange-500"
           />
-          {suffix && <span className="text-xs text-[var(--text-muted)]">{suffix}</span>}
+          {suffix && <span className="text-xs text-gray-400">{suffix}</span>}
         </div>
       </td>
       <td className="px-3 py-2">
@@ -654,7 +654,7 @@ function IndicatorRow({
           type="text"
           value={objective}
           onChange={(e) => onObjectiveChange(e.target.value)}
-          className="w-full rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-2 py-1 text-center text-sm outline-none focus:border-[var(--yellow)]"
+          className="w-full rounded-lg border border-gray-100 bg-white px-2 py-1 text-center text-sm outline-none focus:border-orange-500"
         />
       </td>
     </tr>
@@ -683,11 +683,11 @@ function DynamicList({
             value={item}
             onChange={(e) => onUpdate(i, e.target.value)}
             placeholder={placeholder}
-            className="flex-1 rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-3 py-1.5 text-sm text-[var(--heading)] outline-none focus:border-[var(--yellow)]"
+            className="flex-1 rounded-lg border border-gray-100 bg-white px-3 py-1.5 text-sm text-gray-900 outline-none focus:border-orange-500"
           />
           <button
             onClick={() => onRemove(i)}
-            className="rounded-[var(--radius-xs)] p-1.5 text-[var(--text-muted)] transition-colors hover:bg-red-50 hover:text-red-600"
+            className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600"
           >
             <X className="h-4 w-4" />
           </button>
@@ -695,7 +695,7 @@ function DynamicList({
       ))}
       <button
         onClick={onAdd}
-        className="flex items-center gap-1.5 text-xs font-medium text-[var(--yellow)] transition-colors hover:text-[var(--yellow-hover)]"
+        className="flex items-center gap-1.5 text-xs font-medium text-orange-600 transition-colors hover:text-orange-700"
       >
         <Plus className="h-3.5 w-3.5" />
         Ajouter

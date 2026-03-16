@@ -11,7 +11,7 @@ export function Input({ label, error, className, id, ...props }: InputProps) {
       {label && (
         <label
           htmlFor={id}
-          className="mb-1.5 block text-sm font-medium text-[var(--heading)]"
+          className="mb-1.5 block text-sm font-medium text-gray-900"
         >
           {label}
         </label>
@@ -19,7 +19,7 @@ export function Input({ label, error, className, id, ...props }: InputProps) {
       <input
         id={id}
         className={cn(
-          "h-10 w-full rounded-[var(--radius)] border border-zinc-300 bg-white px-3 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]",
+          "h-10 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-900 outline-none transition-colors placeholder:text-gray-400 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20",
           error && "border-red-300 focus:border-red-500 focus:ring-red-100",
           className
         )}
