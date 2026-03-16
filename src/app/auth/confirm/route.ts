@@ -2,6 +2,14 @@ import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { NextResponse, type NextRequest } from "next/server";
 
+function getBaseUrl(request: NextRequest): string {
+  const host =
+    request.headers.get("x-forwarded-host") || request.headers.get("host");
+  const proto = request.headers.get("x-forwarded-proto") || "http";
+  if (host) return `${proto}://${host}`;
+  return process.env.NEXT_PUBLIC_SITE_URL || request.nextUrl.origin;
+}
+
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const token_hash = searchParams.get("token_hash");
@@ -12,6 +20,7 @@ export async function GET(request: NextRequest) {
     | "magiclink"
     | null;
   const next = searchParams.get("next") ?? "/";
+  const baseUrl = getBaseUrl(request);
 
   if (token_hash && type) {
     const cookieStore = await cookies();
@@ -39,23 +48,19 @@ export async function GET(request: NextRequest) {
     });
 
     if (!error) {
-      // Pour les recovery, rediriger vers la page de reset
       if (type === "recovery") {
-        return NextResponse.redirect(
-          new URL("/reset-password", request.url)
-        );
+        return NextResponse.redirect(new URL("/reset-password", baseUrl));
       }
-      return NextResponse.redirect(new URL(next, request.url));
+      return NextResponse.redirect(new URL(next, baseUrl));
     }
 
-    // Token invalide ou expiré — rediriger vers forgot-password avec erreur
+    // Token invalide ou expiré
     if (type === "recovery") {
       return NextResponse.redirect(
-        new URL("/forgot-password?error=expired", request.url)
+        new URL("/forgot-password?error=expired", baseUrl)
       );
     }
   }
 
-  // En cas d'erreur, rediriger vers login
-  return NextResponse.redirect(new URL("/login", request.url));
+  return NextResponse.redirect(new URL("/login", baseUrl));
 }
