@@ -114,7 +114,7 @@ export default function WelcomeCarousel() {
   const next = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
 
   return (
-    <div className="relative overflow-hidden rounded-2xl bg-[#0F2035] shadow-lg ring-1 ring-black/5">
+    <div className="relative overflow-hidden rounded-xl bg-[#0F2035] shadow-lg ring-1 ring-black/5">
       <div ref={emblaRef} className="overflow-hidden">
         <div className="flex">
           {slides.map((slide, i) => {

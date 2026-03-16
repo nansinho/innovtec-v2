@@ -19,7 +19,7 @@ export function Input({ label, error, className, id, ...props }: InputProps) {
       <input
         id={id}
         className={cn(
-          "h-10 w-full rounded-[var(--radius)] border border-zinc-300 bg-white px-3 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]",
+          "h-9 w-full rounded-lg border border-zinc-300 bg-white px-3 text-[13px] text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]",
           error && "border-red-300 focus:border-red-500 focus:ring-red-100",
           className
         )}

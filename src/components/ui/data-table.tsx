@@ -357,7 +357,7 @@ export function DataTable<T>({
                               }));
                               setPage(0);
                             }}
-                            className="h-9 w-full rounded-lg border border-[var(--border-1)] bg-white px-3 text-[13px] text-[var(--text)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                            className="h-8 w-full rounded-lg border border-[var(--border-1)] bg-white px-3 text-xs text-[var(--text)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
                           >
                             <option value="">{f.placeholder ?? `Tous`}</option>
                             {f.options.map((opt) => (
@@ -378,7 +378,7 @@ export function DataTable<T>({
                               setPage(0);
                             }}
                             placeholder={f.placeholder ?? f.label}
-                            className="h-9 w-full rounded-lg border border-[var(--border-1)] bg-white px-3 text-sm outline-none transition-all placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                            className="h-8 w-full rounded-lg border border-[var(--border-1)] bg-white px-3 text-xs outline-none transition-all placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
                           />
                         )}
                         {f.type === "date" && (
@@ -392,7 +392,7 @@ export function DataTable<T>({
                               }));
                               setPage(0);
                             }}
-                            className="h-9 w-full rounded-lg border border-[var(--border-1)] bg-white px-3 text-sm outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                            className="h-8 w-full rounded-lg border border-[var(--border-1)] bg-white px-3 text-xs outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
                           />
                         )}
                       </div>

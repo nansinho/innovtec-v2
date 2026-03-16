@@ -72,7 +72,7 @@ export default function BirthdayPopup({ wishes, userName }: BirthdayPopupProps) 
       </div>
 
       {/* Popup card */}
-      <div className="relative z-10 mx-4 w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl">
+      <div className="relative z-10 mx-4 w-full max-w-md overflow-hidden rounded-xl bg-white shadow-2xl">
         {/* Close */}
         <button
           onClick={handleClose}

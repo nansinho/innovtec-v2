@@ -564,7 +564,7 @@ export default function PolitiqueContent({
 
         {/* Upload zone */}
         {showUpload && (
-          <div className="rounded-2xl border border-[var(--border-1)] bg-gradient-to-b from-[var(--card)] to-[var(--hover)] p-6 shadow-sm">
+          <div className="rounded-xl border border-[var(--border-1)] bg-gradient-to-b from-[var(--card)] to-[var(--hover)] p-6 shadow-sm">
             <div className="mb-1 flex items-center gap-2">
               <Upload className="h-4 w-4 text-[var(--yellow)]" />
               <h3 className="text-sm font-semibold text-[var(--heading)]">Import IA</h3>
@@ -579,7 +579,7 @@ export default function PolitiqueContent({
         {/* Form */}
         <div className="space-y-5">
           {/* Year + Date signature + Title header */}
-          <div className="rounded-2xl border border-[var(--border-1)] bg-[var(--card)] shadow-sm">
+          <div className="rounded-xl border border-[var(--border-1)] bg-[var(--card)] shadow-sm">
             <div className="flex flex-wrap gap-4 p-5">
               <div className="w-24 shrink-0">
                 <label className="mb-1.5 block text-[11px] font-medium text-[var(--text-muted)]">Année</label>
@@ -613,7 +613,7 @@ export default function PolitiqueContent({
           </div>
 
           {/* Présentation générale */}
-          <div className="rounded-2xl border border-[var(--border-1)] bg-[var(--card)] shadow-sm">
+          <div className="rounded-xl border border-[var(--border-1)] bg-[var(--card)] shadow-sm">
             <div className="flex items-center gap-3 border-b border-[var(--border-1)] px-5 py-4">
               <FileText className="h-5 w-5 text-[var(--text-muted)]" />
               <h3 className="text-[14px] font-semibold text-[var(--heading)]">Présentation générale</h3>
@@ -637,7 +637,7 @@ export default function PolitiqueContent({
               return (
                 <div
                   key={p.key}
-                  className="overflow-hidden rounded-2xl border bg-[var(--card)] shadow-sm"
+                  className="overflow-hidden rounded-xl border bg-[var(--card)] shadow-sm"
                   style={{ borderColor: p.border }}
                 >
                   {/* Pillar header */}
@@ -691,7 +691,7 @@ export default function PolitiqueContent({
         </div>
 
         {/* Documents Obligatoires */}
-        <div className="rounded-2xl border border-[var(--border-1)] bg-[var(--card)] shadow-sm">
+        <div className="rounded-xl border border-[var(--border-1)] bg-[var(--card)] shadow-sm">
           <div className="flex items-center gap-3 border-b border-[var(--border-1)] px-5 py-4">
             <FileText className="h-5 w-5 text-[var(--yellow)]" />
             <h3 className="text-[14px] font-semibold text-[var(--heading)]">Documents obligatoires</h3>
@@ -788,7 +788,7 @@ export default function PolitiqueContent({
         </div>
 
         {/* Engagement de la direction */}
-        <div className="rounded-2xl border border-[var(--border-1)] bg-[var(--card)] shadow-sm">
+        <div className="rounded-xl border border-[var(--border-1)] bg-[var(--card)] shadow-sm">
           <div className="flex items-center gap-3 border-b border-[var(--border-1)] px-5 py-4">
             <Award className="h-5 w-5 text-[var(--green)]" />
             <h3 className="text-[14px] font-semibold text-[var(--heading)]">Engagement de la direction</h3>
@@ -920,7 +920,7 @@ export default function PolitiqueContent({
         </div>
 
         {showUpload && (
-          <div className="rounded-2xl border border-[var(--border-1)] bg-gradient-to-b from-[var(--card)] to-[var(--hover)] p-6 shadow-sm">
+          <div className="rounded-xl border border-[var(--border-1)] bg-gradient-to-b from-[var(--card)] to-[var(--hover)] p-6 shadow-sm">
             <FileUploadAi
               onAnalysisComplete={(result, fileUrl) => { handleAiResult(result, fileUrl); setEditingId(selected.id); }}
               type="politique"
@@ -933,7 +933,7 @@ export default function PolitiqueContent({
         {imageUrl ? (
           <div className="space-y-4">
             {/* Original imported image */}
-            <div className="overflow-hidden rounded-2xl border border-[var(--border-1)] bg-[var(--card)] shadow-lg transition-shadow duration-300 hover:shadow-xl">
+            <div className="overflow-hidden rounded-xl border border-[var(--border-1)] bg-[var(--card)] shadow-lg transition-shadow duration-300 hover:shadow-xl">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={imageUrl} alt={selected.title} className="w-full h-auto" />
             </div>
@@ -982,7 +982,7 @@ export default function PolitiqueContent({
             )}
 
             {/* Hero Banner */}
-            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[var(--navy)] via-[#1e3a5f] to-[#2a4a7a] px-8 py-10 shadow-lg">
+            <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-[var(--navy)] via-[#1e3a5f] to-[#2a4a7a] px-8 py-10 shadow-lg">
               {/* Decorative circles */}
               <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-white/5" />
               <div className="absolute -bottom-4 -left-4 h-20 w-20 rounded-full bg-[var(--yellow)]/10" />
@@ -1012,7 +1012,7 @@ export default function PolitiqueContent({
 
             {/* Introduction */}
             {intro && (
-              <div className="rounded-2xl border border-[var(--border-1)] bg-[var(--card)] px-6 py-5 shadow-sm">
+              <div className="rounded-xl border border-[var(--border-1)] bg-[var(--card)] px-6 py-5 shadow-sm">
                 <p className="text-[13px] leading-[1.7] text-[var(--text)]">
                   {intro}
                 </p>
@@ -1031,7 +1031,7 @@ export default function PolitiqueContent({
                 {selected.sections.map((section, index) => (
                   <div
                     key={index}
-                    className="rounded-2xl border border-[var(--border-1)] bg-[var(--card)] p-5 shadow-xs transition-shadow hover:shadow-sm"
+                    className="rounded-xl border border-[var(--border-1)] bg-[var(--card)] p-5 shadow-xs transition-shadow hover:shadow-sm"
                   >
                     <h3 className="mb-2 text-[13px] font-semibold text-[var(--heading)]">{section.title}</h3>
                     <p className="whitespace-pre-wrap text-[12.5px] leading-relaxed text-[var(--text)]">{section.content}</p>
@@ -1042,7 +1042,7 @@ export default function PolitiqueContent({
 
             {/* Documents Obligatoires */}
             {selected.documents && selected.documents.length > 0 && (
-              <div className="overflow-hidden rounded-2xl border border-[var(--border-1)] bg-gradient-to-br from-[var(--navy)] via-[#1e3a5f] to-[#2a4a7a] shadow-lg">
+              <div className="overflow-hidden rounded-xl border border-[var(--border-1)] bg-gradient-to-br from-[var(--navy)] via-[#1e3a5f] to-[#2a4a7a] shadow-lg">
                 <div className="flex items-center gap-3 border-b border-white/10 px-6 py-4">
                   <FileText className="h-5 w-5 text-[var(--yellow)]" />
                   <h3 className="text-[15px] font-bold text-white">Documents Obligatoires</h3>
@@ -1075,7 +1075,7 @@ export default function PolitiqueContent({
 
             {/* Engagement de la direction */}
             {selected.engagement_text && (
-              <div className="overflow-hidden rounded-2xl border-2 border-[var(--green)] bg-gradient-to-br from-[var(--navy)] via-[#1e3a5f] to-[#2a4a7a] shadow-lg">
+              <div className="overflow-hidden rounded-xl border-2 border-[var(--green)] bg-gradient-to-br from-[var(--navy)] via-[#1e3a5f] to-[#2a4a7a] shadow-lg">
                 <div className="px-8 py-8">
                   <p className="mb-2 text-center text-[12px] font-semibold text-[var(--green)]">
                     Notre engagement
@@ -1166,7 +1166,7 @@ export default function PolitiqueContent({
       {/* Table view */}
       {allContent.length === 0 ? (
         <div className="flex flex-col items-center py-20 text-center">
-          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-zinc-100 ring-1 ring-zinc-200/60">
+          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-xl bg-zinc-100 ring-1 ring-zinc-200/60">
             <FileText className="h-7 w-7 text-zinc-400" />
           </div>
           <p className="text-sm font-semibold text-[var(--heading)]">

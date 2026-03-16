@@ -12,6 +12,7 @@ import {
   Clock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   format,
   startOfWeek,
@@ -169,12 +170,12 @@ export default function PlanningView({
           return (
             <div
               key={kpi.key}
-              className={`animate-slide-up stagger-${i + 1} relative overflow-hidden rounded-2xl bg-white/92 p-6 shadow-[0_1px_4px_rgba(0,0,0,0.04)] ring-1 ring-black/[0.03] backdrop-blur-xl transition-all duration-300 ease-out hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)] hover:scale-[1.01]`}
+              className={`animate-slide-up stagger-${i + 1} relative overflow-hidden rounded-xl bg-white/92 p-6 shadow-[0_1px_4px_rgba(0,0,0,0.04)] ring-1 ring-black/[0.03] backdrop-blur-xl transition-all duration-300 ease-out hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)] hover:scale-[1.01]`}
             >
               <div className={`absolute inset-x-0 top-0 h-[2px] ${kpi.accent} opacity-60`} />
               <div className="flex items-center gap-4">
                 <div
-                  className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${kpi.bg}`}
+                  className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${kpi.bg}`}
                 >
                   <Icon className={`h-5 w-5 ${kpi.color}`} />
                 </div>
@@ -245,10 +246,10 @@ export default function PlanningView({
                   </button>
                 ))}
               </div>
-              <button className="inline-flex h-9 items-center gap-2 rounded-[var(--radius)] bg-[var(--yellow)] px-4 text-sm font-medium text-white transition-colors hover:bg-[var(--yellow-hover)]">
-                <Plus className="h-4 w-4" />
+              <Button size="sm" onClick={() => {}}>
+                <Plus className="h-3.5 w-3.5" />
                 Nouveau
-              </button>
+              </Button>
             </div>
           </div>
 

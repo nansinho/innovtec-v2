@@ -38,7 +38,7 @@ export default function MesSignalements({ signalements }: MesSignalementsProps) 
 
   if (signalements.length === 0) {
     return (
-      <div className="flex flex-col items-center rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] py-16 text-center shadow-xs">
+      <div className="flex flex-col items-center rounded-xl border border-[var(--border-1)] bg-[var(--card)] py-16 text-center shadow-xs">
         <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--yellow-surface)]">
           <AlertTriangle className="h-7 w-7 text-[var(--yellow)]" />
         </div>
@@ -62,7 +62,7 @@ export default function MesSignalements({ signalements }: MesSignalementsProps) 
           <button
             key={s.id}
             onClick={() => router.push(`/qse/signalements/${s.id}`)}
-            className="group flex flex-col rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] p-4 text-left shadow-xs transition-all hover:border-[var(--yellow)] hover:shadow-sm"
+            className="group flex flex-col rounded-xl border border-[var(--border-1)] bg-[var(--card)] p-4 text-left shadow-xs transition-all hover:border-[var(--yellow)] hover:shadow-sm"
           >
             <div className="mb-3 flex items-start justify-between">
               <div className="flex items-center gap-2">
