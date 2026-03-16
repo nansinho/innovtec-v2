@@ -3,19 +3,14 @@
 import { BookOpen, Eye, Download, Trash2 } from "lucide-react";
 import { DataTable, type ColumnDef } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
+import { TypeBadge } from "@/components/ui/status-badge";
+import { INCIDENT_TYPE_MAP } from "@/lib/status-config";
 import { getStandardToolbarActions } from "@/lib/table-toolbar-actions";
 import { useRouter } from "next/navigation";
 import { deleteRex } from "@/actions/qse";
 import { toast } from "sonner";
 import { exportRexPdf } from "@/lib/export/rex-pdf";
 import type { Rex } from "@/lib/types/database";
-
-const EVENT_TYPE_LABELS: Record<string, { label: string; variant: "blue" | "yellow" | "red" | "purple" | "default" }> = {
-  sd: { label: "SD", variant: "yellow" },
-  presquaccident: { label: "PRESQU'ACCIDENT", variant: "yellow" },
-  accident: { label: "ACCIDENT", variant: "red" },
-  hpe: { label: "HPE", variant: "purple" },
-};
 
 interface RexItem extends Rex {
   author?: { first_name: string; last_name: string } | null;
@@ -37,7 +32,7 @@ export default function RexList({ rexList, headerAction }: RexListProps) {
       sortable: true,
       accessor: (r) => r.rex_number || "",
       render: (r) => (
-        <span className="font-semibold text-orange-600">
+        <span className="font-semibold text-orange-700">
           {r.rex_number ? `${r.rex_number}/${r.rex_year || ""}` : "—"}
         </span>
       ),
@@ -77,12 +72,7 @@ export default function RexList({ rexList, headerAction }: RexListProps) {
       sortable: true,
       width: "140px",
       render: (r) => {
-        const t = EVENT_TYPE_LABELS[r.type_evenement];
-        return t ? (
-          <Badge variant={t.variant}>{t.label}</Badge>
-        ) : (
-          <span className="text-[var(--text-muted)]">—</span>
-        );
+        return <TypeBadge module="rex_types" type={r.type_evenement} />;
       },
     },
     {
@@ -91,7 +81,7 @@ export default function RexList({ rexList, headerAction }: RexListProps) {
       sortable: true,
       render: (r) =>
         r.chantier ? (
-          <Badge variant="blue">{r.chantier}</Badge>
+          <Badge variant="blue" dot={false}>{r.chantier}</Badge>
         ) : (
           <span className="text-[var(--text-muted)]">—</span>
         ),

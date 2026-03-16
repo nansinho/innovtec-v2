@@ -25,6 +25,8 @@ import type { Profile, UserRole } from "@/lib/types/database";
 import ConfirmDialog from "@/components/ui/confirm-dialog";
 import UserFormModal from "@/components/admin/user-form-modal";
 import { Badge } from "@/components/ui/badge";
+import { ROLE_MAP } from "@/lib/status-config";
+import { RoleBadge } from "@/components/ui/status-badge";
 
 const roleLabels: Record<string, string> = {
   admin: "Admin",
@@ -35,11 +37,6 @@ const roleOptions: { value: UserRole; label: string }[] = [
   { value: "admin", label: "Admin" },
   { value: "collaborateur", label: "Collaborateur" },
 ];
-
-const roleBadgeVariants: Record<string, "red" | "green" | "default"> = {
-  admin: "red",
-  collaborateur: "green",
-};
 
 interface UsersTableProps {
   users: Profile[];
@@ -431,15 +428,13 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
                         ))}
                       </select>
                     ) : (
-                      <Badge variant={roleBadgeVariants[user.role] ?? "default"} dot={false}>
-                        {roleLabels[user.role] ?? user.role}
-                      </Badge>
+                      <RoleBadge role={user.role} />
                     )}
                   </td>
 
                   {/* Status */}
                   <td className="px-4 py-3.5">
-                    <Badge variant={user.is_active ? "green" : "default"}>
+                    <Badge variant={user.is_active ? "green" : "gray"} dot>
                       {user.is_active ? "Actif" : "Inactif"}
                     </Badge>
                   </td>

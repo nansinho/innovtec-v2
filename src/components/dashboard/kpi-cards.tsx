@@ -3,6 +3,7 @@ import { getDocuments } from "@/actions/documents";
 import { getTrombinoscopeUsers } from "@/actions/trombinoscope";
 import { getTodayEvents } from "@/actions/events";
 import { getUserTodos } from "@/actions/todos";
+import { StatValue, StatLabel } from "@/components/ui/card";
 
 const kpis = [
   { key: "documents", label: "Documents", icon: FileText, color: "text-blue-500", bg: "bg-blue-500/[0.06]", accent: "bg-blue-500" },
@@ -43,10 +44,8 @@ export default async function KpiCards() {
                 <Icon className={`h-5 w-5 ${kpi.color}`} />
               </div>
               <div>
-                <div className="text-[28px] font-bold tracking-tight text-[var(--heading)]">
-                  {values[kpi.key] ?? 0}
-                </div>
-                <div className="text-xs font-medium text-[var(--text-muted)]">{kpi.label}</div>
+                <StatValue>{values[kpi.key] ?? 0}</StatValue>
+                <StatLabel>{kpi.label}</StatLabel>
               </div>
             </div>
           </div>

@@ -16,24 +16,17 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
 import { updateSignalementStatus, assignSignalement } from "@/actions/signalements";
 import { linkSignalement } from "@/actions/action-plans";
+import { StatusBadge, PriorityBadge } from "@/components/ui/status-badge";
+import { SIGNALEMENT_STATUS_MAP, PRIORITY_MAP } from "@/lib/status-config";
 import type { DangerReport, ActionPlan, Profile } from "@/lib/types/database";
 import { toast } from "sonner";
 
-const statusConfig: Record<string, { label: string; variant: "red" | "yellow" | "green" | "default"; color: string }> = {
-  signale: { label: "Signalé", variant: "red", color: "var(--red)" },
-  en_cours: { label: "En cours", variant: "yellow", color: "var(--yellow)" },
-  resolu: { label: "Résolu", variant: "green", color: "var(--green)" },
-  cloture: { label: "Clôturé", variant: "default", color: "var(--text-muted)" },
-};
-
-const priorityConfig: Record<string, { label: string; variant: "green" | "yellow" | "red" | "default" }> = {
-  faible: { label: "Faible", variant: "green" },
-  moyenne: { label: "Moyenne", variant: "yellow" },
-  haute: { label: "Haute", variant: "red" },
-  critique: { label: "Critique", variant: "red" },
+const stepColors: Record<string, string> = {
+  signale: "var(--red)",
+  en_cours: "var(--yellow)",
+  resolu: "var(--green)",
 };
 
 interface SignalementDetailProps {
@@ -54,8 +47,6 @@ export default function SignalementDetail({
   const [isPending, startTransition] = useTransition();
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
-  const st = statusConfig[signalement.status] ?? statusConfig.signale;
-  const pri = priorityConfig[signalement.priority] ?? priorityConfig.faible;
   const cat = signalement.category as { name: string; color: string } | null;
   const photos = signalement.photo_urls?.length > 0 ? signalement.photo_urls : signalement.photo_url ? [signalement.photo_url] : [];
 
@@ -114,11 +105,11 @@ export default function SignalementDetail({
           <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] p-6 shadow-xs">
             <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
               <h1 className="text-xl font-semibold text-[var(--heading)]">{signalement.title}</h1>
-              <Badge variant={st.variant}>{st.label}</Badge>
+              <StatusBadge module="signalements" status={signalement.status} />
             </div>
 
             <div className="mb-5 flex flex-wrap gap-2">
-              <Badge variant={pri.variant}>{pri.label}</Badge>
+              <PriorityBadge priority={signalement.priority} />
               {cat && (
                 <span
                   className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-wide text-white shadow-sm"
@@ -201,7 +192,7 @@ export default function SignalementDetail({
             </h3>
             <div className="flex items-center gap-0">
               {(["signale", "en_cours", "resolu"] as const).map((step, i) => {
-                const stepConf = statusConfig[step];
+                const stepConf = SIGNALEMENT_STATUS_MAP[step];
                 const isActive =
                   step === signalement.status ||
                   (step === "signale" && ["en_cours", "resolu", "cloture"].includes(signalement.status)) ||
@@ -216,7 +207,7 @@ export default function SignalementDetail({
                             ? "border-current text-[var(--green)]"
                             : "border-[var(--border-1)] text-[var(--text-muted)]"
                         )}
-                        style={isActive ? { color: stepConf.color } : undefined}
+                        style={isActive ? { color: stepColors[step] } : undefined}
                       >
                         {isActive ? (
                           <CheckCircle className="h-5 w-5" />

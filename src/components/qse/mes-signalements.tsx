@@ -11,21 +11,22 @@ import {
   Clock,
   AlertCircle,
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { StatusBadge, PriorityBadge } from "@/components/ui/status-badge";
+import { SIGNALEMENT_STATUS_MAP, PRIORITY_MAP } from "@/lib/status-config";
 import type { DangerReport } from "@/lib/types/database";
 
-const statusConfig: Record<string, { label: string; variant: "red" | "yellow" | "green" | "default"; icon: typeof AlertCircle }> = {
-  signale: { label: "Signalé", variant: "red", icon: AlertCircle },
-  en_cours: { label: "En cours", variant: "yellow", icon: Clock },
-  resolu: { label: "Résolu", variant: "green", icon: CheckCircle },
-  cloture: { label: "Clôturé", variant: "default", icon: CheckCircle },
+const statusIcons: Record<string, typeof AlertCircle> = {
+  signale: AlertCircle,
+  en_cours: Clock,
+  resolu: CheckCircle,
+  cloture: CheckCircle,
 };
 
-const priorityConfig: Record<string, { label: string; variant: "green" | "yellow" | "red" | "default" }> = {
-  faible: { label: "Faible", variant: "green" },
-  moyenne: { label: "Moyenne", variant: "yellow" },
-  haute: { label: "Haute", variant: "red" },
-  critique: { label: "Critique", variant: "red" },
+const statusColors: Record<string, string> = {
+  signale: "var(--red)",
+  en_cours: "var(--yellow)",
+  resolu: "var(--green)",
+  cloture: "var(--text-muted)",
 };
 
 interface MesSignalementsProps {
@@ -54,10 +55,8 @@ export default function MesSignalements({ signalements }: MesSignalementsProps) 
   return (
     <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       {signalements.map((s) => {
-        const st = statusConfig[s.status] ?? statusConfig.signale;
-        const pri = priorityConfig[s.priority] ?? priorityConfig.faible;
         const cat = s.category as { name: string; color: string } | null;
-        const StatusIcon = st.icon;
+        const StatusIcon = statusIcons[s.status] ?? AlertCircle;
 
         return (
           <button
@@ -67,8 +66,8 @@ export default function MesSignalements({ signalements }: MesSignalementsProps) 
           >
             <div className="mb-3 flex items-start justify-between">
               <div className="flex items-center gap-2">
-                <StatusIcon className="h-4 w-4" style={{ color: `var(--${st.variant === "default" ? "text-muted" : st.variant})` }} />
-                <Badge variant={st.variant}>{st.label}</Badge>
+                <StatusIcon className="h-4 w-4" style={{ color: statusColors[s.status] ?? "var(--text-muted)" }} />
+                <StatusBadge module="signalements" status={s.status} />
               </div>
               {s.is_anonymous && (
                 <span className="flex items-center gap-1 text-[11px] text-[var(--text-muted)]">
@@ -86,7 +85,7 @@ export default function MesSignalements({ signalements }: MesSignalementsProps) 
             </p>
 
             <div className="mt-auto flex flex-wrap items-center gap-3 text-[11px] text-[var(--text-muted)]">
-              <Badge variant={pri.variant}>{pri.label}</Badge>
+              <PriorityBadge priority={s.priority} />
               {cat && (
                 <span
                   className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold tracking-wide text-white shadow-sm"

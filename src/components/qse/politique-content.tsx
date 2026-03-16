@@ -1213,7 +1213,7 @@ export default function PolitiqueContent({
                       </span>
                     </td>
                     <td className="px-4 py-3.5">
-                      <Badge variant="yellow">
+                      <Badge variant="amber">
                         {docYear}
                       </Badge>
                     </td>

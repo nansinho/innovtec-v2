@@ -4,18 +4,13 @@ import { useState, useTransition } from "react";
 import { BookOpen, Trash2, Image as ImageIcon } from "lucide-react";
 import { DataTable, type ColumnDef } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
+import { CategoryBadge } from "@/components/ui/status-badge";
+import { PILLAR_MAP } from "@/lib/status-config";
 import { getStandardToolbarActions } from "@/lib/table-toolbar-actions";
 import { deleteBonnePratique } from "@/actions/bonnes-pratiques";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import type { BonnePratique } from "@/lib/types/database";
-
-const PILLAR_CONFIG: Record<string, { label: string; variant: "yellow" | "blue" | "red" | "green" }> = {
-  qualite: { label: "Qualité", variant: "yellow" },
-  sante: { label: "Santé", variant: "blue" },
-  securite: { label: "Sécurité", variant: "red" },
-  environnement: { label: "Environnement", variant: "green" },
-};
 
 interface BonnesPratiquesListProps {
   items: BonnePratique[];
@@ -70,8 +65,7 @@ export default function BonnesPratiquesList({ items, headerAction }: BonnesPrati
       sortable: true,
       width: "140px",
       render: (r) => {
-        const config = PILLAR_CONFIG[r.pillar] || { label: r.pillar, variant: "default" as const };
-        return <Badge variant={config.variant}>{config.label}</Badge>;
+        return <CategoryBadge module="piliers" category={r.pillar} />;
       },
     },
     {
@@ -80,7 +74,7 @@ export default function BonnesPratiquesList({ items, headerAction }: BonnesPrati
       sortable: true,
       render: (r) =>
         r.chantier ? (
-          <Badge variant="blue">{r.chantier}</Badge>
+          <Badge variant="blue" dot={false}>{r.chantier}</Badge>
         ) : (
           <span className="text-[var(--text-muted)]">—</span>
         ),
