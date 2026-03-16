@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import type { SseDashboard } from "@/lib/types/database";
+import { createNotificationForAll } from "@/actions/notifications";
 
 // ==========================================
 // SSE DASHBOARDS
@@ -96,6 +97,18 @@ export async function createSseDashboard(
 
   revalidatePath("/qse/tableau-sse");
   revalidatePath("/admin/tableau-sse");
+
+  const monthNames = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
+  const monthLabel = monthNames[dashboard.month - 1] ?? "";
+
+  await createNotificationForAll({
+    type: "system",
+    title: "Nouveau tableau de bord SSE",
+    message: `Le tableau de bord SSE de ${monthLabel} ${dashboard.year} a été publié`,
+    link: "/qse/tableau-sse",
+    excludeUserId: user.id,
+  });
+
   return { success: true, id: data?.id };
 }
 
@@ -136,6 +149,20 @@ export async function updateSseDashboard(
 
   revalidatePath("/qse/tableau-sse");
   revalidatePath("/admin/tableau-sse");
+
+  if (dashboard.month && dashboard.year) {
+    const monthNames = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
+    const monthLabel = monthNames[(dashboard.month as number) - 1] ?? "";
+
+    await createNotificationForAll({
+      type: "system",
+      title: "Tableau de bord SSE mis à jour",
+      message: `Le tableau de bord SSE de ${monthLabel} ${dashboard.year} a été modifié`,
+      link: "/qse/tableau-sse",
+      excludeUserId: user.id,
+    });
+  }
+
   return { success: true };
 }
 

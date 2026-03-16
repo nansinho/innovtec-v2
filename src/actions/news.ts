@@ -262,11 +262,20 @@ export async function shareNews(
     author_id: user.id,
     content: `a partagé l'article : "${article.title}"`,
     image_url: "",
-    news_id: newsId,
   });
 
   revalidatePath(`/actualites/${newsId}`);
   revalidatePath("/");
+
+  await createNotificationForAll({
+    type: "news",
+    title: "Article partagé",
+    message: article.title,
+    link: `/actualites/${newsId}`,
+    related_id: newsId,
+    excludeUserId: user.id,
+  });
+
   return { success: true };
 }
 
