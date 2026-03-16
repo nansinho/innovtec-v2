@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { sendPasswordResetEmail } from "@/lib/email";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
@@ -156,36 +157,36 @@ export async function requestPasswordReset(email: string): Promise<{ success: bo
     return { success: false, error: "Veuillez saisir votre email" };
   }
 
-  try {
-    const supabaseAdmin = createAdminClient();
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "";
+  const supabaseAdmin = createAdminClient();
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "";
 
-    // Générer un lien de recovery via l'admin API
-    const { data, error } = await supabaseAdmin.auth.admin.generateLink({
-      type: "recovery",
-      email,
-      options: {
-        redirectTo: `${siteUrl}/reset-password`,
-      },
-    });
+  // Générer un lien de recovery via l'admin API
+  const { data, error } = await supabaseAdmin.auth.admin.generateLink({
+    type: "recovery",
+    email,
+    options: {
+      redirectTo: `${siteUrl}/reset-password`,
+    },
+  });
 
-    if (error || !data?.properties?.hashed_token) {
-      // Ne pas révéler si l'email existe ou non
-      console.error("[requestPasswordReset]", error?.message ?? "No token");
-      return { success: true };
-    }
-
-    // Construire le lien de confirmation
-    const resetLink = `${siteUrl}/auth/confirm?token_hash=${data.properties.hashed_token}&type=recovery`;
-
-    // Envoyer l'email nous-mêmes via nodemailer
-    const { sendPasswordResetEmail } = await import("@/lib/email");
-    await sendPasswordResetEmail(email, resetLink);
-  } catch (err) {
-    console.error("[requestPasswordReset] Error:", err);
+  if (error) {
+    return { success: false, error: `Erreur génération lien: ${error.message}` };
   }
 
-  // Toujours retourner success pour ne pas révéler si l'email existe
+  if (!data?.properties?.hashed_token) {
+    return { success: false, error: "Aucun token généré. Vérifiez que l'email existe." };
+  }
+
+  // Construire le lien de confirmation
+  const resetLink = `${siteUrl}/auth/confirm?token_hash=${data.properties.hashed_token}&type=recovery`;
+
+  try {
+    await sendPasswordResetEmail(email, resetLink);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return { success: false, error: `Erreur envoi email: ${msg}` };
+  }
+
   return { success: true };
 }
 
