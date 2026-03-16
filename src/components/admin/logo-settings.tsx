@@ -105,16 +105,16 @@ function LogoUploadZone({
     <div className="flex-1 space-y-3">
       {/* Label */}
       <div className="flex items-center gap-2">
-        <Icon className="h-4 w-4 text-gray-400" />
+        <Icon className="h-4 w-4 text-[var(--text-muted)]" />
         <div>
-          <p className="text-xs font-semibold text-gray-900">{label}</p>
-          <p className="text-[10px] text-gray-400">{description}</p>
+          <p className="text-xs font-semibold text-[var(--heading)]">{label}</p>
+          <p className="text-[10px] text-[var(--text-muted)]">{description}</p>
         </div>
       </div>
 
       {/* Preview */}
       {currentUrl && (
-        <div className={`flex items-center justify-between rounded-lg border border-gray-200 px-4 py-3 ${previewBg}`}>
+        <div className={`flex items-center justify-between rounded-[var(--radius-sm)] border border-[var(--border-1)] px-4 py-3 ${previewBg}`}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={currentUrl}
@@ -124,7 +124,7 @@ function LogoUploadZone({
           <button
             onClick={handleDelete}
             disabled={isPending}
-            className="flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600"
+            className="flex items-center gap-1 rounded-[var(--radius-xs)] px-2 py-1 text-[11px] text-[var(--text-muted)] transition-colors hover:bg-[var(--red-surface)] hover:text-[var(--red)]"
           >
             <Trash2 className="h-3 w-3" />
           </button>
@@ -137,21 +137,21 @@ function LogoUploadZone({
         onDragLeave={() => setIsDragging(false)}
         onDrop={handleDrop}
         onClick={() => fileInputRef.current?.click()}
-        className={`${bgClass} flex cursor-pointer flex-col items-center gap-1.5 rounded-lg border-2 border-dashed px-4 py-4 transition-colors ${
+        className={`${bgClass} flex cursor-pointer flex-col items-center gap-1.5 rounded-[var(--radius-sm)] border-2 border-dashed px-4 py-4 transition-colors ${
           isDragging
-            ? "border-orange-500 bg-orange-50"
-            : "border-gray-200 hover:border-orange-500 hover:bg-gray-50"
+            ? "border-[var(--yellow)] bg-[var(--yellow-surface)]"
+            : "border-[var(--border-1)] hover:border-[var(--yellow)] hover:bg-[var(--hover)]"
         }`}
       >
         {isPending ? (
-          <Loader2 className="h-6 w-6 animate-spin text-orange-600" />
+          <Loader2 className="h-6 w-6 animate-spin text-[var(--yellow)]" />
         ) : (
-          <Upload className="h-6 w-6 text-gray-400" />
+          <Upload className="h-6 w-6 text-[var(--text-muted)]" />
         )}
-        <p className="text-[11px] font-medium text-gray-900">
+        <p className="text-[11px] font-medium text-[var(--heading)]">
           {isPending ? "Upload..." : currentUrl ? "Remplacer" : "Glissez ici"}
         </p>
-        <p className="text-[9px] text-gray-400">
+        <p className="text-[9px] text-[var(--text-muted)]">
           PNG, JPG, WebP, SVG
         </p>
         <input
@@ -166,10 +166,10 @@ function LogoUploadZone({
       {/* Message */}
       {message && (
         <div
-          className={`flex items-center gap-2 rounded-lg px-3 py-2 text-[11px] ${
+          className={`flex items-center gap-2 rounded-[var(--radius-sm)] px-3 py-2 text-[11px] ${
             message.type === "success"
-              ? "bg-emerald-50 text-emerald-600"
-              : "bg-red-50 text-red-600"
+              ? "bg-[var(--green-surface)] text-[var(--green)]"
+              : "bg-[var(--red-surface)] text-[var(--red)]"
           }`}
         >
           {message.type === "success" ? (
@@ -188,25 +188,25 @@ export default function LogoSettings({ logos }: LogoSettingsProps) {
   const hasAny = logos.light || logos.dark;
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+    <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] p-6 shadow-sm">
       <div className="mb-4 flex items-center gap-2.5">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50">
-          <ImageIcon className="h-4.5 w-4.5 text-blue-600" />
+        <div className="flex h-9 w-9 items-center justify-center rounded-[var(--radius-sm)] bg-[var(--blue-surface)]">
+          <ImageIcon className="h-4.5 w-4.5 text-[var(--blue)]" />
         </div>
         <div>
-          <h3 className="text-sm font-semibold text-gray-900">
+          <h3 className="text-sm font-semibold text-[var(--heading)]">
             Logo de la société
           </h3>
-          <p className="text-[11px] text-gray-400">
+          <p className="text-[11px] text-[var(--text-muted)]">
             Deux variantes pour un affichage optimal sur tous les fonds
           </p>
         </div>
       </div>
 
       {!hasAny && (
-        <div className="mb-4 flex items-center gap-2 rounded-lg border border-orange-500 bg-orange-50 px-4 py-3">
-          <AlertCircle className="h-4 w-4 text-orange-600" />
-          <span className="text-xs text-gray-700">
+        <div className="mb-4 flex items-center gap-2 rounded-[var(--radius-sm)] border border-[var(--yellow-border)] bg-[var(--yellow-surface)] px-4 py-3">
+          <AlertCircle className="h-4 w-4 text-[var(--yellow)]" />
+          <span className="text-xs text-[var(--text)]">
             Aucun logo configuré. Le logo par défaut INNOVTEC est utilisé.
           </span>
         </div>

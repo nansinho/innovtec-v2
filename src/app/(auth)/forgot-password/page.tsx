@@ -48,33 +48,33 @@ export default function ForgotPasswordPage() {
           />
         ) : (
           <>
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-600">
-              <Zap className="h-5 w-5 text-gray-900" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--yellow)]">
+              <Zap className="h-5 w-5 text-[var(--navy)]" />
             </div>
-            <div className="text-base font-bold tracking-tight text-gray-900">
+            <div className="text-base font-bold tracking-tight text-[var(--heading)]">
               INNOVTEC{" "}
-              <span className="font-normal text-gray-400">Réseaux</span>
+              <span className="font-normal text-[var(--text-muted)]">Réseaux</span>
             </div>
           </>
         )}
       </div>
 
-      <h1 className="mb-1.5 text-2xl font-bold text-gray-900">
+      <h1 className="mb-1.5 text-2xl font-bold text-[var(--heading)]">
         Mot de passe oublié
       </h1>
-      <p className="mb-8 text-sm text-gray-500">
+      <p className="mb-8 text-sm text-[var(--text-secondary)]">
         Saisissez votre email pour recevoir un lien de réinitialisation
       </p>
 
       {sent ? (
         <div className="space-y-4">
-          <div className="rounded-lg bg-green-50 px-4 py-3 text-sm text-green-700">
+          <div className="rounded-[var(--radius-sm)] bg-green-50 px-4 py-3 text-sm text-green-700">
             Si un compte existe avec cet email, vous recevrez un lien de
             réinitialisation dans quelques instants.
           </div>
           <Link
             href="/login"
-            className="flex items-center gap-2 text-sm font-semibold text-gray-900 hover:underline"
+            className="flex items-center gap-2 text-sm font-semibold text-[var(--navy)] hover:underline"
           >
             <ArrowLeft className="h-4 w-4" />
             Retour à la connexion
@@ -85,12 +85,12 @@ export default function ForgotPasswordPage() {
           <div>
             <label
               htmlFor="email"
-              className="mb-1.5 block text-sm font-medium text-gray-900"
+              className="mb-1.5 block text-sm font-medium text-[var(--heading)]"
             >
               Email
             </label>
             <div className="relative">
-              <Mail className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+              <Mail className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-muted)]" />
               <input
                 id="email"
                 type="email"
@@ -98,13 +98,13 @@ export default function ForgotPasswordPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="prenom@innovtec-reseaux.fr"
                 required
-                className="w-full rounded-lg border border-gray-200 bg-white py-3 pl-11 pr-4 text-sm text-gray-900 outline-none transition-all placeholder:text-gray-400 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+                className="w-full rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] py-3 pl-11 pr-4 text-sm text-[var(--heading)] outline-none transition-all placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
               />
             </div>
           </div>
 
           {error && (
-            <div className="rounded-lg bg-red-50 px-3.5 py-2.5 text-sm text-red-600">
+            <div className="rounded-[var(--radius-xs)] bg-[var(--red-surface)] px-3.5 py-2.5 text-sm text-[var(--red)]">
               {error}
             </div>
           )}
@@ -112,14 +112,14 @@ export default function ForgotPasswordPage() {
           <button
             type="submit"
             disabled={loading}
-            className="mt-1 w-full rounded-lg bg-orange-600 py-3 text-base font-semibold text-white shadow-sm transition-all hover:bg-orange-700 hover:shadow-md disabled:opacity-50"
+            className="mt-1 w-full rounded-[var(--radius-sm)] bg-[var(--yellow)] py-3 text-base font-semibold text-white shadow-sm transition-all hover:bg-[var(--yellow-hover)] hover:shadow-md active:scale-[0.97] disabled:opacity-50"
           >
             {loading ? "Envoi en cours..." : "Envoyer le lien"}
           </button>
 
           <Link
             href="/login"
-            className="flex items-center justify-center gap-2 text-sm font-semibold text-gray-900 hover:underline"
+            className="flex items-center justify-center gap-2 text-sm font-semibold text-[var(--navy)] hover:underline"
           >
             <ArrowLeft className="h-4 w-4" />
             Retour à la connexion

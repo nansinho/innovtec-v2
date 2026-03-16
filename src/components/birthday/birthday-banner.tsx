@@ -44,10 +44,10 @@ export default function BirthdayBanner({
   }
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-gradient-to-r from-pink-50 to-orange-50 p-4 shadow-sm">
+    <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-gradient-to-r from-pink-50 to-orange-50 p-4 shadow-xs">
       <div className="mb-3 flex items-center gap-2">
         <Cake className="h-5 w-5 text-pink-500" />
-        <h3 className="text-sm font-semibold text-gray-900">
+        <h3 className="text-sm font-semibold text-[var(--heading)]">
           Anniversaires du jour
         </h3>
       </div>
@@ -67,17 +67,17 @@ export default function BirthdayBanner({
                     {initials}
                   </div>
                   <div>
-                    <p className="text-[12.5px] font-medium text-gray-900">
+                    <p className="text-[12.5px] font-medium text-[var(--heading)]">
                       {person.first_name} {person.last_name}
                     </p>
-                    <p className="text-[10.5px] text-gray-400">
+                    <p className="text-[10.5px] text-[var(--text-muted)]">
                       {person.job_title || "Collaborateur"}
                     </p>
                   </div>
                 </div>
 
                 {hasSent ? (
-                  <Badge variant="success">
+                  <Badge variant="green" dot={false}>
                     Voeux envoyés
                   </Badge>
                 ) : (
@@ -87,7 +87,7 @@ export default function BirthdayBanner({
                         activeWish === person.id ? null : person.id
                       )
                     }
-                    className="rounded-full bg-orange-600 px-3 py-1 text-[10px] font-medium text-white shadow-sm transition-all duration-200 hover:bg-orange-700 hover:shadow-sm"
+                    className="rounded-full bg-[var(--yellow)] px-3 py-1 text-[10px] font-medium text-white shadow-xs transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-sm"
                   >
                     Souhaiter
                   </button>
@@ -105,12 +105,12 @@ export default function BirthdayBanner({
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     placeholder="Joyeux anniversaire !"
-                    className="flex-1 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-[12px] text-gray-900 outline-none transition-colors placeholder:text-gray-400 focus:border-orange-500"
+                    className="flex-1 rounded-lg border border-[var(--border-1)] bg-white px-3 py-1.5 text-[12px] text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)]"
                   />
                   <button
                     onClick={() => handleSendWish(person.id)}
                     disabled={isPending}
-                    className="rounded-lg bg-orange-600 px-3 py-1.5 text-white shadow-sm transition-all duration-200 hover:bg-orange-700 disabled:opacity-50"
+                    className="rounded-lg bg-[var(--yellow)] px-3 py-1.5 text-white shadow-xs transition-all duration-200 hover:bg-[var(--yellow-hover)] disabled:opacity-50"
                   >
                     <Send className="h-3.5 w-3.5" />
                   </button>

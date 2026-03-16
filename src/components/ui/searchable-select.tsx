@@ -161,18 +161,18 @@ export default function SearchableSelect({
           }
         }}
         className={cn(
-          "flex w-full items-center justify-between rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-left text-sm outline-none transition-all",
-          "hover:border-gray-400 focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20",
-          value ? "text-gray-900" : "text-gray-400",
+          "flex w-full items-center justify-between rounded-xl border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-left text-sm outline-none transition-all",
+          "hover:border-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]",
+          value ? "text-[var(--heading)]" : "text-[var(--text-muted)]",
           disabled && "cursor-not-allowed opacity-50",
-          open && "border-orange-500 ring-2 ring-orange-500/20",
+          open && "border-[var(--yellow)] ring-2 ring-[var(--yellow-surface)]",
           className
         )}
       >
         <span className="truncate">{value ? selectedLabel : placeholder}</span>
         <ChevronDown
           className={cn(
-            "ml-1 h-3.5 w-3.5 shrink-0 text-gray-400 transition-transform duration-200",
+            "ml-1 h-3.5 w-3.5 shrink-0 text-[var(--text-muted)] transition-transform duration-200",
             open && "rotate-180"
           )}
         />
@@ -182,7 +182,7 @@ export default function SearchableSelect({
         createPortal(
           <div
             ref={dropdownRef}
-            className="fixed z-[300] overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg shadow-black/[0.08] ring-1 ring-black/[0.04]"
+            className="fixed z-[300] overflow-hidden rounded-xl border border-[var(--border-1)] bg-white shadow-lg shadow-black/[0.08] ring-1 ring-black/[0.04]"
             style={{
               top: pos.top,
               left: pos.left,
@@ -190,22 +190,22 @@ export default function SearchableSelect({
             }}
           >
             {/* Search */}
-            <div className="border-b border-gray-200 p-2">
+            <div className="border-b border-[var(--border-1)] p-2">
               <div className="relative">
-                <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-400" />
+                <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[var(--text-muted)]" />
                 <input
                   ref={searchRef}
                   type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Rechercher..."
-                  className="w-full rounded-lg bg-gray-50 py-2 pl-8 pr-3 text-xs text-gray-900 outline-none placeholder:text-gray-400"
+                  className="w-full rounded-lg bg-[var(--hover)] py-2 pl-8 pr-3 text-xs text-[var(--heading)] outline-none placeholder:text-[var(--text-muted)]"
                 />
                 {search && (
                   <button
                     type="button"
                     onClick={() => setSearch("")}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-900"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--heading)]"
                   >
                     <X className="h-3 w-3" />
                   </button>
@@ -226,8 +226,8 @@ export default function SearchableSelect({
                 className={cn(
                   "flex w-full items-center rounded-lg px-3 py-2 text-left text-xs transition-colors",
                   !value
-                    ? "bg-orange-50 text-orange-600"
-                    : "text-gray-400 hover:bg-gray-50"
+                    ? "bg-[var(--yellow-surface)] text-[var(--yellow)]"
+                    : "text-[var(--text-muted)] hover:bg-[var(--hover)]"
                 )}
               >
                 Aucun
@@ -239,8 +239,8 @@ export default function SearchableSelect({
                   className={cn(
                     "group flex items-center rounded-lg transition-colors",
                     value === option.label
-                      ? "bg-orange-50"
-                      : "hover:bg-gray-50"
+                      ? "bg-[var(--yellow-surface)]"
+                      : "hover:bg-[var(--hover)]"
                   )}
                 >
                   <button
@@ -253,8 +253,8 @@ export default function SearchableSelect({
                     className={cn(
                       "flex flex-1 items-center px-3 py-2 text-left text-xs",
                       value === option.label
-                        ? "font-medium text-orange-600"
-                        : "text-gray-900"
+                        ? "font-medium text-[var(--yellow)]"
+                        : "text-[var(--heading)]"
                     )}
                   >
                     {option.label}
@@ -264,7 +264,7 @@ export default function SearchableSelect({
                       type="button"
                       onClick={(e) => handleDelete(e, option)}
                       disabled={loading}
-                      className="mr-1 rounded-md p-1.5 text-gray-400 opacity-0 transition-all hover:bg-red-50 hover:text-red-500 group-hover:opacity-100 disabled:opacity-50"
+                      className="mr-1 rounded-md p-1.5 text-[var(--text-muted)] opacity-0 transition-all hover:bg-red-50 hover:text-red-500 group-hover:opacity-100 disabled:opacity-50"
                       title="Supprimer"
                     >
                       <Trash2 className="h-3 w-3" />
@@ -274,7 +274,7 @@ export default function SearchableSelect({
               ))}
 
               {filtered.length === 0 && search && (
-                <div className="px-3 py-4 text-center text-xs text-gray-400">
+                <div className="px-3 py-4 text-center text-xs text-[var(--text-muted)]">
                   Aucun résultat pour « {search} »
                 </div>
               )}
@@ -282,7 +282,7 @@ export default function SearchableSelect({
 
             {/* Add new */}
             {onAdd && (
-              <div className="border-t border-gray-200 p-2">
+              <div className="border-t border-[var(--border-1)] p-2">
                 {adding ? (
                   <div className="flex items-center gap-1.5">
                     <input
@@ -302,13 +302,13 @@ export default function SearchableSelect({
                       }}
                       placeholder={`${addLabel}...`}
                       disabled={loading}
-                      className="flex-1 rounded-lg bg-gray-50 px-3 py-2 text-xs text-gray-900 outline-none placeholder:text-gray-400 disabled:opacity-50"
+                      className="flex-1 rounded-lg bg-[var(--hover)] px-3 py-2 text-xs text-[var(--heading)] outline-none placeholder:text-[var(--text-muted)] disabled:opacity-50"
                     />
                     <button
                       type="button"
                       onClick={handleAdd}
                       disabled={loading || !newValue.trim()}
-                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-orange-600 text-white transition-all hover:bg-orange-700 disabled:opacity-50"
+                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--yellow)] text-white transition-all hover:bg-[var(--yellow-hover)] disabled:opacity-50"
                     >
                       {loading ? (
                         <span className="h-3 w-3 animate-spin rounded-full border-2 border-white/30 border-t-white" />
@@ -322,7 +322,7 @@ export default function SearchableSelect({
                         setAdding(false);
                         setNewValue("");
                       }}
-                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-gray-400 transition-all hover:bg-gray-50"
+                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[var(--text-muted)] transition-all hover:bg-[var(--hover)]"
                     >
                       <X className="h-3.5 w-3.5" />
                     </button>
@@ -331,7 +331,7 @@ export default function SearchableSelect({
                   <button
                     type="button"
                     onClick={() => setAdding(true)}
-                    className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-orange-600 transition-colors hover:bg-orange-50"
+                    className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-[var(--yellow)] transition-colors hover:bg-[var(--yellow-surface)]"
                   >
                     <Plus className="h-3.5 w-3.5" />
                     {addLabel}

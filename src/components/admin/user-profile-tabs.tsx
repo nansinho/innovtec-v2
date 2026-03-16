@@ -71,14 +71,14 @@ function InfoRow({
 }) {
   return (
     <div className="flex items-start gap-3 py-3">
-      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gray-50">
-        <Icon className="h-4 w-4 text-gray-400" />
+      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--hover)]">
+        <Icon className="h-4 w-4 text-[var(--text-muted)]" />
       </div>
       <div>
-        <div className="text-[11px] font-medium text-gray-400">
+        <div className="text-[11px] font-medium text-[var(--text-muted)]">
           {label}
         </div>
-        <div className="text-sm text-gray-900">{value || "—"}</div>
+        <div className="text-sm text-[var(--heading)]">{value || "—"}</div>
       </div>
     </div>
   );
@@ -110,7 +110,7 @@ export default function UserProfileTabs({
   return (
     <div>
       {/* Tabs */}
-      <div className="mb-6 flex gap-0 overflow-x-auto border-b border-gray-200">
+      <div className="mb-6 flex gap-0 overflow-x-auto border-b border-[var(--border-1)]">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = active === tab.id;
@@ -121,14 +121,14 @@ export default function UserProfileTabs({
               className={cn(
                 "relative flex shrink-0 items-center gap-2 px-4 py-3 text-xs font-medium transition-colors duration-200",
                 isActive
-                  ? "text-gray-900"
-                  : "text-gray-400 hover:text-gray-500"
+                  ? "text-[var(--heading)]"
+                  : "text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
               )}
             >
               <Icon className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">{tab.label}</span>
               {isActive && (
-                <span className="absolute bottom-0 left-2 right-2 h-[2px] rounded-full bg-orange-600" />
+                <span className="absolute bottom-0 left-2 right-2 h-[2px] rounded-full bg-[var(--yellow)]" />
               )}
             </button>
           );
@@ -143,7 +143,7 @@ export default function UserProfileTabs({
             <div className="flex justify-end">
               <button
                 onClick={() => setEditModalOpen(true)}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-4 py-2 text-xs font-medium text-gray-500 shadow-sm transition-all hover:bg-gray-50 hover:shadow-sm"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--border-1)] bg-white px-4 py-2 text-xs font-medium text-[var(--text-secondary)] shadow-xs transition-all hover:bg-[var(--hover)] hover:shadow-sm"
               >
                 <Pencil className="h-3.5 w-3.5" />
                 Modifier
@@ -152,11 +152,11 @@ export default function UserProfileTabs({
           )}
 
           {/* Personal info */}
-          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-            <h3 className="mb-4 text-sm font-semibold text-gray-900">
+          <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] p-6 shadow-sm">
+            <h3 className="mb-4 text-sm font-semibold text-[var(--heading)]">
               Informations personnelles
             </h3>
-            <div className="divide-y divide-gray-200">
+            <div className="divide-y divide-[var(--border-1)]">
               <InfoRow icon={Mail} label="Email" value={user.email} />
               <InfoRow icon={Phone} label="Téléphone" value={user.phone} />
               <InfoRow
@@ -173,11 +173,11 @@ export default function UserProfileTabs({
           </div>
 
           {/* Organisation */}
-          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-            <h3 className="mb-4 text-sm font-semibold text-gray-900">
+          <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] p-6 shadow-sm">
+            <h3 className="mb-4 text-sm font-semibold text-[var(--heading)]">
               Organisation
             </h3>
-            <div className="divide-y divide-gray-200">
+            <div className="divide-y divide-[var(--border-1)]">
               <InfoRow
                 icon={Building2}
                 label="Département"
@@ -189,11 +189,11 @@ export default function UserProfileTabs({
           </div>
 
           {/* Dates */}
-          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-            <h3 className="mb-4 text-sm font-semibold text-gray-900">
+          <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] p-6 shadow-sm">
+            <h3 className="mb-4 text-sm font-semibold text-[var(--heading)]">
               Dates
             </h3>
-            <div className="divide-y divide-gray-200">
+            <div className="divide-y divide-[var(--border-1)]">
               <InfoRow
                 icon={Calendar}
                 label="Date de naissance"

@@ -82,7 +82,7 @@ export default function BirthdayPopup({ wishes, userName }: BirthdayPopupProps) 
         </button>
 
         {/* Header gradient */}
-        <div className="relative bg-gradient-to-br from-orange-600 to-[#ff8c00] px-8 py-10 text-center">
+        <div className="relative bg-gradient-to-br from-[var(--yellow)] to-[#ff8c00] px-8 py-10 text-center">
           <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
             <PartyPopper className="h-10 w-10 text-white" />
           </div>
@@ -94,7 +94,7 @@ export default function BirthdayPopup({ wishes, userName }: BirthdayPopupProps) 
 
         {/* Content */}
         <div className="px-8 py-6">
-          <p className="mb-4 text-center text-sm text-gray-500">
+          <p className="mb-4 text-center text-sm text-[var(--text-secondary)]">
             Toute l&apos;équipe INNOVTEC Réseaux vous souhaite un merveilleux
             anniversaire !
           </p>
@@ -102,7 +102,7 @@ export default function BirthdayPopup({ wishes, userName }: BirthdayPopupProps) 
           {/* Wishes */}
           {wishes.length > 0 && (
             <div className="mt-4">
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
                 Messages de vos collègues
               </p>
               <div className="max-h-32 space-y-2 overflow-y-auto">
@@ -111,10 +111,10 @@ export default function BirthdayPopup({ wishes, userName }: BirthdayPopupProps) 
                     key={wish.id}
                     className="rounded-lg bg-gray-50 px-3 py-2"
                   >
-                    <p className="text-[12px] text-gray-700">
+                    <p className="text-[12px] text-[var(--text)]">
                       {wish.message}
                     </p>
-                    <p className="mt-0.5 text-[10px] text-gray-400">
+                    <p className="mt-0.5 text-[10px] text-[var(--text-muted)]">
                       — {(wish.from_user as unknown as { first_name: string; last_name: string })?.first_name ?? "Un collègue"}{" "}
                       {(wish.from_user as unknown as { first_name: string; last_name: string })?.last_name ?? ""}
                     </p>
@@ -126,7 +126,7 @@ export default function BirthdayPopup({ wishes, userName }: BirthdayPopupProps) 
 
           <button
             onClick={handleClose}
-            className="mt-6 w-full rounded-lg bg-orange-600 py-2 text-sm font-semibold text-white transition-all duration-200 hover:bg-orange-700"
+            className="mt-6 w-full rounded-[var(--radius-sm)] bg-[var(--yellow)] py-2 text-sm font-semibold text-white transition-all duration-200 hover:bg-[var(--yellow-hover)] active:scale-[0.97]"
           >
             Merci !
           </button>

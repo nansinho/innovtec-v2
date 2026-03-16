@@ -16,7 +16,7 @@ export default async function Feed() {
         action={
           <Link
             href="/actualites"
-            className="flex items-center gap-1 text-xs font-medium text-gray-400 transition-colors hover:text-gray-900"
+            className="flex items-center gap-1 text-xs font-medium text-[var(--text-muted)] transition-colors hover:text-[var(--heading)]"
           >
             Voir tout <ChevronRight className="h-3.5 w-3.5" />
           </Link>
@@ -24,10 +24,10 @@ export default async function Feed() {
       />
       {posts.length === 0 ? (
         <div className="flex flex-col items-center py-12 text-center">
-          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100">
-            <Rss className="h-6 w-6 text-gray-400" />
+          <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-zinc-100">
+            <Rss className="h-6 w-6 text-zinc-400" />
           </div>
-          <p className="text-sm font-medium text-gray-900">
+          <p className="text-sm font-medium text-[var(--text-muted)]">
             Aucune publication pour le moment
           </p>
         </div>

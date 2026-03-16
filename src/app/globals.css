@@ -1,71 +1,53 @@
 @import "tailwindcss";
 
 :root {
-  /* Accent — INNOVTEC orange (used sparingly) */
-  --accent: #E8590C;
-  --accent-hover: #D14E0B;
-  --accent-surface: #FFF4ED;
-  --accent-border: rgba(232, 89, 12, 0.14);
-  --accent-text: #C2410C;
+  /* Brand — accent color (overridable via theme settings) */
+  --yellow: #F59E0B;
+  --yellow-hover: #D97706;
+  --yellow-surface: rgba(245, 158, 11, 0.06);
+  --yellow-border: rgba(245, 158, 11, 0.14);
 
-  /* Sidebar */
-  --sidebar: #1A1D23;
-  --sidebar-hover: #262930;
-  --sidebar-active: #2A2D35;
+  /* Navy */
+  --navy: #1E3A5F;
+  --navy-dark: #0F2035;
 
-  /* Backgrounds — Corporate clean */
-  --bg: #FAFBFC;
-  --card: #FFFFFF;
-  --card-solid: #FFFFFF;
-  --hover: #F9FAFB;
+  /* Backgrounds — Apple style */
+  --bg: #f5f5f7;
+  --card: rgba(255, 255, 255, 0.92);
+  --card-solid: #ffffff;
+  --hover: #fafafa;
 
-  /* Borders */
-  --border-1: #E5E7EB;
-  --border-2: #F3F4F6;
+  /* Borders — softer */
+  --border-1: rgba(0, 0, 0, 0.06);
+  --border-2: rgba(0, 0, 0, 0.1);
 
-  /* Text — Gray hierarchy */
-  --heading: #111827;
-  --text: #374151;
-  --text-secondary: #6B7280;
-  --text-muted: #9CA3AF;
+  /* Text — Apple typography */
+  --heading: #1d1d1f;
+  --text: #424245;
+  --text-secondary: #6e6e73;
+  --text-muted: #86868b;
 
-  /* Semantic status */
-  --success: #059669;
-  --success-surface: #ECFDF5;
-  --warning: #D97706;
-  --warning-surface: #FFFBEB;
-  --error: #DC2626;
-  --error-surface: #FEF2F2;
-  --info: #2563EB;
-  --info-surface: #EFF6FF;
+  /* Status — softer surfaces */
+  --red: #ff3b30;
+  --red-surface: rgba(255, 59, 48, 0.06);
+  --green: #34c759;
+  --green-surface: rgba(52, 199, 89, 0.06);
+  --blue: #007aff;
+  --blue-surface: rgba(0, 122, 255, 0.06);
+  --purple: #af52de;
+  --purple-surface: rgba(175, 82, 222, 0.06);
 
-  /* Legacy aliases (for components still referencing old names) */
-  --yellow: var(--accent);
-  --yellow-hover: var(--accent-hover);
-  --yellow-surface: var(--accent-surface);
-  --yellow-border: var(--accent-border);
-  --navy: var(--sidebar);
-  --navy-dark: var(--sidebar);
-  --red: var(--error);
-  --red-surface: var(--error-surface);
-  --green: var(--success);
-  --green-surface: var(--success-surface);
-  --blue: var(--info);
-  --blue-surface: var(--info-surface);
-  --purple: #7C3AED;
-  --purple-surface: #F5F3FF;
+  /* Radii — Apple rounded */
+  --radius: 16px;
+  --radius-sm: 12px;
+  --radius-xs: 8px;
 
-  /* Radii */
-  --radius: 12px;
-  --radius-sm: 8px;
-  --radius-xs: 6px;
-
-  /* Shadows — Subtle corporate */
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.04);
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.06), 0 4px 6px rgba(0, 0, 0, 0.04);
-  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.08), 0 8px 10px rgba(0, 0, 0, 0.04);
+  /* Shadows — Apple diffuse */
+  --shadow-xs: 0 0.5px 1px rgba(0, 0, 0, 0.03);
+  --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.04), 0 0.5px 1.5px rgba(0, 0, 0, 0.03);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.05), 0 1px 4px rgba(0, 0, 0, 0.03);
+  --shadow-lg: 0 8px 28px rgba(0, 0, 0, 0.07), 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(0, 0, 0, 0.04);
 
   /* Layout */
   --sidebar-width: 260px;
@@ -76,8 +58,9 @@
   --color-background: var(--bg);
   --color-foreground: var(--text);
   --color-card: var(--card);
-  --color-brand: var(--accent);
-  --color-brand-hover: var(--accent-hover);
+  --color-navy: var(--navy);
+  --color-brand: var(--yellow);
+  --color-brand-hover: var(--yellow-hover);
   --color-heading: var(--heading);
   --color-muted: var(--text-muted);
   --color-border: var(--border-1);
@@ -110,10 +93,10 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Smooth transitions on interactive elements */
 button, a, input, select, textarea {
-  transition: all 0.15s ease;
+  transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
-/* Scrollbar — Minimal */
+/* Scrollbar — Apple minimal */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -129,7 +112,7 @@ button, a, input, select, textarea {
   background: rgba(0, 0, 0, 0.2);
 }
 
-/* Animations */
+/* Animations — Apple style */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -246,13 +229,13 @@ button, a, input, select, textarea {
 }
 
 .prose-news a {
-  color: var(--info);
+  color: var(--blue);
   text-decoration: underline;
   text-underline-offset: 2px;
 }
 
 .prose-news a:hover {
-  color: var(--accent);
+  color: var(--navy);
 }
 
 .prose-news strong {
@@ -284,10 +267,10 @@ button, a, input, select, textarea {
 }
 
 .prose-news blockquote {
-  border-left: 3px solid var(--accent);
+  border-left: 3px solid var(--yellow);
   padding: 0.5em 1em;
   margin: 1em 0;
-  background: var(--accent-surface);
+  background: var(--yellow-surface);
   border-radius: 0 var(--radius-xs) var(--radius-xs) 0;
   color: var(--text-secondary);
   font-style: italic;
@@ -312,7 +295,7 @@ button, a, input, select, textarea {
 }
 
 .prose-news mark {
-  background: rgba(232, 89, 12, 0.15);
+  background: rgba(245, 166, 35, 0.2);
   padding: 0.1em 0.3em;
   border-radius: 2px;
 }
@@ -326,7 +309,7 @@ button, a, input, select, textarea {
 }
 
 .prose-news pre {
-  background: #1F2937;
+  background: var(--navy);
   color: #e5e7eb;
   padding: 1em 1.25em;
   border-radius: var(--radius-sm);
@@ -395,10 +378,10 @@ button, a, input, select, textarea {
 }
 
 .tiptap blockquote {
-  border-left: 3px solid var(--accent);
+  border-left: 3px solid var(--yellow);
   padding: 0.4em 0.8em;
   margin: 0.8em 0;
-  background: var(--accent-surface);
+  background: var(--yellow-surface);
   border-radius: 0 var(--radius-xs) var(--radius-xs) 0;
 }
 
@@ -417,12 +400,12 @@ button, a, input, select, textarea {
 }
 
 .tiptap mark {
-  background: rgba(232, 89, 12, 0.15);
+  background: rgba(245, 166, 35, 0.2);
   padding: 0.1em 0.2em;
   border-radius: 2px;
 }
 
-/* Range slider thumbs */
+/* Range slider thumbs — Apple style */
 .hue-slider::-webkit-slider-thumb,
 .sat-slider::-webkit-slider-thumb {
   -webkit-appearance: none;

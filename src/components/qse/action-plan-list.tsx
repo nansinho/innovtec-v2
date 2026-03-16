@@ -11,23 +11,23 @@ import type { ActionPlan } from "@/lib/types/database";
 import { toast } from "sonner";
 import ConfirmDialog from "@/components/ui/confirm-dialog";
 
-const statusConfig: Record<string, { label: string; variant: "default" | "warning" | "success" | "error" }> = {
+const statusConfig: Record<string, { label: string; variant: "default" | "yellow" | "green" | "red" | "blue" }> = {
   a_faire: { label: "À faire", variant: "default" },
-  en_cours: { label: "En cours", variant: "warning" },
-  termine: { label: "Terminé", variant: "success" },
-  annule: { label: "Annulé", variant: "error" },
+  en_cours: { label: "En cours", variant: "yellow" },
+  termine: { label: "Terminé", variant: "green" },
+  annule: { label: "Annulé", variant: "red" },
 };
 
-const typeConfig: Record<string, { label: string; variant: "info" | "accent" }> = {
-  corrective: { label: "Corrective", variant: "info" },
-  preventive: { label: "Préventive", variant: "accent" },
+const typeConfig: Record<string, { label: string; variant: "blue" | "purple" }> = {
+  corrective: { label: "Corrective", variant: "blue" },
+  preventive: { label: "Préventive", variant: "purple" },
 };
 
-const priorityConfig: Record<string, { label: string; variant: "default" | "info" | "warning" | "error" }> = {
-  faible: { label: "Faible", variant: "default" },
-  moyenne: { label: "Moyenne", variant: "info" },
-  haute: { label: "Haute", variant: "warning" },
-  critique: { label: "Critique", variant: "error" },
+const priorityConfig: Record<string, { label: string; variant: "green" | "yellow" | "red" | "default" }> = {
+  faible: { label: "Faible", variant: "green" },
+  moyenne: { label: "Moyenne", variant: "yellow" },
+  haute: { label: "Haute", variant: "red" },
+  critique: { label: "Critique", variant: "red" },
 };
 
 interface ActionPlanListProps {

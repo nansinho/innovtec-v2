@@ -67,26 +67,26 @@ export default function Topbar({ profile }: TopbarProps) {
 
   return (
     <>
-      <div className="sticky top-0 z-50 flex h-[56px] items-center gap-4 border-b border-gray-200 bg-white px-6">
+      <div className="sticky top-0 z-50 flex h-[56px] items-center gap-4 border-b border-[var(--border-1)] bg-white/80 px-6 backdrop-blur-xl">
         {/* Breadcrumb */}
         <nav className="hidden items-center gap-1 text-sm sm:flex" aria-label="Fil d'Ariane">
           <Link
             href="/"
-            className="text-gray-400 transition-colors hover:text-gray-900"
+            className="text-[var(--text-muted)] transition-colors hover:text-[var(--heading)]"
           >
             Accueil
           </Link>
           {breadcrumbs.map((crumb) => (
             <span key={crumb.href} className="flex items-center gap-1">
-              <ChevronRight className="h-3.5 w-3.5 text-gray-400" />
+              <ChevronRight className="h-3.5 w-3.5 text-[var(--text-muted)]" />
               {crumb.isLast ? (
-                <span className="font-medium text-gray-900">
+                <span className="font-medium text-[var(--heading)]">
                   {crumb.label}
                 </span>
               ) : (
                 <Link
                   href={crumb.href}
-                  className="text-gray-400 transition-colors hover:text-gray-900"
+                  className="text-[var(--text-muted)] transition-colors hover:text-[var(--heading)]"
                 >
                   {crumb.label}
                 </Link>
@@ -104,34 +104,34 @@ export default function Topbar({ profile }: TopbarProps) {
         <div className="flex items-center gap-1">
           <button
             onClick={() => setNotifOpen(true)}
-            className="relative flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 transition-colors duration-150 hover:bg-gray-100 hover:text-gray-600"
+            className="relative flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-all duration-200 hover:bg-black/[0.04] hover:text-[var(--heading)]"
             aria-label="Notifications"
           >
             <Bell className="h-[18px] w-[18px]" />
             {unreadCount > 0 && (
-              <div className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-orange-600 text-[8px] font-bold text-white">
+              <div className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-[var(--yellow)] text-[8px] font-bold text-white shadow-sm">
                 {unreadCount > 9 ? "9+" : unreadCount}
               </div>
             )}
           </button>
           <button
-            className="flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 transition-colors duration-150 hover:bg-gray-100 hover:text-gray-600"
+            className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-all duration-200 hover:bg-black/[0.04] hover:text-[var(--heading)]"
             aria-label="Messages"
           >
             <MessageSquare className="h-[18px] w-[18px]" />
           </button>
           <button
-            className="flex h-9 w-9 items-center justify-center rounded-lg text-gray-400 transition-colors duration-150 hover:bg-gray-100 hover:text-gray-600"
+            className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-all duration-200 hover:bg-black/[0.04] hover:text-[var(--heading)]"
             aria-label="Paramètres"
           >
             <Settings className="h-[18px] w-[18px]" />
           </button>
 
           {/* Separator + User profile */}
-          <div className="mx-1 h-6 w-px bg-gray-200" />
+          <div className="h-6 w-px bg-[var(--border-1)]" />
           <Link
             href="/profil"
-            className="flex items-center gap-2.5 rounded-lg py-1 pl-1 pr-3 transition-colors hover:bg-gray-50"
+            className="flex items-center gap-2.5 rounded-full py-1 pl-1 pr-3 transition-colors hover:bg-black/[0.04]"
           >
             {profile?.avatar_url ? (
               <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full">
@@ -139,11 +139,11 @@ export default function Topbar({ profile }: TopbarProps) {
                 <img src={profile.avatar_url} alt="" className="h-full w-full object-cover" />
               </div>
             ) : (
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-100 text-[11px] font-medium text-gray-600">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--navy)]/10 text-[11px] font-medium text-[var(--navy)]">
                 {initials}
               </div>
             )}
-            <span className="hidden text-sm font-medium text-gray-900 sm:inline">
+            <span className="hidden text-sm font-medium text-[var(--heading)] sm:inline">
               {displayName}
             </span>
           </Link>
@@ -153,7 +153,7 @@ export default function Topbar({ profile }: TopbarProps) {
               router.push("/login");
               router.refresh();
             }}
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors duration-150 hover:bg-gray-100 hover:text-gray-600"
+            className="flex h-8 w-8 items-center justify-center rounded-full text-[var(--text-muted)] transition-all duration-200 hover:bg-black/[0.04] hover:text-[var(--heading)]"
             aria-label="Se déconnecter"
           >
             <LogOut className="h-4 w-4" />

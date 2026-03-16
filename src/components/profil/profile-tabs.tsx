@@ -48,7 +48,7 @@ export default function ProfileTabs({
 
   return (
     <div>
-      <div className="mb-6 flex gap-0 overflow-x-auto border-b border-gray-200">
+      <div className="mb-6 flex gap-0 overflow-x-auto border-b border-[var(--border-1)]">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = active === tab.id;
@@ -59,14 +59,14 @@ export default function ProfileTabs({
               className={cn(
                 "relative flex shrink-0 items-center gap-2 px-4 py-3 text-xs font-medium transition-colors duration-200",
                 isActive
-                  ? "text-gray-900"
-                  : "text-gray-400 hover:text-gray-500"
+                  ? "text-[var(--heading)]"
+                  : "text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
               )}
             >
               <Icon className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">{tab.label}</span>
               {isActive && (
-                <span className="absolute bottom-0 left-2 right-2 h-[2px] rounded-full bg-orange-600" />
+                <span className="absolute bottom-0 left-2 right-2 h-[2px] rounded-full bg-[var(--yellow)]" />
               )}
             </button>
           );

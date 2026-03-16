@@ -11,18 +11,18 @@ import { Badge } from "@/components/ui/badge";
 import { getStandardToolbarActions } from "@/lib/table-toolbar-actions";
 import type { DangerReport, SignalementCategory } from "@/lib/types/database";
 
-const statusConfig: Record<string, { label: string; variant: "error" | "warning" | "success" | "default" }> = {
-  signale: { label: "Signalé", variant: "error" },
-  en_cours: { label: "En cours", variant: "warning" },
-  resolu: { label: "Résolu", variant: "success" },
+const statusConfig: Record<string, { label: string; variant: "red" | "yellow" | "green" | "default" }> = {
+  signale: { label: "Signalé", variant: "red" },
+  en_cours: { label: "En cours", variant: "yellow" },
+  resolu: { label: "Résolu", variant: "green" },
   cloture: { label: "Clôturé", variant: "default" },
 };
 
-const priorityConfig: Record<string, { label: string; variant: "error" | "warning" | "info" | "default" }> = {
-  faible: { label: "Faible", variant: "default" },
-  moyenne: { label: "Moyenne", variant: "info" },
-  haute: { label: "Haute", variant: "warning" },
-  critique: { label: "Critique", variant: "error" },
+const priorityConfig: Record<string, { label: string; variant: "green" | "yellow" | "red" | "default" }> = {
+  faible: { label: "Faible", variant: "green" },
+  moyenne: { label: "Moyenne", variant: "yellow" },
+  haute: { label: "Haute", variant: "red" },
+  critique: { label: "Critique", variant: "red" },
 };
 
 interface SignalementListProps {
@@ -105,11 +105,11 @@ export default function SignalementList({ signalements: initial, categories, can
       accessor: (d) => d.incident_date || d.created_at,
       render: (d) => (
         <div>
-          <span className="text-gray-500">
+          <span className="text-[var(--text-secondary)]">
             {(d.incident_date ? new Date(d.incident_date) : new Date(d.created_at)).toLocaleDateString("fr-FR")}
           </span>
           {d.incident_time && (
-            <div className="text-[11px] text-gray-400">{d.incident_time.slice(0, 5)}</div>
+            <div className="text-[11px] text-[var(--text-muted)]">{d.incident_time.slice(0, 5)}</div>
           )}
         </div>
       ),
@@ -120,8 +120,8 @@ export default function SignalementList({ signalements: initial, categories, can
       sortable: true,
       render: (d) => (
         <div>
-          <div className="font-medium text-gray-900">{d.title}</div>
-          <div className="mt-0.5 line-clamp-1 text-xs text-gray-400">
+          <div className="font-medium text-[var(--heading)]">{d.title}</div>
+          <div className="mt-0.5 line-clamp-1 text-xs text-[var(--text-muted)]">
             {d.description}
           </div>
         </div>
@@ -133,9 +133,17 @@ export default function SignalementList({ signalements: initial, categories, can
       width: "130px",
       render: (d) => {
         const cat = d.category as { name: string; color: string } | null;
-        if (!cat) return <span className="text-gray-400">—</span>;
+        if (!cat) return <span className="text-[var(--text-muted)]">—</span>;
         return (
-          <Badge variant="default">
+          <Badge
+            dot
+            className="border"
+            style={{
+              backgroundColor: `${cat.color}15`,
+              color: cat.color,
+              borderColor: `${cat.color}30`,
+            }}
+          >
             {cat.name}
           </Badge>
         );
@@ -156,7 +164,7 @@ export default function SignalementList({ signalements: initial, categories, can
       header: "Lieu",
       sortable: true,
       render: (d) => (
-        <span className="text-gray-500">
+        <span className="text-[var(--text-secondary)]">
           {d.chantier || d.location || "—"}
         </span>
       ),
@@ -168,13 +176,13 @@ export default function SignalementList({ signalements: initial, categories, can
       render: (d) => {
         if (d.is_anonymous) {
           return (
-            <span className="inline-flex items-center gap-1 text-gray-400">
+            <span className="inline-flex items-center gap-1 text-[var(--text-muted)]">
               <span className="text-xs italic">Anonyme</span>
             </span>
           );
         }
         return (
-          <span className="text-gray-500">
+          <span className="text-[var(--text-secondary)]">
             {d.reporter ? `${d.reporter.first_name} ${d.reporter.last_name}` : "—"}
           </span>
         );
@@ -197,7 +205,7 @@ export default function SignalementList({ signalements: initial, categories, can
               }}
               onClick={(e) => e.stopPropagation()}
               disabled={isPending}
-              className="rounded-lg border border-gray-200 bg-white px-2 py-1 text-xs outline-none transition-all focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20"
+              className="rounded-lg border border-[var(--border-1)] bg-white px-2 py-1 text-xs outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
             >
               <option value="signale">Signalé</option>
               <option value="en_cours">En cours</option>

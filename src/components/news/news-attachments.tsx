@@ -116,10 +116,10 @@ export default function NewsAttachmentsManager({
           }}
           onDragLeave={() => setDragOver(false)}
           onDrop={handleDrop}
-          className={`mb-4 flex cursor-pointer flex-col items-center gap-2 rounded-xl border-2 border-dashed px-6 py-6 transition-colors ${
+          className={`mb-4 flex cursor-pointer flex-col items-center gap-2 rounded-[var(--radius)] border-2 border-dashed px-6 py-6 transition-colors ${
             dragOver
-              ? "border-orange-500 bg-orange-50"
-              : "border-gray-200 hover:border-gray-100 hover:bg-gray-50"
+              ? "border-[var(--yellow)] bg-[var(--yellow-surface)]"
+              : "border-[var(--border-1)] hover:border-[var(--border-2)] hover:bg-[var(--hover)]"
           }`}
           onClick={() => {
             const input = document.createElement("input");
@@ -135,16 +135,16 @@ export default function NewsAttachmentsManager({
           }}
         >
           {uploading ? (
-            <Loader2 className="h-6 w-6 animate-spin text-orange-600" />
+            <Loader2 className="h-6 w-6 animate-spin text-[var(--yellow)]" />
           ) : (
-            <Upload className="h-6 w-6 text-gray-400" />
+            <Upload className="h-6 w-6 text-[var(--text-muted)]" />
           )}
-          <p className="text-[12px] text-gray-500">
+          <p className="text-[12px] text-[var(--text-secondary)]">
             {uploading
               ? "Téléchargement en cours..."
               : "Glissez vos fichiers ici ou cliquez pour parcourir"}
           </p>
-          <p className="text-[10px] text-gray-400">
+          <p className="text-[10px] text-[var(--text-muted)]">
             PDF, JPG, PNG, DOCX — Max 10 Mo
           </p>
         </div>
@@ -158,16 +158,16 @@ export default function NewsAttachmentsManager({
             return (
               <div
                 key={att.id}
-                className="flex items-center gap-3 rounded-lg border border-gray-200 bg-gray-50 px-4 py-3"
+                className="flex items-center gap-3 rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--hover)] px-4 py-3"
               >
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-white">
-                  <Icon className="h-4.5 w-4.5 text-gray-500" />
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-xs)] bg-[var(--card)]">
+                  <Icon className="h-4.5 w-4.5 text-[var(--text-secondary)]" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="truncate text-[12.5px] font-medium text-gray-900">
+                  <p className="truncate text-[12.5px] font-medium text-[var(--heading)]">
                     {att.file_name}
                   </p>
-                  <p className="text-[10px] text-gray-400">
+                  <p className="text-[10px] text-[var(--text-muted)]">
                     {getFileExtension(att.file_type)}
                     {att.file_size ? ` • ${formatFileSize(att.file_size)}` : ""}
                   </p>
@@ -177,7 +177,7 @@ export default function NewsAttachmentsManager({
                     href={att.file_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="rounded-md p-1.5 text-gray-400 transition-colors hover:bg-white hover:text-blue-600"
+                    className="rounded-[var(--radius-xs)] p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--card)] hover:text-[var(--blue)]"
                     title="Télécharger"
                   >
                     <Download className="h-3.5 w-3.5" />
@@ -185,7 +185,7 @@ export default function NewsAttachmentsManager({
                   {!readOnly && (
                     <button
                       onClick={() => onRemove(att.id)}
-                      className="rounded-md p-1.5 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600"
+                      className="rounded-[var(--radius-xs)] p-1.5 text-[var(--text-muted)] transition-colors hover:bg-[var(--red-surface)] hover:text-[var(--red)]"
                       title="Supprimer"
                     >
                       <X className="h-3.5 w-3.5" />
@@ -210,14 +210,14 @@ export function NewsAttachmentsDisplay({
   if (attachments.length === 0) return null;
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
-      <div className="border-b border-gray-200 px-5 py-3.5">
-        <h3 className="flex items-center gap-2 text-sm font-semibold text-gray-900">
+    <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] shadow-sm">
+      <div className="border-b border-[var(--border-1)] px-5 py-3.5">
+        <h3 className="flex items-center gap-2 text-sm font-semibold text-[var(--heading)]">
           <FileText className="h-4 w-4" />
           Pièces jointes ({attachments.length})
         </h3>
       </div>
-      <div className="divide-y divide-gray-200">
+      <div className="divide-y divide-[var(--border-1)]">
         {attachments.map((att) => {
           const Icon = fileIcons[att.file_type] || File;
           return (
@@ -226,21 +226,21 @@ export function NewsAttachmentsDisplay({
               href={att.file_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-3 px-5 py-3 transition-colors hover:bg-gray-50"
+              className="flex items-center gap-3 px-5 py-3 transition-colors hover:bg-[var(--hover)]"
             >
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-gray-50">
-                <Icon className="h-4 w-4 text-gray-500" />
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-xs)] bg-[var(--hover)]">
+                <Icon className="h-4 w-4 text-[var(--text-secondary)]" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="truncate text-[12.5px] font-medium text-gray-900">
+                <p className="truncate text-[12.5px] font-medium text-[var(--heading)]">
                   {att.file_name}
                 </p>
-                <p className="text-[10px] text-gray-400">
+                <p className="text-[10px] text-[var(--text-muted)]">
                   {getFileExtension(att.file_type)}
                   {att.file_size ? ` • ${formatFileSize(att.file_size)}` : ""}
                 </p>
               </div>
-              <Download className="h-4 w-4 shrink-0 text-gray-400" />
+              <Download className="h-4 w-4 shrink-0 text-[var(--text-muted)]" />
             </a>
           );
         })}

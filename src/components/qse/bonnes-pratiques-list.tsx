@@ -10,11 +10,11 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import type { BonnePratique } from "@/lib/types/database";
 
-const PILLAR_CONFIG: Record<string, { label: string; variant: "warning" | "info" | "error" | "success" }> = {
-  qualite: { label: "Qualité", variant: "warning" },
-  sante: { label: "Santé", variant: "info" },
-  securite: { label: "Sécurité", variant: "error" },
-  environnement: { label: "Environnement", variant: "success" },
+const PILLAR_CONFIG: Record<string, { label: string; variant: "yellow" | "blue" | "red" | "green" }> = {
+  qualite: { label: "Qualité", variant: "yellow" },
+  sante: { label: "Santé", variant: "blue" },
+  securite: { label: "Sécurité", variant: "red" },
+  environnement: { label: "Environnement", variant: "green" },
 };
 
 interface BonnesPratiquesListProps {
@@ -80,7 +80,7 @@ export default function BonnesPratiquesList({ items, headerAction }: BonnesPrati
       sortable: true,
       render: (r) =>
         r.chantier ? (
-          <Badge variant="default">{r.chantier}</Badge>
+          <Badge variant="blue">{r.chantier}</Badge>
         ) : (
           <span className="text-[var(--text-muted)]">—</span>
         ),

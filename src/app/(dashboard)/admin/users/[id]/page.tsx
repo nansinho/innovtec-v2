@@ -67,7 +67,7 @@ export default async function UserDetailPage({
       {isAdminOrRh && (
         <Link
           href="/admin/users"
-          className="mb-4 inline-flex items-center gap-1.5 text-xs text-gray-400 transition-colors hover:text-gray-900"
+          className="mb-4 inline-flex items-center gap-1.5 text-xs text-[var(--text-muted)] transition-colors hover:text-[var(--heading)]"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
           Retour aux utilisateurs
@@ -86,16 +86,16 @@ export default async function UserDetailPage({
             />
           </div>
         ) : (
-          <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-gray-900 text-2xl font-semibold text-white shadow-md ring-2 ring-white">
+          <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-[var(--navy)] text-2xl font-semibold text-white shadow-md ring-2 ring-white">
             {initials}
           </div>
         )}
         <div className="flex-1">
-          <h1 className="text-xl font-semibold text-gray-900">
+          <h1 className="text-xl font-semibold text-[var(--heading)]">
             {fullName}
           </h1>
           {user.job_title && (
-            <p className="mt-0.5 text-sm text-gray-500">
+            <p className="mt-0.5 text-sm text-[var(--text-secondary)]">
               {user.job_title}
             </p>
           )}

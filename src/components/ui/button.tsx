@@ -15,22 +15,22 @@ export function Button({
   return (
     <button
       className={cn(
-        "inline-flex items-center justify-center gap-2 font-medium transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500/20",
+        "inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-1",
         "disabled:pointer-events-none disabled:opacity-50",
         {
-          "bg-orange-600 text-white hover:bg-orange-700 rounded-lg":
+          "bg-gradient-to-b from-amber-500 to-amber-600 text-white shadow-sm shadow-amber-600/20 hover:from-amber-600 hover:to-amber-700 hover:shadow-md hover:shadow-amber-600/25 active:scale-[0.98] focus:ring-amber-500":
             variant === "primary",
-          "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 rounded-lg":
+          "border border-zinc-200 bg-white text-[var(--text)] shadow-xs hover:bg-zinc-50 hover:border-zinc-300 active:scale-[0.98] focus:ring-zinc-300":
             variant === "secondary",
-          "text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-lg":
+          "text-[var(--text-secondary)] hover:text-[var(--heading)] hover:bg-zinc-100 focus:ring-zinc-200":
             variant === "ghost",
-          "bg-red-600 text-white hover:bg-red-700 rounded-lg":
+          "border border-red-200 bg-white text-red-600 hover:bg-red-50 hover:border-red-300 active:scale-[0.98] focus:ring-red-400":
             variant === "danger",
         },
         {
-          "h-8 px-3 text-xs rounded-md gap-1.5": size === "sm",
-          "h-9 px-4 text-sm rounded-lg gap-2": size === "md",
-          "h-10 px-5 text-sm rounded-lg gap-2": size === "lg",
+          "h-8 px-3 text-xs": size === "sm",
+          "h-9 px-4 text-sm": size === "md",
+          "h-10 px-5 text-sm": size === "lg",
         },
         className
       )}
