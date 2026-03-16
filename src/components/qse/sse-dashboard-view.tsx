@@ -9,6 +9,7 @@ import ConfirmDialog from "@/components/ui/confirm-dialog";
 import { toast } from "sonner";
 import { DropdownMenu } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   ArrowLeft, Download, FileSpreadsheet, Plus, Pencil, Trash2,
   Calendar, BarChart3, Eye, Edit3,
@@ -415,14 +416,11 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
     <div>
       {/* Header with action */}
       {canManage && (
-        <div className="mb-6 flex items-center justify-end">
-          <button
-            onClick={() => setMode("create")}
-            className="flex items-center gap-1.5 rounded-[var(--radius-xs)] bg-[var(--yellow)] px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-[var(--yellow-hover)]"
-          >
-            <Plus className="h-4 w-4" />
+        <div className="mb-4 flex items-center justify-end">
+          <Button size="sm" onClick={() => setMode("create")}>
+            <Plus className="h-3.5 w-3.5" />
             Nouveau tableau
-          </button>
+          </Button>
         </div>
       )}
 
@@ -436,13 +434,10 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
             Les tableaux de bord Santé-Sécurité-Environnement apparaîtront ici une fois créés.
           </p>
           {canManage && (
-            <button
-              onClick={() => setMode("create")}
-              className="mt-5 flex items-center gap-1.5 rounded-[var(--radius-xs)] bg-[var(--yellow)] px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-[var(--yellow-hover)]"
-            >
-              <Plus className="h-4 w-4" />
+            <Button size="sm" className="mt-5" onClick={() => setMode("create")}>
+              <Plus className="h-3.5 w-3.5" />
               Créer le premier tableau
-            </button>
+            </Button>
           )}
         </div>
       ) : (
