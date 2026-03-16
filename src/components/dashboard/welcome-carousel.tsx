@@ -98,7 +98,7 @@ export default function WelcomeCarousel() {
   }, [next]);
 
   return (
-    <div className="relative h-[260px] overflow-hidden rounded-2xl shadow-lg ring-1 ring-black/5">
+    <div className="relative h-[260px] overflow-hidden rounded-2xl bg-[#0F2035] shadow-lg ring-1 ring-black/5">
       <div
         className="flex h-full transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] will-change-transform"
         style={{ transform: `translateX(-${current * 100}%)` }}
@@ -145,44 +145,46 @@ export default function WelcomeCarousel() {
         })}
       </div>
 
-      {/* Counter */}
-      <div className="absolute right-4 top-3 z-[5] rounded-full bg-black/25 px-2.5 py-0.5 font-mono text-[10px] font-medium text-white/70 backdrop-blur-sm">
-        {String(current + 1).padStart(2, "0")} / {String(slides.length).padStart(2, "0")}
-      </div>
-
-      {/* Arrows */}
       {slides.length > 1 && (
-        <div className="absolute bottom-3 right-4 z-[5] flex gap-1.5">
-          <button
-            onClick={prev}
-            className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/15 text-white backdrop-blur-sm transition-all hover:bg-white/25 active:scale-95"
-            aria-label="Précédent"
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </button>
-          <button
-            onClick={next}
-            className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/15 text-white backdrop-blur-sm transition-all hover:bg-white/25 active:scale-95"
-            aria-label="Suivant"
-          >
-            <ChevronRight className="h-4 w-4" />
-          </button>
-        </div>
-      )}
+        <>
+          {/* Counter */}
+          <div className="absolute right-4 top-3 z-[5] rounded-full bg-black/25 px-2.5 py-0.5 font-mono text-[10px] font-medium text-white/70 backdrop-blur-sm">
+            {String(current + 1).padStart(2, "0")} / {String(slides.length).padStart(2, "0")}
+          </div>
 
-      {/* Dots */}
-      <div className="absolute bottom-3.5 left-8 z-[5] flex gap-1.5">
-        {slides.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => setCurrent(i)}
-            className={`h-1.5 rounded-full transition-all duration-300 ${
-              i === current ? "w-6 bg-white" : "w-1.5 bg-white/30 hover:bg-white/50"
-            }`}
-            aria-label={`Diapositive ${i + 1}`}
-          />
-        ))}
-      </div>
+          {/* Arrows */}
+          <div className="absolute bottom-3 right-4 z-[5] flex gap-1.5">
+            <button
+              onClick={(e) => { e.preventDefault(); prev(); }}
+              className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/15 text-white backdrop-blur-sm transition-all hover:bg-white/25 active:scale-95"
+              aria-label="Précédent"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            <button
+              onClick={(e) => { e.preventDefault(); next(); }}
+              className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/15 text-white backdrop-blur-sm transition-all hover:bg-white/25 active:scale-95"
+              aria-label="Suivant"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
+
+          {/* Dots */}
+          <div className="absolute bottom-3.5 left-8 z-[5] flex gap-1.5">
+            {slides.map((_, i) => (
+              <button
+                key={i}
+                onClick={(e) => { e.preventDefault(); setCurrent(i); }}
+                className={`h-1.5 rounded-full transition-all duration-300 ${
+                  i === current ? "w-6 bg-white" : "w-1.5 bg-white/30 hover:bg-white/50"
+                }`}
+                aria-label={`Diapositive ${i + 1}`}
+              />
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }
