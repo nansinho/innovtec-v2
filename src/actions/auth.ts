@@ -9,7 +9,7 @@ import { revalidatePath } from "next/cache";
 export async function signOut() {
   const supabase = await createClient();
   await supabase.auth.signOut();
-  redirect("/login");
+  revalidatePath("/", "layout");
 }
 
 export async function signIn(formData: {

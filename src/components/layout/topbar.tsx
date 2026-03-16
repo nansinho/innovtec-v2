@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Bell, MessageSquare, Settings, ChevronRight, LogOut } from "lucide-react";
 import Link from "next/link";
 
@@ -44,6 +44,7 @@ export default function Topbar({ profile }: TopbarProps) {
   const [notifOpen, setNotifOpen] = useState(false);
   const { unreadCount } = useNotifications();
   const pathname = usePathname();
+  const router = useRouter();
 
   const displayName = profile
     ? `${profile.first_name} ${profile.last_name}`.trim() || profile.email
@@ -146,15 +147,17 @@ export default function Topbar({ profile }: TopbarProps) {
               {displayName}
             </span>
           </Link>
-          <form action={signOut}>
-            <button
-              type="submit"
-              className="flex h-8 w-8 items-center justify-center rounded-full text-[var(--text-muted)] transition-all duration-200 hover:bg-black/[0.04] hover:text-[var(--heading)]"
-              aria-label="Se déconnecter"
-            >
-              <LogOut className="h-4 w-4" />
-            </button>
-          </form>
+          <button
+            onClick={async () => {
+              await signOut();
+              router.push("/login");
+              router.refresh();
+            }}
+            className="flex h-8 w-8 items-center justify-center rounded-full text-[var(--text-muted)] transition-all duration-200 hover:bg-black/[0.04] hover:text-[var(--heading)]"
+            aria-label="Se déconnecter"
+          >
+            <LogOut className="h-4 w-4" />
+          </button>
         </div>
       </div>
 
