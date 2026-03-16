@@ -1,12 +1,12 @@
-import { Cake, Rss } from "lucide-react";
+import { Rss } from "lucide-react";
 import { Card, CardHeader } from "@/components/ui/card";
 import { getFeedPosts } from "@/actions/feed";
 import { getTodayBirthdays, getUpcomingBirthdays, getMyBirthdayWishes } from "@/actions/birthday";
 import { getProfile } from "@/actions/auth";
 import FeedList from "@/components/dashboard/feed-list";
-import BirthdayBanner from "@/components/birthday/birthday-banner";
 import UpcomingBirthdays from "@/components/social/upcoming-birthdays";
 import MyBirthdayWishes from "@/components/social/my-birthday-wishes";
+import BirthdayFeedCard from "@/components/social/birthday-feed-card";
 import CreatePost from "@/components/social/create-post";
 
 export const dynamic = "force-dynamic";
@@ -33,22 +33,25 @@ export default async function SocialPage() {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_300px]">
         {/* Main column */}
-        <div className="flex flex-col gap-6">
-          {birthdays.length > 0 && profile && (
-            <BirthdayBanner
-              birthdays={birthdays}
-              currentUserId={profile.id}
-            />
-          )}
-
+        <div className="flex flex-col gap-4">
           <CreatePost />
 
+          {/* Birthday cards in the feed */}
+          {birthdays.map((person) => (
+            <BirthdayFeedCard
+              key={person.id}
+              person={person}
+              currentUserId={profile?.id ?? ""}
+            />
+          ))}
+
+          {/* Regular feed posts */}
           <Card>
             <CardHeader
               title="Fil d'actualités"
               icon={Rss}
             />
-            {posts.length === 0 ? (
+            {posts.length === 0 && birthdays.length === 0 ? (
               <div className="flex flex-col items-center py-12 text-center">
                 <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-zinc-100">
                   <Rss className="h-6 w-6 text-zinc-400" />
@@ -59,6 +62,10 @@ export default async function SocialPage() {
                 <p className="mt-1 text-xs text-[var(--text-muted)]">
                   Soyez le premier à publier !
                 </p>
+              </div>
+            ) : posts.length === 0 ? (
+              <div className="px-5 py-6 text-center text-sm text-[var(--text-muted)]">
+                Aucune publication pour le moment
               </div>
             ) : (
               <FeedList initialPosts={posts} />
