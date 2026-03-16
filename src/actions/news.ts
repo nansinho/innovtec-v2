@@ -1,9 +1,9 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
 import type { News, NewsComment, NewsAttachment } from "@/lib/types/database";
+import { createNotificationForAll, createNotificationForUser } from "@/actions/notifications";
 
 // ==========================================
 // PUBLIC: Read operations
@@ -114,6 +114,34 @@ export async function addNewsComment(
   });
 
   if (error) return { success: false, error: error.message };
+
+  // Notify the news author about the comment
+  const { data: news } = await supabase
+    .from("news")
+    .select("author_id, title")
+    .eq("id", newsId)
+    .single();
+
+  if (news?.author_id && news.author_id !== user.id) {
+    const { data: commenter } = await supabase
+      .from("profiles")
+      .select("first_name, last_name")
+      .eq("id", user.id)
+      .single();
+
+    const commenterName = commenter
+      ? `${commenter.first_name} ${commenter.last_name}`.trim()
+      : "Quelqu'un";
+
+    await createNotificationForUser({
+      user_id: news.author_id,
+      type: "comment",
+      title: "Nouveau commentaire",
+      message: `${commenterName} a commenté votre article "${news.title}"`,
+      link: `/actualites/${newsId}`,
+      related_id: newsId,
+    });
+  }
 
   revalidatePath(`/actualites/${newsId}`);
   return { success: true };
@@ -404,28 +432,14 @@ export async function createNews(formData: {
     });
 
     // Notify all users about new published news
-    const supabaseAdmin = createAdminClient();
-    const { data: profiles } = await supabaseAdmin
-      .from("profiles")
-      .select("id")
-      .eq("is_active", true);
-
-    if (profiles) {
-      const notifications = profiles
-        .filter((p) => p.id !== user.id)
-        .map((p) => ({
-          user_id: p.id,
-          type: "news" as const,
-          title: "Nouvelle actualité",
-          message: formData.title,
-          link: `/actualites/${data.id}`,
-          related_id: data.id,
-        }));
-
-      if (notifications.length > 0) {
-        await supabaseAdmin.from("notifications").insert(notifications);
-      }
-    }
+    await createNotificationForAll({
+      type: "news",
+      title: "Nouvelle actualité",
+      message: formData.title,
+      link: `/actualites/${data.id}`,
+      related_id: data.id,
+      excludeUserId: user.id,
+    });
   }
 
   revalidatePath("/actualites");
@@ -487,28 +501,15 @@ export async function updateNews(
       news_id: newsId,
     });
 
-    const supabaseAdmin = createAdminClient();
-    const { data: profiles } = await supabaseAdmin
-      .from("profiles")
-      .select("id")
-      .eq("is_active", true);
-
-    if (profiles) {
-      const notifications = profiles
-        .filter((p) => p.id !== user.id)
-        .map((p) => ({
-          user_id: p.id,
-          type: "news" as const,
-          title: "Nouvelle actualité",
-          message: formData.title,
-          link: `/actualites/${newsId}`,
-          related_id: newsId,
-        }));
-
-      if (notifications.length > 0) {
-        await supabaseAdmin.from("notifications").insert(notifications);
-      }
-    }
+    // Notify all users about newly published news
+    await createNotificationForAll({
+      type: "news",
+      title: "Nouvelle actualité",
+      message: formData.title,
+      link: `/actualites/${newsId}`,
+      related_id: newsId,
+      excludeUserId: user.id,
+    });
   }
 
   revalidatePath("/actualites");

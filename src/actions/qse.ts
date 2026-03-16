@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
 import type { DangerReport, Rex, QseContent, QseContentSection, QseDocument } from "@/lib/types/database";
+import { createNotificationForAll } from "@/actions/notifications";
 
 // ==========================================
 // POLITIQUE QSE
@@ -403,6 +404,16 @@ export async function createRex(
     .single();
 
   if (error) return { success: false, error: error.message };
+
+  // Notify all users about new REX
+  await createNotificationForAll({
+    type: "danger",
+    title: "Nouveau REX",
+    message: rex.title,
+    link: `/qse/rex/${data?.id}`,
+    related_id: data?.id,
+    excludeUserId: user.id,
+  });
 
   revalidatePath("/qse/rex");
   return { success: true, id: data?.id };
