@@ -86,7 +86,7 @@ export async function ensureAdminExists(): Promise<{
 
   const { error } = await supabaseAdmin
     .from("profiles")
-    .update({ role: "admin" })
+    .update({ role: "admin", is_active: true })
     .eq("id", user.id);
 
   if (error) return { promoted: false, hasAdmin: false };
