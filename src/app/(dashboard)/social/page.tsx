@@ -76,7 +76,7 @@ export default async function SocialPage() {
                 Aucune publication pour le moment
               </div>
             ) : (
-              <FeedList initialPosts={posts} />
+              <FeedList initialPosts={posts} currentUserId={profile?.id} />
             )}
           </Card>
         </div>

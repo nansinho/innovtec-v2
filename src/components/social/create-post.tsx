@@ -23,7 +23,7 @@ export default function CreatePost() {
     try {
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("bucket", "feed");
+      formData.append("bucket", "news-images");
 
       const res = await fetch("/api/upload", {
         method: "POST",
@@ -33,9 +33,11 @@ export default function CreatePost() {
       const data = await res.json();
       if (data.url) {
         setImageUrl(data.url);
+      } else if (data.error) {
+        setError(data.error);
       }
     } catch {
-      // ignore upload errors
+      setError("Erreur lors de l'envoi de l'image");
     } finally {
       setUploading(false);
       if (fileInputRef.current) {

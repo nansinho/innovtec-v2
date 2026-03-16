@@ -38,8 +38,11 @@ export default function BirthdayFeedCard({
   const initials =
     `${person.first_name?.[0] ?? ""}${person.last_name?.[0] ?? ""}`.toUpperCase() || "?";
 
+  const hasReplied = isMe && wishes.some((w) => w.from_user_id === currentUserId);
+
   function handleSendWish() {
-    if (isMe || !wishMessage.trim()) return;
+    if (!wishMessage.trim()) return;
+    if (isMe && hasReplied) return;
     setError("");
     startTransition(async () => {
       const result = await sendBirthdayWish(
@@ -47,9 +50,8 @@ export default function BirthdayFeedCard({
         wishMessage.trim()
       );
       if (result.success) {
-        setLiked(true);
+        if (!isMe) setLiked(true);
         setWishMessage("");
-        // Refresh wishes
         const updated = await getBirthdayWishesFor(person.id);
         setWishes(updated);
       } else {
@@ -230,38 +232,45 @@ export default function BirthdayFeedCard({
           )}
 
           {/* Write a wish / comment input */}
-          {!isMe && (
-            <div className="border-t border-zinc-100 px-5 py-3">
-              {error && (
-                <p className="mb-2 text-[11px] text-red-500">{error}</p>
-              )}
-              <div className="flex items-center gap-2">
-                <input
-                  type="text"
-                  value={wishMessage}
-                  onChange={(e) => setWishMessage(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && !e.shiftKey) {
-                      e.preventDefault();
-                      handleSendWish();
-                    }
-                  }}
-                  placeholder={liked ? "Vous avez déjà envoyé vos voeux" : "Écrire un message d'anniversaire..."}
-                  disabled={liked}
-                  className="flex-1 rounded-full bg-white px-4 py-2 text-xs text-[var(--heading)] shadow-xs ring-1 ring-black/[0.06] outline-none placeholder:text-zinc-400 focus:ring-pink-300 disabled:opacity-50"
-                />
-                {!liked && (
-                  <button
-                    onClick={handleSendWish}
-                    disabled={isPending || !wishMessage.trim()}
-                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-pink-500 text-white shadow-sm transition-all hover:bg-pink-600 disabled:opacity-40"
-                  >
-                    <Send className="h-3.5 w-3.5" />
-                  </button>
+          {(() => {
+            const inputDisabled = isMe ? hasReplied : liked;
+            const placeholder = isMe
+              ? (hasReplied ? "Vous avez déjà répondu" : "Remercier vos collègues...")
+              : (liked ? "Vous avez déjà envoyé vos voeux" : "Écrire un message d'anniversaire...");
+
+            return (
+              <div className="border-t border-zinc-100 px-5 py-3">
+                {error && (
+                  <p className="mb-2 text-[11px] text-red-500">{error}</p>
                 )}
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={wishMessage}
+                    onChange={(e) => setWishMessage(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        handleSendWish();
+                      }
+                    }}
+                    placeholder={placeholder}
+                    disabled={inputDisabled}
+                    className="flex-1 rounded-full bg-white px-4 py-2 text-xs text-[var(--heading)] shadow-xs ring-1 ring-black/[0.06] outline-none placeholder:text-zinc-400 focus:ring-pink-300 disabled:opacity-50"
+                  />
+                  {!inputDisabled && (
+                    <button
+                      onClick={handleSendWish}
+                      disabled={isPending || !wishMessage.trim()}
+                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-pink-500 text-white shadow-sm transition-all hover:bg-pink-600 disabled:opacity-40"
+                    >
+                      <Send className="h-3.5 w-3.5" />
+                    </button>
+                  )}
+                </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
 
           {isMe && wishes.length === 0 && (
             <div className="px-5 py-4 text-center text-xs text-zinc-400">

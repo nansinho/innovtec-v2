@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -9,6 +9,10 @@ import {
   Newspaper,
   Send,
   Trash2,
+  MoreHorizontal,
+  Pencil,
+  X,
+  ImagePlus,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -20,13 +24,17 @@ import {
   getFeedComments,
   addFeedComment,
   deleteFeedComment,
+  deleteFeedPost,
+  updateFeedPost,
 } from "@/actions/feed";
+import ConfirmDialog from "@/components/ui/confirm-dialog";
 
 interface FeedListProps {
   initialPosts: FeedPostWithMeta[];
+  currentUserId?: string;
 }
 
-export default function FeedList({ initialPosts }: FeedListProps) {
+export default function FeedList({ initialPosts, currentUserId }: FeedListProps) {
   const [posts, setPosts] = useState(initialPosts);
 
   useEffect(() => {
@@ -57,14 +65,29 @@ export default function FeedList({ initialPosts }: FeedListProps) {
     );
   }
 
+  function handlePostDeleted(postId: string) {
+    setPosts((prev) => prev.filter((p) => p.id !== postId));
+  }
+
+  function handlePostUpdated(postId: string, content: string, imageUrl: string) {
+    setPosts((prev) =>
+      prev.map((p) =>
+        p.id === postId ? { ...p, content, image_url: imageUrl } : p
+      )
+    );
+  }
+
   return (
     <div>
       {posts.map((post) => (
         <FeedPost
           key={post.id}
           post={post}
+          currentUserId={currentUserId}
           onLikeUpdate={handleLikeUpdate}
           onCommentCountChange={handleCommentCountChange}
+          onDeleted={handlePostDeleted}
+          onUpdated={handlePostUpdated}
         />
       ))}
     </div>
@@ -77,12 +100,18 @@ export default function FeedList({ initialPosts }: FeedListProps) {
 
 function FeedPost({
   post,
+  currentUserId,
   onLikeUpdate,
   onCommentCountChange,
+  onDeleted,
+  onUpdated,
 }: {
   post: FeedPostWithMeta;
+  currentUserId?: string;
   onLikeUpdate: (postId: string, liked: boolean, count: number) => void;
   onCommentCountChange: (postId: string, delta: number) => void;
+  onDeleted: (postId: string) => void;
+  onUpdated: (postId: string, content: string, imageUrl: string) => void;
 }) {
   const [liked, setLiked] = useState(post.user_has_liked);
   const [likesCount, setLikesCount] = useState(post.likes_count);
@@ -93,6 +122,20 @@ function FeedPost({
   const [commentText, setCommentText] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
+  // Edit/delete state
+  const [showMenu, setShowMenu] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [editContent, setEditContent] = useState(post.content);
+  const [editImageUrl, setEditImageUrl] = useState(post.image_url);
+  const [editUploading, setEditUploading] = useState(false);
+  const [editSaving, setEditSaving] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const editFileRef = useRef<HTMLInputElement>(null);
+
+  const isOwner = currentUserId && post.author_id === currentUserId;
+
   const author = post.author;
   const authorName = author
     ? `${author.first_name} ${author.last_name}`.trim()
@@ -102,8 +145,20 @@ function FeedPost({
     locale: fr,
   });
 
+  // Close menu on outside click
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setShowMenu(false);
+      }
+    }
+    if (showMenu) {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
+    }
+  }, [showMenu]);
+
   async function handleLike() {
-    // Optimistic update
     const newLiked = !liked;
     const newCount = newLiked ? likesCount + 1 : likesCount - 1;
     setLiked(newLiked);
@@ -133,7 +188,6 @@ function FeedPost({
     const result = await addFeedComment(post.id, commentText);
     if (result.success) {
       setCommentText("");
-      // Refresh comments
       const data = await getFeedComments(post.id);
       setComments(data);
       onCommentCountChange(post.id, 1);
@@ -147,6 +201,59 @@ function FeedPost({
       setComments((prev) => prev.filter((c) => c.id !== commentId));
       onCommentCountChange(post.id, -1);
     }
+  }
+
+  async function handleDelete() {
+    setDeleting(true);
+    const result = await deleteFeedPost(post.id);
+    if (result.success) {
+      onDeleted(post.id);
+    }
+    setDeleting(false);
+    setShowDeleteConfirm(false);
+  }
+
+  function startEditing() {
+    setEditContent(post.content);
+    setEditImageUrl(post.image_url);
+    setEditing(true);
+    setShowMenu(false);
+  }
+
+  function cancelEditing() {
+    setEditing(false);
+    setEditContent(post.content);
+    setEditImageUrl(post.image_url);
+  }
+
+  async function handleEditImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setEditUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("bucket", "news-images");
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json();
+      if (data.url) setEditImageUrl(data.url);
+    } catch {
+      // ignore
+    } finally {
+      setEditUploading(false);
+      if (editFileRef.current) editFileRef.current.value = "";
+    }
+  }
+
+  async function handleSaveEdit() {
+    if (!editContent.trim() || editSaving) return;
+    setEditSaving(true);
+    const result = await updateFeedPost(post.id, editContent.trim(), editImageUrl || "");
+    if (result.success) {
+      onUpdated(post.id, editContent.trim(), editImageUrl || "");
+      setEditing(false);
+    }
+    setEditSaving(false);
   }
 
   return (
@@ -171,106 +278,188 @@ function FeedPost({
         </div>
 
         <div className="flex-1 min-w-0">
-          {/* Author + time */}
+          {/* Author + time + menu */}
           <div className="flex items-center gap-2">
             <span className="text-sm font-semibold text-[var(--heading)]">
               {authorName}
             </span>
             <span className="text-[11px] text-zinc-400">{timeAgo}</span>
+            {isOwner && !editing && (
+              <div className="relative ml-auto" ref={menuRef}>
+                <button
+                  onClick={() => setShowMenu(!showMenu)}
+                  className="flex h-7 w-7 items-center justify-center rounded-full text-zinc-300 transition-colors hover:bg-zinc-100 hover:text-zinc-500"
+                >
+                  <MoreHorizontal className="h-4 w-4" />
+                </button>
+                {showMenu && (
+                  <div className="absolute right-0 top-full z-50 mt-1 w-36 overflow-hidden rounded-lg border border-[var(--border-1)] bg-white py-1 shadow-lg">
+                    <button
+                      onClick={startEditing}
+                      className="flex w-full items-center gap-2 px-3 py-2 text-xs font-medium text-[var(--heading)] hover:bg-zinc-50"
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                      Modifier
+                    </button>
+                    <button
+                      onClick={() => { setShowDeleteConfirm(true); setShowMenu(false); }}
+                      className="flex w-full items-center gap-2 px-3 py-2 text-xs font-medium text-red-600 hover:bg-red-50"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                      Supprimer
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
-          {/* Content */}
-          <p className="mt-1 text-sm leading-relaxed text-[var(--text)]">
-            {post.content}
-          </p>
+          {/* Content - edit mode or display mode */}
+          {editing ? (
+            <div className="mt-2">
+              <textarea
+                value={editContent}
+                onChange={(e) => setEditContent(e.target.value)}
+                rows={3}
+                className="w-full resize-none rounded-xl bg-zinc-50 px-4 py-3 text-sm text-[var(--heading)] outline-none placeholder:text-zinc-400 focus:bg-zinc-100/80"
+              />
+              {editImageUrl && (
+                <div className="relative mt-2 h-[120px] overflow-hidden rounded-xl">
+                  <Image src={editImageUrl} alt="" fill className="object-cover" />
+                  <button
+                    onClick={() => setEditImageUrl("")}
+                    className="absolute right-2 top-2 rounded-full bg-black/50 p-1 text-white hover:bg-black/70"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              )}
+              <div className="mt-2 flex items-center justify-between">
+                <div>
+                  <input ref={editFileRef} type="file" accept="image/*" onChange={handleEditImageUpload} className="hidden" />
+                  <button
+                    onClick={() => editFileRef.current?.click()}
+                    disabled={editUploading}
+                    className="flex items-center gap-1 rounded-full px-2 py-1 text-[11px] text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 disabled:opacity-50"
+                  >
+                    <ImagePlus className="h-3.5 w-3.5" />
+                    {editUploading ? "Envoi..." : "Photo"}
+                  </button>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={cancelEditing}
+                    className="rounded-full px-3 py-1 text-xs font-medium text-zinc-500 hover:bg-zinc-100"
+                  >
+                    Annuler
+                  </button>
+                  <button
+                    onClick={handleSaveEdit}
+                    disabled={!editContent.trim() || editSaving}
+                    className="rounded-full bg-[var(--yellow)] px-3 py-1 text-xs font-medium text-white hover:bg-[var(--yellow-hover)] disabled:opacity-40"
+                  >
+                    {editSaving ? "Enregistrement..." : "Enregistrer"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <>
+              <p className="mt-1 text-sm leading-relaxed text-[var(--text)]">
+                {post.content}
+              </p>
 
-          {/* Linked news */}
-          {post.news && (
-            <Link
-              href={`/actualites/${post.news.id}`}
-              className="mt-2.5 flex items-start gap-3 rounded-xl bg-zinc-50/80 p-3 shadow-xs ring-1 ring-zinc-950/[0.04] transition-all hover:bg-zinc-50 hover:shadow-sm"
-            >
-              {post.news.image_url ? (
-                <div className="relative h-12 w-16 shrink-0 overflow-hidden rounded-lg bg-zinc-200">
+              {/* Linked news */}
+              {post.news && (
+                <Link
+                  href={`/actualites/${post.news.id}`}
+                  className="mt-2.5 flex items-start gap-3 rounded-xl bg-zinc-50/80 p-3 shadow-xs ring-1 ring-zinc-950/[0.04] transition-all hover:bg-zinc-50 hover:shadow-sm"
+                >
+                  {post.news.image_url ? (
+                    <div className="relative h-12 w-16 shrink-0 overflow-hidden rounded-lg bg-zinc-200">
+                      <Image
+                        src={post.news.image_url}
+                        alt=""
+                        fill
+                        sizes="64px"
+                        loading="lazy"
+                        className="object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex h-12 w-16 shrink-0 items-center justify-center rounded-lg bg-zinc-200">
+                      <Newspaper className="h-4 w-4 text-zinc-400" />
+                    </div>
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-semibold text-[var(--heading)]">
+                      {post.news.title}
+                    </p>
+                    {post.news.excerpt && (
+                      <p className="mt-0.5 line-clamp-2 text-[11px] text-zinc-400">
+                        {post.news.excerpt}
+                      </p>
+                    )}
+                  </div>
+                </Link>
+              )}
+
+              {/* Post image */}
+              {!post.news && post.image_url && (
+                <div className="relative mt-2.5 h-[150px] overflow-hidden rounded-xl">
                   <Image
-                    src={post.news.image_url}
+                    src={post.image_url}
                     alt=""
                     fill
-                    sizes="64px"
+                    sizes="(max-width: 1024px) 100vw, 60vw"
                     loading="lazy"
                     className="object-cover"
                   />
                 </div>
-              ) : (
-                <div className="flex h-12 w-16 shrink-0 items-center justify-center rounded-lg bg-zinc-200">
-                  <Newspaper className="h-4 w-4 text-zinc-400" />
-                </div>
               )}
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-semibold text-[var(--heading)]">
-                  {post.news.title}
-                </p>
-                {post.news.excerpt && (
-                  <p className="mt-0.5 line-clamp-2 text-[11px] text-zinc-400">
-                    {post.news.excerpt}
-                  </p>
-                )}
-              </div>
-            </Link>
-          )}
-
-          {/* Post image */}
-          {!post.news && post.image_url && (
-            <div className="relative mt-2.5 h-[150px] overflow-hidden rounded-xl">
-              <Image
-                src={post.image_url}
-                alt=""
-                fill
-                sizes="(max-width: 1024px) 100vw, 60vw"
-                loading="lazy"
-                className="object-cover"
-              />
-            </div>
+            </>
           )}
 
           {/* Actions: Like + Comment */}
-          <div className="mt-2.5 flex gap-1">
-            <button
-              onClick={handleLike}
-              className={cn(
-                "flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-all",
-                liked
-                  ? "bg-red-50 text-red-500"
-                  : "text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600"
-              )}
-            >
-              <Heart
+          {!editing && (
+            <div className="mt-2.5 flex gap-1">
+              <button
+                onClick={handleLike}
                 className={cn(
-                  "h-3.5 w-3.5 transition-transform",
-                  liked && "fill-red-500",
-                  likeAnimating && "scale-125"
+                  "flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-all",
+                  liked
+                    ? "bg-red-50 text-red-500"
+                    : "text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600"
                 )}
-              />
-              {likesCount > 0 && <span>{likesCount}</span>}
-              {likesCount === 0 && <span>J&apos;aime</span>}
-            </button>
-            <button
-              onClick={handleToggleComments}
-              className={cn(
-                "flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-all",
-                showComments
-                  ? "bg-blue-50 text-blue-500"
-                  : "text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600"
-              )}
-            >
-              <MessageSquare className="h-3.5 w-3.5" />
-              {post.comments_count > 0 ? (
-                <span>{post.comments_count}</span>
-              ) : (
-                <span>Commenter</span>
-              )}
-            </button>
-          </div>
+              >
+                <Heart
+                  className={cn(
+                    "h-3.5 w-3.5 transition-transform",
+                    liked && "fill-red-500",
+                    likeAnimating && "scale-125"
+                  )}
+                />
+                {likesCount > 0 && <span>{likesCount}</span>}
+                {likesCount === 0 && <span>J&apos;aime</span>}
+              </button>
+              <button
+                onClick={handleToggleComments}
+                className={cn(
+                  "flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-all",
+                  showComments
+                    ? "bg-blue-50 text-blue-500"
+                    : "text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600"
+                )}
+              >
+                <MessageSquare className="h-3.5 w-3.5" />
+                {post.comments_count > 0 ? (
+                  <span>{post.comments_count}</span>
+                ) : (
+                  <span>Commenter</span>
+                )}
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -372,6 +561,18 @@ function FeedPost({
           )}
         </div>
       )}
+
+      {/* Delete confirmation */}
+      <ConfirmDialog
+        open={showDeleteConfirm}
+        title="Supprimer cette publication ?"
+        message="Cette publication sera définitivement supprimée."
+        confirmLabel="Supprimer"
+        variant="danger"
+        loading={deleting}
+        onConfirm={handleDelete}
+        onClose={() => setShowDeleteConfirm(false)}
+      />
     </div>
   );
 }

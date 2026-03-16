@@ -224,6 +224,60 @@ export async function addFeedComment(
   return { success: true };
 }
 
+export async function deleteFeedPost(
+  postId: string
+): Promise<{ success: boolean; error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { success: false, error: "Non authentifié" };
+
+  const { error } = await supabase
+    .from("feed_posts")
+    .delete()
+    .eq("id", postId)
+    .eq("author_id", user.id);
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath("/");
+  revalidatePath("/social");
+  return { success: true };
+}
+
+export async function updateFeedPost(
+  postId: string,
+  content: string,
+  imageUrl?: string
+): Promise<{ success: boolean; error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { success: false, error: "Non authentifié" };
+  if (!content.trim()) return { success: false, error: "Contenu vide" };
+
+  const updateData: Record<string, unknown> = {
+    content: content.trim(),
+  };
+  if (imageUrl !== undefined) {
+    updateData.image_url = imageUrl;
+  }
+
+  const { error } = await supabase
+    .from("feed_posts")
+    .update(updateData)
+    .eq("id", postId)
+    .eq("author_id", user.id);
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath("/");
+  revalidatePath("/social");
+  return { success: true };
+}
+
 export async function deleteFeedComment(
   commentId: string
 ): Promise<{ success: boolean; error?: string }> {
