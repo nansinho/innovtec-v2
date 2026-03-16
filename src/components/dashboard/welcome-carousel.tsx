@@ -98,7 +98,7 @@ export default function WelcomeCarousel() {
   }, [next]);
 
   return (
-    <div className="relative h-[260px] overflow-hidden rounded-2xl shadow-lg ring-1 ring-black/5">
+    <div className="relative h-[260px] overflow-hidden rounded-2xl bg-[#0F2035] shadow-lg ring-1 ring-black/5">
       <div
         className="flex h-full transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] will-change-transform"
         style={{ transform: `translateX(-${current * 100}%)` }}
