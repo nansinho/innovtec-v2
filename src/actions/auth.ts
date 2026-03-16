@@ -136,6 +136,7 @@ export async function signUp(formData: {
         department: formData.department ?? "",
         team: formData.team ?? "",
         agency: formData.agency ?? "",
+        is_active: true,
       }, { onConflict: "id" });
 
     if (profileError) {
