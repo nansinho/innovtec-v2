@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -28,6 +28,10 @@ interface FeedListProps {
 
 export default function FeedList({ initialPosts }: FeedListProps) {
   const [posts, setPosts] = useState(initialPosts);
+
+  useEffect(() => {
+    setPosts(initialPosts);
+  }, [initialPosts]);
 
   function handleLikeUpdate(
     postId: string,

@@ -10,6 +10,7 @@ export default function CreatePost() {
   const [content, setContent] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState("");
   const [isPending, startTransition] = useTransition();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
@@ -45,12 +46,17 @@ export default function CreatePost() {
 
   function handleSubmit() {
     if (!content.trim() || isPending) return;
+    setError("");
 
     startTransition(async () => {
-      await createFeedPost(content.trim(), imageUrl || undefined);
-      setContent("");
-      setImageUrl("");
-      router.refresh();
+      try {
+        await createFeedPost(content.trim(), imageUrl || undefined);
+        setContent("");
+        setImageUrl("");
+        router.refresh();
+      } catch {
+        setError("Erreur lors de la publication. Réessayez.");
+      }
     });
   }
 
@@ -79,6 +85,10 @@ export default function CreatePost() {
             <X className="h-4 w-4" />
           </button>
         </div>
+      )}
+
+      {error && (
+        <p className="mt-2 text-xs text-red-500">{error}</p>
       )}
 
       <div className="mt-3 flex items-center justify-between">
