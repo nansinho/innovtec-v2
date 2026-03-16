@@ -418,7 +418,7 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
         <div className="mb-6 flex items-center justify-end">
           <button
             onClick={() => setMode("create")}
-            className="flex items-center gap-1.5 rounded-[var(--radius-xs)] bg-[var(--yellow)] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[var(--yellow-hover)]"
+            className="flex items-center gap-1.5 rounded-[var(--radius-xs)] bg-[var(--yellow)] px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-[var(--yellow-hover)]"
           >
             <Plus className="h-4 w-4" />
             Nouveau tableau
@@ -438,7 +438,7 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
           {canManage && (
             <button
               onClick={() => setMode("create")}
-              className="mt-5 flex items-center gap-1.5 rounded-[var(--radius-xs)] bg-[var(--yellow)] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[var(--yellow-hover)]"
+              className="mt-5 flex items-center gap-1.5 rounded-[var(--radius-xs)] bg-[var(--yellow)] px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-[var(--yellow-hover)]"
             >
               <Plus className="h-4 w-4" />
               Créer le premier tableau
@@ -450,15 +450,15 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
           <table className="w-full">
             <thead>
               <tr className="border-b border-[var(--border-1)] bg-[var(--hover)]">
-                <th className="px-4 py-3.5 text-left text-xs font-medium text-[var(--text-secondary)]">Mois</th>
-                <th className="px-4 py-3.5 text-left text-xs font-medium text-[var(--text-secondary)]" style={{ width: "80px" }}>Année</th>
-                <th className="px-4 py-3.5 text-center text-xs font-medium text-[var(--text-secondary)]" style={{ width: "80px" }}>ASAA</th>
-                <th className="px-4 py-3.5 text-center text-xs font-medium text-[var(--text-secondary)]" style={{ width: "80px" }}>SST</th>
-                <th className="px-4 py-3.5 text-center text-xs font-medium text-[var(--text-secondary)]" style={{ width: "100px" }}>Conformité</th>
-                <th className="px-4 py-3.5 text-center text-xs font-medium text-[var(--text-secondary)]" style={{ width: "80px" }}>Visites</th>
-                <th className="px-4 py-3.5 text-center text-xs font-medium text-[var(--text-secondary)]" style={{ width: "80px" }}>Statut</th>
-                <th className="px-4 py-3.5 text-left text-xs font-medium text-[var(--text-secondary)]" style={{ width: "130px" }}>Date</th>
-                <th className="px-4 py-3.5 text-right text-xs font-medium text-[var(--text-secondary)]" style={{ width: "70px" }}>Actions</th>
+                <th className="px-3 py-2 text-left text-xs font-medium text-[var(--text-secondary)]">Mois</th>
+                <th className="px-3 py-2 text-left text-xs font-medium text-[var(--text-secondary)]" style={{ width: "80px" }}>Année</th>
+                <th className="px-3 py-2 text-center text-xs font-medium text-[var(--text-secondary)]" style={{ width: "80px" }}>ASAA</th>
+                <th className="px-3 py-2 text-center text-xs font-medium text-[var(--text-secondary)]" style={{ width: "80px" }}>SST</th>
+                <th className="px-3 py-2 text-center text-xs font-medium text-[var(--text-secondary)]" style={{ width: "100px" }}>Conformité</th>
+                <th className="px-3 py-2 text-center text-xs font-medium text-[var(--text-secondary)]" style={{ width: "80px" }}>Visites</th>
+                <th className="px-3 py-2 text-center text-xs font-medium text-[var(--text-secondary)]" style={{ width: "80px" }}>Statut</th>
+                <th className="px-3 py-2 text-left text-xs font-medium text-[var(--text-secondary)]" style={{ width: "130px" }}>Date</th>
+                <th className="px-3 py-2 text-right text-xs font-medium text-[var(--text-secondary)]" style={{ width: "70px" }}>Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--border-1)]">
@@ -484,37 +484,37 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
                     onClick={() => openDetail(d)}
                     className="cursor-pointer transition-colors duration-200 hover:bg-[var(--hover)]"
                   >
-                    <td className="px-4 py-3.5">
+                    <td className="px-3 py-2">
                       <span className="text-sm font-medium text-[var(--heading)]">{MONTH_NAMES[d.month - 1]}</span>
                     </td>
-                    <td className="px-4 py-3.5">
+                    <td className="px-3 py-2">
                       <Badge variant="amber" dot={false}>
                         {d.year}
                       </Badge>
                     </td>
-                    <td className="px-4 py-3.5 text-center text-sm font-semibold text-[var(--heading)]">
+                    <td className="px-3 py-2 text-center text-sm font-semibold text-[var(--heading)]">
                       {d.accidents_with_leave}
                     </td>
-                    <td className={`px-4 py-3.5 text-center text-sm font-semibold ${getSstColorClass(d.sst_rate)}`}>
+                    <td className={`px-3 py-2 text-center text-sm font-semibold ${getSstColorClass(d.sst_rate)}`}>
                       {formatFr(d.sst_rate)}%
                     </td>
-                    <td className={`px-4 py-3.5 text-center text-sm font-semibold ${getStatusColorClass(complianceStatus)}`}>
+                    <td className={`px-3 py-2 text-center text-sm font-semibold ${getStatusColorClass(complianceStatus)}`}>
                       {formatFr(d.regulatory_compliance_rate)}%
                     </td>
-                    <td className="px-4 py-3.5 text-center text-sm font-semibold text-[var(--heading)]">
+                    <td className="px-3 py-2 text-center text-sm font-semibold text-[var(--heading)]">
                       {d.field_visits_count}
                     </td>
-                    <td className="px-4 py-3.5 text-center">
+                    <td className="px-3 py-2 text-center">
                       {hasIssues ? (
                         <Badge variant="red" dot={false}>Alerte</Badge>
                       ) : (
                         <Badge variant="green" dot={false}>OK</Badge>
                       )}
                     </td>
-                    <td className="px-4 py-3.5 text-sm text-[var(--text-muted)]">
+                    <td className="px-3 py-2 text-sm text-[var(--text-muted)]">
                       {new Date(d.created_at).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" })}
                     </td>
-                    <td className="px-4 py-3.5 text-right" onClick={(e) => e.stopPropagation()}>
+                    <td className="px-3 py-2 text-right" onClick={(e) => e.stopPropagation()}>
                       <DropdownMenu items={dropdownItems} />
                     </td>
                   </tr>

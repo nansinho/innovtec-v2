@@ -37,10 +37,10 @@
   --purple: #af52de;
   --purple-surface: rgba(175, 82, 222, 0.06);
 
-  /* Radii — Apple rounded */
-  --radius: 16px;
-  --radius-sm: 12px;
-  --radius-xs: 8px;
+  /* Radii — refined */
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-xs: 6px;
 
   /* Shadows — Apple diffuse */
   --shadow-xs: 0 0.5px 1px rgba(0, 0, 0, 0.03);
