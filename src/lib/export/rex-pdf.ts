@@ -1,54 +1,26 @@
 import { jsPDF } from "jspdf";
 import type { Rex } from "@/lib/types/database";
+import { REX_BADGE_SVGS } from "@/components/icons/rex-section-icons";
 
 // ==========================================
-// COLORS (matching the REX fiche design)
+// COLORS
 // ==========================================
 const ORANGE = [243, 156, 18] as const;
 const NAVY = [30, 58, 95] as const;
 const YELLOW_ACCENT = [245, 158, 11] as const;
-const GRAY_TEXT = [60, 60, 60] as const;
+const GRAY_TEXT = [55, 55, 55] as const;
 
 const RED_ACCENT = [220, 53, 69] as const;
 const PURPLE_ACCENT = [142, 68, 173] as const;
 const ORANGE_SEC = [255, 152, 0] as const;
 const AMBER = [255, 193, 7] as const;
 
-// Section badge config: circle color, badge label color, label text, text color
-const SECTION_CONFIG = {
-  faits: {
-    circleOuter: [212, 201, 168] as const, // #D4C9A8 beige
-    circleInner: [197, 184, 154] as const, // #C5B89A
-    badgeColor: [30, 58, 95] as const,     // #1E3A5F navy
-    label: "LES FAITS",
-    textColor: [255, 255, 255] as const,
-    borderColor: [30, 58, 95] as const,
-  },
-  causes: {
-    circleOuter: [212, 201, 168] as const,
-    circleInner: [197, 184, 154] as const,
-    badgeColor: [107, 142, 35] as const,   // #6B8E23 olive green
-    label: "LES CAUSES ET LES CIRCONSTANCES",
-    textColor: [255, 255, 255] as const,
-    borderColor: [107, 142, 35] as const,
-  },
-  actions: {
-    circleOuter: [46, 125, 50] as const,   // #2E7D32 dark green
-    circleInner: [56, 142, 60] as const,   // #388E3C
-    badgeColor: [230, 126, 34] as const,   // #E67E22 orange
-    label: "LA SYNTHESE DES ACTIONS ENGAGEES",
-    textColor: [255, 255, 255] as const,
-    borderColor: [230, 126, 34] as const,
-  },
-  vigilance: {
-    circleOuter: [46, 125, 50] as const,
-    circleInner: [56, 142, 60] as const,
-    badgeColor: [241, 196, 15] as const,   // #F1C40F yellow
-    label: "LE RAPPEL A VIGILANCE",
-    textColor: [51, 51, 51] as const,      // dark text on yellow
-    borderColor: [241, 196, 15] as const,
-  },
-} as const;
+const SECTION_BORDER: Record<string, [number, number, number]> = {
+  faits: [30, 58, 95],
+  causes: [107, 142, 35],
+  actions: [230, 126, 34],
+  vigilance: [241, 196, 15],
+};
 
 const EVENT_TYPES: { value: string; label: string; color: readonly [number, number, number] }[] = [
   { value: "sd", label: "SD (Situation Dangereuse)", color: ORANGE_SEC },
@@ -58,199 +30,52 @@ const EVENT_TYPES: { value: string; label: string; color: readonly [number, numb
 ];
 
 /**
- * Sanitize text for jsPDF built-in fonts (Helvetica/WinAnsiEncoding).
+ * Sanitize text for Helvetica/WinAnsiEncoding.
  */
 function sanitize(text: string): string {
   return text
-    .replace(/\u2264/g, "<=")
-    .replace(/\u2265/g, ">=")
-    .replace(/\u2019/g, "'")
-    .replace(/\u2018/g, "'")
-    .replace(/\u201c/g, '"')
-    .replace(/\u201d/g, '"')
+    .replace(/[\u2018\u2019]/g, "'")
+    .replace(/[\u201c\u201d]/g, '"')
     .replace(/\u2013/g, "-")
     .replace(/\u2014/g, "--")
     .replace(/\u2026/g, "...")
-    .replace(/\u00ab/g, '"')
-    .replace(/\u00bb/g, '"')
-    .replace(/\u00c8/g, "E")
-    .replace(/\u00c9/g, "E")
-    .replace(/\u00c0/g, "A")
-    .replace(/\u00e8/g, "e")
-    .replace(/\u00e9/g, "e")
-    .replace(/\u00ea/g, "e")
-    .replace(/\u00e0/g, "a");
+    .replace(/[\u00ab\u00bb]/g, '"')
+    .replace(/\u2264/g, "<=")
+    .replace(/\u2265/g, ">=");
 }
 
 /**
- * Draw a section badge: colored circle + colored label rectangle
+ * Render an inline SVG string to a PNG data URL via canvas.
  */
-function drawSectionBadge(
-  pdf: jsPDF,
-  x: number,
-  y: number,
-  type: keyof typeof SECTION_CONFIG
-) {
-  const cfg = SECTION_CONFIG[type];
-  const circleOuter: [number, number, number] = [...cfg.circleOuter];
-  const circleInner: [number, number, number] = [...cfg.circleInner];
-  const badgeColor: [number, number, number] = [...cfg.badgeColor];
-  const textColor: [number, number, number] = [...cfg.textColor];
-  const r = 7;
-  const cx = x + r;
-  const cy = y + r;
+function svgStringToPng(svgString: string, scale = 3): Promise<string | null> {
+  return new Promise((resolve) => {
+    const blob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const img = new Image();
 
-  // Outer circle
-  pdf.setFillColor(...circleOuter);
-  pdf.circle(cx, cy, r, "F");
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.naturalWidth * scale;
+      canvas.height = img.naturalHeight * scale;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) { resolve(null); URL.revokeObjectURL(url); return; }
+      ctx.scale(scale, scale);
+      ctx.drawImage(img, 0, 0);
+      resolve(canvas.toDataURL("image/png"));
+      URL.revokeObjectURL(url);
+    };
 
-  // Inner circle
-  pdf.setFillColor(...circleInner);
-  pdf.circle(cx, cy, r - 1.5, "F");
-
-  // Symbol inside circle (simple ASCII characters only)
-  pdf.setFont("helvetica", "bold");
-  pdf.setTextColor(255, 255, 255);
-
-  switch (type) {
-    case "faits":
-      // Two person silhouettes → simplified as group icon
-      pdf.setFillColor(...badgeColor);
-      // Draw two simple person shapes
-      pdf.circle(cx - 2, cy - 2, 1.3, "F");
-      pdf.circle(cx + 2, cy - 2, 1.3, "F");
-      pdf.roundedRect(cx - 4, cy, 4, 3, 0.5, 0.5, "F");
-      pdf.roundedRect(cx, cy, 4, 3, 0.5, 0.5, "F");
-      break;
-    case "causes":
-      // Two red question marks
-      pdf.setTextColor(139, 26, 26); // #8B1A1A
-      pdf.setFontSize(11);
-      pdf.text("??", cx, cy + 1.5, { align: "center" });
-      break;
-    case "actions":
-      // Document icon (white)
-      pdf.setDrawColor(255, 255, 255);
-      pdf.setLineWidth(0.5);
-      pdf.rect(cx - 3, cy - 4, 6, 8);
-      pdf.line(cx - 1.5, cy - 2, cx + 1.5, cy - 2);
-      pdf.line(cx - 1.5, cy, cx + 1.5, cy);
-      pdf.line(cx - 1.5, cy + 2, cx + 0.5, cy + 2);
-      break;
-    case "vigilance":
-      // Warning triangle
-      pdf.setFillColor(255, 152, 0); // orange
-      const triH = 8;
-      const triW = 9;
-      pdf.triangle(
-        cx, cy - triH / 2 + 1,
-        cx - triW / 2, cy + triH / 2 - 1,
-        cx + triW / 2, cy + triH / 2 - 1,
-        "F"
-      );
-      pdf.setTextColor(255, 255, 255);
-      pdf.setFontSize(8);
-      pdf.text("!", cx, cy + 2.5, { align: "center" });
-      break;
-  }
-
-  // Label badge rectangle (to the right of the circle, slightly overlapping)
-  const labelX = x + r * 2 - 2;
-  const labelFontSize = cfg.label.length > 20 ? 6 : 8;
-  pdf.setFontSize(labelFontSize);
-  const labelW = pdf.getStringUnitWidth(sanitize(cfg.label)) * labelFontSize / pdf.internal.scaleFactor + 8;
-  const labelH = cfg.label.length > 20 ? 10 : 7;
-  const labelY = y + r - labelH / 2;
-
-  pdf.setFillColor(...badgeColor);
-  pdf.roundedRect(labelX, labelY, labelW, labelH, 1.5, 1.5, "F");
-
-  pdf.setFont("helvetica", "bold");
-  pdf.setFontSize(labelFontSize);
-  pdf.setTextColor(...textColor);
-  pdf.text(sanitize(cfg.label), labelX + 4, labelY + labelH / 2 + labelFontSize / 6);
-
-  return labelX + labelW;
-}
-
-function drawSection(
-  pdf: jsPDF,
-  y: number,
-  text: string,
-  type: keyof typeof SECTION_CONFIG,
-  photoData?: string | null,
-  pageW = 210,
-  marginX = 12
-): number {
-  if (!text && !photoData) return y;
-
-  const contentW = pageW - marginX * 2;
-  const cfg = SECTION_CONFIG[type];
-  const borderColor: [number, number, number] = [...cfg.borderColor];
-
-  // Check page break
-  if (y > 230) {
-    pdf.addPage();
-    y = 15;
-  }
-
-  // Section header badge (circle + label)
-  drawSectionBadge(pdf, marginX, y - 2, type);
-
-  y += 18;
-
-  // Content area
-  const textW = photoData ? contentW * 0.65 : contentW;
-
-  pdf.setFont("helvetica", "normal");
-  pdf.setFontSize(9);
-  pdf.setTextColor(...GRAY_TEXT);
-
-  const sanitizedText = sanitize(text || "");
-  const lines = pdf.splitTextToSize(sanitizedText, textW - 10);
-  const textH = Math.max(lines.length * 4 + 8, 16);
-
-  // Background fill (subtle warm gray)
-  pdf.setFillColor(252, 250, 245);
-  pdf.roundedRect(marginX, y - 2, textW, textH, 1.5, 1.5, "F");
-
-  // Left colored border (thick, 2.5mm)
-  pdf.setFillColor(...borderColor);
-  pdf.rect(marginX, y - 2, 2.5, textH, "F");
-
-  // Draw text
-  pdf.setTextColor(...GRAY_TEXT);
-  pdf.setFont("helvetica", "normal");
-  pdf.setFontSize(9);
-  pdf.text(lines, marginX + 7, y + 4);
-
-  // Photo (right 1/3)
-  if (photoData) {
-    const photoX = marginX + textW + 4;
-    const photoW = contentW - textW - 4;
-    const photoH = Math.max(textH, 35);
-
-    try {
-      pdf.addImage(photoData, "JPEG", photoX, y - 2, photoW, photoH);
-    } catch {
-      pdf.setFillColor(245, 245, 245);
-      pdf.roundedRect(photoX, y - 2, photoW, photoH, 2, 2, "F");
-      pdf.setFont("helvetica", "italic");
-      pdf.setFontSize(7);
-      pdf.setTextColor(180, 180, 180);
-      pdf.text("Photo", photoX + photoW / 2, y + photoH / 2, { align: "center" });
-    }
-  }
-
-  return y + textH + 8;
+    img.onerror = () => { resolve(null); URL.revokeObjectURL(url); };
+    img.src = url;
+  });
 }
 
 async function fetchImageAsBase64(url: string): Promise<string | null> {
   try {
     const response = await fetch(url);
     const blob = await response.blob();
-    const reader = new FileReader();
     return await new Promise<string>((resolve) => {
+      const reader = new FileReader();
       reader.onload = () => resolve(reader.result as string);
       reader.readAsDataURL(blob);
     });
@@ -259,51 +84,62 @@ async function fetchImageAsBase64(url: string): Promise<string | null> {
   }
 }
 
+// ==========================================
+// MAIN EXPORT
+// ==========================================
+
 export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string | null) {
   const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
   const pageW = 210;
-  const marginX = 12;
-  const contentW = pageW - marginX * 2;
+  const mx = 12; // margin X
+  const cw = pageW - mx * 2; // content width
   let y = 12;
+
+  // ------------------------------------------
+  // Preload all images in parallel
+  // ------------------------------------------
+  const [
+    badgeFaits, badgeCauses, badgeActions, badgeVigilance,
+    photoFaits, photoCauses, photoActions, photoVigilance,
+    logoData,
+  ] = await Promise.all([
+    svgStringToPng(REX_BADGE_SVGS.faits),
+    svgStringToPng(REX_BADGE_SVGS.causes),
+    svgStringToPng(REX_BADGE_SVGS.actions),
+    svgStringToPng(REX_BADGE_SVGS.vigilance),
+    rex.faits_photo_url ? fetchImageAsBase64(rex.faits_photo_url) : null,
+    rex.causes_photo_url ? fetchImageAsBase64(rex.causes_photo_url) : null,
+    rex.actions_photo_url ? fetchImageAsBase64(rex.actions_photo_url) : null,
+    rex.vigilance_photo_url ? fetchImageAsBase64(rex.vigilance_photo_url) : null,
+    logoUrl ? fetchImageAsBase64(logoUrl) : null,
+  ]);
+
+  const badges: Record<string, string | null> = {
+    faits: badgeFaits, causes: badgeCauses, actions: badgeActions, vigilance: badgeVigilance,
+  };
 
   // ==========================================
   // HEADER
   // ==========================================
 
-  // Badge "FICHE REX n/year" — orange rounded rectangle
-  const badgeW = 32;
-  const badgeH = 22;
+  // Badge "FICHE REX n/year"
+  const bw = 32, bh = 22;
   pdf.setFillColor(...ORANGE);
-  pdf.roundedRect(marginX, y, badgeW, badgeH, 3, 3, "F");
-
+  pdf.roundedRect(mx, y, bw, bh, 3, 3, "F");
   pdf.setFont("helvetica", "bold");
   pdf.setFontSize(7);
   pdf.setTextColor(255, 255, 255);
-  pdf.text("FICHE REX", marginX + badgeW / 2, y + 7, { align: "center" });
+  pdf.text("FICHE REX", mx + bw / 2, y + 7, { align: "center" });
   pdf.setFontSize(14);
-  pdf.text(
-    `${rex.rex_number || "-"}/${rex.rex_year || "-"}`,
-    marginX + badgeW / 2,
-    y + 17,
-    { align: "center" }
-  );
+  pdf.text(`${rex.rex_number || "-"}/${rex.rex_year || "-"}`, mx + bw / 2, y + 17, { align: "center" });
 
-  // Logo (real company logo or text fallback)
-  const logoX = pageW - marginX - 50;
-  let logoData: string | null = null;
-  if (logoUrl) {
-    logoData = await fetchImageAsBase64(logoUrl);
-  }
-
+  // Company logo
+  const logoX = pageW - mx - 48;
+  let logoOk = false;
   if (logoData) {
-    try {
-      pdf.addImage(logoData, "PNG", logoX, y, 45, 16);
-    } catch {
-      logoData = null;
-    }
+    try { pdf.addImage(logoData, "PNG", logoX, y, 45, 16); logoOk = true; } catch { /* fallback */ }
   }
-
-  if (!logoData) {
+  if (!logoOk) {
     pdf.setFont("helvetica", "bold");
     pdf.setFontSize(14);
     pdf.setTextColor(...NAVY);
@@ -315,127 +151,148 @@ export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string 
     pdf.setFontSize(6);
     pdf.text("RESEAUX", logoX + 12, y + 13, { align: "center" });
     pdf.setFillColor(...YELLOW_ACCENT);
-    pdf.rect(logoX, y + 14, 38, 0.5, "F");
+    pdf.rect(logoX, y + 14.5, 38, 0.5, "F");
   }
 
-  // Title and metadata
-  const infoX = marginX + badgeW + 6;
-  const infoW = logoX - infoX - 4;
+  // Title + metadata
+  const ix = mx + bw + 6;
+  const iw = logoX - ix - 4;
 
-  // Title line
   pdf.setFont("helvetica", "bold");
   pdf.setFontSize(9);
   pdf.setTextColor(...ORANGE);
-  const titleLabel = "TITRE DE L'EVENEMENT";
-  pdf.text(titleLabel, infoX, y + 5);
-
-  const titleLabelW = pdf.getStringUnitWidth(titleLabel) * 9 / pdf.internal.scaleFactor;
+  pdf.text("TITRE DE L'EVENEMENT", ix, y + 5);
   pdf.setTextColor(...NAVY);
-  pdf.setFont("helvetica", "bold");
-  const titleText = sanitize(` - ${rex.title}`);
-  const titleLines = pdf.splitTextToSize(titleText, infoW - titleLabelW);
-  pdf.text(titleLines, infoX + titleLabelW, y + 5);
+  const tw = pdf.getStringUnitWidth("TITRE DE L'EVENEMENT") * 9 / pdf.internal.scaleFactor;
+  const tl = pdf.splitTextToSize(sanitize(` - ${rex.title}`), iw - tw);
+  pdf.text(tl, ix + tw, y + 5);
 
-  // Metadata
   pdf.setFontSize(8);
-  let metaY = y + 11;
-  if (rex.lieu) {
+  let my = y + 11;
+  const meta = [
+    { label: "Lieu", value: rex.lieu, lw: 8 },
+    { label: "Date", value: rex.date_evenement ? new Date(rex.date_evenement).toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" }) : "", lw: 9 },
+    { label: "Horaire", value: rex.horaire, lw: 14 },
+  ];
+  for (const m of meta) {
+    if (!m.value) continue;
     pdf.setTextColor(66, 133, 244);
     pdf.setFont("helvetica", "bold");
-    pdf.text("Lieu", infoX, metaY);
+    pdf.text(m.label, ix, my);
     pdf.setTextColor(...GRAY_TEXT);
     pdf.setFont("helvetica", "normal");
-    pdf.text(` : ${sanitize(rex.lieu)}`, infoX + 8, metaY);
-    metaY += 4;
-  }
-  if (rex.date_evenement) {
-    const dateStr = new Date(rex.date_evenement).toLocaleDateString("fr-FR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    });
-    pdf.setTextColor(66, 133, 244);
-    pdf.setFont("helvetica", "bold");
-    pdf.text("Date", infoX, metaY);
-    pdf.setTextColor(...GRAY_TEXT);
-    pdf.setFont("helvetica", "normal");
-    pdf.text(` : ${dateStr}`, infoX + 9, metaY);
-    metaY += 4;
-  }
-  if (rex.horaire) {
-    pdf.setTextColor(66, 133, 244);
-    pdf.setFont("helvetica", "bold");
-    pdf.text("Horaire", infoX, metaY);
-    pdf.setTextColor(...GRAY_TEXT);
-    pdf.setFont("helvetica", "normal");
-    pdf.text(` : ${sanitize(rex.horaire)}`, infoX + 14, metaY);
+    pdf.text(` : ${sanitize(m.value)}`, ix + m.lw, my);
+    my += 4;
   }
 
-  y += badgeH + 6;
+  y += bh + 6;
 
-  // Orange separator line (gradient effect: two rects)
-  pdf.setFillColor(243, 156, 18);
-  pdf.rect(marginX, y, contentW * 0.5, 1.5, "F");
-  pdf.setFillColor(231, 76, 60);
-  pdf.rect(marginX + contentW * 0.5, y, contentW * 0.5, 1.5, "F");
+  // Orange gradient separator
+  const gradSteps = 20;
+  const stepW = cw / gradSteps;
+  for (let i = 0; i < gradSteps; i++) {
+    const t = i / gradSteps;
+    const r = Math.round(243 + (231 - 243) * t);
+    const g = Math.round(156 + (76 - 156) * t);
+    const b = Math.round(18 + (60 - 18) * t);
+    pdf.setFillColor(r, g, b);
+    pdf.rect(mx + i * stepW, y, stepW + 0.5, 1.5, "F");
+  }
   y += 8;
 
   // ==========================================
   // SECTIONS
   // ==========================================
 
-  // Preload photos
-  const photoDataMap: Record<string, string | null> = {};
-  const photoFields = [
-    { key: "faits_photo_url", value: rex.faits_photo_url },
-    { key: "causes_photo_url", value: rex.causes_photo_url },
-    { key: "actions_photo_url", value: rex.actions_photo_url },
-    { key: "vigilance_photo_url", value: rex.vigilance_photo_url },
-  ];
+  const sections = [
+    { key: "faits", text: rex.faits, photo: photoFaits },
+    { key: "causes", text: rex.causes, photo: photoCauses },
+    { key: "actions", text: rex.actions_engagees, photo: photoActions },
+    { key: "vigilance", text: rex.vigilance, photo: photoVigilance },
+  ] as const;
 
-  await Promise.all(
-    photoFields.map(async ({ key, value }) => {
-      if (value) {
-        photoDataMap[key] = await fetchImageAsBase64(value);
+  for (const sec of sections) {
+    if (!sec.text && !sec.photo) continue;
+
+    // Page break check
+    if (y > 225) { pdf.addPage(); y = 15; }
+
+    // Badge image
+    const badge = badges[sec.key];
+    if (badge) {
+      try {
+        // Badge is wider than tall, scale appropriately
+        const badgeH = 10;
+        const badgeW = sec.key === "faits" ? 40 : sec.key === "causes" ? 48 : sec.key === "actions" ? 50 : 44;
+        pdf.addImage(badge, "PNG", mx, y - 1, badgeW, badgeH);
+      } catch {
+        // Fallback: simple text header
+        pdf.setFont("helvetica", "bold");
+        pdf.setFontSize(10);
+        const bc = SECTION_BORDER[sec.key];
+        pdf.setTextColor(bc[0], bc[1], bc[2]);
+        pdf.text(sec.key.toUpperCase(), mx, y + 5);
       }
-    })
-  );
+    }
 
-  // Section 1: Les Faits
-  y = drawSection(pdf, y, rex.faits, "faits", photoDataMap.faits_photo_url, pageW, marginX);
+    y += 14;
 
-  // Section 2: Les Causes
-  y = drawSection(pdf, y, rex.causes, "causes", photoDataMap.causes_photo_url, pageW, marginX);
+    // Text content
+    const textW = sec.photo ? cw * 0.65 : cw;
+    const sanitizedText = sanitize(sec.text || "");
+    pdf.setFont("helvetica", "normal");
+    pdf.setFontSize(9);
+    const lines = pdf.splitTextToSize(sanitizedText, textW - 12);
+    const textH = Math.max(lines.length * 4.2 + 8, 18);
 
-  // Section 3: Les Actions
-  y = drawSection(pdf, y, rex.actions_engagees, "actions", photoDataMap.actions_photo_url, pageW, marginX);
+    // Background
+    pdf.setFillColor(253, 251, 247);
+    pdf.roundedRect(mx, y - 2, textW, textH, 1.5, 1.5, "F");
 
-  // Section 4: La Vigilance
-  y = drawSection(pdf, y, rex.vigilance, "vigilance", photoDataMap.vigilance_photo_url, pageW, marginX);
+    // Left colored border
+    const bc = SECTION_BORDER[sec.key];
+    pdf.setFillColor(bc[0], bc[1], bc[2]);
+    pdf.rect(mx, y - 2, 2.5, textH, "F");
+
+    // Text
+    pdf.setTextColor(...GRAY_TEXT);
+    pdf.setFont("helvetica", "normal");
+    pdf.setFontSize(9);
+    pdf.text(lines, mx + 8, y + 4);
+
+    // Photo
+    if (sec.photo) {
+      const px = mx + textW + 4;
+      const pw = cw - textW - 4;
+      const ph = Math.max(textH, 30);
+      try {
+        pdf.addImage(sec.photo, "JPEG", px, y - 2, pw, ph);
+      } catch {
+        // skip
+      }
+    }
+
+    y += textH + 8;
+  }
 
   // ==========================================
   // FOOTER
   // ==========================================
+  if (y > 230) { pdf.addPage(); y = 15; }
 
-  if (y > 235) {
-    pdf.addPage();
-    y = 15;
-  }
-
-  // Separator
   pdf.setDrawColor(220, 220, 220);
   pdf.setLineWidth(0.3);
-  pdf.line(marginX, y, pageW - marginX, y);
+  pdf.line(mx, y, pageW - mx, y);
   y += 6;
 
-  const halfW = contentW / 2 - 2;
-  const footerStartY = y;
+  const halfW = cw / 2 - 2;
+  const fy = y;
 
-  // Left: Deja arrive ?
+  // Left: Deja arrive
   pdf.setFont("helvetica", "bold");
   pdf.setFontSize(9);
   pdf.setTextColor(66, 133, 244);
-  pdf.text("DEJA ARRIVE ?", marginX, y);
+  pdf.text("DEJA ARRIVE ?", mx, y);
   y += 5;
 
   if (rex.deja_arrive && rex.deja_arrive.length > 0) {
@@ -444,34 +301,32 @@ export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string 
     pdf.setTextColor(...GRAY_TEXT);
     for (const item of rex.deja_arrive) {
       pdf.setFillColor(...NAVY);
-      pdf.circle(marginX + 2, y - 0.5, 0.7, "F");
-      const itemLines = pdf.splitTextToSize(sanitize(item), halfW - 8);
-      pdf.text(itemLines, marginX + 6, y);
-      y += itemLines.length * 3.5 + 1;
+      pdf.circle(mx + 2, y - 0.5, 0.7, "F");
+      const il = pdf.splitTextToSize(sanitize(item), halfW - 8);
+      pdf.text(il, mx + 6, y);
+      y += il.length * 3.5 + 1;
     }
   } else {
     pdf.setFont("helvetica", "italic");
     pdf.setFontSize(8);
     pdf.setTextColor(160, 160, 160);
-    pdf.text("Non renseigne", marginX + 4, y);
+    pdf.text("Non renseigne", mx + 4, y);
   }
 
   // Right: Type d'evenement
-  const rightX = marginX + halfW + 4;
-  let typeY = footerStartY;
-
+  const rx = mx + halfW + 4;
+  let ty = fy;
   pdf.setFont("helvetica", "bold");
   pdf.setFontSize(9);
   pdf.setTextColor(...ORANGE);
-  pdf.text("TYPE D'EVENEMENT", rightX, typeY);
-  typeY += 5;
+  pdf.text("TYPE D'EVENEMENT", rx, ty);
+  ty += 5;
 
   for (const t of EVENT_TYPES) {
-    const isActive = rex.type_evenement === t.value;
-
-    if (isActive) {
+    const active = rex.type_evenement === t.value;
+    if (active) {
       pdf.setFillColor(...t.color);
-      pdf.roundedRect(rightX, typeY - 3, halfW, 5.5, 1, 1, "F");
+      pdf.roundedRect(rx, ty - 3, halfW, 5.5, 1, 1, "F");
       pdf.setFont("helvetica", "bold");
       pdf.setFontSize(8);
       pdf.setTextColor(255, 255, 255);
@@ -480,9 +335,8 @@ export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string 
       pdf.setFontSize(8);
       pdf.setTextColor(160, 160, 160);
     }
-
-    pdf.text(sanitize(t.label), rightX + 2, typeY);
-    typeY += 6;
+    pdf.text(sanitize(t.label), rx + 2, ty);
+    ty += 6;
   }
 
   // ==========================================
