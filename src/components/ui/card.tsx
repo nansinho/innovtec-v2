@@ -1,14 +1,42 @@
+import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
+
+// ─── Card ───
+
+const cardVariants = cva("overflow-hidden transition-all duration-300 ease-out", {
+  variants: {
+    variant: {
+      default:
+        "rounded-2xl bg-white/92 shadow-[0_1px_4px_rgba(0,0,0,0.04)] ring-1 ring-black/[0.03] backdrop-blur-xl hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)] hover:translate-y-[-1px]",
+      stat:
+        "rounded-lg bg-[var(--hover)] p-4 ring-1 ring-black/[0.03]",
+      flat:
+        "rounded-xl bg-transparent p-4",
+    },
+  },
+  defaultVariants: {
+    variant: "default",
+  },
+});
 
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
+  variant?: "default" | "stat" | "flat";
+  hover?: boolean;
 }
 
-export function Card({ className, children, ...props }: CardProps) {
+export function Card({
+  variant = "default",
+  hover,
+  className,
+  children,
+  ...props
+}: CardProps) {
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-2xl bg-white/92 shadow-[0_1px_4px_rgba(0,0,0,0.04)] ring-1 ring-black/[0.03] backdrop-blur-xl transition-all duration-300 ease-out hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)] hover:translate-y-[-1px]",
+        cardVariants({ variant }),
+        hover && "cursor-pointer hover:ring-[var(--border-2)] hover:shadow-sm active:scale-[0.995]",
         className
       )}
       {...props}
@@ -18,13 +46,21 @@ export function Card({ className, children, ...props }: CardProps) {
   );
 }
 
+// ─── CardHeader (original) ───
+
 interface CardHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
   title: string;
   icon?: React.ComponentType<{ className?: string }>;
   action?: React.ReactNode;
 }
 
-export function CardHeader({ title, icon: Icon, action, className, ...props }: CardHeaderProps) {
+export function CardHeader({
+  title,
+  icon: Icon,
+  action,
+  className,
+  ...props
+}: CardHeaderProps) {
   return (
     <div
       className={cn(
@@ -35,9 +71,86 @@ export function CardHeader({ title, icon: Icon, action, className, ...props }: C
     >
       <div className="flex items-center gap-2.5">
         {Icon && <Icon className="h-4 w-4 text-[var(--text-muted)]" />}
-        <h3 className="text-[13px] font-semibold tracking-tight text-[var(--heading)]">{title}</h3>
+        <h3 className="text-[13px] font-semibold tracking-tight text-[var(--heading)]">
+          {title}
+        </h3>
       </div>
       {action}
+    </div>
+  );
+}
+
+// ─── CardHeaderWithBadge ───
+
+interface CardHeaderWithBadgeProps
+  extends React.HTMLAttributes<HTMLDivElement> {
+  title: string;
+  subtitle?: string;
+  badges?: React.ReactNode;
+}
+
+export function CardHeaderWithBadge({
+  title,
+  subtitle,
+  badges,
+  className,
+  ...props
+}: CardHeaderWithBadgeProps) {
+  return (
+    <div
+      className={cn(
+        "flex items-center justify-between gap-3 px-5 py-3.5",
+        className
+      )}
+      {...props}
+    >
+      <div className="min-w-0 flex-1">
+        <h3 className="truncate text-[13px] font-semibold tracking-tight text-[var(--heading)]">
+          {title}
+        </h3>
+        {subtitle && (
+          <p className="truncate text-xs text-[var(--text-muted)]">
+            {subtitle}
+          </p>
+        )}
+      </div>
+      {badges && (
+        <div className="flex shrink-0 items-center gap-1.5">{badges}</div>
+      )}
+    </div>
+  );
+}
+
+// ─── StatValue ───
+
+interface StatValueProps extends React.HTMLAttributes<HTMLDivElement> {
+  children: React.ReactNode;
+}
+
+export function StatValue({ className, children, ...props }: StatValueProps) {
+  return (
+    <div
+      className={cn("text-2xl font-medium text-[var(--heading)]", className)}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+}
+
+// ─── StatLabel ───
+
+interface StatLabelProps extends React.HTMLAttributes<HTMLDivElement> {
+  children: React.ReactNode;
+}
+
+export function StatLabel({ className, children, ...props }: StatLabelProps) {
+  return (
+    <div
+      className={cn("text-[13px] text-[var(--text-muted)]", className)}
+      {...props}
+    >
+      {children}
     </div>
   );
 }

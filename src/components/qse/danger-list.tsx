@@ -6,22 +6,9 @@ import { cn, formatRelative } from "@/lib/utils";
 import { updateDangerStatus } from "@/actions/qse";
 import { DataTable, type ColumnDef, type FilterDef } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
+import { StatusBadge } from "@/components/ui/status-badge";
+import { SIGNALEMENT_STATUS_MAP, DANGER_SEVERITY_MAP } from "@/lib/status-config";
 import { getStandardToolbarActions } from "@/lib/table-toolbar-actions";
-
-const statusConfig: Record<string, { label: string; variant: "red" | "yellow" | "green" | "default" }> = {
-  signale: { label: "Signalé", variant: "red" },
-  en_cours: { label: "En cours", variant: "yellow" },
-  resolu: { label: "Résolu", variant: "green" },
-  cloture: { label: "Clôturé", variant: "default" },
-};
-
-const severityConfig: Record<number, { label: string; variant: "green" | "yellow" | "red" | "default" }> = {
-  1: { label: "Faible", variant: "green" },
-  2: { label: "Modérée", variant: "yellow" },
-  3: { label: "Sérieuse", variant: "yellow" },
-  4: { label: "Grave", variant: "red" },
-  5: { label: "Critique", variant: "red" },
-};
 
 interface DangerItem {
   id: string;
@@ -43,8 +30,8 @@ function exportCsv(dangers: DangerItem[]) {
   const headers = ["#", "Date", "Titre", "Lieu", "Gravité", "Déclarant", "Statut"];
   const rows = dangers.map((d, i) => {
     const reporter = d.reporter as unknown as { first_name: string; last_name: string } | null;
-    const sev = severityConfig[d.severity] ?? severityConfig[1];
-    const st = statusConfig[d.status] ?? statusConfig.signale;
+    const sev = DANGER_SEVERITY_MAP[String(d.severity)] ?? DANGER_SEVERITY_MAP["1"];
+    const st = SIGNALEMENT_STATUS_MAP[d.status] ?? SIGNALEMENT_STATUS_MAP.signale;
     return [
       i + 1,
       new Date(d.created_at).toLocaleDateString("fr-FR"),
@@ -132,8 +119,8 @@ export default function DangerList({ dangers: initialDangers, canManage }: Dange
       width: "100px",
       accessor: (d) => d.severity,
       render: (d) => {
-        const sev = severityConfig[d.severity] ?? severityConfig[1];
-        return <Badge variant={sev.variant}>{sev.label} ({d.severity}/5)</Badge>;
+        const sev = DANGER_SEVERITY_MAP[String(d.severity)];
+        return <Badge variant={sev?.variant ?? "gray"} dot>{sev?.label ?? d.severity} ({d.severity}/5)</Badge>;
       },
     },
     {
@@ -154,7 +141,6 @@ export default function DangerList({ dangers: initialDangers, canManage }: Dange
       sortable: true,
       width: "130px",
       render: (d) => {
-        const st = statusConfig[d.status] ?? statusConfig.signale;
         if (canManage && d.status !== "cloture") {
           return (
             <select
@@ -174,7 +160,7 @@ export default function DangerList({ dangers: initialDangers, canManage }: Dange
             </select>
           );
         }
-        return <Badge variant={st.variant}>{st.label}</Badge>;
+        return <StatusBadge module="signalements" status={d.status} />;
       },
     },
   ];
@@ -185,14 +171,14 @@ export default function DangerList({ dangers: initialDangers, canManage }: Dange
       label: "Statut",
       type: "select",
       placeholder: "Tous les statuts",
-      options: Object.entries(statusConfig).map(([k, v]) => ({ value: k, label: v.label })),
+      options: Object.entries(SIGNALEMENT_STATUS_MAP).filter(([k]) => ["signale","en_cours","resolu","cloture"].includes(k)).map(([k, v]) => ({ value: k, label: v.label })),
     },
     {
       key: "severity",
       label: "Gravité",
       type: "select",
       placeholder: "Toutes les gravités",
-      options: Object.entries(severityConfig).map(([k, v]) => ({ value: k, label: v.label })),
+      options: Object.entries(DANGER_SEVERITY_MAP).map(([k, v]) => ({ value: k, label: v.label })),
     },
   ];
 

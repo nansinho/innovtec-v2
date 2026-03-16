@@ -8,22 +8,10 @@ import ConfirmDialog from "@/components/ui/confirm-dialog";
 import { toast } from "sonner";
 import { DataTable, type ColumnDef, type FilterDef } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
+import { StatusBadge, PriorityBadge } from "@/components/ui/status-badge";
+import { SIGNALEMENT_STATUS_MAP, PRIORITY_MAP } from "@/lib/status-config";
 import { getStandardToolbarActions } from "@/lib/table-toolbar-actions";
 import type { DangerReport, SignalementCategory } from "@/lib/types/database";
-
-const statusConfig: Record<string, { label: string; variant: "red" | "yellow" | "green" | "default" }> = {
-  signale: { label: "Signalé", variant: "red" },
-  en_cours: { label: "En cours", variant: "yellow" },
-  resolu: { label: "Résolu", variant: "green" },
-  cloture: { label: "Clôturé", variant: "default" },
-};
-
-const priorityConfig: Record<string, { label: string; variant: "green" | "yellow" | "red" | "default" }> = {
-  faible: { label: "Faible", variant: "green" },
-  moyenne: { label: "Moyenne", variant: "yellow" },
-  haute: { label: "Haute", variant: "red" },
-  critique: { label: "Critique", variant: "red" },
-};
 
 interface SignalementListProps {
   signalements: DangerReport[];
@@ -36,8 +24,8 @@ function exportCsv(signalements: DangerReport[]) {
   const headers = ["#", "Date", "Titre", "Catégorie", "Priorité", "Lieu", "Déclarant", "Statut"];
   const rows = signalements.map((d, i) => {
     const cat = d.category as { name: string } | null;
-    const pri = priorityConfig[d.priority] ?? priorityConfig.faible;
-    const st = statusConfig[d.status] ?? statusConfig.signale;
+    const pri = PRIORITY_MAP[d.priority] ?? PRIORITY_MAP.faible;
+    const st = SIGNALEMENT_STATUS_MAP[d.status] ?? SIGNALEMENT_STATUS_MAP.signale;
     const reporter = d.is_anonymous
       ? "Anonyme"
       : d.reporter
@@ -136,6 +124,7 @@ export default function SignalementList({ signalements: initial, categories, can
         if (!cat) return <span className="text-[var(--text-muted)]">—</span>;
         return (
           <Badge
+            variant="gray"
             dot
             className="border"
             style={{
@@ -155,8 +144,7 @@ export default function SignalementList({ signalements: initial, categories, can
       sortable: true,
       width: "100px",
       render: (d) => {
-        const pri = priorityConfig[d.priority] ?? priorityConfig.faible;
-        return <Badge variant={pri.variant}>{pri.label}</Badge>;
+        return <PriorityBadge priority={d.priority} />;
       },
     },
     {
@@ -194,7 +182,6 @@ export default function SignalementList({ signalements: initial, categories, can
       sortable: true,
       width: "130px",
       render: (d) => {
-        const st = statusConfig[d.status] ?? statusConfig.signale;
         if (canManage && d.status !== "cloture") {
           return (
             <select
@@ -214,7 +201,7 @@ export default function SignalementList({ signalements: initial, categories, can
             </select>
           );
         }
-        return <Badge variant={st.variant}>{st.label}</Badge>;
+        return <StatusBadge module="signalements" status={d.status} />;
       },
     },
   ];
@@ -225,14 +212,14 @@ export default function SignalementList({ signalements: initial, categories, can
       label: "Statut",
       type: "select",
       placeholder: "Tous les statuts",
-      options: Object.entries(statusConfig).map(([k, v]) => ({ value: k, label: v.label })),
+      options: Object.entries(SIGNALEMENT_STATUS_MAP).filter(([k]) => ["signale","en_cours","resolu","cloture"].includes(k)).map(([k, v]) => ({ value: k, label: v.label })),
     },
     {
       key: "priority",
       label: "Priorité",
       type: "select",
       placeholder: "Toutes les priorités",
-      options: Object.entries(priorityConfig).map(([k, v]) => ({ value: k, label: v.label })),
+      options: Object.entries(PRIORITY_MAP).filter(([k]) => ["faible","moyenne","haute","critique"].includes(k)).map(([k, v]) => ({ value: k, label: v.label })),
     },
     ...(categories.length > 0
       ? [

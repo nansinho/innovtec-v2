@@ -5,21 +5,14 @@ import { Search, Users, Filter, Cake, Mail, Phone } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ProfileDrawer from "./profile-drawer";
 import type { Profile } from "@/lib/types/database";
-import { Badge, type BadgeVariant } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/badge";
+import { EQUIPE_MAP } from "@/lib/status-config";
 
 interface TrombinoscopeGridProps {
   users: Profile[];
   birthdayIds: string[];
   currentUserId: string;
 }
-
-const DEPT_VARIANTS: Record<string, BadgeVariant> = {
-  "Travaux": "yellow",
-  "Ingénierie": "blue",
-  "Administration": "purple",
-  "Ressources Humaines": "pink",
-  "Direction": "red",
-};
 
 export default function TrombinoscopeGrid({
   users,
@@ -134,7 +127,7 @@ export default function TrombinoscopeGrid({
             const initials =
               `${user.first_name?.[0] ?? ""}${user.last_name?.[0] ?? ""}`.toUpperCase() || "?";
             const hasBirthday = birthdaySet.has(user.id);
-            const deptVariant = DEPT_VARIANTS[user.department] ?? "default";
+            const deptEntry = EQUIPE_MAP[user.department];
 
             return (
               <button
@@ -186,7 +179,7 @@ export default function TrombinoscopeGrid({
 
                 {/* Department badge */}
                 {user.department && (
-                  <Badge variant={deptVariant} dot={false} className="mt-2 text-[9px]">
+                  <Badge variant={deptEntry?.variant ?? "gray"} dot={false} size="sm" className="mt-2">
                     {user.department}
                   </Badge>
                 )}

@@ -488,7 +488,7 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
                       <span className="text-sm font-medium text-[var(--heading)]">{MONTH_NAMES[d.month - 1]}</span>
                     </td>
                     <td className="px-4 py-3.5">
-                      <Badge variant="yellow" dot={false}>
+                      <Badge variant="amber" dot={false}>
                         {d.year}
                       </Badge>
                     </td>

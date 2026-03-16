@@ -4,31 +4,13 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ClipboardList, Eye, Pencil, Trash2 } from "lucide-react";
 import { DataTable, type ColumnDef, type FilterDef } from "@/components/ui/data-table";
-import { Badge } from "@/components/ui/badge";
+import { StatusBadge, PriorityBadge, TypeBadge } from "@/components/ui/status-badge";
+import { PLAN_ACTION_STATUS_MAP, PLAN_ACTION_TYPE_MAP, PRIORITY_MAP } from "@/lib/status-config";
 import { getStandardToolbarActions } from "@/lib/table-toolbar-actions";
 import { deleteActionPlan } from "@/actions/action-plans";
 import type { ActionPlan } from "@/lib/types/database";
 import { toast } from "sonner";
 import ConfirmDialog from "@/components/ui/confirm-dialog";
-
-const statusConfig: Record<string, { label: string; variant: "default" | "yellow" | "green" | "red" | "blue" }> = {
-  a_faire: { label: "À faire", variant: "default" },
-  en_cours: { label: "En cours", variant: "yellow" },
-  termine: { label: "Terminé", variant: "green" },
-  annule: { label: "Annulé", variant: "red" },
-};
-
-const typeConfig: Record<string, { label: string; variant: "blue" | "purple" }> = {
-  corrective: { label: "Corrective", variant: "blue" },
-  preventive: { label: "Préventive", variant: "purple" },
-};
-
-const priorityConfig: Record<string, { label: string; variant: "green" | "yellow" | "red" | "default" }> = {
-  faible: { label: "Faible", variant: "green" },
-  moyenne: { label: "Moyenne", variant: "yellow" },
-  haute: { label: "Haute", variant: "red" },
-  critique: { label: "Critique", variant: "red" },
-};
 
 interface ActionPlanListProps {
   plans: ActionPlan[];
@@ -79,8 +61,7 @@ export default function ActionPlanList({ plans: initial, canManage, onEdit, onAd
       header: "Type",
       width: "120px",
       render: (p) => {
-        const t = typeConfig[p.type] ?? typeConfig.corrective;
-        return <Badge variant={t.variant}>{t.label}</Badge>;
+        return <TypeBadge module="plan_action_types" type={p.type} />;
       },
     },
     {
@@ -89,8 +70,7 @@ export default function ActionPlanList({ plans: initial, canManage, onEdit, onAd
       sortable: true,
       width: "100px",
       render: (p) => {
-        const pri = priorityConfig[p.priority] ?? priorityConfig.faible;
-        return <Badge variant={pri.variant}>{pri.label}</Badge>;
+        return <PriorityBadge priority={p.priority} />;
       },
     },
     {
@@ -150,8 +130,7 @@ export default function ActionPlanList({ plans: initial, canManage, onEdit, onAd
       sortable: true,
       width: "110px",
       render: (p) => {
-        const st = statusConfig[p.status] ?? statusConfig.a_faire;
-        return <Badge variant={st.variant}>{st.label}</Badge>;
+        return <StatusBadge module="plans_actions" status={p.status} />;
       },
     },
   ];
@@ -162,21 +141,21 @@ export default function ActionPlanList({ plans: initial, canManage, onEdit, onAd
       label: "Statut",
       type: "select",
       placeholder: "Tous les statuts",
-      options: Object.entries(statusConfig).map(([k, v]) => ({ value: k, label: v.label })),
+      options: Object.entries(PLAN_ACTION_STATUS_MAP).filter(([k]) => ["a_faire","en_cours","termine","annule"].includes(k)).map(([k, v]) => ({ value: k, label: v.label })),
     },
     {
       key: "type",
       label: "Type",
       type: "select",
       placeholder: "Tous les types",
-      options: Object.entries(typeConfig).map(([k, v]) => ({ value: k, label: v.label })),
+      options: Object.entries(PLAN_ACTION_TYPE_MAP).filter(([k]) => ["corrective","preventive"].includes(k)).map(([k, v]) => ({ value: k, label: v.label })),
     },
     {
       key: "priority",
       label: "Priorité",
       type: "select",
       placeholder: "Toutes les priorités",
-      options: Object.entries(priorityConfig).map(([k, v]) => ({ value: k, label: v.label })),
+      options: Object.entries(PRIORITY_MAP).filter(([k]) => ["faible","moyenne","haute","critique"].includes(k)).map(([k, v]) => ({ value: k, label: v.label })),
     },
   ];
 

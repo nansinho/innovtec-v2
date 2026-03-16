@@ -14,17 +14,14 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft } from "lucide-react";
 import UserProfileTabs from "@/components/admin/user-profile-tabs";
+import { RoleBadge } from "@/components/ui/status-badge";
+import { Badge } from "@/components/ui/badge";
 
 export const dynamic = "force-dynamic";
 
 const roleLabels: Record<string, string> = {
   admin: "Administrateur",
   collaborateur: "Collaborateur",
-};
-
-const roleBadgeColors: Record<string, string> = {
-  admin: "bg-red-50 text-red-600",
-  collaborateur: "bg-green-50 text-green-600",
 };
 
 export default async function UserDetailPage({
@@ -100,25 +97,12 @@ export default async function UserDetailPage({
             </p>
           )}
           <div className="mt-2 flex items-center gap-2">
-            <span
-              className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium ${
-                roleBadgeColors[user.role] ?? "bg-gray-100 text-gray-600"
-              }`}
-            >
+            <RoleBadge role={user.role}>
               {roleLabels[user.role] ?? user.role}
-            </span>
-            <span
-              className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-medium ${
-                user.is_active
-                  ? "bg-green-50 text-green-600"
-                  : "bg-red-50 text-red-600"
-              }`}
-            >
-              <span
-                className={`h-1.5 w-1.5 rounded-full ${user.is_active ? "bg-green-500" : "bg-red-500"}`}
-              />
+            </RoleBadge>
+            <Badge variant={user.is_active ? "green" : "red"} dot size="sm">
               {user.is_active ? "Actif" : "Inactif"}
-            </span>
+            </Badge>
           </div>
         </div>
       </div>

@@ -5,17 +5,10 @@ import { Users, Mail, Phone, Eye, Cake } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DataTable, type ColumnDef, type FilterDef } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
+import { EQUIPE_MAP } from "@/lib/status-config";
 import { getStandardToolbarActions } from "@/lib/table-toolbar-actions";
 import ProfileDrawer from "./profile-drawer";
 import type { Profile } from "@/lib/types/database";
-
-const DEPT_VARIANTS: Record<string, "yellow" | "blue" | "green" | "red" | "purple" | "default"> = {
-  "Travaux": "yellow",
-  "Ingénierie": "blue",
-  "Administration": "purple",
-  "Ressources Humaines": "red",
-  "Direction": "green",
-};
 
 interface TrombinoscopeTableProps {
   users: Profile[];
@@ -108,7 +101,7 @@ export default function TrombinoscopeTable({
       sortable: true,
       render: (user) =>
         user.department ? (
-          <Badge variant={DEPT_VARIANTS[user.department] ?? "default"}>
+          <Badge variant={EQUIPE_MAP[user.department]?.variant ?? "gray"} dot={false}>
             {user.department}
           </Badge>
         ) : (

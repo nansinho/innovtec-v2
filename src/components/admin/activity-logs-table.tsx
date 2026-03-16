@@ -15,48 +15,22 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { getActivityLogs, type ActivityLog } from "@/actions/users";
+import { ACTIVITY_TYPE_MAP } from "@/lib/status-config";
 
 const PAGE_SIZE = 25;
 
-const actionConfig: Record<
+// Icon + background color config for activity log display (not badges)
+const actionIconConfig: Record<
   string,
-  { label: string; icon: React.ComponentType<{ className?: string }>; color: string }
+  { icon: React.ComponentType<{ className?: string }>; color: string }
 > = {
-  create_user: {
-    label: "Création d'utilisateur",
-    icon: UserPlus,
-    color: "bg-green-50 text-green-600",
-  },
-  update_user: {
-    label: "Modification d'utilisateur",
-    icon: Pencil,
-    color: "bg-blue-50 text-blue-600",
-  },
-  change_role: {
-    label: "Changement de rôle",
-    icon: Shield,
-    color: "bg-purple-50 text-purple-600",
-  },
-  deactivate_user: {
-    label: "Désactivation",
-    icon: UserMinus,
-    color: "bg-orange-50 text-orange-600",
-  },
-  reactivate_user: {
-    label: "Réactivation",
-    icon: UserCheck,
-    color: "bg-emerald-50 text-emerald-600",
-  },
-  delete_user: {
-    label: "Suppression",
-    icon: Trash2,
-    color: "bg-red-50 text-red-600",
-  },
-  promote_to_admin: {
-    label: "Promotion admin",
-    icon: ArrowUpCircle,
-    color: "bg-amber-50 text-amber-600",
-  },
+  create_user: { icon: UserPlus, color: "bg-green-50 text-green-600" },
+  update_user: { icon: Pencil, color: "bg-blue-50 text-blue-600" },
+  change_role: { icon: Shield, color: "bg-purple-50 text-purple-600" },
+  deactivate_user: { icon: UserMinus, color: "bg-orange-50 text-orange-600" },
+  reactivate_user: { icon: UserCheck, color: "bg-emerald-50 text-emerald-600" },
+  delete_user: { icon: Trash2, color: "bg-red-50 text-red-600" },
+  promote_to_admin: { icon: ArrowUpCircle, color: "bg-amber-50 text-amber-600" },
 };
 
 function formatDate(dateStr: string): string {
@@ -166,12 +140,10 @@ export default function ActivityLogsTable() {
         ) : (
           <div className="divide-y divide-[var(--border-1)]">
             {logs.map((log) => {
-              const config = actionConfig[log.action] || {
-                label: log.action,
-                icon: Activity,
-                color: "bg-gray-50 text-gray-600",
-              };
-              const Icon = config.icon;
+              const iconConf = actionIconConfig[log.action] || { icon: Activity, color: "bg-gray-50 text-gray-600" };
+              const labelEntry = ACTIVITY_TYPE_MAP[log.action];
+              const label = labelEntry?.label ?? log.action;
+              const Icon = iconConf.icon;
               const actor = log.user
                 ? `${log.user.first_name} ${log.user.last_name}`.trim() || log.user.email
                 : "Système";
@@ -182,7 +154,7 @@ export default function ActivityLogsTable() {
                   className="flex items-start gap-3 px-5 py-4 transition-colors duration-200 hover:bg-[var(--hover)]"
                 >
                   <div
-                    className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${config.color}`}
+                    className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${iconConf.color}`}
                   >
                     <Icon className="h-4 w-4" />
                   </div>
@@ -196,8 +168,8 @@ export default function ActivityLogsTable() {
                       </span>
                     </div>
                     <div className="mt-0.5 flex items-center gap-2">
-                      <span className={`inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-medium ${config.color}`}>
-                        {config.label}
+                      <span className={`inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-medium ${iconConf.color}`}>
+                        {label}
                       </span>
                       <span className="text-[11px] text-[var(--text-muted)]">
                         {formatDate(log.created_at)}

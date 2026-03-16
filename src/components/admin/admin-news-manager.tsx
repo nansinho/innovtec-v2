@@ -22,25 +22,9 @@ import {
 } from "@/actions/news";
 import { DropdownMenu } from "@/components/ui/dropdown-menu";
 import type { News, NewsCategory, NewsPriority } from "@/lib/types/database";
-import { Badge, type BadgeVariant } from "@/components/ui/badge";
-
-const categoryLabels: Record<NewsCategory, string> = {
-  entreprise: "Entreprise",
-  securite: "Sécurité",
-  formation: "Formation",
-  chantier: "Chantier",
-  social: "Social",
-  rh: "RH",
-};
-
-const categoryVariants: Record<NewsCategory, BadgeVariant> = {
-  entreprise: "blue",
-  securite: "red",
-  formation: "green",
-  chantier: "yellow",
-  social: "purple",
-  rh: "indigo",
-};
+import { Badge } from "@/components/ui/badge";
+import { ARTICLE_CATEGORY_MAP } from "@/lib/status-config";
+import { CategoryBadge } from "@/components/ui/status-badge";
 
 type NewsItem = News & {
   author?: { first_name: string; last_name: string } | null;
@@ -318,13 +302,13 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
                   }
                   className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-2 py-2.5 text-sm outline-none transition-colors focus:border-[var(--yellow)]"
                 >
-                  {(Object.entries(categoryLabels) as [NewsCategory, string][]).map(
-                    ([val, lab]) => (
+                  {Object.entries(ARTICLE_CATEGORY_MAP)
+                    .filter(([k]) => ["entreprise", "securite", "formation", "chantier", "social", "rh"].includes(k))
+                    .map(([val, entry]) => (
                       <option key={val} value={val}>
-                        {lab}
+                        {entry.label}
                       </option>
-                    )
-                  )}
+                    ))}
                 </select>
               </div>
               <div>
@@ -477,12 +461,10 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
                     </div>
                   </td>
                   <td className="px-4 py-3.5">
-                    <Badge variant={categoryVariants[article.category]} dot={false}>
-                      {categoryLabels[article.category]}
-                    </Badge>
+                    <CategoryBadge module="articles" category={article.category} />
                   </td>
                   <td className="px-4 py-3.5">
-                    <Badge variant={article.is_published ? "green" : "default"} dot={false}>
+                    <Badge variant={article.is_published ? "green" : "gray"} dot={false}>
                       {article.is_published ? "Publié" : "Brouillon"}
                     </Badge>
                   </td>

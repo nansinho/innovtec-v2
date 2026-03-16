@@ -16,7 +16,8 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
+import { StatusBadge, PriorityBadge, TypeBadge } from "@/components/ui/status-badge";
+import { PLAN_ACTION_STATUS_MAP, PLAN_ACTION_TYPE_MAP, PRIORITY_MAP } from "@/lib/status-config";
 import {
   updateActionPlan,
   addActionPlanTask,
@@ -28,24 +29,6 @@ import {
 import type { ActionPlan, ActionPlanTask, DangerReport } from "@/lib/types/database";
 import { toast } from "sonner";
 
-const statusConfig: Record<string, { label: string; variant: "default" | "yellow" | "green" | "red" }> = {
-  a_faire: { label: "À faire", variant: "default" },
-  en_cours: { label: "En cours", variant: "yellow" },
-  termine: { label: "Terminé", variant: "green" },
-  annule: { label: "Annulé", variant: "red" },
-};
-
-const typeConfig: Record<string, { label: string; variant: "blue" | "purple" }> = {
-  corrective: { label: "Corrective", variant: "blue" },
-  preventive: { label: "Préventive", variant: "purple" },
-};
-
-const priorityConfig: Record<string, { label: string; variant: "green" | "yellow" | "red" | "default" }> = {
-  faible: { label: "Faible", variant: "green" },
-  moyenne: { label: "Moyenne", variant: "yellow" },
-  haute: { label: "Haute", variant: "red" },
-  critique: { label: "Critique", variant: "red" },
-};
 
 interface ActionPlanDetailProps {
   plan: ActionPlan;
@@ -62,10 +45,6 @@ export default function ActionPlanDetail({
   const [plan, setPlan] = useState(initial);
   const [isPending, startTransition] = useTransition();
   const [newTaskLabel, setNewTaskLabel] = useState("");
-
-  const st = statusConfig[plan.status] ?? statusConfig.a_faire;
-  const t = typeConfig[plan.type] ?? typeConfig.corrective;
-  const pri = priorityConfig[plan.priority] ?? priorityConfig.faible;
 
   const tasks = plan.tasks ?? [];
   const doneCount = tasks.filter((t) => t.is_done).length;
@@ -161,12 +140,12 @@ export default function ActionPlanDetail({
           <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] p-6 shadow-xs">
             <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
               <h1 className="text-xl font-semibold text-[var(--heading)]">{plan.title}</h1>
-              <Badge variant={st.variant}>{st.label}</Badge>
+              <StatusBadge module="plans_actions" status={plan.status} />
             </div>
 
             <div className="mb-4 flex flex-wrap gap-2">
-              <Badge variant={t.variant}>{t.label}</Badge>
-              <Badge variant={pri.variant}>{pri.label}</Badge>
+              <TypeBadge module="plan_action_types" type={plan.type} />
+              <PriorityBadge priority={plan.priority} />
             </div>
 
             <div className="mb-4 grid grid-cols-2 gap-4 sm:grid-cols-3">

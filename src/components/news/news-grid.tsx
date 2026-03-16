@@ -16,31 +16,9 @@ import {
 } from "lucide-react";
 import { cn, formatRelative } from "@/lib/utils";
 import type { NewsCategory, NewsPriority } from "@/lib/types/database";
-import { Badge, type BadgeVariant } from "@/components/ui/badge";
-
-const categoryLabels: Record<NewsCategory, string> = {
-  entreprise: "Entreprise",
-  securite: "Sécurité",
-  formation: "Formation",
-  chantier: "Chantier",
-  social: "Social",
-  rh: "RH",
-};
-
-const categoryVariants: Record<NewsCategory, BadgeVariant> = {
-  entreprise: "blue",
-  securite: "red",
-  formation: "green",
-  chantier: "yellow",
-  social: "purple",
-  rh: "indigo",
-};
-
-const priorityVariants: Record<NewsPriority, { label: string; variant: BadgeVariant }> = {
-  normal: { label: "", variant: "default" },
-  important: { label: "Important", variant: "yellow" },
-  urgent: { label: "Urgent", variant: "red" },
-};
+import { Badge } from "@/components/ui/badge";
+import { ARTICLE_CATEGORY_MAP, ARTICLE_IMPORTANCE_MAP } from "@/lib/status-config";
+import { CategoryBadge } from "@/components/ui/status-badge";
 
 interface NewsItem {
   id: string;
@@ -79,7 +57,7 @@ export default function NewsTable({ news }: NewsTableProps) {
     [news, selectedCategory]
   );
 
-  const categories = Object.keys(categoryLabels) as NewsCategory[];
+  const categories: NewsCategory[] = ["entreprise", "securite", "formation", "chantier", "social", "rh"];
 
   return (
     <div>
@@ -111,7 +89,7 @@ export default function NewsTable({ news }: NewsTableProps) {
                   : "bg-[var(--hover)] text-[var(--text-secondary)] hover:bg-[var(--border-1)]"
               )}
             >
-              {categoryLabels[cat]} ({count})
+              {ARTICLE_CATEGORY_MAP[cat]?.label ?? cat} ({count})
             </button>
           );
         })}
@@ -150,7 +128,9 @@ export default function NewsTable({ news }: NewsTableProps) {
           {/* Table rows */}
           <div className="divide-y divide-[var(--border-1)]">
             {filtered.map((article) => {
-              const priority = priorityVariants[article.priority];
+              const priorityEntry = article.priority === "urgent"
+                ? { label: "Urgent", variant: "red" as const }
+                : ARTICLE_IMPORTANCE_MAP[article.priority];
               const authorName = article.author
                 ? `${article.author.first_name} ${article.author.last_name}`
                 : "Rédaction";
@@ -182,9 +162,9 @@ export default function NewsTable({ news }: NewsTableProps) {
 
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
-                        {article.priority !== "normal" && (
-                          <Badge variant={priority.variant}>
-                            {priority.label}
+                        {article.priority !== "normal" && priorityEntry && (
+                          <Badge variant={priorityEntry.variant} dot>
+                            {priorityEntry.label}
                           </Badge>
                         )}
                         <h3 className="truncate text-[13px] font-semibold text-[var(--heading)] group-hover:text-[var(--yellow)]">
@@ -197,9 +177,7 @@ export default function NewsTable({ news }: NewsTableProps) {
 
                       {/* Mobile meta */}
                       <div className="mt-2 flex flex-wrap items-center gap-3 md:hidden">
-                        <Badge variant={categoryVariants[article.category]} dot={false}>
-                          {categoryLabels[article.category]}
-                        </Badge>
+                        <CategoryBadge module="articles" category={article.category} />
                         <span className="text-[10px] text-[var(--text-muted)]">
                           {authorName}
                         </span>
@@ -222,9 +200,7 @@ export default function NewsTable({ news }: NewsTableProps) {
 
                   {/* Category - desktop */}
                   <div className="hidden md:block">
-                    <Badge variant={categoryVariants[article.category]} dot={false}>
-                      {categoryLabels[article.category]}
-                    </Badge>
+                    <CategoryBadge module="articles" category={article.category} />
                   </div>
 
                   {/* Author - desktop */}

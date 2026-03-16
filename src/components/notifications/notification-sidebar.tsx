@@ -27,7 +27,8 @@ import {
 import { useNotifications } from "@/components/notifications/notification-provider";
 import type { NotificationType } from "@/lib/types/database";
 
-const typeConfig: Record<
+// Icon + background color config for notification display (icon styling, not badges)
+const typeIconConfig: Record<
   NotificationType,
   { icon: React.ComponentType<{ className?: string }>; color: string; bg: string }
 > = {
@@ -37,8 +38,8 @@ const typeConfig: Record<
   comment: { icon: MessageSquare, color: "text-green-600", bg: "bg-green-50" },
   conge: { icon: Briefcase, color: "text-orange-600", bg: "bg-orange-50" },
   danger: { icon: AlertTriangle, color: "text-red-600", bg: "bg-red-50" },
-  action_plan: { icon: ClipboardList, color: "text-cyan-600", bg: "bg-cyan-50" },
-  formation: { icon: GraduationCap, color: "text-indigo-600", bg: "bg-indigo-50" },
+  action_plan: { icon: ClipboardList, color: "text-teal-600", bg: "bg-teal-50" },
+  formation: { icon: GraduationCap, color: "text-teal-600", bg: "bg-teal-50" },
   system: { icon: Settings, color: "text-gray-600", bg: "bg-gray-50" },
 };
 
@@ -185,7 +186,7 @@ export default function NotificationSidebar({
           ) : (
             <div className="divide-y divide-[var(--border-1)]">
               {filtered.map((notification) => {
-                const config = typeConfig[notification.type] || typeConfig.system;
+                const config = typeIconConfig[notification.type] || typeIconConfig.system;
                 const Icon = config.icon;
 
                 return (
