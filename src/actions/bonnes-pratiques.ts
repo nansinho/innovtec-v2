@@ -2,6 +2,7 @@
 
 import { randomUUID } from "crypto";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
 import type { BonnePratique } from "@/lib/types/database";
 import { createNotificationForAll } from "@/actions/notifications";
@@ -38,6 +39,9 @@ export async function createBonnePratique(bp: {
     } = await supabase.auth.getUser();
     if (!user) return { success: false, error: "Non authentifié" };
 
+    // Use admin client to bypass RLS for insert
+    const adminSupabase = createAdminClient();
+
     // Base payload (always works with original schema)
     const payload: Record<string, unknown> = {
       title: bp.title,
@@ -49,7 +53,7 @@ export async function createBonnePratique(bp: {
       author_id: user.id,
     };
 
-    // Try with extended fields first (requires migration)
+    // Add extended fields if they have values (requires migration)
     if (bp.cover_photo) payload.cover_photo = bp.cover_photo;
     if (bp.difficulty) payload.difficulty = bp.difficulty;
     if (bp.priority) payload.priority = bp.priority;
@@ -58,7 +62,7 @@ export async function createBonnePratique(bp: {
     if (bp.safety_impact) payload.safety_impact = bp.safety_impact;
     if (bp.source_file_url) payload.source_file_url = bp.source_file_url;
 
-    let { error } = await supabase.from("bonnes_pratiques").insert(payload);
+    let { error } = await adminSupabase.from("bonnes_pratiques").insert(payload);
 
     // Fallback: if extended fields cause error, retry with base fields only
     if (error) {
@@ -72,7 +76,7 @@ export async function createBonnePratique(bp: {
         photos: bp.photos,
         author_id: user.id,
       };
-      const fallback = await supabase.from("bonnes_pratiques").insert(basePayload);
+      const fallback = await adminSupabase.from("bonnes_pratiques").insert(basePayload);
       error = fallback.error;
       if (error) {
         console.error("Fallback insert also failed:", error.message);
