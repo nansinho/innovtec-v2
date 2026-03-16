@@ -151,6 +151,43 @@ export async function signUp(formData: {
   }
 }
 
+export async function requestPasswordReset(email: string): Promise<{ success: boolean; error?: string }> {
+  if (!email) {
+    return { success: false, error: "Veuillez saisir votre email" };
+  }
+
+  const supabase = await createClient();
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? ""}/reset-password`,
+  });
+
+  if (error) {
+    console.error("[requestPasswordReset]", error.message);
+  }
+
+  // Toujours retourner success pour ne pas révéler si l'email existe
+  return { success: true };
+}
+
+export async function updatePassword(newPassword: string): Promise<{ success: boolean; error?: string }> {
+  if (!newPassword || newPassword.length < 6) {
+    return { success: false, error: "Le mot de passe doit contenir au moins 6 caractères" };
+  }
+
+  const supabase = await createClient();
+
+  const { error } = await supabase.auth.updateUser({
+    password: newPassword,
+  });
+
+  if (error) {
+    return { success: false, error: "Impossible de mettre à jour le mot de passe : " + error.message };
+  }
+
+  return { success: true };
+}
+
 export async function getProfile() {
   const supabase = await createClient();
   const {
