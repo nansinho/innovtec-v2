@@ -2,10 +2,11 @@ import { ChevronRight, Rss } from "lucide-react";
 import Link from "next/link";
 import { Card, CardHeader } from "@/components/ui/card";
 import { getFeedPosts } from "@/actions/feed";
+import { getProfile } from "@/actions/auth";
 import FeedList from "@/components/dashboard/feed-list";
 
 export default async function Feed() {
-  const posts = await getFeedPosts();
+  const [posts, profile] = await Promise.all([getFeedPosts(), getProfile()]);
 
   return (
     <Card>
@@ -31,7 +32,7 @@ export default async function Feed() {
           </p>
         </div>
       ) : (
-        <FeedList initialPosts={posts} />
+        <FeedList initialPosts={posts} currentUserId={profile?.id} />
       )}
     </Card>
   );

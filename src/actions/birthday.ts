@@ -109,28 +109,31 @@ export async function sendBirthdayWish(
     ? `${senderProfile.first_name} ${senderProfile.last_name}`
     : "Un collègue";
 
-  await createNotificationForUser({
-    user_id: toUserId,
-    type: "birthday",
-    title: `${senderName} vous souhaite un joyeux anniversaire !`,
-    message,
-    link: "/social",
-  });
+  // Skip notification and feed post for self-replies (birthday person replying)
+  if (user.id !== toUserId) {
+    await createNotificationForUser({
+      user_id: toUserId,
+      type: "birthday",
+      title: `${senderName} vous souhaite un joyeux anniversaire !`,
+      message,
+      link: "/social",
+    });
 
-  // Publier dans le fil d'actualités
-  const { data: recipient } = await supabase
-    .from("profiles")
-    .select("first_name, last_name")
-    .eq("id", toUserId)
-    .single();
+    // Publier dans le fil d'actualités
+    const { data: recipient } = await supabase
+      .from("profiles")
+      .select("first_name, last_name")
+      .eq("id", toUserId)
+      .single();
 
-  const recipientName = recipient
-    ? `${recipient.first_name} ${recipient.last_name}`.trim()
-    : "un collègue";
+    const recipientName = recipient
+      ? `${recipient.first_name} ${recipient.last_name}`.trim()
+      : "un collègue";
 
-  await createFeedPost(
-    `a souhaité un joyeux anniversaire à ${recipientName} 🎂`
-  );
+    await createFeedPost(
+      `a souhaité un joyeux anniversaire à ${recipientName} 🎂`
+    );
+  }
 
   return { success: true };
 }
