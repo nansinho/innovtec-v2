@@ -255,7 +255,7 @@ export default function SignalementDetail({
                 value={signalement.status}
                 onChange={(e) => handleStatusChange(e.target.value)}
                 disabled={isPending}
-                className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2 text-sm outline-none focus:border-[var(--yellow)]"
+                className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2 text-sm outline-none focus:border-[var(--yellow)]"
               >
                 <option value="signale">Signalé</option>
                 <option value="en_cours">En cours</option>
@@ -273,7 +273,7 @@ export default function SignalementDetail({
                 value={signalement.assigned_to ?? ""}
                 onChange={(e) => handleAssign(e.target.value)}
                 disabled={isPending}
-                className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2 text-sm outline-none focus:border-[var(--yellow)]"
+                className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2 text-sm outline-none focus:border-[var(--yellow)]"
               >
                 <option value="">Non assigné</option>
                 {profiles.map((p) => (
@@ -300,7 +300,7 @@ export default function SignalementDetail({
                     if (e.target.value) handleLinkPlan(e.target.value);
                   }}
                   disabled={isPending}
-                  className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2 text-sm outline-none focus:border-[var(--yellow)]"
+                  className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2 text-sm outline-none focus:border-[var(--yellow)]"
                 >
                   <option value="">Sélectionner un plan...</option>
                   {actionPlans.map((p) => (

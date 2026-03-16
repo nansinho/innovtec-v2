@@ -114,7 +114,7 @@ export default function BonnePratiqueForm({ onCreated, onClose }: BonnePratiqueF
             <input
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
-              className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none focus:border-[var(--green)]"
+              className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none focus:border-[var(--green)]"
               placeholder="Titre de la bonne pratique"
             />
           </div>
@@ -128,7 +128,7 @@ export default function BonnePratiqueForm({ onCreated, onClose }: BonnePratiqueF
               <select
                 value={form.pillar}
                 onChange={(e) => setForm({ ...form, pillar: e.target.value })}
-                className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none focus:border-[var(--green)]"
+                className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none focus:border-[var(--green)]"
               >
                 {PILLARS.map((p) => (
                   <option key={p.key} value={p.key}>
@@ -144,7 +144,7 @@ export default function BonnePratiqueForm({ onCreated, onClose }: BonnePratiqueF
               <input
                 value={form.category}
                 onChange={(e) => setForm({ ...form, category: e.target.value })}
-                className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none focus:border-[var(--green)]"
+                className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none focus:border-[var(--green)]"
                 placeholder="Ex: EPI, signalisation..."
               />
             </div>
@@ -159,7 +159,7 @@ export default function BonnePratiqueForm({ onCreated, onClose }: BonnePratiqueF
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
               rows={6}
-              className="w-full resize-none rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none focus:border-[var(--green)]"
+              className="w-full resize-none rounded-[var(--radius-xs)] border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none focus:border-[var(--green)]"
               placeholder="Décrivez en détail la bonne pratique, son contexte et ses bénéfices..."
             />
           </div>
@@ -172,7 +172,7 @@ export default function BonnePratiqueForm({ onCreated, onClose }: BonnePratiqueF
             <input
               value={form.chantier}
               onChange={(e) => setForm({ ...form, chantier: e.target.value })}
-              className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none focus:border-[var(--green)]"
+              className="w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none focus:border-[var(--green)]"
               placeholder="Nom du chantier concerné"
             />
           </div>

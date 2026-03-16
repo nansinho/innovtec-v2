@@ -131,7 +131,7 @@ export default function RexForm({ onCreated, onClose, initialData }: RexFormProp
   const photoInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
   const inputClass =
-    "w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]";
+    "w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]";
 
   function handleAiImportComplete(result: unknown, fileUrl?: string) {
     const r = result as Record<string, unknown>;
@@ -471,7 +471,7 @@ export default function RexForm({ onCreated, onClose, initialData }: RexFormProp
                             setForm({ ...form, [key]: e.target.value })
                           }
                           rows={4}
-                          className={`${inputClass} resize-none bg-white`}
+                          className={`${inputClass} resize-none`}
                           placeholder={`Contenu de la section "${label}"...`}
                         />
                       </div>
