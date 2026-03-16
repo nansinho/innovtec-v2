@@ -14,6 +14,7 @@ import { createBonnePratique, uploadBonnePratiquePhoto } from "@/actions/bonnes-
 import { toast } from "sonner";
 import AiGenerateButton from "@/components/ai/ai-generate-button";
 import FileUploadAi from "@/components/ai/file-upload-ai";
+import RichTextEditor from "@/components/news/rich-text-editor";
 
 type Mode = "import" | "ai" | "manual";
 
@@ -189,7 +190,8 @@ export default function BonnePratiqueForm({ onCreated, onClose }: BonnePratiqueF
       toast.error("Le titre est obligatoire");
       return;
     }
-    if (!form.description.trim()) {
+    const descriptionText = form.description.replace(/<[^>]*>/g, "").trim();
+    if (!descriptionText) {
       toast.error("La description est obligatoire");
       return;
     }
@@ -341,11 +343,9 @@ export default function BonnePratiqueForm({ onCreated, onClose }: BonnePratiqueF
                 <label className="mb-1.5 block text-[12px] font-medium text-[var(--text-secondary)]">
                   Description *
                 </label>
-                <textarea
-                  value={form.description}
-                  onChange={(e) => setForm({ ...form, description: e.target.value })}
-                  rows={6}
-                  className={`${inputClass} resize-none`}
+                <RichTextEditor
+                  content={form.description}
+                  onChange={(html) => setForm({ ...form, description: html })}
                   placeholder="Décrivez en détail la bonne pratique, son contexte et ses bénéfices..."
                 />
               </div>
