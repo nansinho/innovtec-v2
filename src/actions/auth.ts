@@ -160,8 +160,23 @@ export async function requestPasswordReset(email: string): Promise<{ success: bo
   const supabaseAdmin = createAdminClient();
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "";
 
-  // Générer un lien de recovery via l'admin API
-  const { data, error } = await supabaseAdmin.auth.admin.generateLink({
+  // Vérifier que l'utilisateur existe dans profiles
+  const { data: profile } = await supabaseAdmin
+    .from("profiles")
+    .select("id")
+    .eq("email", email)
+    .maybeSingle();
+
+  if (!profile) {
+    // Ne pas révéler si l'email existe ou non
+    return { success: true };
+  }
+
+  // Essayer recovery d'abord, fallback sur magiclink si Email provider désactivé
+  let tokenHash: string | undefined;
+  let tokenType: "recovery" | "magiclink" = "recovery";
+
+  const { data: recoveryData, error: recoveryError } = await supabaseAdmin.auth.admin.generateLink({
     type: "recovery",
     email,
     options: {
@@ -169,16 +184,25 @@ export async function requestPasswordReset(email: string): Promise<{ success: bo
     },
   });
 
-  if (error) {
-    return { success: false, error: `Erreur génération lien: ${error.message}` };
-  }
+  if (!recoveryError && recoveryData?.properties?.hashed_token) {
+    tokenHash = recoveryData.properties.hashed_token;
+  } else {
+    // Fallback: magiclink (fonctionne même si Email provider est désactivé)
+    const { data: magicData, error: magicError } = await supabaseAdmin.auth.admin.generateLink({
+      type: "magiclink",
+      email,
+    });
 
-  if (!data?.properties?.hashed_token) {
-    return { success: false, error: "Aucun token généré. Vérifiez que l'email existe." };
+    if (magicError || !magicData?.properties?.hashed_token) {
+      return { success: false, error: `Erreur génération lien: ${magicError?.message ?? "Token non généré"}` };
+    }
+
+    tokenHash = magicData.properties.hashed_token;
+    tokenType = "magiclink";
   }
 
   // Construire le lien de confirmation
-  const resetLink = `${siteUrl}/auth/confirm?token_hash=${data.properties.hashed_token}&type=recovery`;
+  const resetLink = `${siteUrl}/auth/confirm?token_hash=${tokenHash}&type=${tokenType}&next=reset-password`;
 
   try {
     await sendPasswordResetEmail(email, resetLink);
