@@ -5,24 +5,17 @@ import { REX_BADGE_SVGS } from "@/components/icons/rex-section-icons";
 // ==========================================
 // COLORS
 // ==========================================
-const ORANGE = [243, 156, 18] as const;
-const NAVY = [30, 58, 95] as const;
-const YELLOW_ACCENT = [245, 158, 11] as const;
-const GRAY_TEXT = [55, 55, 55] as const;
+const ORANGE: [number, number, number] = [249, 115, 22]; // #F97316 — orange-500
+const NAVY: [number, number, number] = [11, 54, 85];     // #0B3655
+const GRAY_TEXT: [number, number, number] = [55, 55, 55];
+const GOLD_BORDER: [number, number, number] = [200, 168, 78]; // #C8A84E — golden border for text boxes
 
-const RED_ACCENT = [220, 53, 69] as const;
-const PURPLE_ACCENT = [142, 68, 173] as const;
-const ORANGE_SEC = [255, 152, 0] as const;
-const AMBER = [255, 193, 7] as const;
+const RED_ACCENT: [number, number, number] = [220, 53, 69];
+const PURPLE_ACCENT: [number, number, number] = [142, 68, 173];
+const ORANGE_SEC: [number, number, number] = [255, 152, 0];
+const AMBER: [number, number, number] = [255, 193, 7];
 
-const SECTION_BORDER: Record<string, [number, number, number]> = {
-  faits: [30, 58, 95],
-  causes: [107, 142, 35],
-  actions: [230, 126, 34],
-  vigilance: [241, 196, 15],
-};
-
-const EVENT_TYPES: { value: string; label: string; color: readonly [number, number, number] }[] = [
+const EVENT_TYPES: { value: string; label: string; color: [number, number, number] }[] = [
   { value: "sd", label: "SD (Situation Dangereuse)", color: ORANGE_SEC },
   { value: "presquaccident", label: "PRESQU'ACCIDENT", color: AMBER },
   { value: "accident", label: "ACCIDENT", color: RED_ACCENT },
@@ -31,6 +24,8 @@ const EVENT_TYPES: { value: string; label: string; color: readonly [number, numb
 
 /**
  * Sanitize text for Helvetica/WinAnsiEncoding.
+ * Keep French accents (supported by WinAnsiEncoding), only replace
+ * Unicode typographic characters not in the encoding.
  */
 function sanitize(text: string): string {
   return text
@@ -66,6 +61,35 @@ function svgStringToPng(svgString: string, scale = 3): Promise<string | null> {
     };
 
     img.onerror = () => { resolve(null); URL.revokeObjectURL(url); };
+    img.src = url;
+  });
+}
+
+/**
+ * Load an image URL to base64 via Image element (works with CORS).
+ */
+function imageUrlToBase64(url: string): Promise<string | null> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) { resolve(null); return; }
+      ctx.drawImage(img, 0, 0);
+      try {
+        resolve(canvas.toDataURL("image/png"));
+      } catch {
+        // Tainted canvas (CORS), try fetch fallback
+        fetchImageAsBase64(url).then(resolve);
+      }
+    };
+    img.onerror = () => {
+      // Fallback to fetch
+      fetchImageAsBase64(url).then(resolve);
+    };
     img.src = url;
   });
 }
@@ -107,11 +131,11 @@ export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string 
     svgStringToPng(REX_BADGE_SVGS.causes),
     svgStringToPng(REX_BADGE_SVGS.actions),
     svgStringToPng(REX_BADGE_SVGS.vigilance),
-    rex.faits_photo_url ? fetchImageAsBase64(rex.faits_photo_url) : null,
-    rex.causes_photo_url ? fetchImageAsBase64(rex.causes_photo_url) : null,
-    rex.actions_photo_url ? fetchImageAsBase64(rex.actions_photo_url) : null,
-    rex.vigilance_photo_url ? fetchImageAsBase64(rex.vigilance_photo_url) : null,
-    logoUrl ? fetchImageAsBase64(logoUrl) : null,
+    rex.faits_photo_url ? imageUrlToBase64(rex.faits_photo_url) : null,
+    rex.causes_photo_url ? imageUrlToBase64(rex.causes_photo_url) : null,
+    rex.actions_photo_url ? imageUrlToBase64(rex.actions_photo_url) : null,
+    rex.vigilance_photo_url ? imageUrlToBase64(rex.vigilance_photo_url) : null,
+    logoUrl ? imageUrlToBase64(logoUrl) : null,
   ]);
 
   const badges: Record<string, string | null> = {
@@ -122,67 +146,81 @@ export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string 
   // HEADER
   // ==========================================
 
-  // Badge "FICHE REX n/year"
+  // Badge "FICHE REX n/year" — orange rounded rectangle
   const bw = 32, bh = 22;
   pdf.setFillColor(...ORANGE);
   pdf.roundedRect(mx, y, bw, bh, 3, 3, "F");
   pdf.setFont("helvetica", "bold");
-  pdf.setFontSize(7);
+  pdf.setFontSize(8);
   pdf.setTextColor(255, 255, 255);
-  pdf.text("FICHE REX", mx + bw / 2, y + 7, { align: "center" });
-  pdf.setFontSize(14);
-  pdf.text(`${rex.rex_number || "-"}/${rex.rex_year || "-"}`, mx + bw / 2, y + 17, { align: "center" });
+  pdf.text("FICHE REX", mx + bw / 2, y + 8, { align: "center" });
+  pdf.setFontSize(16);
+  pdf.text(`${rex.rex_number || "-"}/${rex.rex_year || "-"}`, mx + bw / 2, y + 18, { align: "center" });
 
-  // Company logo
+  // Company logo (top right)
   const logoX = pageW - mx - 48;
   let logoOk = false;
   if (logoData) {
     try { pdf.addImage(logoData, "PNG", logoX, y, 45, 16); logoOk = true; } catch { /* fallback */ }
   }
   if (!logoOk) {
+    // Text fallback
     pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(14);
-    pdf.setTextColor(...NAVY);
-    pdf.text("I", logoX, y + 8);
-    pdf.setTextColor(...YELLOW_ACCENT);
-    pdf.text("NN", logoX + 5, y + 8);
-    pdf.setTextColor(...NAVY);
-    pdf.text("OVTEC", logoX + 16, y + 8);
-    pdf.setFontSize(6);
-    pdf.text("RESEAUX", logoX + 12, y + 13, { align: "center" });
-    pdf.setFillColor(...YELLOW_ACCENT);
-    pdf.rect(logoX, y + 14.5, 38, 0.5, "F");
+    pdf.setFontSize(16);
+    pdf.setTextColor(30, 58, 95);
+    pdf.text("INN", logoX, y + 10);
+    pdf.setTextColor(245, 158, 11);
+    pdf.text("O", logoX + 16, y + 10);
+    pdf.setTextColor(30, 58, 95);
+    pdf.text("VTEC", logoX + 20, y + 10);
+    pdf.setFontSize(7);
+    pdf.setTextColor(100, 100, 100);
+    pdf.text("R\u00c9SEAUX", logoX + 10, y + 14);
+    pdf.setFillColor(245, 158, 11);
+    pdf.rect(logoX, y + 15.5, 38, 0.5, "F");
   }
 
-  // Title + metadata
+  // Title + metadata (between badge and logo)
   const ix = mx + bw + 6;
   const iw = logoX - ix - 4;
 
+  // Title: "TITRE DE L'ÉVÉNEMENT — Title text"
   pdf.setFont("helvetica", "bold");
-  pdf.setFontSize(9);
+  pdf.setFontSize(11);
   pdf.setTextColor(...ORANGE);
-  pdf.text("TITRE DE L'EVENEMENT", ix, y + 5);
-  pdf.setTextColor(...NAVY);
-  const tw = pdf.getStringUnitWidth("TITRE DE L'EVENEMENT") * 9 / pdf.internal.scaleFactor;
-  const tl = pdf.splitTextToSize(sanitize(` - ${rex.title}`), iw - tw);
-  pdf.text(tl, ix + tw, y + 5);
+  const titleLabel = "TITRE DE L'\u00c9V\u00c9NEMENT";
+  pdf.text(titleLabel, ix, y + 6);
+  const tlW = pdf.getStringUnitWidth(titleLabel) * 11 / pdf.internal.scaleFactor;
 
-  pdf.setFontSize(8);
-  let my = y + 11;
-  const meta = [
-    { label: "Lieu", value: rex.lieu, lw: 8 },
-    { label: "Date", value: rex.date_evenement ? new Date(rex.date_evenement).toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" }) : "", lw: 9 },
-    { label: "Horaire", value: rex.horaire, lw: 14 },
+  pdf.setTextColor(...NAVY);
+  pdf.setFontSize(11);
+  const titleText = sanitize(` \u2014 ${rex.title}`);
+  const titleLines = pdf.splitTextToSize(titleText, iw - tlW);
+  pdf.text(titleLines, ix + tlW, y + 6);
+
+  // Metadata
+  pdf.setFontSize(9);
+  let metaY = y + 12 + (titleLines.length > 1 ? (titleLines.length - 1) * 4 : 0);
+  const metaItems = [
+    { label: "Lieu", value: rex.lieu, lw: 9 },
+    {
+      label: "Date",
+      value: rex.date_evenement
+        ? new Date(rex.date_evenement).toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" })
+        : "",
+      lw: 10,
+    },
+    { label: "Horaire", value: rex.horaire, lw: 15 },
   ];
-  for (const m of meta) {
+  for (const m of metaItems) {
     if (!m.value) continue;
     pdf.setTextColor(66, 133, 244);
     pdf.setFont("helvetica", "bold");
-    pdf.text(m.label, ix, my);
+    pdf.text(m.label, ix, metaY);
     pdf.setTextColor(...GRAY_TEXT);
     pdf.setFont("helvetica", "normal");
-    pdf.text(` : ${sanitize(m.value)}`, ix + m.lw, my);
-    my += 4;
+    pdf.text(` : ${sanitize(m.value)}`, ix + m.lw, metaY);
+    metaY += 4.5;
   }
 
   y += bh + 6;
@@ -192,9 +230,9 @@ export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string 
   const stepW = cw / gradSteps;
   for (let i = 0; i < gradSteps; i++) {
     const t = i / gradSteps;
-    const r = Math.round(243 + (231 - 243) * t);
-    const g = Math.round(156 + (76 - 156) * t);
-    const b = Math.round(18 + (60 - 18) * t);
+    const r = Math.round(249 + (231 - 249) * t);
+    const g = Math.round(115 + (76 - 115) * t);
+    const b = Math.round(22 + (60 - 22) * t);
     pdf.setFillColor(r, g, b);
     pdf.rect(mx + i * stepW, y, stepW + 0.5, 1.5, "F");
   }
@@ -217,27 +255,25 @@ export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string 
     // Page break check
     if (y > 225) { pdf.addPage(); y = 15; }
 
-    // Badge image
+    // Badge image (SVG rendered to PNG)
     const badge = badges[sec.key];
     if (badge) {
       try {
-        // Badge is wider than tall, scale appropriately
         const badgeH = 10;
         const badgeW = sec.key === "faits" ? 40 : sec.key === "causes" ? 48 : sec.key === "actions" ? 50 : 44;
         pdf.addImage(badge, "PNG", mx, y - 1, badgeW, badgeH);
       } catch {
-        // Fallback: simple text header
+        // Fallback: text header
         pdf.setFont("helvetica", "bold");
         pdf.setFontSize(10);
-        const bc = SECTION_BORDER[sec.key];
-        pdf.setTextColor(bc[0], bc[1], bc[2]);
+        pdf.setTextColor(...NAVY);
         pdf.text(sec.key.toUpperCase(), mx, y + 5);
       }
     }
 
     y += 14;
 
-    // Text content
+    // Text content box with golden border
     const textW = sec.photo ? cw * 0.65 : cw;
     const sanitizedText = sanitize(sec.text || "");
     pdf.setFont("helvetica", "normal");
@@ -245,22 +281,22 @@ export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string 
     const lines = pdf.splitTextToSize(sanitizedText, textW - 12);
     const textH = Math.max(lines.length * 4.2 + 8, 18);
 
-    // Background
-    pdf.setFillColor(253, 251, 247);
+    // White background
+    pdf.setFillColor(255, 255, 255);
     pdf.roundedRect(mx, y - 2, textW, textH, 1.5, 1.5, "F");
 
-    // Left colored border
-    const bc = SECTION_BORDER[sec.key];
-    pdf.setFillColor(bc[0], bc[1], bc[2]);
-    pdf.rect(mx, y - 2, 2.5, textH, "F");
+    // Golden border around entire box
+    pdf.setDrawColor(...GOLD_BORDER);
+    pdf.setLineWidth(0.5);
+    pdf.roundedRect(mx, y - 2, textW, textH, 1.5, 1.5, "S");
 
     // Text
     pdf.setTextColor(...GRAY_TEXT);
     pdf.setFont("helvetica", "normal");
     pdf.setFontSize(9);
-    pdf.text(lines, mx + 8, y + 4);
+    pdf.text(lines, mx + 5, y + 4);
 
-    // Photo
+    // Photo (right column)
     if (sec.photo) {
       const px = mx + textW + 4;
       const pw = cw - textW - 4;
@@ -280,6 +316,7 @@ export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string 
   // ==========================================
   if (y > 230) { pdf.addPage(); y = 15; }
 
+  // Separator
   pdf.setDrawColor(220, 220, 220);
   pdf.setLineWidth(0.3);
   pdf.line(mx, y, pageW - mx, y);
@@ -288,11 +325,11 @@ export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string 
   const halfW = cw / 2 - 2;
   const fy = y;
 
-  // Left: Deja arrive
+  // Left: Déjà arrivé
   pdf.setFont("helvetica", "bold");
   pdf.setFontSize(9);
   pdf.setTextColor(66, 133, 244);
-  pdf.text("DEJA ARRIVE ?", mx, y);
+  pdf.text("D\u00c9J\u00c0 ARRIV\u00c9 ?", mx, y);
   y += 5;
 
   if (rex.deja_arrive && rex.deja_arrive.length > 0) {
@@ -310,16 +347,16 @@ export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string 
     pdf.setFont("helvetica", "italic");
     pdf.setFontSize(8);
     pdf.setTextColor(160, 160, 160);
-    pdf.text("Non renseigne", mx + 4, y);
+    pdf.text("Non renseign\u00e9", mx + 4, y);
   }
 
-  // Right: Type d'evenement
+  // Right: Type d'événement
   const rx = mx + halfW + 4;
   let ty = fy;
   pdf.setFont("helvetica", "bold");
   pdf.setFontSize(9);
   pdf.setTextColor(...ORANGE);
-  pdf.text("TYPE D'EVENEMENT", rx, ty);
+  pdf.text("TYPE D'\u00c9V\u00c9NEMENT", rx, ty);
   ty += 5;
 
   for (const t of EVENT_TYPES) {

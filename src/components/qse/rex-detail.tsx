@@ -27,25 +27,25 @@ const SECTIONS = [
   {
     key: "faits",
     photoKey: "faits_photo_url",
-    borderColor: "border-l-[#1E3A5F]",
+    borderColor: "border-[#C8A84E]",
     Badge: RexFaitsBadge,
   },
   {
     key: "causes",
     photoKey: "causes_photo_url",
-    borderColor: "border-l-[#6B8E23]",
+    borderColor: "border-[#C8A84E]",
     Badge: RexCausesBadge,
   },
   {
     key: "actions_engagees",
     photoKey: "actions_photo_url",
-    borderColor: "border-l-[#E67E22]",
+    borderColor: "border-[#C8A84E]",
     Badge: RexActionsBadge,
   },
   {
     key: "vigilance",
     photoKey: "vigilance_photo_url",
-    borderColor: "border-l-[#F1C40F]",
+    borderColor: "border-[#C8A84E]",
     Badge: RexVigilanceBadge,
   },
 ] as const;
@@ -190,7 +190,7 @@ export default function RexDetail({ rex, onExportPdf, onEdit, companyLogo }: Rex
 
                 {/* Content: 2/3 text + 1/3 photo */}
                 <div className={`grid ${photo ? "grid-cols-3" : "grid-cols-1"} gap-4`}>
-                  <div className={`${photo ? "col-span-2" : ""} rounded-[var(--radius)] border-l-4 ${borderColor} bg-gray-50/50 p-4`}>
+                  <div className={`${photo ? "col-span-2" : ""} rounded-lg border ${borderColor} bg-white p-4`}>
                     <p className="whitespace-pre-line text-sm leading-relaxed text-[var(--heading)]">
                       {text}
                     </p>
