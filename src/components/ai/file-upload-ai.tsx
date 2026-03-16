@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useRef, useCallback } from "react";
-import { Upload, FileText, Image, X, Sparkles, Loader2 } from "lucide-react";
+import { Upload, FileText, Image, X, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
+import AiAnalysisProgress from "./ai-analysis-progress";
 
 interface FileUploadAiProps {
   onAnalysisComplete: (result: unknown, fileUrl?: string) => void;
@@ -19,9 +20,11 @@ export default function FileUploadAi({
 }: FileUploadAiProps) {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+  const [analysisComplete, setAnalysisComplete] = useState(false);
   const [error, setError] = useState("");
   const [isDragging, setIsDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const analysisResultRef = useRef<{ result: unknown; fileUrl?: string } | null>(null);
 
   const handleFile = useCallback((f: File) => {
     const maxSize = 10 * 1024 * 1024; // 10MB
@@ -65,7 +68,9 @@ export default function FileUploadAi({
     if (!file) return;
 
     setLoading(true);
+    setAnalysisComplete(false);
     setError("");
+    analysisResultRef.current = null;
 
     try {
       const formData = new FormData();
@@ -86,14 +91,26 @@ export default function FileUploadAi({
 
       if (!res.ok) {
         setError(data.error || "Erreur lors de l'analyse");
+        setLoading(false);
         return;
       }
 
-      onAnalysisComplete(data.result, data.fileUrl);
+      // Store result and trigger completion animation
+      analysisResultRef.current = { result: data.result, fileUrl: data.fileUrl };
+      setAnalysisComplete(true);
     } catch {
       setError("Erreur de connexion au serveur");
-    } finally {
       setLoading(false);
+    }
+  }
+
+  function handleAllStepsDone() {
+    const stored = analysisResultRef.current;
+    setLoading(false);
+    setAnalysisComplete(false);
+    if (stored) {
+      onAnalysisComplete(stored.result, stored.fileUrl);
+      analysisResultRef.current = null;
     }
   }
 
@@ -106,14 +123,19 @@ export default function FileUploadAi({
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
-        onClick={() => inputRef.current?.click()}
+        onClick={() => !loading && inputRef.current?.click()}
         className={cn(
-          "flex cursor-pointer flex-col items-center gap-3 rounded-[var(--radius)] border-2 border-dashed p-8 text-center transition-all",
-          isDragging
+          "flex flex-col items-center gap-3 rounded-[var(--radius)] border-2 border-dashed p-8 text-center transition-all",
+          loading
+            ? "pointer-events-none border-[var(--border-1)] opacity-50"
+            : "cursor-pointer",
+          !loading && isDragging
             ? "border-[var(--yellow)] bg-[var(--yellow-surface)]"
-            : file
+            : !loading && file
               ? "border-[var(--green)]/30 bg-[var(--green-surface)]"
-              : "border-[var(--border-1)] bg-[var(--hover)] hover:border-[var(--yellow)]/50 hover:bg-[var(--yellow-surface)]"
+              : !loading
+                ? "border-[var(--border-1)] bg-[var(--hover)] hover:border-[var(--yellow)]/50 hover:bg-[var(--yellow-surface)]"
+                : ""
         )}
       >
         <input
@@ -173,19 +195,23 @@ export default function FileUploadAi({
       )}
 
       {/* Analyze button */}
-      {file && (
+      {file && !loading && (
         <button
           onClick={handleAnalyze}
-          disabled={loading}
-          className="flex w-full items-center justify-center gap-2 rounded-[var(--radius-sm)] bg-[var(--navy)] py-2 text-sm font-medium text-white transition-all hover:bg-[var(--navy)]/90 active:scale-[0.97] disabled:opacity-50"
+          className="flex w-full items-center justify-center gap-2 rounded-[var(--radius-sm)] bg-[var(--navy)] py-2 text-sm font-medium text-white transition-all hover:bg-[var(--navy)]/90 active:scale-[0.97]"
         >
-          {loading ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <Sparkles className="h-4 w-4" />
-          )}
-          {loading ? "Analyse en cours..." : "Analyser avec l'IA"}
+          <Sparkles className="h-4 w-4" />
+          Analyser avec l&apos;IA
         </button>
+      )}
+
+      {/* Step-by-step progress */}
+      {loading && (
+        <AiAnalysisProgress
+          isActive={loading}
+          isComplete={analysisComplete}
+          onAllStepsDone={handleAllStepsDone}
+        />
       )}
     </div>
   );
