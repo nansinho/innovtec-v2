@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { createNotificationForUser } from "@/actions/notifications";
+import { createFeedPost } from "@/actions/feed";
 import type { Profile, BirthdayWish } from "@/lib/types/database";
 
 export async function getTodayBirthdays(): Promise<Profile[]> {
@@ -115,6 +116,21 @@ export async function sendBirthdayWish(
     message,
     link: "/",
   });
+
+  // Publier dans le fil d'actualités
+  const { data: recipient } = await supabase
+    .from("profiles")
+    .select("first_name, last_name")
+    .eq("id", toUserId)
+    .single();
+
+  const recipientName = recipient
+    ? `${recipient.first_name} ${recipient.last_name}`.trim()
+    : "un collègue";
+
+  await createFeedPost(
+    `a souhaité un joyeux anniversaire à ${recipientName} 🎂`
+  );
 
   return { success: true };
 }
