@@ -14,6 +14,9 @@ import { DataTable, type ColumnDef, type FilterDef } from "@/components/ui/data-
 import { getStandardToolbarActions } from "@/lib/table-toolbar-actions";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
+import { deleteDocument, batchDeleteDocuments } from "@/actions/documents";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface DocItem {
   id: string;
@@ -25,15 +28,18 @@ interface DocItem {
   uploaded_by_profile?: { first_name: string; last_name: string } | null;
 }
 
-function getFileIcon(name: string) {
+function getFileIcon(name: string, category?: string) {
+  if (category === "rex") {
+    return { icon: FileText, color: "text-[#0B3655] bg-[#0B3655]/10" };
+  }
   const ext = name.split(".").pop()?.toLowerCase() ?? "";
   if (["jpg", "jpeg", "png", "gif", "webp", "svg"].includes(ext))
     return { icon: FileImage, color: "text-purple-500 bg-purple-50" };
   if (["xls", "xlsx", "csv"].includes(ext))
     return { icon: FileSpreadsheet, color: "text-emerald-500 bg-emerald-50" };
   if (["pdf"].includes(ext))
-    return { icon: File, color: "text-red-500 bg-red-50" };
-  return { icon: FileText, color: "text-blue-500 bg-blue-50" };
+    return { icon: File, color: "text-[#0B3655] bg-[#0B3655]/10" };
+  return { icon: FileText, color: "text-[#0B3655] bg-[#0B3655]/10" };
 }
 
 function formatSize(bytes?: number) {
@@ -48,7 +54,30 @@ interface DocumentsTableProps {
 }
 
 export default function DocumentsTable({ documents }: DocumentsTableProps) {
+  const router = useRouter();
   const categories = [...new Set(documents.map((d) => d.category).filter(Boolean))].sort();
+
+  async function handleDelete(doc: DocItem) {
+    if (!confirm(`Supprimer "${doc.name}" ?`)) return;
+    const result = await deleteDocument(doc.id);
+    if (result.success) {
+      toast.success("Document supprimé");
+      router.refresh();
+    } else {
+      toast.error(result.error || "Erreur lors de la suppression");
+    }
+  }
+
+  async function handleBatchDelete(ids: string[]) {
+    if (!confirm(`Supprimer ${ids.length} document(s) ?`)) return;
+    const result = await batchDeleteDocuments(ids);
+    if (result.success) {
+      toast.success(`${ids.length} document(s) supprimé(s)`);
+      router.refresh();
+    } else {
+      toast.error(result.error || "Erreur lors de la suppression");
+    }
+  }
 
   const columns: ColumnDef<DocItem>[] = [
     {
@@ -56,7 +85,7 @@ export default function DocumentsTable({ documents }: DocumentsTableProps) {
       header: "",
       width: "45px",
       render: (doc) => {
-        const { icon: Icon, color } = getFileIcon(doc.name);
+        const { icon: Icon, color } = getFileIcon(doc.name, doc.category);
         return (
           <div className={`flex h-8 w-8 items-center justify-center rounded-[var(--radius)] ${color}`}>
             <Icon className="h-4 w-4" />
@@ -144,7 +173,11 @@ export default function DocumentsTable({ documents }: DocumentsTableProps) {
       filters={filters}
       selectable
       batchActions={[
-        { label: "Supprimer", onClick: () => {}, variant: "danger" },
+        {
+          label: "Supprimer",
+          onClick: (selectedIds) => handleBatchDelete(selectedIds as string[]),
+          variant: "danger",
+        },
       ]}
       emptyState={{
         icon: FolderOpen,
@@ -162,12 +195,15 @@ export default function DocumentsTable({ documents }: DocumentsTableProps) {
         {
           label: "Partager",
           icon: Share2,
-          onClick: () => {},
+          onClick: () => {
+            navigator.clipboard.writeText(window.location.origin + "/documents");
+            toast.success("Lien copié");
+          },
         },
         {
           label: "Supprimer",
           icon: Trash2,
-          onClick: () => {},
+          onClick: () => handleDelete(doc),
           variant: "danger" as const,
         },
       ]}
