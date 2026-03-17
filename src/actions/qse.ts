@@ -516,11 +516,53 @@ export async function deleteRex(
   } = await supabase.auth.getUser();
   if (!user) return { success: false, error: "Non authentifié" };
 
-  const { error } = await supabase.from("rex").delete().eq("id", id);
+  // Get REX data to clean up associated resources
+  const { data: rex } = await supabase
+    .from("rex")
+    .select("source_file_url, faits_photo_url, causes_photo_url, actions_photo_url, vigilance_photo_url")
+    .eq("id", id)
+    .single();
 
+  // Delete REX record
+  const { error } = await supabase.from("rex").delete().eq("id", id);
   if (error) return { success: false, error: error.message };
 
+  // Clean up: delete linked document entry
+  if (rex?.source_file_url) {
+    await supabase
+      .from("documents")
+      .delete()
+      .eq("file_url", rex.source_file_url);
+
+    // Delete the source file from storage
+    await supabase.storage.from("documents").remove([rex.source_file_url]);
+  }
+
+  // Clean up: delete section photos from storage
+  const photoUrls = [
+    rex?.faits_photo_url,
+    rex?.causes_photo_url,
+    rex?.actions_photo_url,
+    rex?.vigilance_photo_url,
+  ].filter(Boolean) as string[];
+
+  if (photoUrls.length > 0) {
+    // Extract storage paths from public URLs
+    const storagePaths = photoUrls
+      .map((url) => {
+        const match = url.match(/\/documents\/(.+)$/);
+        return match ? match[1] : null;
+      })
+      .filter(Boolean) as string[];
+
+    if (storagePaths.length > 0) {
+      await supabase.storage.from("documents").remove(storagePaths);
+    }
+  }
+
   revalidatePath("/qse/rex");
+  revalidatePath("/documents");
+  revalidatePath("/");
   return { success: true };
 }
 
