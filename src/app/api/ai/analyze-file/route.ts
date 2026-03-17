@@ -346,25 +346,10 @@ Chaque point doit être sur sa propre ligne dans le champ content. Extrais TOUTE
       fileUrl = filePath;
     }
 
-    // For REX PDFs: extract embedded images using pdfjs-dist
-    let extractedImages: { section: string; url: string }[] = [];
-    if (type === "rex" && isPdf && parsed && !parsed.raw) {
-      try {
-        extractedImages = await extractImagesFromPdf(
-          Buffer.from(buffer),
-          supabase,
-          parsed.rex_number,
-          parsed.rex_year
-        );
-      } catch (imgErr) {
-        console.error("PDF image extraction error:", imgErr);
-      }
-    }
-
     return NextResponse.json({
       result: parsed,
       fileUrl,
-      extractedImages,
+      imagesDetected: parsed?.images_detected || 0,
       credits_remaining: credit
         ? credit.credits_limit - credit.credits_used - 1
         : 0,
@@ -376,125 +361,4 @@ Chaque point doit être sur sa propre ligne dans le champ content. Extrais TOUTE
       { status: 500 }
     );
   }
-}
-
-/**
- * Extract embedded images from a PDF using pdfjs-dist
- * Returns uploaded image URLs mapped to REX sections based on position
- */
-async function extractImagesFromPdf(
-  pdfBuffer: Buffer,
-  supabase: Awaited<ReturnType<typeof createClient>>,
-  rexNumber?: string,
-  rexYear?: number
-): Promise<{ section: string; url: string }[]> {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const pdfjsLib = require("pdfjs-dist/legacy/build/pdf.mjs");
-
-  const loadingTask = pdfjsLib.getDocument({ data: new Uint8Array(pdfBuffer) });
-  const pdfDoc = await loadingTask.promise;
-
-  const extractedImages: { section: string; url: string }[] = [];
-  const sectionMapping = ["faits", "causes", "actions_engagees", "vigilance"];
-  let imageIndex = 0;
-
-  for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
-    const page = await pdfDoc.getPage(pageNum);
-    const ops = await page.getOperatorList();
-
-    for (let i = 0; i < ops.fnArray.length; i++) {
-      // OPS.paintImageXObject = 85, OPS.paintJpegXObject = 82
-      if (ops.fnArray[i] === 85 || ops.fnArray[i] === 82) {
-        try {
-          const imgName = ops.argsArray[i][0];
-          const img = await page.objs.get(imgName);
-
-          if (!img || !img.data || !img.width || !img.height) continue;
-
-          // Skip tiny images (logos, icons) - only keep real photos (> 50x50px)
-          if (img.width < 50 || img.height < 50) continue;
-
-          // Convert RGBA data to PNG using canvas-like approach
-          const pngBuffer = createPngFromImageData(img.data, img.width, img.height);
-
-          if (pngBuffer.length < 1000) continue; // Skip if too small
-
-          const section = sectionMapping[imageIndex] || `photo_${imageIndex}`;
-          const safeNum = String(rexNumber || "X").replace(/[^a-zA-Z0-9-]/g, "");
-          const safeYear = String(rexYear || new Date().getFullYear());
-          const imgPath = `qse/rex/${section}-rex-${safeNum}-${safeYear}-${randomUUID().slice(0, 8)}.png`;
-
-          const { error: uploadErr } = await supabase.storage
-            .from("documents")
-            .upload(imgPath, pngBuffer, {
-              contentType: "image/png",
-              upsert: false,
-            });
-
-          if (!uploadErr) {
-            const { data: urlData } = supabase.storage
-              .from("documents")
-              .getPublicUrl(imgPath);
-
-            if (urlData?.publicUrl) {
-              extractedImages.push({
-                section,
-                url: urlData.publicUrl,
-              });
-              imageIndex++;
-            }
-          }
-        } catch {
-          // Skip individual image extraction errors
-          continue;
-        }
-      }
-    }
-  }
-
-  return extractedImages;
-}
-
-/**
- * Create a minimal PNG buffer from raw RGBA pixel data
- */
-function createPngFromImageData(data: Uint8Array | Uint8ClampedArray, width: number, height: number): Buffer {
-  // For server-side, we create a raw image buffer
-  // We'll upload the raw bitmap data as PNG using a simple approach
-  const { createCanvas } = (() => {
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      return require("canvas");
-    } catch {
-      return { createCanvas: null };
-    }
-  })();
-
-  if (createCanvas) {
-    const canvas = createCanvas(width, height);
-    const ctx = canvas.getContext("2d");
-    const imageData = ctx.createImageData(width, height);
-
-    // PDF images may be RGB (3 channels) or RGBA (4 channels)
-    const channels = data.length / (width * height);
-    if (channels === 4) {
-      imageData.data.set(data);
-    } else if (channels === 3) {
-      for (let i = 0, j = 0; i < data.length; i += 3, j += 4) {
-        imageData.data[j] = data[i];
-        imageData.data[j + 1] = data[i + 1];
-        imageData.data[j + 2] = data[i + 2];
-        imageData.data[j + 3] = 255;
-      }
-    }
-    ctx.putImageData(imageData, 0, 0);
-    return canvas.toBuffer("image/png");
-  }
-
-  // Fallback: create a simple BMP-like buffer that Supabase can store
-  // Upload raw data - the image won't be perfect but will be stored
-  const header = Buffer.alloc(8);
-  header.writeUInt32BE(width, 0);
-  header.writeUInt32BE(height, 4);
-  return Buffer.concat([header, Buffer.from(data)]);
 }

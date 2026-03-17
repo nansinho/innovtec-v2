@@ -34,10 +34,10 @@ const EVENT_TYPES = [
 ];
 
 const SECTIONS = [
-  { key: "faits", label: "LES FAITS", photoKey: "faits_photo_url", bgClass: "border-l-[#1E3A5F] bg-blue-50/30", Badge: RexFaitsBadge },
-  { key: "causes", label: "LES CAUSES ET LES CIRCONSTANCES", photoKey: "causes_photo_url", bgClass: "border-l-[#6B8E23] bg-green-50/30", Badge: RexCausesBadge },
-  { key: "actions_engagees", label: "LA SYNTHÈSE DES ACTIONS ENGAGÉES", photoKey: "actions_photo_url", bgClass: "border-l-[#E67E22] bg-orange-50/30", Badge: RexActionsBadge },
-  { key: "vigilance", label: "LE RAPPEL À VIGILANCE", photoKey: "vigilance_photo_url", bgClass: "border-l-[#F1C40F] bg-yellow-50/30", Badge: RexVigilanceBadge },
+  { key: "faits", label: "LES FAITS", photoKey: "faits_photo_url", Badge: RexFaitsBadge },
+  { key: "causes", label: "LES CAUSES ET LES CIRCONSTANCES", photoKey: "causes_photo_url", Badge: RexCausesBadge },
+  { key: "actions_engagees", label: "LA SYNTHÈSE DES ACTIONS ENGAGÉES", photoKey: "actions_photo_url", Badge: RexActionsBadge },
+  { key: "vigilance", label: "LE RAPPEL À VIGILANCE", photoKey: "vigilance_photo_url", Badge: RexVigilanceBadge },
 ] as const;
 
 interface RexFormData {
@@ -133,19 +133,8 @@ export default function RexForm({ onCreated, onClose, initialData }: RexFormProp
   const inputClass =
     "w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]";
 
-  function handleAiImportComplete(result: unknown, fileUrl?: string, extractedImages?: { section: string; url: string }[]) {
+  function handleAiImportComplete(result: unknown, fileUrl?: string, imagesDetected?: number) {
     const r = result as Record<string, unknown>;
-
-    // Map extracted images to their sections
-    const imageMap: Record<string, string> = {};
-    if (extractedImages && Array.isArray(extractedImages)) {
-      for (const img of extractedImages) {
-        if (img.section === "faits") imageMap.faits_photo_url = img.url;
-        else if (img.section === "causes") imageMap.causes_photo_url = img.url;
-        else if (img.section === "actions_engagees") imageMap.actions_photo_url = img.url;
-        else if (img.section === "vigilance") imageMap.vigilance_photo_url = img.url;
-      }
-    }
 
     setForm({
       title: (r.title as string) || "",
@@ -158,22 +147,25 @@ export default function RexForm({ onCreated, onClose, initialData }: RexFormProp
       date_evenement: (r.date_evenement as string) || "",
       horaire: (r.horaire as string) || "",
       faits: (r.faits as string) || "",
-      faits_photo_url: imageMap.faits_photo_url || "",
+      faits_photo_url: "",
       causes: (r.causes as string) || "",
-      causes_photo_url: imageMap.causes_photo_url || "",
+      causes_photo_url: "",
       actions_engagees: (r.actions_engagees as string) || "",
-      actions_photo_url: imageMap.actions_photo_url || "",
+      actions_photo_url: "",
       vigilance: (r.vigilance as string) || "",
-      vigilance_photo_url: imageMap.vigilance_photo_url || "",
+      vigilance_photo_url: "",
       deja_arrive: Array.isArray(r.deja_arrive) ? (r.deja_arrive as string[]) : [],
       type_evenement: (r.type_evenement as string) || "",
       source_file_url: fileUrl || "",
     });
     setMode("manual");
 
-    const imgCount = extractedImages?.length || 0;
-    const imgMsg = imgCount > 0 ? ` — ${imgCount} image(s) extraite(s) du PDF` : "";
-    toast.success(`Fiche REX analysée par l'IA${imgMsg} — vérifiez et complétez les champs`);
+    const imgCount = imagesDetected || 0;
+    if (imgCount > 0) {
+      toast.success(`Fiche REX analysée — ${imgCount} photo(s) détectée(s), ajoutez-les manuellement aux sections`);
+    } else {
+      toast.success("Fiche REX analysée par l'IA — vérifiez et complétez les champs");
+    }
   }
 
   async function handleAiGenerate() {
@@ -465,7 +457,7 @@ export default function RexForm({ onCreated, onClose, initialData }: RexFormProp
               </div>
 
               {/* 4 Sections */}
-              {SECTIONS.map(({ key, label, photoKey, bgClass, Badge }) => {
+              {SECTIONS.map(({ key, label, photoKey, Badge }) => {
                 const textValue = form[key as keyof RexFormData] as string;
                 const actualPhotoKey = key === "actions_engagees" ? "actions_photo_url" : photoKey;
                 const photoValue = form[actualPhotoKey as keyof RexFormData] as string;
@@ -473,13 +465,13 @@ export default function RexForm({ onCreated, onClose, initialData }: RexFormProp
                 return (
                   <div
                     key={key}
-                    className={`rounded-[var(--radius)] border-l-4 p-4 ${bgClass}`}
+                    className="overflow-hidden rounded-[var(--radius)] border border-[var(--border-1)] bg-white p-4"
                   >
                     <div className="mb-3">
                       <Badge />
                     </div>
-                    <div className="grid grid-cols-3 gap-3">
-                      <div className="col-span-2">
+                    <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+                      <div className="md:col-span-2">
                         <textarea
                           value={textValue}
                           onChange={(e) =>
@@ -490,7 +482,7 @@ export default function RexForm({ onCreated, onClose, initialData }: RexFormProp
                           placeholder={`Contenu de la section "${label}"...`}
                         />
                       </div>
-                      <div className="flex flex-col items-center justify-center rounded-[var(--radius-xs)] border border-dashed border-[var(--border-1)] bg-white p-2">
+                      <div className="flex flex-col items-center justify-center rounded-[var(--radius-xs)] border border-dashed border-[var(--border-1)] bg-[var(--hover)] p-2">
                         {photoValue ? (
                           <div className="relative w-full">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -542,7 +534,7 @@ export default function RexForm({ onCreated, onClose, initialData }: RexFormProp
               <div className="grid grid-cols-2 gap-4">
                 {/* Déjà arrivé */}
                 <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--hover)] p-4">
-                  <h3 className="mb-2 text-[12px] font-semibold text-blue-600">
+                  <h3 className="mb-2 text-[12px] font-semibold text-[var(--navy)]">
                     Déjà arrivé ?
                   </h3>
                   <div className="space-y-2">
@@ -578,7 +570,7 @@ export default function RexForm({ onCreated, onClose, initialData }: RexFormProp
 
                 {/* Type d'événement */}
                 <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--hover)] p-4">
-                  <h3 className="mb-2 text-[12px] font-semibold text-orange-600">
+                  <h3 className="mb-2 text-[12px] font-semibold text-[var(--navy)]">
                     Type d&apos;événement
                   </h3>
                   <div className="space-y-1.5">
