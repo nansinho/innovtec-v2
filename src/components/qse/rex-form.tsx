@@ -133,8 +133,20 @@ export default function RexForm({ onCreated, onClose, initialData }: RexFormProp
   const inputClass =
     "w-full rounded-[var(--radius-xs)] border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]";
 
-  function handleAiImportComplete(result: unknown, fileUrl?: string) {
+  function handleAiImportComplete(result: unknown, fileUrl?: string, extractedImages?: { section: string; url: string }[]) {
     const r = result as Record<string, unknown>;
+
+    // Map extracted images to their sections
+    const imageMap: Record<string, string> = {};
+    if (extractedImages && Array.isArray(extractedImages)) {
+      for (const img of extractedImages) {
+        if (img.section === "faits") imageMap.faits_photo_url = img.url;
+        else if (img.section === "causes") imageMap.causes_photo_url = img.url;
+        else if (img.section === "actions_engagees") imageMap.actions_photo_url = img.url;
+        else if (img.section === "vigilance") imageMap.vigilance_photo_url = img.url;
+      }
+    }
+
     setForm({
       title: (r.title as string) || "",
       description: (r.description as string) || "",
@@ -146,19 +158,22 @@ export default function RexForm({ onCreated, onClose, initialData }: RexFormProp
       date_evenement: (r.date_evenement as string) || "",
       horaire: (r.horaire as string) || "",
       faits: (r.faits as string) || "",
-      faits_photo_url: "",
+      faits_photo_url: imageMap.faits_photo_url || "",
       causes: (r.causes as string) || "",
-      causes_photo_url: "",
+      causes_photo_url: imageMap.causes_photo_url || "",
       actions_engagees: (r.actions_engagees as string) || "",
-      actions_photo_url: "",
+      actions_photo_url: imageMap.actions_photo_url || "",
       vigilance: (r.vigilance as string) || "",
-      vigilance_photo_url: "",
+      vigilance_photo_url: imageMap.vigilance_photo_url || "",
       deja_arrive: Array.isArray(r.deja_arrive) ? (r.deja_arrive as string[]) : [],
       type_evenement: (r.type_evenement as string) || "",
       source_file_url: fileUrl || "",
     });
     setMode("manual");
-    toast.success("Fiche REX analysée par l'IA — vérifiez et complétez les champs");
+
+    const imgCount = extractedImages?.length || 0;
+    const imgMsg = imgCount > 0 ? ` — ${imgCount} image(s) extraite(s) du PDF` : "";
+    toast.success(`Fiche REX analysée par l'IA${imgMsg} — vérifiez et complétez les champs`);
   }
 
   async function handleAiGenerate() {

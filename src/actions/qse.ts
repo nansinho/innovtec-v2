@@ -433,7 +433,23 @@ export async function createRex(
     excludeUserId: user.id,
   });
 
+  // Save as document entry so it appears in "Documents récents"
+  if (rex.source_file_url) {
+    const rexNum = rex.rex_number || "X";
+    const rexYr = rex.rex_year || new Date().getFullYear();
+    const docName = `Fiche REX ${rexNum}/${rexYr} - ${rex.title}`;
+
+    await supabase.from("documents").insert({
+      name: docName,
+      file_url: rex.source_file_url,
+      file_type: "pdf",
+      category: "rex",
+      uploaded_by: user.id,
+    });
+  }
+
   revalidatePath("/qse/rex");
+  revalidatePath("/");
   return { success: true, id: data?.id };
 }
 

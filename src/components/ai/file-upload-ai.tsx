@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import AiAnalysisProgress from "./ai-analysis-progress";
 
 interface FileUploadAiProps {
-  onAnalysisComplete: (result: unknown, fileUrl?: string) => void;
+  onAnalysisComplete: (result: unknown, fileUrl?: string, extractedImages?: { section: string; url: string }[]) => void;
   type: string;
   acceptTypes?: string;
   label?: string;
@@ -24,7 +24,7 @@ export default function FileUploadAi({
   const [error, setError] = useState("");
   const [isDragging, setIsDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const analysisResultRef = useRef<{ result: unknown; fileUrl?: string } | null>(null);
+  const analysisResultRef = useRef<{ result: unknown; fileUrl?: string; extractedImages?: { section: string; url: string }[] } | null>(null);
 
   const handleFile = useCallback((f: File) => {
     const maxSize = 10 * 1024 * 1024; // 10MB
@@ -97,7 +97,7 @@ export default function FileUploadAi({
       }
 
       // Store result and trigger completion animation
-      analysisResultRef.current = { result: data.result, fileUrl: data.fileUrl };
+      analysisResultRef.current = { result: data.result, fileUrl: data.fileUrl, extractedImages: data.extractedImages };
       setAnalysisComplete(true);
     } catch {
       setError("Erreur de connexion au serveur");
@@ -110,7 +110,7 @@ export default function FileUploadAi({
     setLoading(false);
     setAnalysisComplete(false);
     if (stored) {
-      onAnalysisComplete(stored.result, stored.fileUrl);
+      onAnalysisComplete(stored.result, stored.fileUrl, stored.extractedImages);
       analysisResultRef.current = null;
     }
   }

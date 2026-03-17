@@ -193,42 +193,47 @@ IMPORTANT:
 - Utilise les accents français corrects.
 - Retourne UNIQUEMENT du JSON valide, sans markdown, sans backticks.`;
     } else if (type === "rex") {
-      systemPrompt = `Tu es un assistant IA spécialisé dans l'analyse de fiches REX (Retour d'Expérience) pour INNOVTEC Réseaux.
-Analyse cette fiche REX et extrais TOUTES les informations structurées.
+      systemPrompt = `Tu es un assistant IA expert dans l'analyse de fiches REX (Retour d'Expérience) pour INNOVTEC Réseaux, entreprise de BTP spécialisée dans les réseaux.
+Analyse cette fiche REX avec une EXTRÊME PRÉCISION et extrais TOUTES les informations structurées.
 
-La fiche REX contient typiquement :
-- Un header avec : numéro de fiche, année, titre de l'événement, lieu, date, horaire
-- Section "LES FAITS" : description factuelle de l'événement
-- Section "LES CAUSES ET LES CIRCONSTANCES" : analyse des causes
-- Section "LA SYNTHÈSE DES ACTIONS ENGAGÉES" : actions correctives prises
-- Section "LE RAPPEL À VIGILANCE" : rappels et consignes de vigilance
-- Footer avec : "DÉJÀ ARRIVÉ ?" (précédents similaires) et "TYPE D'ÉVÉNEMENT" (SD, PRESQU'ACCIDENT, ACCIDENT, HPE)
+STRUCTURE D'UNE FICHE REX INNOVTEC :
+1. HEADER : badge orange "FICHE REX N/ANNÉE", titre de l'événement, lieu, date (format JJ/MM/AAAA), horaire
+2. Section "LES FAITS" (badge bleu avec engrenages) : description factuelle de ce qui s'est passé. Le texte est dans un encadré. Une photo peut accompagner à droite.
+3. Section "LES CAUSES ET LES CIRCONSTANCES" (badge vert avec point d'interrogation) : analyse des causes racines. Le texte est dans un encadré. Une photo peut accompagner.
+4. Section "LA SYNTHÈSE DES ACTIONS ENGAGÉES" (badge orange avec checklist) : mesures correctives prises. Le texte est dans un encadré. Une photo peut accompagner.
+5. Section "LE RAPPEL À VIGILANCE" (badge jaune avec triangle attention) : rappels et consignes de sécurité. Le texte est dans un encadré. Un badge "RÈGLE VITALE" peut accompagner.
+6. FOOTER : "DÉJÀ ARRIVÉ ?" avec liste de précédents similaires, et "TYPE D'ÉVÉNEMENT" où un type est mis en surbrillance parmi SD, PRESQU'ACCIDENT, ACCIDENT, HPE.
 
 Retourne UNIQUEMENT un JSON valide avec ces champs :
 {
-  "rex_number": "<numéro de la fiche, ex: 5>",
-  "rex_year": <année, ex: 2025>,
-  "title": "<titre complet de l'événement>",
-  "lieu": "<lieu de l'événement>",
-  "date_evenement": "<date au format YYYY-MM-DD>",
-  "horaire": "<horaire, ex: 10h40>",
-  "faits": "<texte complet de la section Les Faits>",
-  "causes": "<texte complet de la section Les Causes et les Circonstances>",
-  "actions_engagees": "<texte complet de la section La Synthèse des Actions Engagées>",
-  "vigilance": "<texte complet de la section Le Rappel à Vigilance>",
-  "deja_arrive": ["<élément 1>", "<élément 2>"],
-  "type_evenement": "<sd|presquaccident|accident|hpe>",
-  "description": "<résumé court de l'événement en 1-2 phrases>",
-  "lessons_learned": "<leçons principales tirées>",
-  "chantier": "<nom du chantier ou référence si mentionné>"
+  "rex_number": "<numéro exact de la fiche, ex: 2>",
+  "rex_year": <année exacte, ex: 2025>,
+  "title": "<titre EXACT tel qu'écrit après TITRE DE L'ÉVÉNEMENT>",
+  "lieu": "<lieu EXACT tel qu'écrit>",
+  "date_evenement": "<date convertie au format YYYY-MM-DD, ex: 2025-02-10 pour 10/02/2025>",
+  "horaire": "<horaire EXACT, ex: 08h>",
+  "faits": "<texte COMPLET et EXACT de la section Les Faits, en préservant chaque phrase et saut de ligne avec \\n>",
+  "causes": "<texte COMPLET et EXACT de la section Les Causes, en préservant chaque phrase et saut de ligne avec \\n>",
+  "actions_engagees": "<texte COMPLET et EXACT de la section Actions Engagées, en préservant chaque phrase et saut de ligne avec \\n>",
+  "vigilance": "<texte COMPLET et EXACT de la section Rappel à Vigilance, en préservant chaque phrase et saut de ligne avec \\n>",
+  "deja_arrive": ["<précédent 1>", "<précédent 2>"],
+  "type_evenement": "<sd|presquaccident|accident|hpe — celui qui est en SURBRILLANCE ou encadré dans le footer>",
+  "description": "<résumé clair en 1-2 phrases de ce qui s'est passé>",
+  "lessons_learned": "<principales leçons tirées de cet événement>",
+  "chantier": "<nom du chantier ou référence si mentionné, sinon chaîne vide>",
+  "images_detected": <nombre d'images/photos visibles dans le document (hors icônes et logos)>
 }
 
-IMPORTANT:
-- Extrais le contenu EXACT de chaque section, en préservant les sauts de ligne.
-- Pour type_evenement, identifie quel type est mis en surbrillance/sélectionné dans le footer.
-- Pour deja_arrive, extrais les points listés sous "DÉJÀ ARRIVÉ ?" (peut être vide).
-- Utilise les accents français corrects.
-- Retourne UNIQUEMENT du JSON valide, sans markdown, sans backticks.`;
+RÈGLES CRITIQUES :
+1. Extrais le contenu EXACT mot pour mot de chaque section — ne résume JAMAIS, ne reformule JAMAIS.
+2. Préserve les sauts de ligne entre les phrases/paragraphes avec \\n.
+3. Pour la date, CONVERTIS toujours du format français JJ/MM/AAAA vers YYYY-MM-DD.
+4. Pour type_evenement, identifie le type qui est visuellement SÉLECTIONNÉ (fond coloré, surligné, encadré) dans le footer. Ne devine pas.
+5. Pour deja_arrive, extrais TOUS les points listés. Si la section contient "Non..." ou est vague, retourne le texte exact.
+6. Le rex_number et rex_year sont dans le badge orange "FICHE REX" en haut.
+7. Compte le nombre de VRAIES photos/images dans le document (pas les icônes, badges ou logos).
+8. Utilise les accents français corrects (é, è, ê, à, ç, etc.).
+9. Retourne UNIQUEMENT du JSON valide, sans markdown, sans backticks.`;
     } else if (type === "politique") {
       systemPrompt +=
         ` Analyse ce document de politique QSE et retourne un JSON avec ces champs:
@@ -316,25 +321,50 @@ Chaque point doit être sur sa propre ligne dans le champ content. Extrais TOUTE
       parsed = { raw: rawText };
     }
 
-    // Upload original file to Supabase storage
+    // Upload original file to Supabase storage with smart naming
     let fileUrl = "";
     const fileExt = file.name.split(".").pop() || (isPdf ? "pdf" : "png");
-    const filePath = `qse/${type}/${Date.now()}-${randomUUID()}.${fileExt}`;
+
+    // Smart file naming for REX: Fiche-REX-{number}-{year}.pdf
+    let filePath: string;
+    if (type === "rex" && parsed && parsed.rex_number && parsed.rex_year) {
+      const safeNumber = String(parsed.rex_number).replace(/[^a-zA-Z0-9-]/g, "");
+      const safeYear = String(parsed.rex_year).replace(/[^0-9]/g, "");
+      filePath = `qse/rex/Fiche-REX-${safeNumber}-${safeYear}.${fileExt}`;
+    } else {
+      filePath = `qse/${type}/${Date.now()}-${randomUUID()}.${fileExt}`;
+    }
 
     const { error: uploadError } = await supabase.storage
       .from("documents")
       .upload(filePath, Buffer.from(buffer), {
         contentType: mimeType,
-        upsert: false,
+        upsert: true,
       });
 
     if (!uploadError) {
       fileUrl = filePath;
     }
 
+    // For REX PDFs: extract embedded images using pdfjs-dist
+    let extractedImages: { section: string; url: string }[] = [];
+    if (type === "rex" && isPdf && parsed && !parsed.raw) {
+      try {
+        extractedImages = await extractImagesFromPdf(
+          Buffer.from(buffer),
+          supabase,
+          parsed.rex_number,
+          parsed.rex_year
+        );
+      } catch (imgErr) {
+        console.error("PDF image extraction error:", imgErr);
+      }
+    }
+
     return NextResponse.json({
       result: parsed,
       fileUrl,
+      extractedImages,
       credits_remaining: credit
         ? credit.credits_limit - credit.credits_used - 1
         : 0,
@@ -346,4 +376,125 @@ Chaque point doit être sur sa propre ligne dans le champ content. Extrais TOUTE
       { status: 500 }
     );
   }
+}
+
+/**
+ * Extract embedded images from a PDF using pdfjs-dist
+ * Returns uploaded image URLs mapped to REX sections based on position
+ */
+async function extractImagesFromPdf(
+  pdfBuffer: Buffer,
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  rexNumber?: string,
+  rexYear?: number
+): Promise<{ section: string; url: string }[]> {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const pdfjsLib = require("pdfjs-dist/legacy/build/pdf.mjs");
+
+  const loadingTask = pdfjsLib.getDocument({ data: new Uint8Array(pdfBuffer) });
+  const pdfDoc = await loadingTask.promise;
+
+  const extractedImages: { section: string; url: string }[] = [];
+  const sectionMapping = ["faits", "causes", "actions_engagees", "vigilance"];
+  let imageIndex = 0;
+
+  for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
+    const page = await pdfDoc.getPage(pageNum);
+    const ops = await page.getOperatorList();
+
+    for (let i = 0; i < ops.fnArray.length; i++) {
+      // OPS.paintImageXObject = 85, OPS.paintJpegXObject = 82
+      if (ops.fnArray[i] === 85 || ops.fnArray[i] === 82) {
+        try {
+          const imgName = ops.argsArray[i][0];
+          const img = await page.objs.get(imgName);
+
+          if (!img || !img.data || !img.width || !img.height) continue;
+
+          // Skip tiny images (logos, icons) - only keep real photos (> 50x50px)
+          if (img.width < 50 || img.height < 50) continue;
+
+          // Convert RGBA data to PNG using canvas-like approach
+          const pngBuffer = createPngFromImageData(img.data, img.width, img.height);
+
+          if (pngBuffer.length < 1000) continue; // Skip if too small
+
+          const section = sectionMapping[imageIndex] || `photo_${imageIndex}`;
+          const safeNum = String(rexNumber || "X").replace(/[^a-zA-Z0-9-]/g, "");
+          const safeYear = String(rexYear || new Date().getFullYear());
+          const imgPath = `qse/rex/${section}-rex-${safeNum}-${safeYear}-${randomUUID().slice(0, 8)}.png`;
+
+          const { error: uploadErr } = await supabase.storage
+            .from("documents")
+            .upload(imgPath, pngBuffer, {
+              contentType: "image/png",
+              upsert: false,
+            });
+
+          if (!uploadErr) {
+            const { data: urlData } = supabase.storage
+              .from("documents")
+              .getPublicUrl(imgPath);
+
+            if (urlData?.publicUrl) {
+              extractedImages.push({
+                section,
+                url: urlData.publicUrl,
+              });
+              imageIndex++;
+            }
+          }
+        } catch {
+          // Skip individual image extraction errors
+          continue;
+        }
+      }
+    }
+  }
+
+  return extractedImages;
+}
+
+/**
+ * Create a minimal PNG buffer from raw RGBA pixel data
+ */
+function createPngFromImageData(data: Uint8Array | Uint8ClampedArray, width: number, height: number): Buffer {
+  // For server-side, we create a raw image buffer
+  // We'll upload the raw bitmap data as PNG using a simple approach
+  const { createCanvas } = (() => {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      return require("canvas");
+    } catch {
+      return { createCanvas: null };
+    }
+  })();
+
+  if (createCanvas) {
+    const canvas = createCanvas(width, height);
+    const ctx = canvas.getContext("2d");
+    const imageData = ctx.createImageData(width, height);
+
+    // PDF images may be RGB (3 channels) or RGBA (4 channels)
+    const channels = data.length / (width * height);
+    if (channels === 4) {
+      imageData.data.set(data);
+    } else if (channels === 3) {
+      for (let i = 0, j = 0; i < data.length; i += 3, j += 4) {
+        imageData.data[j] = data[i];
+        imageData.data[j + 1] = data[i + 1];
+        imageData.data[j + 2] = data[i + 2];
+        imageData.data[j + 3] = 255;
+      }
+    }
+    ctx.putImageData(imageData, 0, 0);
+    return canvas.toBuffer("image/png");
+  }
+
+  // Fallback: create a simple BMP-like buffer that Supabase can store
+  // Upload raw data - the image won't be perfect but will be stored
+  const header = Buffer.alloc(8);
+  header.writeUInt32BE(width, 0);
+  header.writeUInt32BE(height, 4);
+  return Buffer.concat([header, Buffer.from(data)]);
 }
