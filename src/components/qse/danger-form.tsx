@@ -105,7 +105,7 @@ export default function DangerForm({ onCreated }: DangerFormProps) {
             onChange={(e) => setAiPrompt(e.target.value)}
             placeholder="Décrivez brièvement la situation dangereuse... (ex: câble électrique dénudé à proximité du passage piéton sur le chantier de Bordeaux)"
             rows={3}
-            className="w-full resize-none rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2.5 text-[12.5px] text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+            className="w-full resize-none rounded-[var(--radius-xs)] border border-[var(--border-1)] px-3 py-2.5 text-[13px] text-[var(--heading)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
           />
           <AiGenerateButton
             onClick={handleAiGenerate}

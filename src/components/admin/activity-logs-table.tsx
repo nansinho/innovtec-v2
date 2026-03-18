@@ -127,7 +127,7 @@ export default function ActivityLogsTable() {
       </div>
 
       {/* Logs list */}
-      <div className="rounded-xl border border-[var(--border-1)] bg-white shadow-sm ring-1 ring-black/[0.03]">
+      <div className="rounded-xl border border-[var(--border-1)] bg-white shadow-sm">
         {loading && logs.length === 0 ? (
           <div className="flex items-center justify-center py-16">
             <div className="h-6 w-6 animate-spin rounded-full border-2 border-[var(--border-1)] border-t-[var(--yellow)]" />

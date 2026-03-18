@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
 import type { Profile, UserRole } from "@/lib/types/database";
+import { auditLog } from "@/lib/audit-logger";
 
 // ==========================================
 // HELPERS
@@ -27,27 +28,6 @@ async function getCallerProfile() {
 
 function isAdminOrRh(role: string) {
   return ["admin", "rh"].includes(role);
-}
-
-async function logActivity(
-  userId: string,
-  action: string,
-  targetType: string,
-  targetId: string | null,
-  details: Record<string, unknown> = {}
-) {
-  try {
-    const supabaseAdmin = createAdminClient();
-    await supabaseAdmin.from("activity_logs").insert({
-      user_id: userId,
-      action,
-      target_type: targetType,
-      target_id: targetId,
-      details,
-    });
-  } catch (e) {
-    console.error("[logActivity] Failed:", e);
-  }
 }
 
 function revalidateAll() {
@@ -91,7 +71,7 @@ export async function ensureAdminExists(): Promise<{
 
   if (error) return { promoted: false, hasAdmin: false };
 
-  await logActivity(user.id, "promote_to_admin", "user", user.id, {
+  await auditLog(user.id, "promote_to_admin", "user", user.id, {
     reason: "bootstrap",
   });
 
@@ -257,7 +237,7 @@ export async function createUser(formData: {
       console.error("[createUser] Profile error:", profileError.message);
     }
 
-    await logActivity(caller.authId, "create_user", "user", authData.user.id, {
+    await auditLog(caller.authId, "create", "user", authData.user.id, {
       email,
       name: `${first_name} ${last_name}`,
       role,
@@ -322,7 +302,7 @@ export async function updateUser(
     return { success: false, error: error.message };
   }
 
-  await logActivity(caller.authId, "update_user", "user", userId, {
+  await auditLog(caller.authId, "update", "user", userId, {
     changes: updateData,
     previous_email: currentProfile?.email,
     user_name: currentProfile
@@ -358,7 +338,7 @@ export async function updateUserRole(
 
   if (error) return { success: false, error: error.message };
 
-  await logActivity(caller.authId, "change_role", "user", userId, {
+  await auditLog(caller.authId, "change_role", "user", userId, {
     from: targetProfile?.role,
     to: role,
     user_name: targetProfile
@@ -398,9 +378,9 @@ export async function toggleUserActive(
 
   if (error) return { success: false, error: error.message };
 
-  await logActivity(
+  await auditLog(
     caller.authId,
-    isActive ? "reactivate_user" : "deactivate_user",
+    isActive ? "reactivate" : "deactivate",
     "user",
     userId,
     {
@@ -466,7 +446,7 @@ export async function deleteUser(
     }
   }
 
-  await logActivity(caller.authId, "delete_user", "user", userId, {
+  await auditLog(caller.authId, "delete", "user", userId, {
     deleted_user: `${targetProfile.first_name} ${targetProfile.last_name}`,
     email: targetProfile.email,
     role: targetProfile.role,

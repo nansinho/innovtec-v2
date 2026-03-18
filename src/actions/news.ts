@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import type { News, NewsComment, NewsAttachment } from "@/lib/types/database";
 import { createNotificationForAll, createNotificationForUser } from "@/actions/notifications";
+import { auditLog } from "@/lib/audit-logger";
 
 // ==========================================
 // PUBLIC: Read operations
@@ -154,6 +155,8 @@ export async function addNewsComment(
     });
   }
 
+  await auditLog(user.id, "comment", "news", newsId, { content: content.trim().slice(0, 100) });
+
   revalidatePath(`/actualites/${newsId}`);
   return { success: true };
 }
@@ -163,12 +166,19 @@ export async function deleteNewsComment(
   newsId: string
 ): Promise<{ success: boolean; error?: string }> {
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { success: false, error: "Non authentifié" };
+
   const { error } = await supabase
     .from("news_comments")
     .delete()
     .eq("id", commentId);
 
   if (error) return { success: false, error: error.message };
+
+  await auditLog(user.id, "delete", "news", commentId, { newsId });
 
   revalidatePath(`/actualites/${newsId}`);
   return { success: true };
@@ -198,6 +208,7 @@ export async function toggleNewsLike(
   if (existing) {
     // Unlike
     await supabase.from("news_likes").delete().eq("id", existing.id);
+    await auditLog(user.id, "like", "news", newsId, { liked: false });
     revalidatePath(`/actualites/${newsId}`);
     return { success: true, liked: false };
   } else {
@@ -207,6 +218,7 @@ export async function toggleNewsLike(
       user_id: user.id,
     });
     if (error) return { success: false, liked: false, error: error.message };
+    await auditLog(user.id, "like", "news", newsId, { liked: true });
     revalidatePath(`/actualites/${newsId}`);
     return { success: true, liked: true };
   }
@@ -286,6 +298,8 @@ export async function shareNews(
     related_id: newsId,
     excludeUserId: user.id,
   });
+
+  await auditLog(user.id, "send", "news", newsId, { title: article.title });
 
   return { success: true };
 }
@@ -461,6 +475,8 @@ export async function createNews(formData: {
     });
   }
 
+  await auditLog(user.id, "create", "news", data?.id ?? null, { title: formData.title, category: formData.category, published: formData.is_published });
+
   revalidatePath("/actualites");
   revalidatePath("/admin/news");
   revalidatePath("/");
@@ -535,6 +551,8 @@ export async function updateNews(
     });
   }
 
+  await auditLog(user.id, "update", "news", newsId, { title: formData.title, published: formData.is_published });
+
   revalidatePath("/actualites");
   revalidatePath(`/actualites/${newsId}`);
   revalidatePath("/admin/news");
@@ -558,6 +576,11 @@ export async function togglePublishNews(
   publish: boolean
 ): Promise<{ success: boolean; error?: string }> {
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { success: false, error: "Non authentifié" };
+
   const { error } = await supabase
     .from("news")
     .update({
@@ -567,6 +590,8 @@ export async function togglePublishNews(
     .eq("id", newsId);
 
   if (error) return { success: false, error: error.message };
+
+  await auditLog(user.id, publish ? "publish" : "archive", "news", newsId, {});
 
   revalidatePath("/actualites");
   revalidatePath("/admin/news");
@@ -578,9 +603,16 @@ export async function deleteNews(
   newsId: string
 ): Promise<{ success: boolean; error?: string }> {
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { success: false, error: "Non authentifié" };
+
   const { error } = await supabase.from("news").delete().eq("id", newsId);
 
   if (error) return { success: false, error: error.message };
+
+  await auditLog(user.id, "delete", "news", newsId, {});
 
   revalidatePath("/actualites");
   revalidatePath("/admin/news");

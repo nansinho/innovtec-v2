@@ -170,7 +170,7 @@ export default function PlanningView({
           return (
             <div
               key={kpi.key}
-              className={`animate-slide-up stagger-${i + 1} relative overflow-hidden rounded-xl bg-white/92 p-6 shadow-[0_1px_4px_rgba(0,0,0,0.04)] ring-1 ring-black/[0.03] backdrop-blur-xl transition-all duration-300 ease-out hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)] hover:scale-[1.01]`}
+              className={`animate-slide-up stagger-${i + 1} relative overflow-hidden rounded-xl bg-white/92 p-6 border border-[var(--border-1)] shadow-sm backdrop-blur-xl transition-all duration-300 ease-out hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)] hover:scale-[1.01]`}
             >
               <div className={`absolute inset-x-0 top-0 h-[2px] ${kpi.accent} opacity-60`} />
               <div className="flex items-center gap-4">

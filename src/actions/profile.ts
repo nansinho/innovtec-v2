@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
+import { auditLog } from "@/lib/audit-logger";
 import type {
   UserExperience,
   UserDiploma,
@@ -53,6 +54,7 @@ export async function updateAvatar(
 
   if (error) return { success: false, error: error.message };
 
+  await auditLog(user.id, "update", "user", user.id, { field: "avatar" });
   revalidatePath("/profil");
   revalidatePath("/equipe/trombinoscope");
   revalidatePath("/", "layout");
@@ -106,6 +108,7 @@ export async function updateProfile(data: {
   }
 
   console.log("[updateProfile] Success for user:", user.id);
+  await auditLog(user.id, "update", "user", user.id, { fields: Object.keys(data) });
   revalidatePath("/profil");
   revalidatePath("/", "layout");
   return { success: true };
@@ -161,6 +164,7 @@ export async function upsertExperience(data: {
 
   if (error) return { success: false, error: error.message };
 
+  await auditLog(resolved.userId, data.id ? "update" : "create", "user", resolved.userId, { type: "experience" });
   revalidatePath("/profil");
   revalidatePath(`/admin/users/${resolved.userId}`);
   return { success: true };
@@ -183,6 +187,7 @@ export async function deleteExperience(
 
   if (error) return { success: false, error: error.message };
 
+  await auditLog(resolved.userId, "delete", "user", resolved.userId, { type: "experience", id });
   revalidatePath("/profil");
   revalidatePath(`/admin/users/${resolved.userId}`);
   return { success: true };
@@ -229,6 +234,7 @@ export async function upsertDiploma(data: {
 
   if (error) return { success: false, error: error.message };
 
+  await auditLog(resolved.userId, data.id ? "update" : "create", "user", resolved.userId, { type: "diploma" });
   revalidatePath("/profil");
   revalidatePath(`/admin/users/${resolved.userId}`);
   return { success: true };
@@ -251,6 +257,7 @@ export async function deleteDiploma(
 
   if (error) return { success: false, error: error.message };
 
+  await auditLog(resolved.userId, "delete", "user", resolved.userId, { type: "diploma", id });
   revalidatePath("/profil");
   revalidatePath(`/admin/users/${resolved.userId}`);
   return { success: true };
@@ -298,6 +305,7 @@ export async function upsertUserFormation(data: {
 
   if (error) return { success: false, error: error.message };
 
+  await auditLog(resolved.userId, data.id ? "update" : "create", "user", resolved.userId, { type: "formation" });
   revalidatePath("/profil");
   revalidatePath(`/admin/users/${resolved.userId}`);
   return { success: true };
@@ -320,6 +328,7 @@ export async function deleteUserFormation(
 
   if (error) return { success: false, error: error.message };
 
+  await auditLog(resolved.userId, "delete", "user", resolved.userId, { type: "formation", id });
   revalidatePath("/profil");
   revalidatePath(`/admin/users/${resolved.userId}`);
   return { success: true };
@@ -388,6 +397,7 @@ export async function updatePassword(data: {
     .update({ must_change_password: false })
     .eq("id", user.id);
 
+  await auditLog(user.id, "password_change", "user", user.id, {});
   revalidatePath("/", "layout");
   return { success: true };
 }
@@ -436,6 +446,7 @@ export async function updateEmergencyContact(
 
   if (error) return { success: false, error: error.message };
 
+  await auditLog(resolved.userId, "update", "user", resolved.userId, { type: "emergency_contact" });
   revalidatePath("/profil");
   revalidatePath(`/admin/users/${resolved.userId}`);
   return { success: true };

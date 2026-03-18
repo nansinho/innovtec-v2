@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
+import { auditLog } from "@/lib/audit-logger";
 
 export interface JobTitle {
   id: string;
@@ -53,6 +54,7 @@ export async function addJobTitle(
     return { success: false, error: error.message };
   }
 
+  await auditLog(user.id, "create", "job_title", data?.id ?? null, { label: label.trim() });
   return { success: true, jobTitle: data as JobTitle };
 }
 
@@ -85,6 +87,7 @@ export async function updateUserJobTitle(
 
   if (error) return { success: false, error: error.message };
 
+  await auditLog(user.id, "update", "job_title", userId, { job_title: jobTitle });
   revalidatePath("/admin/users");
   revalidatePath("/equipe/trombinoscope");
   return { success: true };
@@ -118,5 +121,6 @@ export async function deleteJobTitle(
 
   if (error) return { success: false, error: error.message };
 
+  await auditLog(user.id, "delete", "job_title", id, {});
   return { success: true };
 }

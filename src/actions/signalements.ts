@@ -5,6 +5,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
 import type { DangerReport, SignalementCategory, DangerStatus, SignalementPriority } from "@/lib/types/database";
 import { createNotificationForUser } from "@/actions/notifications";
+import { auditLog } from "@/lib/audit-logger";
 
 // ==========================================
 // HELPERS
@@ -13,6 +14,7 @@ import { createNotificationForUser } from "@/actions/notifications";
 function revalidateAll() {
   revalidatePath("/qse/signalements");
   revalidatePath("/qse");
+  revalidatePath("/");
 }
 
 async function getAuthUser() {
@@ -115,6 +117,8 @@ export async function createSignalementCategory(
 
   if (error) return { success: false, error: error.message };
 
+  await auditLog(profile.id, "create", "signalement", null, { name, type: "category" });
+
   revalidateAll();
   return { success: true };
 }
@@ -136,6 +140,8 @@ export async function updateSignalementCategory(
 
   if (error) return { success: false, error: error.message };
 
+  await auditLog(profile.id, "update", "signalement", id, { type: "category" });
+
   revalidateAll();
   return { success: true };
 }
@@ -155,6 +161,8 @@ export async function deleteSignalementCategory(
     .eq("id", id);
 
   if (error) return { success: false, error: error.message };
+
+  await auditLog(profile.id, "delete", "signalement", id, { type: "category" });
 
   revalidateAll();
   return { success: true };
@@ -303,6 +311,8 @@ export async function createSignalement(report: {
     }
   }
 
+  await auditLog(user.id, "create", "signalement", data.id, { title: report.title, priority: report.priority });
+
   revalidateAll();
   return { success: true, id: data.id };
 }
@@ -354,6 +364,8 @@ export async function updateSignalementStatus(
     });
   }
 
+  await auditLog(profile.id, "status_change", "signalement", id, { status });
+
   revalidateAll();
   return { success: true };
 }
@@ -374,6 +386,8 @@ export async function assignSignalement(
     .eq("id", id);
 
   if (error) return { success: false, error: error.message };
+
+  await auditLog(profile.id, "assign", "signalement", id, { assigned_to: assignedTo });
 
   revalidateAll();
   return { success: true };
@@ -460,6 +474,8 @@ export async function deleteSignalement(
   if (error) {
     return { success: false, error: error.message };
   }
+
+  await auditLog(profile.id, "delete", "signalement", id, {});
 
   revalidateAll();
   return { success: true };

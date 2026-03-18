@@ -257,7 +257,7 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto rounded-xl border border-[var(--border-1)] bg-white shadow-sm ring-1 ring-black/[0.03]">
+      <div className="overflow-x-auto rounded-xl border border-[var(--border-1)] bg-[var(--card)] shadow-sm">
         {/* Batch actions bar */}
         {selectedIds.size > 0 && (
           <div className="flex items-center gap-3 border-b border-amber-200 bg-amber-50 px-4 py-2 text-sm">
@@ -274,8 +274,8 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
           </div>
         )}
 
-        <table className="w-full text-left text-sm">
-          <thead className="border-b border-[var(--border-1)] bg-[var(--hover)]">
+        <table className="w-full text-left">
+          <thead className="border-b border-[var(--border-2)] bg-[var(--hover)]">
             <tr>
               <th className="w-10 px-3 py-2">
                 <input
@@ -286,22 +286,22 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
                   aria-label="Sélectionner tout"
                 />
               </th>
-              <th className="w-12 px-3 py-2 text-xs font-medium text-[var(--text-secondary)]">
+              <th className="w-12 px-3 py-2 text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]">
                 #
               </th>
-              <th className="px-3 py-2 text-xs font-medium text-[var(--text-secondary)]">
+              <th className="px-3 py-2 text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]">
                 Collaborateur
               </th>
-              <th className="hidden px-3 py-2 text-xs font-medium text-[var(--text-secondary)] md:table-cell">
+              <th className="hidden px-3 py-2 text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)] md:table-cell">
                 Poste
               </th>
-              <th className="px-3 py-2 text-xs font-medium text-[var(--text-secondary)]">
+              <th className="px-3 py-2 text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]">
                 Rôle
               </th>
-              <th className="px-3 py-2 text-xs font-medium text-[var(--text-secondary)]">
+              <th className="px-3 py-2 text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]">
                 Statut
               </th>
-              <th className="w-14 px-3 py-2 text-right text-xs font-medium text-[var(--text-secondary)]">
+              <th className="w-14 px-3 py-2 text-right text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]">
                 Actions
               </th>
             </tr>

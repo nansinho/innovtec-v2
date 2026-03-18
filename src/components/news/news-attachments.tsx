@@ -164,7 +164,7 @@ export default function NewsAttachmentsManager({
                   <Icon className="h-4.5 w-4.5 text-[var(--text-secondary)]" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="truncate text-[12.5px] font-medium text-[var(--heading)]">
+                  <p className="truncate text-[13px] font-medium text-[var(--heading)]">
                     {att.file_name}
                   </p>
                   <p className="text-[10px] text-[var(--text-muted)]">
@@ -232,7 +232,7 @@ export function NewsAttachmentsDisplay({
                 <Icon className="h-4 w-4 text-[var(--text-secondary)]" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="truncate text-[12.5px] font-medium text-[var(--heading)]">
+                <p className="truncate text-[13px] font-medium text-[var(--heading)]">
                   {att.file_name}
                 </p>
                 <p className="text-[10px] text-[var(--text-muted)]">

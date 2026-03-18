@@ -140,7 +140,7 @@ export default async function QseHubPage() {
               <h2 className="mt-4 text-[15px] font-semibold text-[var(--heading)]">
                 {card.label}
               </h2>
-              <p className="mt-1 flex-1 text-[12.5px] leading-relaxed text-[var(--text-muted)]">
+              <p className="mt-1 flex-1 text-[13px] leading-relaxed text-[var(--text-muted)]">
                 {card.description}
               </p>
 

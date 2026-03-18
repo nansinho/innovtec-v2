@@ -225,7 +225,7 @@ function PillarCard({ pillar }: { pillar: Pillar }) {
           </div>
           <ul className="space-y-2.5">
             {pillar.engagements.map((item, i) => (
-              <li key={i} className="flex gap-2.5 text-[12.5px] leading-relaxed text-[var(--text)]">
+              <li key={i} className="flex gap-2.5 text-[13px] leading-relaxed text-[var(--text)]">
                 <span
                   className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full transition-transform duration-200"
                   style={{ background: pillar.color }}
@@ -251,7 +251,7 @@ function PillarCard({ pillar }: { pillar: Pillar }) {
           </div>
           <ul className="space-y-2">
             {pillar.objectifs.map((item, i) => (
-              <li key={i} className="flex gap-2.5 text-[12.5px] leading-relaxed text-white/90">
+              <li key={i} className="flex gap-2.5 text-[13px] leading-relaxed text-white/90">
                 <span className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--yellow)]" />
                 <span>{item}</span>
               </li>
@@ -624,7 +624,7 @@ export default function PolitiqueContent({
                 onChange={(e) => setIntroText(e.target.value)}
                 placeholder="Décrivez la politique générale de l'entreprise en matière de Qualité, Sécurité et Environnement..."
                 rows={4}
-                className="w-full resize-none rounded-lg border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-[12.5px] leading-relaxed text-[var(--text)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                className="w-full resize-none rounded-lg border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-[13px] leading-relaxed text-[var(--text)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
               />
             </div>
           </div>
@@ -667,7 +667,7 @@ export default function PolitiqueContent({
                         onChange={(e) => updatePillar(p.key, "engagements", e.target.value)}
                         placeholder={"Un engagement par ligne..."}
                         rows={6}
-                        className="w-full resize-none rounded-lg border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-[12.5px] leading-relaxed text-[var(--text)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                        className="w-full resize-none rounded-lg border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-[13px] leading-relaxed text-[var(--text)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
                       />
                     </div>
                     <div className="p-5">
@@ -680,7 +680,7 @@ export default function PolitiqueContent({
                         onChange={(e) => updatePillar(p.key, "objectifs", e.target.value)}
                         placeholder={"Un objectif par ligne..."}
                         rows={6}
-                        className="w-full resize-none rounded-lg border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-[12.5px] leading-relaxed text-[var(--text)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                        className="w-full resize-none rounded-lg border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-[13px] leading-relaxed text-[var(--text)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
                       />
                     </div>
                   </div>
@@ -801,7 +801,7 @@ export default function PolitiqueContent({
                 onChange={(e) => setEngagementText(e.target.value)}
                 placeholder="La direction s'engage à mettre en œuvre les moyens nécessaires..."
                 rows={4}
-                className="w-full resize-none rounded-lg border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-[12.5px] leading-relaxed text-[var(--text)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
+                className="w-full resize-none rounded-lg border border-[var(--border-1)] bg-[var(--bg)] px-3 py-2.5 text-[13px] leading-relaxed text-[var(--text)] outline-none transition-all focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
               />
             </div>
             <div className="flex gap-4">
@@ -1034,7 +1034,7 @@ export default function PolitiqueContent({
                     className="rounded-xl border border-[var(--border-1)] bg-[var(--card)] p-5 shadow-xs transition-shadow hover:shadow-sm"
                   >
                     <h3 className="mb-2 text-[13px] font-semibold text-[var(--heading)]">{section.title}</h3>
-                    <p className="whitespace-pre-wrap text-[12.5px] leading-relaxed text-[var(--text)]">{section.content}</p>
+                    <p className="whitespace-pre-wrap text-[13px] leading-relaxed text-[var(--text)]">{section.content}</p>
                   </div>
                 ))}
               </div>

@@ -10,6 +10,7 @@ import type {
   SignalementPriority,
 } from "@/lib/types/database";
 import { createNotificationForUser } from "@/actions/notifications";
+import { auditLog } from "@/lib/audit-logger";
 
 // ==========================================
 // HELPERS
@@ -19,6 +20,7 @@ function revalidateAll() {
   revalidatePath("/qse/plans");
   revalidatePath("/qse/signalements");
   revalidatePath("/qse");
+  revalidatePath("/");
 }
 
 async function getAuthProfile() {
@@ -194,6 +196,8 @@ export async function createActionPlan(planData: {
     });
   }
 
+  await auditLog(profile.id, "create", "action_plan", data.id, { title: planData.title, type: planData.type });
+
   revalidateAll();
   return { success: true, id: data.id };
 }
@@ -256,6 +260,8 @@ export async function updateActionPlan(
     }
   }
 
+  await auditLog(profile.id, "update", "action_plan", id, { changes: planData });
+
   revalidateAll();
   return { success: true };
 }
@@ -288,6 +294,8 @@ export async function deleteActionPlan(
     .eq("id", id);
 
   if (error) return { success: false, error: error.message };
+
+  await auditLog(profile.id, "delete", "action_plan", id, {});
 
   revalidateAll();
   return { success: true };
@@ -336,6 +344,8 @@ export async function linkSignalement(
     });
   }
 
+  await auditLog(profile.id, "update", "action_plan", planId, { linked_signalement: signalementId });
+
   revalidateAll();
   return { success: true };
 }
@@ -359,6 +369,8 @@ export async function unlinkSignalement(
     .eq("id", signalementId);
 
   if (error) return { success: false, error: error.message };
+
+  await auditLog(profile.id, "update", "action_plan", null, { unlinked_signalement: signalementId });
 
   revalidateAll();
   return { success: true };

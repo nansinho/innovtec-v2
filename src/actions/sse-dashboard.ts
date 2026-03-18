@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import type { SseDashboard } from "@/lib/types/database";
 import { createNotificationForAll } from "@/actions/notifications";
+import { auditLog } from "@/lib/audit-logger";
 
 // ==========================================
 // SSE DASHBOARDS
@@ -95,6 +96,7 @@ export async function createSseDashboard(
     return { success: false, error: error.message };
   }
 
+  await auditLog(user.id, "create", "sse_dashboard", data?.id ?? null, { month: dashboard.month, year: dashboard.year });
   revalidatePath("/qse/tableau-sse");
   revalidatePath("/admin/tableau-sse");
 
@@ -147,6 +149,7 @@ export async function updateSseDashboard(
     return { success: false, error: error.message };
   }
 
+  await auditLog(user.id, "update", "sse_dashboard", id, { month: dashboard.month, year: dashboard.year });
   revalidatePath("/qse/tableau-sse");
   revalidatePath("/admin/tableau-sse");
 
@@ -192,6 +195,7 @@ export async function deleteSseDashboard(
 
   if (error) return { success: false, error: error.message };
 
+  await auditLog(user.id, "delete", "sse_dashboard", id, {});
   revalidatePath("/qse/tableau-sse");
   revalidatePath("/admin/tableau-sse");
   return { success: true };
