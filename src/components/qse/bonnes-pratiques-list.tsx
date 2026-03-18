@@ -49,7 +49,7 @@ export default function BonnesPratiquesList({ items, headerAction }: BonnesPrati
       width: "110px",
       accessor: (r) => r.created_at,
       render: (r) => (
-        <span className="text-[var(--text-secondary)]">
+        <span>
           {new Date(r.created_at).toLocaleDateString("fr-FR")}
         </span>
       ),
@@ -60,7 +60,7 @@ export default function BonnesPratiquesList({ items, headerAction }: BonnesPrati
       sortable: true,
       render: (r) => (
         <div>
-          <div className="font-medium text-[var(--heading)]">{r.title}</div>
+          <div className="font-medium">{r.title}</div>
           <div className="mt-0.5 line-clamp-1 text-xs text-[var(--text-muted)]">
             {r.description}
           </div>
@@ -93,7 +93,7 @@ export default function BonnesPratiquesList({ items, headerAction }: BonnesPrati
       width: "80px",
       render: (r) =>
         r.photos && r.photos.length > 0 ? (
-          <span className="flex items-center gap-1 text-xs text-[var(--text-secondary)]">
+          <span className="flex items-center gap-1 text-xs">
             <ImageIcon className="h-3.5 w-3.5" />
             {r.photos.length}
           </span>
@@ -105,7 +105,7 @@ export default function BonnesPratiquesList({ items, headerAction }: BonnesPrati
       key: "author",
       header: "Auteur",
       render: (r) => (
-        <span className="text-[var(--text-secondary)]">
+        <span>
           {r.author?.full_name || "—"}
         </span>
       ),

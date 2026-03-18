@@ -292,7 +292,7 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
           </div>
         )}
 
-        <table className="w-full text-left">
+        <table className="w-full text-left text-[13px] text-[var(--text)]">
           <thead className="border-b border-[var(--border-2)] bg-[var(--hover)]">
             <tr>
               <th className="w-10 px-3 py-2">
@@ -359,7 +359,7 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
                       </div>
                       <div className="min-w-0">
                         <div className="flex items-center gap-1.5">
-                          <span className="truncate font-medium text-[var(--heading)]">
+                          <span className="truncate font-medium">
                             {user.first_name} {user.last_name}
                           </span>
                           {isMe && (
@@ -368,7 +368,7 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
                             </span>
                           )}
                         </div>
-                        <div className="truncate text-xs text-[var(--text-secondary)]">
+                        <div className="truncate text-xs text-[var(--text-muted)]">
                           {user.email}
                         </div>
                       </div>
@@ -425,7 +425,7 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
                     ) : (
                       <button
                         onClick={() => setEditingJobTitle(user.id)}
-                        className="text-xs text-[var(--text-secondary)] transition-colors hover:text-[var(--heading)]"
+                        className="text-xs transition-colors hover:text-[var(--heading)]"
                         title="Cliquer pour modifier le poste"
                       >
                         {user.job_title || "—"}
@@ -440,7 +440,7 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
                         ? users.find((u) => u.id === user.manager_id)
                         : null;
                       return (
-                        <span className="text-xs text-[var(--text-secondary)]">
+                        <span className="text-xs">
                           {mgr
                             ? `${mgr.first_name} ${mgr.last_name}`
                             : "—"}

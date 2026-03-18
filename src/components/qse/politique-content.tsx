@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,10 +20,10 @@ import {
   Upload,
   Copy,
 } from "lucide-react";
-import { cn, formatDate } from "@/lib/utils";
+import { cn, formatDate, createReferenceMap } from "@/lib/utils";
 import { toast } from "sonner";
-import { DropdownMenu } from "@/components/ui/dropdown-menu";
 import { getStandardToolbarActions } from "@/lib/table-toolbar-actions";
+import { DataTable, type ColumnDef } from "@/components/ui/data-table";
 import FileUploadAi from "@/components/ai/file-upload-ai";
 import {
   saveQseContent,
@@ -305,6 +305,7 @@ export default function PolitiqueContent({
   const [pillarData, setPillarData] = useState<Record<string, { engagements: string; objectifs: string }>>({});
   const router = useRouter();
 
+  const refMap = useMemo(() => createReferenceMap(allContent, "POL"), [allContent]);
   const selected = allContent.find((c) => c.id === selectedId) ?? null;
   const { pillars, intro } = selected
     ? parsePillars(selected.sections)
@@ -1180,109 +1181,98 @@ export default function PolitiqueContent({
       )}
 
       {/* Table view */}
-      {allContent.length === 0 ? (
-        <div className="flex flex-col items-center py-20 text-center">
-          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-xl bg-zinc-100 ring-1 ring-zinc-200/60">
-            <FileText className="h-7 w-7 text-zinc-400" />
-          </div>
-          <p className="text-sm font-semibold text-[var(--heading)]">
-            Aucune politique QSE
-          </p>
-          {canEdit && (
-            <p className="mx-auto mt-1 max-w-xs text-sm text-[var(--text-muted)]">
-              Créez une nouvelle politique ou importez un PDF/image pour commencer.
-            </p>
-          )}
-        </div>
-      ) : (
-        <div className="overflow-hidden rounded-xl border border-[var(--border-1)] bg-[var(--card)] shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-[var(--border-2)] bg-[var(--hover)]">
-                <th className="px-3 py-2 text-left text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]">Titre</th>
-                <th className="px-3 py-2 text-left text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "80px" }}>Année</th>
-                <th className="px-3 py-2 text-left text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "130px" }}>Signature</th>
-                <th className="px-3 py-2 text-left text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]">Piliers</th>
-                <th className="px-3 py-2 text-left text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "130px" }}>Date</th>
-                {canEdit && (
-                  <th className="px-3 py-2 text-right text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "120px" }}>Actions</th>
-                )}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[var(--border-1)]">
-              {allContent.map((doc) => {
-                const docYear = getDocYear(doc);
+      <DataTable
+        data={allContent}
+        columns={(() => {
+          const cols: ColumnDef<QseContent>[] = [
+            {
+              key: "index",
+              header: "ID",
+              width: "120px",
+              render: (doc) => <span className="text-[var(--text-muted)]">{refMap.get(doc.id)}</span>,
+            },
+            {
+              key: "title",
+              header: "Titre",
+              sortable: true,
+              render: (doc) => <span className="font-medium">{doc.title}</span>,
+            },
+            {
+              key: "year",
+              header: "Année",
+              width: "80px",
+              sortable: true,
+              accessor: (doc) => getDocYear(doc),
+              render: (doc) => <Badge variant="amber">{getDocYear(doc)}</Badge>,
+            },
+            {
+              key: "date_signature",
+              header: "Signature",
+              width: "130px",
+              sortable: true,
+              accessor: (doc) => doc.date_signature || "",
+              render: (doc) => (
+                <span>
+                  {doc.date_signature
+                    ? formatDate(doc.date_signature)
+                    : <span className="text-[var(--text-muted)]">—</span>}
+                </span>
+              ),
+            },
+            {
+              key: "pillars",
+              header: "Piliers",
+              render: (doc) => {
                 const docPillars = parsePillars(doc.sections).pillars;
-
                 return (
-                  <tr
-                    key={doc.id}
-                    onClick={() => setSelectedId(doc.id)}
-                    className="cursor-pointer transition-colors duration-150 hover:bg-[var(--hover)]"
-                  >
-                    <td className="px-3 py-2">
-                      <span className="text-[13px] font-medium text-[var(--heading)]">
-                        {doc.title}
-                      </span>
-                    </td>
-                    <td className="px-3 py-2">
-                      <Badge variant="amber">
-                        {docYear}
-                      </Badge>
-                    </td>
-                    <td className="px-3 py-2 text-[13px] text-[var(--text-muted)]">
-                      {doc.date_signature
-                        ? formatDate(doc.date_signature)
-                        : <span className="text-[var(--text-muted)]/50">—</span>}
-                    </td>
-                    <td className="px-3 py-2">
-                      <div className="flex flex-wrap gap-1.5">
-                        {docPillars.map((p) => {
-                          const Icon = p.icon;
-                          return (
-                            <Badge
-                              key={p.key}
-                              dot={false}
-                              className="border"
-                              style={{
-                                backgroundColor: `${p.color}15`,
-                                color: p.color,
-                                borderColor: `${p.color}30`,
-                              }}
-                            >
-                              <Icon className="h-3 w-3" />
-                              {p.label}
-                            </Badge>
-                          );
-                        })}
-                      </div>
-                    </td>
-                    <td className="px-3 py-2 text-[13px] text-[var(--text-muted)]">
-                      {formatDate(doc.updated_at)}
-                    </td>
-                    {canEdit && (
-                      <td className="px-3 py-2 text-right">
-                        <DropdownMenu
-                          items={[
-                            { label: "Dupliquer", icon: Copy, onClick: () => duplicateDoc(doc) },
-                            { label: "Modifier", icon: Edit3, onClick: () => startEditing(doc) },
-                            { label: "Supprimer", icon: Trash2, variant: "danger", onClick: () => handleDelete(doc.id, doc.title) },
-                          ]}
-                        />
-                      </td>
-                    )}
-                  </tr>
+                  <div className="flex flex-wrap gap-1.5">
+                    {docPillars.map((p) => {
+                      const Icon = p.icon;
+                      return (
+                        <Badge
+                          key={p.key}
+                          dot={false}
+                          className="border"
+                          style={{
+                            backgroundColor: `${p.color}15`,
+                            color: p.color,
+                            borderColor: `${p.color}30`,
+                          }}
+                        >
+                          <Icon className="h-3 w-3" />
+                          {p.label}
+                        </Badge>
+                      );
+                    })}
+                  </div>
                 );
-              })}
-            </tbody>
-          </table>
-          <div className="border-t border-[var(--border-1)] px-3 py-2 text-[11px] text-[var(--text-muted)]">
-            {allContent.length} politique{allContent.length > 1 ? "s" : ""} QSE
-          </div>
-        </div>
-        </div>
-      )}
+              },
+            },
+            {
+              key: "updated_at",
+              header: "Date",
+              width: "130px",
+              sortable: true,
+              accessor: (doc) => doc.updated_at,
+              render: (doc) => <span>{formatDate(doc.updated_at)}</span>,
+            },
+          ];
+          return cols;
+        })()}
+        keyField="id"
+        selectable
+        onRowClick={(doc) => setSelectedId(doc.id)}
+        emptyState={{
+          icon: FileText,
+          title: "Aucune politique QSE",
+          description: "Aucune politique n'a été créée pour le moment.",
+        }}
+        actions={canEdit ? (doc) => [
+          { label: "Dupliquer", icon: Copy, onClick: () => duplicateDoc(doc) },
+          { label: "Modifier", icon: Edit3, onClick: () => startEditing(doc) },
+          { label: "Supprimer", icon: Trash2, variant: "danger" as const, onClick: () => handleDelete(doc.id, doc.title) },
+        ] : undefined}
+      />
     </div>
   );
 }

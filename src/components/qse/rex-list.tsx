@@ -40,7 +40,7 @@ export default function RexList({ rexList, headerAction }: RexListProps) {
       sortable: true,
       accessor: (r) => r.rex_number || "",
       render: (r) => (
-        <span className="font-semibold text-orange-700">
+        <span>
           {r.rex_number ? `${r.rex_number}/${r.rex_year || ""}` : "—"}
         </span>
       ),
@@ -52,7 +52,7 @@ export default function RexList({ rexList, headerAction }: RexListProps) {
       width: "100px",
       accessor: (r) => r.date_evenement || r.created_at,
       render: (r) => (
-        <span className="text-[var(--text-secondary)]">
+        <span>
           {r.date_evenement
             ? new Date(r.date_evenement).toLocaleDateString("fr-FR")
             : new Date(r.created_at).toLocaleDateString("fr-FR")}
@@ -65,7 +65,7 @@ export default function RexList({ rexList, headerAction }: RexListProps) {
       sortable: true,
       render: (r) => (
         <div>
-          <div className="font-medium text-[var(--heading)]">{r.title}</div>
+          <div className="font-medium">{r.title}</div>
           {r.lieu && (
             <div className="mt-0.5 text-xs text-[var(--text-muted)]">
               {r.lieu}
@@ -100,7 +100,7 @@ export default function RexList({ rexList, headerAction }: RexListProps) {
       render: (r) => {
         const author = r.author as unknown as { first_name: string; last_name: string } | null;
         return (
-          <span className="text-[var(--text-secondary)]">
+          <span>
             {author ? `${author.first_name} ${author.last_name}` : "—"}
           </span>
         );

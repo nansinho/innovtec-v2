@@ -55,7 +55,7 @@ export default function ActionPlanList({ plans: initial, canManage, onEdit, onAd
       sortable: true,
       render: (p) => (
         <div>
-          <div className="font-medium text-[var(--heading)]">{p.title}</div>
+          <div className="font-medium">{p.title}</div>
           {p.description && (
             <div className="mt-0.5 line-clamp-1 text-xs text-[var(--text-muted)]">
               {p.description}
@@ -86,7 +86,7 @@ export default function ActionPlanList({ plans: initial, canManage, onEdit, onAd
       header: "Responsable",
       width: "150px",
       render: (p) => (
-        <span className="text-[var(--text-secondary)]">
+        <span>
           {p.responsible
             ? `${p.responsible.first_name} ${p.responsible.last_name}`
             : "—"}
@@ -104,7 +104,7 @@ export default function ActionPlanList({ plans: initial, canManage, onEdit, onAd
         const date = new Date(p.due_date);
         const isOverdue = p.status !== "termine" && p.status !== "annule" && date < new Date();
         return (
-          <span className={isOverdue ? "font-medium text-[var(--red)]" : "text-[var(--text-secondary)]"}>
+          <span className={isOverdue ? "text-[var(--red)]" : ""}>
             {date.toLocaleDateString("fr-FR")}
           </span>
         );

@@ -100,7 +100,7 @@ export default function DocumentsTable({ documents }: DocumentsTableProps) {
       header: "Nom",
       sortable: true,
       render: (doc) => (
-        <span className="font-medium text-[var(--heading)]">{doc.name}</span>
+        <span className="font-medium">{doc.name}</span>
       ),
     },
     {
@@ -108,7 +108,7 @@ export default function DocumentsTable({ documents }: DocumentsTableProps) {
       header: "Dossier",
       sortable: true,
       render: (doc) => (
-        <span className="text-[var(--text-secondary)]">
+        <span>
           {doc.category || "Général"}
         </span>
       ),
@@ -144,7 +144,7 @@ export default function DocumentsTable({ documents }: DocumentsTableProps) {
       render: (doc) => {
         const profile = doc.uploaded_by_profile;
         return (
-          <span className="text-[var(--text-secondary)]">
+          <span>
             {profile ? `${profile.first_name} ${profile.last_name}` : "—"}
           </span>
         );

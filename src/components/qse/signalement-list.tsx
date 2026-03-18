@@ -103,7 +103,7 @@ export default function SignalementList({ signalements: initial, categories, can
       accessor: (d) => d.incident_date || d.created_at,
       render: (d) => (
         <div>
-          <span className="text-[var(--text-secondary)]">
+          <span>
             {(d.incident_date ? new Date(d.incident_date) : new Date(d.created_at)).toLocaleDateString("fr-FR")}
           </span>
           {d.incident_time && (
@@ -118,7 +118,7 @@ export default function SignalementList({ signalements: initial, categories, can
       sortable: true,
       render: (d) => (
         <div>
-          <div className="font-medium text-[var(--heading)]">{d.title}</div>
+          <div className="font-medium">{d.title}</div>
           <div className="mt-0.5 line-clamp-1 text-xs text-[var(--text-muted)]">
             {d.description}
           </div>
@@ -160,7 +160,7 @@ export default function SignalementList({ signalements: initial, categories, can
       header: "Lieu",
       sortable: true,
       render: (d) => (
-        <span className="text-[var(--text-secondary)]">
+        <span>
           {d.chantier || d.location || "—"}
         </span>
       ),
@@ -178,7 +178,7 @@ export default function SignalementList({ signalements: initial, categories, can
           );
         }
         return (
-          <span className="text-[var(--text-secondary)]">
+          <span>
             {d.reporter ? `${d.reporter.first_name} ${d.reporter.last_name}` : "—"}
           </span>
         );

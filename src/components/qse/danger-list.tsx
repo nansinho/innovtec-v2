@@ -82,7 +82,7 @@ export default function DangerList({ dangers: initialDangers, canManage }: Dange
       width: "110px",
       accessor: (d) => d.created_at,
       render: (d) => (
-        <span className="text-[var(--text-secondary)]">
+        <span>
           {new Date(d.created_at).toLocaleDateString("fr-FR")}
         </span>
       ),
@@ -93,7 +93,7 @@ export default function DangerList({ dangers: initialDangers, canManage }: Dange
       sortable: true,
       render: (d) => (
         <div>
-          <div className="font-medium text-[var(--heading)]">{d.title}</div>
+          <div className="font-medium">{d.title}</div>
           <div className="mt-0.5 line-clamp-1 text-xs text-[var(--text-muted)]">
             {d.description}
           </div>
@@ -105,7 +105,7 @@ export default function DangerList({ dangers: initialDangers, canManage }: Dange
       header: "Lieu",
       sortable: true,
       render: (d) => (
-        <span className="text-[var(--text-secondary)]">
+        <span>
           {d.location || "—"}
         </span>
       ),
@@ -127,7 +127,7 @@ export default function DangerList({ dangers: initialDangers, canManage }: Dange
       render: (d) => {
         const reporter = d.reporter as unknown as { first_name: string; last_name: string } | null;
         return (
-          <span className="text-[var(--text-secondary)]">
+          <span>
             {reporter ? `${reporter.first_name} ${reporter.last_name}` : "—"}
           </span>
         );
