@@ -15,7 +15,37 @@ export async function getDocuments(category?: string) {
   }
 
   const { data } = await query.limit(50);
-  return data ?? [];
+  const docs = data ?? [];
+
+  // Resolve REX links for rex documents
+  const rexDocs = docs.filter(
+    (d) => d.category === "rex" && d.file_url && !d.file_url.startsWith("/qse/rex/")
+  );
+  const rexLinks: Record<string, string> = {};
+  if (rexDocs.length > 0) {
+    const fileUrls = rexDocs.map((d) => d.file_url).filter(Boolean);
+    const { data: rexRows } = await supabase
+      .from("rex")
+      .select("id, source_file_url")
+      .in("source_file_url", fileUrls);
+    if (rexRows) {
+      for (const row of rexRows) {
+        rexLinks[row.source_file_url] = `/qse/rex/${row.id}`;
+      }
+    }
+  }
+
+  return docs.map((doc) => {
+    let rex_link: string | undefined;
+    if (doc.category === "rex") {
+      if (doc.file_url?.startsWith("/qse/rex/")) {
+        rex_link = doc.file_url;
+      } else if (doc.file_url && rexLinks[doc.file_url]) {
+        rex_link = rexLinks[doc.file_url];
+      }
+    }
+    return { ...doc, rex_link };
+  });
 }
 
 export async function deleteDocument(
