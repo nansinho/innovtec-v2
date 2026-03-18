@@ -12,6 +12,7 @@ interface NotificationContextType {
   markAsReadLocal: (id: string) => void;
   markAllAsReadLocal: () => void;
   deleteLocal: (id: string) => void;
+  deleteAllLocal: () => void;
 }
 
 const NotificationContext = createContext<NotificationContextType>({
@@ -21,6 +22,7 @@ const NotificationContext = createContext<NotificationContextType>({
   markAsReadLocal: () => {},
   markAllAsReadLocal: () => {},
   deleteLocal: () => {},
+  deleteAllLocal: () => {},
 });
 
 export function useNotifications() {
@@ -57,6 +59,11 @@ export default function NotificationProvider({
 
   const markAllAsReadLocal = useCallback(() => {
     setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
+    setUnreadCount(0);
+  }, []);
+
+  const deleteAllLocal = useCallback(() => {
+    setNotifications([]);
     setUnreadCount(0);
   }, []);
 
@@ -154,6 +161,7 @@ export default function NotificationProvider({
         markAsReadLocal,
         markAllAsReadLocal,
         deleteLocal,
+        deleteAllLocal,
       }}
     >
       {children}
