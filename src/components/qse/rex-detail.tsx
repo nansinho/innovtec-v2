@@ -17,31 +17,35 @@ import { toast } from "sonner";
 import { useState } from "react";
 
 const EVENT_TYPES = [
-  { value: "sd", label: "SD", full: "Situation Dangereuse", color: "text-[#0B3655]", bg: "bg-[#C8A84E]/20" },
-  { value: "presquaccident", label: "PRESQU'ACCIDENT", full: "Presqu'accident", color: "text-[#0B3655]", bg: "bg-[#C8A84E]/30" },
-  { value: "accident", label: "ACCIDENT", full: "Accident", color: "text-white", bg: "bg-[#0B3655]" },
-  { value: "hpe", label: "HPE", full: "High Potential Events", color: "text-[#0B3655]", bg: "bg-[#C8A84E]/20" },
+  { value: "sd", label: "SD", full: "Situation Dangereuse", color: "text-orange-600", bg: "bg-orange-100" },
+  { value: "presquaccident", label: "PRESQU'ACCIDENT", full: "Presqu'accident", color: "text-yellow-700", bg: "bg-yellow-200" },
+  { value: "accident", label: "ACCIDENT", full: "Accident", color: "text-red-600", bg: "bg-red-100" },
+  { value: "hpe", label: "HPE", full: "High Potential Events", color: "text-purple-600", bg: "bg-purple-100" },
 ];
 
 const SECTIONS = [
   {
     key: "faits",
     photoKey: "faits_photo_url",
+    borderColor: "border-[#C8A84E]",
     Badge: RexFaitsBadge,
   },
   {
     key: "causes",
     photoKey: "causes_photo_url",
+    borderColor: "border-[#40884D]",
     Badge: RexCausesBadge,
   },
   {
     key: "actions_engagees",
     photoKey: "actions_photo_url",
+    borderColor: "border-[#9A326D]",
     Badge: RexActionsBadge,
   },
   {
     key: "vigilance",
     photoKey: "vigilance_photo_url",
+    borderColor: "border-[#0D7C38]",
     Badge: RexVigilanceBadge,
   },
 ] as const;
@@ -126,9 +130,9 @@ export default function RexDetail({ rex, onExportPdf, onEdit, companyLogo }: Rex
           <div className="flex items-start justify-between">
             {/* Left: Badge + Info */}
             <div className="flex items-start gap-4">
-              {/* Badge FICHE REX - navy/yellow */}
-              <div className="flex flex-col items-center rounded-lg bg-[#0B3655] px-3 py-2 text-white shadow-sm">
-                <span className="text-[10px] font-bold text-[#C8A84E]">
+              {/* Badge FICHE REX */}
+              <div className="flex flex-col items-center rounded-lg bg-gradient-to-b from-orange-500 to-orange-600 px-3 py-2 text-white shadow-sm">
+                <span className="text-[10px] font-bold">
                   Fiche REX
                 </span>
                 <span className="text-lg font-bold leading-tight">
@@ -138,24 +142,24 @@ export default function RexDetail({ rex, onExportPdf, onEdit, companyLogo }: Rex
               {/* Info */}
               <div>
                 <h1 className="text-base font-bold text-[var(--heading)]">
-                  <span className="text-[#C8A84E]">TITRE DE L&apos;ÉVÉNEMENT</span>
+                  <span className="text-orange-500">TITRE DE L&apos;ÉVÉNEMENT</span>
                   {" — "}
                   {rex.title}
                 </h1>
                 <div className="mt-1.5 space-y-0.5 text-sm text-[var(--text-secondary)]">
                   {rex.lieu && (
                     <p>
-                      <span className="font-semibold text-[#0B3655]">Lieu</span> : {rex.lieu}
+                      <span className="font-semibold text-blue-600">Lieu</span> : {rex.lieu}
                     </p>
                   )}
                   {dateFormatted && (
                     <p>
-                      <span className="font-semibold text-[#0B3655]">Date</span> : {dateFormatted}
+                      <span className="font-semibold text-blue-600">Date</span> : {dateFormatted}
                     </p>
                   )}
                   {rex.horaire && (
                     <p>
-                      <span className="font-semibold text-[#0B3655]">Horaire</span> : {rex.horaire}
+                      <span className="font-semibold text-blue-600">Horaire</span> : {rex.horaire}
                     </p>
                   )}
                 </div>
@@ -166,12 +170,12 @@ export default function RexDetail({ rex, onExportPdf, onEdit, companyLogo }: Rex
           </div>
         </div>
 
-        {/* Navy/Yellow separator */}
-        <div className="h-1 bg-gradient-to-r from-[#0B3655] via-[#C8A84E] to-[#0B3655]" />
+        {/* Orange separator */}
+        <div className="h-1 bg-gradient-to-r from-orange-400 via-orange-500 to-red-500" />
 
         {/* Sections */}
         <div className="space-y-6 p-6">
-          {SECTIONS.map(({ key, photoKey, Badge }) => {
+          {SECTIONS.map(({ key, photoKey, borderColor, Badge }) => {
             const text = rex[key as keyof Rex] as string;
             const photo = rex[photoKey as keyof Rex] as string;
 
@@ -184,9 +188,9 @@ export default function RexDetail({ rex, onExportPdf, onEdit, companyLogo }: Rex
                   <Badge />
                 </div>
 
-                {/* Content: text + optional photo */}
-                <div className={`grid ${photo ? "grid-cols-1 gap-4 md:grid-cols-3" : "grid-cols-1"}`}>
-                  <div className={`${photo ? "md:col-span-2" : ""} overflow-hidden rounded-lg border border-[#C8A84E]/30 bg-white p-4`}>
+                {/* Content: 2/3 text + 1/3 photo */}
+                <div className={`grid ${photo ? "grid-cols-3" : "grid-cols-1"} gap-4`}>
+                  <div className={`${photo ? "col-span-2" : ""} rounded-lg border ${borderColor} bg-white p-4`}>
                     <p className="whitespace-pre-line text-sm leading-relaxed text-[var(--heading)]">
                       {text}
                     </p>
@@ -209,17 +213,17 @@ export default function RexDetail({ rex, onExportPdf, onEdit, companyLogo }: Rex
 
         {/* Footer */}
         <div className="border-t border-[var(--border-1)] bg-gray-50/50 p-6">
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div className="grid grid-cols-2 gap-6">
             {/* Déjà arrivé */}
             <div>
-              <h3 className="mb-2 text-[12px] font-bold text-[#0B3655]">
+              <h3 className="mb-2 text-[12px] font-bold text-blue-600">
                 Déjà arrivé ?
               </h3>
               {rex.deja_arrive && rex.deja_arrive.length > 0 ? (
                 <ul className="space-y-1">
                   {rex.deja_arrive.map((item, i) => (
                     <li key={i} className="flex items-start gap-2 text-sm text-[var(--heading)]">
-                      <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[#C8A84E]" />
+                      <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[var(--text-muted)]" />
                       {item}
                     </li>
                   ))}
@@ -231,7 +235,7 @@ export default function RexDetail({ rex, onExportPdf, onEdit, companyLogo }: Rex
 
             {/* Type d'événement */}
             <div>
-              <h3 className="mb-2 text-[12px] font-bold text-[#0B3655]">
+              <h3 className="mb-2 text-[12px] font-bold text-orange-600">
                 Type d&apos;événement
               </h3>
               <div className="space-y-1">
