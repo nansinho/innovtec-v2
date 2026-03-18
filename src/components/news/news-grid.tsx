@@ -163,7 +163,7 @@ export default function NewsTable({ news }: NewsTableProps) {
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
                         {article.priority !== "normal" && priorityEntry && (
-                          <Badge variant={priorityEntry.variant} dot>
+                          <Badge variant={priorityEntry.variant} size="sm" dot>
                             {priorityEntry.label}
                           </Badge>
                         )}

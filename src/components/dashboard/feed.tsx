@@ -94,7 +94,7 @@ export default async function Feed() {
                       />
                     )}
                     {priority !== "normal" && priorityEntry && (
-                      <Badge variant={priorityEntry.variant} dot>
+                      <Badge variant={priorityEntry.variant} size="sm" dot>
                         {priorityEntry.label}
                       </Badge>
                     )}
