@@ -594,6 +594,7 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
         jobTitles={jobTitles}
         departments={departments}
         teams={teams}
+        teamsWithMembers={teamsWithMembers}
         allUsers={users}
       />
 

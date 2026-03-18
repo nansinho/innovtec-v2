@@ -8,7 +8,7 @@ import { addJobTitle, deleteJobTitle, type JobTitle } from "@/actions/job-titles
 import { addDepartment, deleteDepartment, type Department } from "@/actions/departments";
 import { addTeam, deleteTeam, type Team } from "@/actions/teams";
 import SearchableSelect from "@/components/ui/searchable-select";
-import type { Profile, UserRole } from "@/lib/types/database";
+import type { Profile, UserRole, TeamWithMembers } from "@/lib/types/database";
 import { Button } from "@/components/ui/button";
 
 const roleOptions: { value: UserRole; label: string }[] = [
@@ -23,6 +23,7 @@ interface UserFormModalProps {
   jobTitles?: JobTitle[];
   departments?: Department[];
   teams?: Team[];
+  teamsWithMembers?: TeamWithMembers[];
   allUsers?: Profile[];
 }
 
@@ -33,6 +34,7 @@ export default function UserFormModal({
   jobTitles = [],
   departments = [],
   teams = [],
+  teamsWithMembers = [],
   allUsers = [],
 }: UserFormModalProps) {
   const isEdit = !!user;
@@ -68,6 +70,16 @@ export default function UserFormModal({
 
   useEffect(() => {
     if (user) {
+      // Resolve team from team_members if available, fallback to profiles.team
+      let teamLabel = user.team || "";
+      if (teamsWithMembers.length > 0) {
+        const memberTeam = teamsWithMembers.find((t) =>
+          t.members.some((m) => m.user_id === user.id)
+        );
+        if (memberTeam) {
+          teamLabel = memberTeam.label;
+        }
+      }
       setForm({
         email: user.email,
         password: "",
@@ -78,7 +90,7 @@ export default function UserFormModal({
         phone: user.phone || "",
         gender: user.gender || "",
         department: user.department || "",
-        team: user.team || "",
+        team: teamLabel,
         agency: user.agency || "Siège",
         date_of_birth: user.date_of_birth || "",
         hire_date: user.hire_date || "",

@@ -349,6 +349,19 @@ export async function addTeamMember(
     return { success: false, error: error.message };
   }
 
+  // Sync profiles.team with the team label
+  const { data: teamData } = await supabaseAdmin
+    .from("teams")
+    .select("label")
+    .eq("id", teamId)
+    .single();
+  if (teamData) {
+    await supabaseAdmin
+      .from("profiles")
+      .update({ team: teamData.label })
+      .eq("id", userId);
+  }
+
   await auditLog(caller.authId, "add_member", "team", teamId, { userId, role });
   revalidateAll();
   return { success: true };
@@ -371,6 +384,20 @@ export async function removeTeamMember(
     .eq("user_id", userId);
 
   if (error) return { success: false, error: error.message };
+
+  // Sync profiles.team: check if user still has other teams
+  const { data: remainingTeams } = await supabaseAdmin
+    .from("team_members")
+    .select("team_id, team:teams!team_members_team_id_fkey(label)")
+    .eq("user_id", userId)
+    .limit(1);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const firstTeamLabel = remainingTeams?.[0] ? (remainingTeams[0].team as any)?.label ?? "" : "";
+  await supabaseAdmin
+    .from("profiles")
+    .update({ team: firstTeamLabel })
+    .eq("id", userId);
 
   await auditLog(caller.authId, "remove_member", "team", teamId, { userId });
   revalidateAll();
