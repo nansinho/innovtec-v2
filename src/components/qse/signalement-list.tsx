@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { AlertTriangle, Eye, Trash2 } from "lucide-react";
 import { updateSignalementStatus, deleteSignalement } from "@/actions/signalements";

@@ -1,11 +1,13 @@
 "use client";
 
+import { useMemo } from "react";
 import { FileText, Eye, Download, Trash2 } from "lucide-react";
 import { DataTable, type ColumnDef } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
 import { TypeBadge } from "@/components/ui/status-badge";
 import { INCIDENT_TYPE_MAP } from "@/lib/status-config";
 import { getStandardToolbarActions } from "@/lib/table-toolbar-actions";
+import { createReferenceMap } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { deleteRex } from "@/actions/qse";
 import { toast } from "sonner";

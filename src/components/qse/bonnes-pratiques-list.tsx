@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useMemo } from "react";
 import { FileText, Trash2, Image as ImageIcon } from "lucide-react";
 import { DataTable, type ColumnDef } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
 import { CategoryBadge } from "@/components/ui/status-badge";
 import { PILLAR_MAP } from "@/lib/status-config";
 import { getStandardToolbarActions } from "@/lib/table-toolbar-actions";
+import { createReferenceMap } from "@/lib/utils";
 import { deleteBonnePratique } from "@/actions/bonnes-pratiques";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";

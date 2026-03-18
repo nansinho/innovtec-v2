@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useMemo } from "react";
 import type { SseDashboard } from "@/lib/types/database";
 import { SseDashboardForm } from "./sse-dashboard-form";
 import { deleteSseDashboard } from "@/actions/sse-dashboard";
@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { Plus, Pencil, Trash2, Calendar, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu } from "@/components/ui/dropdown-menu";
+import { createReferenceMap } from "@/lib/utils";
 
 const MONTH_NAMES = [
   "Janvier", "Fevrier", "Mars", "Avril", "Mai", "Juin",
