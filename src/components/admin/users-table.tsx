@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import {
   Search,
@@ -26,6 +26,7 @@ import ConfirmDialog from "@/components/ui/confirm-dialog";
 import UserFormModal from "@/components/admin/user-form-modal";
 import { Badge } from "@/components/ui/badge";
 import { ROLE_MAP } from "@/lib/status-config";
+import { createReferenceMap } from "@/lib/utils";
 import { RoleBadge } from "@/components/ui/status-badge";
 import { Button } from "@/components/ui/button";
 
@@ -59,6 +60,7 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
   const [jobTitles, setJobTitles] = useState(initialJobTitles);
   const [loading, setLoading] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const refMap = useMemo(() => createReferenceMap(users, "USER"), [users]);
 
   // Modals
   const [formModal, setFormModal] = useState<{ open: boolean; user: Profile | null }>({
@@ -287,7 +289,7 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
                 />
               </th>
               <th className="w-12 px-3 py-2 text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]">
-                #
+                ID
               </th>
               <th className="px-3 py-2 text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]">
                 Collaborateur
@@ -329,7 +331,7 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
                     />
                   </td>
                   {/* # */}
-                  <td className="px-3 py-2 text-[var(--text-muted)]">{idx + 1}</td>
+                  <td className="px-3 py-2 text-[var(--text-muted)]">{refMap.get(user.id)}</td>
                   {/* User info */}
                   <td className="px-3 py-2">
                     <div className="flex items-center gap-3">

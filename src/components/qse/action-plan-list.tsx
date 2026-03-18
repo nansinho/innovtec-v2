@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { ClipboardList, Eye, Pencil, Trash2 } from "lucide-react";
 import { DataTable, type ColumnDef, type FilterDef } from "@/components/ui/data-table";
 import { StatusBadge, PriorityBadge, TypeBadge } from "@/components/ui/status-badge";
 import { PLAN_ACTION_STATUS_MAP, PLAN_ACTION_TYPE_MAP, PRIORITY_MAP } from "@/lib/status-config";
 import { getStandardToolbarActions } from "@/lib/table-toolbar-actions";
+import { createReferenceMap } from "@/lib/utils";
 import { deleteActionPlan } from "@/actions/action-plans";
 import type { ActionPlan } from "@/lib/types/database";
 import { toast } from "sonner";
@@ -24,6 +25,7 @@ export default function ActionPlanList({ plans: initial, canManage, onEdit, onAd
   const [isPending, startTransition] = useTransition();
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const router = useRouter();
+  const refMap = useMemo(() => createReferenceMap(initial, "PA"), [initial]);
 
   function handleDelete() {
     if (!deleteId) return;
@@ -43,12 +45,9 @@ export default function ActionPlanList({ plans: initial, canManage, onEdit, onAd
   const columns: ColumnDef<ActionPlan>[] = [
     {
       key: "index",
-      header: "#",
-      width: "50px",
-      render: (_) => {
-        const idx = plans.indexOf(_);
-        return <span className="text-[var(--text-muted)]">{idx + 1}</span>;
-      },
+      header: "ID",
+      width: "120px",
+      render: (item) => <span className="text-[var(--text-muted)]">{refMap.get(item.id)}</span>,
     },
     {
       key: "title",

@@ -17,7 +17,7 @@ export default async function ActualitesPage() {
     ["admin", "rh", "responsable_qse"].includes(profile.role);
 
   return (
-    <div className="px-7 py-6 pb-20 md:pb-7">
+    <div className="p-6 pb-20 md:pb-6">
       <div className="mb-6 flex items-start justify-between">
         <div>
           <h1 className="text-base font-semibold text-[var(--heading)]">

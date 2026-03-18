@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useMemo } from "react";
 import { AlertTriangle, Eye } from "lucide-react";
-import { cn, formatRelative } from "@/lib/utils";
+import { cn, formatRelative, createReferenceMap } from "@/lib/utils";
 import { updateDangerStatus } from "@/actions/qse";
 import { DataTable, type ColumnDef, type FilterDef } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
@@ -55,6 +55,7 @@ function exportCsv(dangers: DangerItem[]) {
 export default function DangerList({ dangers: initialDangers, canManage }: DangerListProps) {
   const [dangers, setDangers] = useState(initialDangers);
   const [isPending, startTransition] = useTransition();
+  const refMap = useMemo(() => createReferenceMap(initialDangers, "SD"), [initialDangers]);
 
   function handleStatusChange(id: string, newStatus: string) {
     startTransition(async () => {
@@ -70,12 +71,9 @@ export default function DangerList({ dangers: initialDangers, canManage }: Dange
   const columns: ColumnDef<DangerItem>[] = [
     {
       key: "index",
-      header: "#",
-      width: "50px",
-      render: (_, ) => {
-        const idx = dangers.indexOf(_);
-        return <span className="text-[var(--text-muted)]">{idx + 1}</span>;
-      },
+      header: "ID",
+      width: "120px",
+      render: (item) => <span className="text-[var(--text-muted)]">{refMap.get(item.id)}</span>,
     },
     {
       key: "created_at",

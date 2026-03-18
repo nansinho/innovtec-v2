@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useMemo } from "react";
 import { FileText, Trash2, Image as ImageIcon } from "lucide-react";
 import { DataTable, type ColumnDef } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
 import { CategoryBadge } from "@/components/ui/status-badge";
 import { PILLAR_MAP } from "@/lib/status-config";
 import { getStandardToolbarActions } from "@/lib/table-toolbar-actions";
+import { createReferenceMap } from "@/lib/utils";
 import { deleteBonnePratique } from "@/actions/bonnes-pratiques";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -20,6 +21,7 @@ interface BonnesPratiquesListProps {
 export default function BonnesPratiquesList({ items, headerAction }: BonnesPratiquesListProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const refMap = useMemo(() => createReferenceMap(items, "BP"), [items]);
 
   function handleDelete(id: string) {
     startTransition(async () => {
@@ -36,12 +38,9 @@ export default function BonnesPratiquesList({ items, headerAction }: BonnesPrati
   const columns: ColumnDef<BonnePratique>[] = [
     {
       key: "index",
-      header: "#",
-      width: "50px",
-      render: (_) => {
-        const idx = items.indexOf(_);
-        return <span className="text-[var(--text-muted)]">{idx + 1}</span>;
-      },
+      header: "ID",
+      width: "120px",
+      render: (item) => <span className="text-[var(--text-muted)]">{refMap.get(item.id)}</span>,
     },
     {
       key: "created_at",

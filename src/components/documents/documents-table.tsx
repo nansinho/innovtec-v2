@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import {
   FileText,
   File,
@@ -13,6 +14,7 @@ import {
 } from "lucide-react";
 import { DataTable, type ColumnDef, type FilterDef } from "@/components/ui/data-table";
 import { getStandardToolbarActions } from "@/lib/table-toolbar-actions";
+import { createReferenceMap } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { deleteDocument, batchDeleteDocuments } from "@/actions/documents";
@@ -57,6 +59,7 @@ interface DocumentsTableProps {
 
 export default function DocumentsTable({ documents }: DocumentsTableProps) {
   const router = useRouter();
+  const refMap = useMemo(() => createReferenceMap(documents, "DOC"), [documents]);
   const categories = [...new Set(documents.map((d) => d.category).filter(Boolean))].sort();
 
   async function handleDelete(doc: DocItem) {
@@ -84,12 +87,9 @@ export default function DocumentsTable({ documents }: DocumentsTableProps) {
   const columns: ColumnDef<DocItem>[] = [
     {
       key: "index",
-      header: "#",
-      width: "50px",
-      render: (_) => {
-        const idx = documents.indexOf(_);
-        return <span className="text-[var(--text-muted)]">{idx + 1}</span>;
-      },
+      header: "ID",
+      width: "120px",
+      render: (item) => <span className="text-[var(--text-muted)]">{refMap.get(item.id)}</span>,
     },
     {
       key: "icon",

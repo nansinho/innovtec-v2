@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { AlertTriangle, Eye, Trash2 } from "lucide-react";
 import { updateSignalementStatus, deleteSignalement } from "@/actions/signalements";
@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { StatusBadge, PriorityBadge } from "@/components/ui/status-badge";
 import { SIGNALEMENT_STATUS_MAP, PRIORITY_MAP } from "@/lib/status-config";
 import { getStandardToolbarActions } from "@/lib/table-toolbar-actions";
+import { createReferenceMap } from "@/lib/utils";
 import type { DangerReport, SignalementCategory } from "@/lib/types/database";
 
 interface SignalementListProps {
@@ -57,6 +58,7 @@ export default function SignalementList({ signalements: initial, categories, can
   const [isPending, startTransition] = useTransition();
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const router = useRouter();
+  const refMap = useMemo(() => createReferenceMap(initial, "SIG"), [initial]);
 
   function handleDelete() {
     if (!deleteId) return;
@@ -87,12 +89,9 @@ export default function SignalementList({ signalements: initial, categories, can
   const columns: ColumnDef<DangerReport>[] = [
     {
       key: "index",
-      header: "#",
-      width: "50px",
-      render: (_) => {
-        const idx = signalements.indexOf(_);
-        return <span className="text-[var(--text-muted)]">{idx + 1}</span>;
-      },
+      header: "ID",
+      width: "120px",
+      render: (item) => <span className="text-[var(--text-muted)]">{refMap.get(item.id)}</span>,
     },
     {
       key: "incident_date",

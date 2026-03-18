@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { Users, Mail, Phone, Eye, Cake } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, createReferenceMap } from "@/lib/utils";
 import { DataTable, type ColumnDef, type FilterDef } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
 import { EQUIPE_MAP } from "@/lib/status-config";
@@ -23,6 +23,7 @@ export default function TrombinoscopeTable({
 }: TrombinoscopeTableProps) {
   const [selectedUser, setSelectedUser] = useState<Profile | null>(null);
   const birthdaySet = useMemo(() => new Set(birthdayIds), [birthdayIds]);
+  const refMap = useMemo(() => createReferenceMap(users, "EMP"), [users]);
 
   const departments = useMemo(
     () => [...new Set(users.map((u) => u.department).filter(Boolean))].sort(),
@@ -36,12 +37,9 @@ export default function TrombinoscopeTable({
   const columns: ColumnDef<Profile>[] = [
     {
       key: "index",
-      header: "#",
-      width: "50px",
-      render: (_) => {
-        const idx = users.indexOf(_);
-        return <span className="text-[var(--text-muted)]">{idx + 1}</span>;
-      },
+      header: "ID",
+      width: "120px",
+      render: (item) => <span className="text-[var(--text-muted)]">{refMap.get(item.id)}</span>,
     },
     {
       key: "avatar",

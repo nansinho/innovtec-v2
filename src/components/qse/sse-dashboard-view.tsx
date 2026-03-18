@@ -445,15 +445,15 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
           <table className="w-full">
             <thead>
               <tr className="border-b border-[var(--border-1)] bg-[var(--hover)]">
-                <th className="px-3 py-2 text-left text-xs font-medium text-[var(--text-secondary)]">Mois</th>
-                <th className="px-3 py-2 text-left text-xs font-medium text-[var(--text-secondary)]" style={{ width: "80px" }}>Année</th>
-                <th className="px-3 py-2 text-center text-xs font-medium text-[var(--text-secondary)]" style={{ width: "80px" }}>ASAA</th>
-                <th className="px-3 py-2 text-center text-xs font-medium text-[var(--text-secondary)]" style={{ width: "80px" }}>SST</th>
-                <th className="px-3 py-2 text-center text-xs font-medium text-[var(--text-secondary)]" style={{ width: "100px" }}>Conformité</th>
-                <th className="px-3 py-2 text-center text-xs font-medium text-[var(--text-secondary)]" style={{ width: "80px" }}>Visites</th>
-                <th className="px-3 py-2 text-center text-xs font-medium text-[var(--text-secondary)]" style={{ width: "80px" }}>Statut</th>
-                <th className="px-3 py-2 text-left text-xs font-medium text-[var(--text-secondary)]" style={{ width: "130px" }}>Date</th>
-                <th className="px-3 py-2 text-right text-xs font-medium text-[var(--text-secondary)]" style={{ width: "70px" }}>Actions</th>
+                <th className="px-3 py-2 text-left text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]">Mois</th>
+                <th className="px-3 py-2 text-left text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "80px" }}>Année</th>
+                <th className="px-3 py-2 text-center text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "80px" }}>ASAA</th>
+                <th className="px-3 py-2 text-center text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "80px" }}>SST</th>
+                <th className="px-3 py-2 text-center text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "100px" }}>Conformité</th>
+                <th className="px-3 py-2 text-center text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "80px" }}>Visites</th>
+                <th className="px-3 py-2 text-center text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "80px" }}>Statut</th>
+                <th className="px-3 py-2 text-left text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "130px" }}>Date</th>
+                <th className="px-3 py-2 text-right text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "70px" }}>Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--border-1)]">

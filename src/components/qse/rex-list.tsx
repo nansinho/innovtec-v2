@@ -1,11 +1,13 @@
 "use client";
 
+import { useMemo } from "react";
 import { FileText, Eye, Download, Trash2 } from "lucide-react";
 import { DataTable, type ColumnDef } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
 import { TypeBadge } from "@/components/ui/status-badge";
 import { INCIDENT_TYPE_MAP } from "@/lib/status-config";
 import { getStandardToolbarActions } from "@/lib/table-toolbar-actions";
+import { createReferenceMap } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { deleteRex } from "@/actions/qse";
 import { toast } from "sonner";
@@ -22,16 +24,14 @@ interface RexListProps {
 
 export default function RexList({ rexList, headerAction }: RexListProps) {
   const router = useRouter();
+  const refMap = useMemo(() => createReferenceMap(rexList, "REX"), [rexList]);
 
   const columns: ColumnDef<RexItem>[] = [
     {
       key: "index",
-      header: "#",
-      width: "50px",
-      render: (_) => {
-        const idx = rexList.indexOf(_);
-        return <span className="text-[var(--text-muted)]">{idx + 1}</span>;
-      },
+      header: "ID",
+      width: "120px",
+      render: (item) => <span className="text-[var(--text-muted)]">{refMap.get(item.id)}</span>,
     },
     {
       key: "rex_number",

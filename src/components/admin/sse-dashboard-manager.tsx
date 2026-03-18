@@ -1,13 +1,15 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useMemo } from "react";
 import type { SseDashboard } from "@/lib/types/database";
 import { SseDashboardForm } from "./sse-dashboard-form";
 import { deleteSseDashboard } from "@/actions/sse-dashboard";
 import ConfirmDialog from "@/components/ui/confirm-dialog";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2, Calendar } from "lucide-react";
+import { Plus, Pencil, Trash2, Calendar, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { DropdownMenu } from "@/components/ui/dropdown-menu";
+import { createReferenceMap } from "@/lib/utils";
 
 const MONTH_NAMES = [
   "Janvier", "Fevrier", "Mars", "Avril", "Mai", "Juin",
@@ -24,6 +26,7 @@ export function SseDashboardManager({ dashboards: initialDashboards }: SseDashbo
   const [creating, setCreating] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<SseDashboard | null>(null);
   const [isPending, startTransition] = useTransition();
+  const refMap = useMemo(() => createReferenceMap(dashboards, "SSE"), [dashboards]);
 
   function handleCreated(newDashboard: SseDashboard) {
     setDashboards((prev) => [newDashboard, ...prev].sort((a, b) => {
@@ -104,17 +107,19 @@ export function SseDashboardManager({ dashboards: initialDashboards }: SseDashbo
           <table className="w-full text-left text-sm">
             <thead className="border-b border-[var(--border-1)] bg-[var(--hover)]">
               <tr>
-                <th className="px-3 py-2 text-[11px] font-medium text-[var(--text-muted)]">Periode</th>
-                <th className="px-3 py-2 text-[11px] font-medium text-[var(--text-muted)]">ASAA</th>
-                <th className="px-3 py-2 text-[11px] font-medium text-[var(--text-muted)]">Taux SST</th>
-                <th className="px-3 py-2 text-[11px] font-medium text-[var(--text-muted)]">Visites terrain</th>
-                <th className="px-3 py-2 text-[11px] font-medium text-[var(--text-muted)]">Cree le</th>
-                <th className="px-3 py-2 text-right text-[11px] font-medium text-[var(--text-muted)]">Actions</th>
+                <th className="px-3 py-2 text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]">ID</th>
+                <th className="px-3 py-2 text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]">Période</th>
+                <th className="px-3 py-2 text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]">ASAA</th>
+                <th className="px-3 py-2 text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]">Taux SST</th>
+                <th className="px-3 py-2 text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]">Visites terrain</th>
+                <th className="px-3 py-2 text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]">Créé le</th>
+                <th className="px-3 py-2 text-right text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--border-1)]">
-              {dashboards.map((d) => (
+              {dashboards.map((d, index) => (
                 <tr key={d.id} className="transition-colors hover:bg-[var(--hover)]">
+                  <td className="px-3 py-2 text-[13px] text-[var(--text-muted)]">{refMap.get(d.id)}</td>
                   <td className="px-3 py-2 font-medium text-[var(--heading)]">
                     {MONTH_NAMES[d.month - 1]} {d.year}
                   </td>
@@ -125,22 +130,12 @@ export function SseDashboardManager({ dashboards: initialDashboards }: SseDashbo
                     {new Date(d.created_at).toLocaleDateString("fr-FR")}
                   </td>
                   <td className="px-3 py-2 text-right">
-                    <div className="flex items-center justify-end gap-1">
-                      <button
-                        onClick={() => setEditing(d)}
-                        className="rounded-[var(--radius-xs)] p-1.5 text-[var(--text-secondary)] transition-colors hover:bg-[var(--hover)] hover:text-[var(--heading)]"
-                        title="Modifier"
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </button>
-                      <button
-                        onClick={() => setDeleteTarget(d)}
-                        className="rounded-[var(--radius-xs)] p-1.5 text-[var(--text-secondary)] transition-colors hover:bg-red-50 hover:text-red-600"
-                        title="Supprimer"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </div>
+                    <DropdownMenu
+                      items={[
+                        { label: "Modifier", icon: Pencil, onClick: () => setEditing(d) },
+                        { label: "Supprimer", icon: Trash2, variant: "danger" as const, onClick: () => setDeleteTarget(d) },
+                      ]}
+                    />
                   </td>
                 </tr>
               ))}
