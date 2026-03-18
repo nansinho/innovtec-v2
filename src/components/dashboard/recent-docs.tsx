@@ -24,9 +24,15 @@ export default async function RecentDocs() {
   // Resolve REX links for rex documents
   const rexLinks: Record<string, string> = {};
   for (const doc of docs) {
-    if (doc.category === "rex" && doc.file_url) {
-      const rexId = await getRexIdByFileUrl(doc.file_url);
-      if (rexId) rexLinks[doc.id] = `/qse/rex/${rexId}`;
+    if (doc.category === "rex") {
+      if (doc.file_url?.startsWith("/qse/rex/")) {
+        // REX without source file: file_url is already the detail page URL
+        rexLinks[doc.id] = doc.file_url;
+      } else if (doc.file_url) {
+        // REX with source file: look up REX by source_file_url
+        const rexId = await getRexIdByFileUrl(doc.file_url);
+        if (rexId) rexLinks[doc.id] = `/qse/rex/${rexId}`;
+      }
     }
   }
 
