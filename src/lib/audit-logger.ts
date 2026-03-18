@@ -72,7 +72,7 @@ interface AuditDetails {
  * Never throws — silently catches errors to avoid blocking the main flow.
  */
 export async function auditLog(
-  userId: string,
+  userId: string | null,
   action: AuditAction,
   targetType: AuditTargetType,
   targetId: string | null,

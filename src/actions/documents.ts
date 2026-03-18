@@ -130,7 +130,16 @@ export async function deleteDocumentsByFileUrl(
   fileUrl: string
 ): Promise<void> {
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
   await supabase.from("documents").delete().eq("file_url", fileUrl);
+
+  if (user) {
+    await auditLog(user.id, "delete", "document", null, { file_url: fileUrl });
+  }
+
   revalidatePath("/documents");
   revalidatePath("/");
 }
