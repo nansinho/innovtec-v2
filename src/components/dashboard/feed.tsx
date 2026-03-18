@@ -8,8 +8,24 @@ import { getProfile } from "@/actions/auth";
 import FeedList from "@/components/dashboard/feed-list";
 import { formatRelative } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-import { ARTICLE_IMPORTANCE_MAP } from "@/lib/status-config";
+import { CategoryBadge } from "@/components/ui/status-badge";
+import {
+  ARTICLE_IMPORTANCE_MAP,
+  ARTICLE_CATEGORY_MAP,
+} from "@/lib/status-config";
 import type { NewsPriority } from "@/lib/types/database";
+
+const cardCategoryStyles: Record<string, string> = {
+  red: "ring-[color:var(--red)]/30 bg-[var(--red-surface)]",
+  blue: "ring-[color:var(--blue)]/30 bg-[var(--blue-surface)]",
+  teal: "ring-[color:var(--teal)]/30 bg-[var(--teal-surface)]",
+  coral: "ring-[color:var(--coral)]/30 bg-[var(--coral-surface)]",
+  amber: "ring-[color:var(--amber)]/30 bg-[var(--amber-surface)]",
+  purple: "ring-[color:var(--purple)]/30 bg-[var(--purple-surface)]",
+  pink: "ring-[color:var(--pink)]/30 bg-[var(--pink-surface)]",
+  green: "ring-[color:var(--green)]/30 bg-[var(--green-surface)]",
+  gray: "ring-zinc-950/[0.04] bg-zinc-50/80",
+};
 
 export default async function Feed() {
   const [posts, profile, latestNews] = await Promise.all([
@@ -42,12 +58,17 @@ export default async function Feed() {
               priority === "urgent"
                 ? { label: "Urgent", variant: "red" as const }
                 : ARTICLE_IMPORTANCE_MAP[priority];
+            const categoryEntry =
+              ARTICLE_CATEGORY_MAP[article.category as string];
+            const categoryColor =
+              cardCategoryStyles[categoryEntry?.variant ?? "gray"] ??
+              cardCategoryStyles.gray;
 
             return (
               <Link
                 key={article.id}
                 href={`/actualites/${article.id}`}
-                className="group overflow-hidden rounded-xl bg-zinc-50/80 ring-1 ring-zinc-950/[0.04] transition-all hover:shadow-md hover:ring-zinc-950/[0.08]"
+                className={`group overflow-hidden rounded-xl ring-1 transition-all hover:shadow-md hover:ring-zinc-950/[0.08] ${categoryColor}`}
               >
                 <div className="relative h-28 w-full overflow-hidden bg-zinc-200">
                   {article.image_url ? (
@@ -65,7 +86,13 @@ export default async function Feed() {
                   )}
                 </div>
                 <div className="p-3">
-                  <div className="mb-1 flex items-center gap-1.5">
+                  <div className="mb-1 flex flex-wrap items-center gap-1.5">
+                    {article.category && (
+                      <CategoryBadge
+                        module="articles"
+                        category={article.category as string}
+                      />
+                    )}
                     {priority !== "normal" && priorityEntry && (
                       <Badge variant={priorityEntry.variant} dot>
                         {priorityEntry.label}
