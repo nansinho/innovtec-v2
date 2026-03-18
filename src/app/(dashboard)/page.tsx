@@ -42,7 +42,7 @@ export default async function DashboardPage() {
       {/* Greeting */}
       <div className="mb-6">
         <p className="text-[13px] font-medium text-zinc-400">{dateFormatted}</p>
-        <h1 className="text-base font-semibold text-[var(--heading)]">
+        <h1 className="text-lg font-semibold text-[var(--heading)]">
           Bonjour, {displayName}
         </h1>
       </div>

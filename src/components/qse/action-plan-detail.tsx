@@ -139,7 +139,7 @@ export default function ActionPlanDetail({
           {/* Header card */}
           <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] p-6 shadow-xs">
             <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
-              <h1 className="text-base font-semibold text-[var(--heading)]">{plan.title}</h1>
+              <h1 className="text-lg font-semibold text-[var(--heading)]">{plan.title}</h1>
               <StatusBadge module="plans_actions" status={plan.status} />
             </div>
 
