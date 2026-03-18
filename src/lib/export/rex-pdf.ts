@@ -1,6 +1,7 @@
 import { jsPDF } from "jspdf";
 import type { Rex } from "@/lib/types/database";
 import { REX_BADGE_SVGS } from "@/components/icons/rex-section-icons";
+import { registerInterFont } from "@/lib/fonts/inter-font";
 
 // ==========================================
 // COLORS — Navy + Yellow (#F59E0B) theme
@@ -103,6 +104,8 @@ async function fetchImageAsBase64(url: string): Promise<string | null> {
 
 export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string | null) {
   const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+  registerInterFont(pdf);
+  const F = "Inter"; // font family name
   const pageW = 210;
   const pageH = 297;
   const mx = 8; // margin X
@@ -160,7 +163,7 @@ export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string 
       try { pdf.addImage(logoData, "PNG", mx, y, 40, 13); logoOk = true; } catch { /* fallback */ }
     }
     if (!logoOk) {
-      pdf.setFont("helvetica", "bold");
+      pdf.setFont(F, "bold");
       pdf.setFontSize(16);
       pdf.setTextColor(...NAVY);
       pdf.text("INN", mx, y + 8);
@@ -181,7 +184,7 @@ export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string 
     const badgeX = pageW - mx - badgeW;
     pdf.setFillColor(...YELLOW);
     pdf.roundedRect(badgeX, y, badgeW, badgeH, 2, 2, "F");
-    pdf.setFont("helvetica", "bold");
+    pdf.setFont(F, "bold");
     pdf.setFontSize(13);
     pdf.setTextColor(...NAVY);
     pdf.text("FICHE REX", badgeX + 3, y + 5.5);
@@ -191,7 +194,7 @@ export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string 
     y += 17;
 
     // TITRE DE L'ÉVÉNEMENT
-    pdf.setFont("helvetica", "bold");
+    pdf.setFont(F, "bold");
     pdf.setFontSize(10);
     pdf.setTextColor(...YELLOW);
     const tLabel = "TITRE DE L'\u00c9V\u00c9NEMENT : ";
@@ -211,11 +214,11 @@ export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string 
     ];
     for (const m of metaItems) {
       if (!m.value) continue;
-      pdf.setFont("helvetica", "bold");
+      pdf.setFont(F, "bold");
       pdf.setTextColor(...YELLOW);
       pdf.text(m.label, mx, y);
       const lw = pdf.getStringUnitWidth(m.label) * 9 / pdf.internal.scaleFactor;
-      pdf.setFont("helvetica", "normal");
+      pdf.setFont(F, "normal");
       pdf.setTextColor(...GRAY_TEXT);
       pdf.text(` : ${sanitize(m.value)}`, mx + lw, y);
       y += 3.8;
@@ -225,22 +228,22 @@ export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string 
     if (dateStr || rex.horaire) {
       let lineX = mx;
       if (dateStr) {
-        pdf.setFont("helvetica", "bold");
+        pdf.setFont(F, "bold");
         pdf.setTextColor(...YELLOW);
         pdf.text("DATE", lineX, y);
         const dw = pdf.getStringUnitWidth("DATE") * 9 / pdf.internal.scaleFactor;
-        pdf.setFont("helvetica", "normal");
+        pdf.setFont(F, "normal");
         pdf.setTextColor(...GRAY_TEXT);
         const dateVal = ` : ${dateStr}`;
         pdf.text(dateVal, lineX + dw, y);
         lineX += dw + pdf.getStringUnitWidth(dateVal) * 9 / pdf.internal.scaleFactor + 8;
       }
       if (rex.horaire) {
-        pdf.setFont("helvetica", "bold");
+        pdf.setFont(F, "bold");
         pdf.setTextColor(...YELLOW);
         pdf.text("HORAIRE", lineX, y);
         const hw = pdf.getStringUnitWidth("HORAIRE") * 9 / pdf.internal.scaleFactor;
-        pdf.setFont("helvetica", "normal");
+        pdf.setFont(F, "normal");
         pdf.setTextColor(...GRAY_TEXT);
         pdf.text(` : ${sanitize(rex.horaire)}`, lineX + hw, y);
       }
@@ -253,7 +256,7 @@ export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string 
       if (evtType) {
         y += 1;
         const evtLabel = sanitize(evtType.label);
-        pdf.setFont("helvetica", "bold");
+        pdf.setFont(F, "bold");
         pdf.setFontSize(7);
         const evtW = pdf.getStringUnitWidth(evtLabel) * 7 / pdf.internal.scaleFactor + 6;
         pdf.setFillColor(...NAVY);
@@ -288,7 +291,7 @@ export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string 
     const bw = 28, bh = 18;
     pdf.setFillColor(...YELLOW);
     pdf.roundedRect(mx, y, bw, bh, 2.5, 2.5, "F");
-    pdf.setFont("helvetica", "bold");
+    pdf.setFont(F, "bold");
     pdf.setFontSize(7);
     pdf.setTextColor(255, 255, 255);
     pdf.text("FICHE REX", mx + bw / 2, y + 6, { align: "center" });
@@ -302,7 +305,7 @@ export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string 
       try { pdf.addImage(logoData, "PNG", logoX, y, 42, 14); logoOk = true; } catch { /* fallback */ }
     }
     if (!logoOk) {
-      pdf.setFont("helvetica", "bold");
+      pdf.setFont(F, "bold");
       pdf.setFontSize(14);
       pdf.setTextColor(30, 58, 95);
       pdf.text("INN", logoX, y + 9);
@@ -321,7 +324,7 @@ export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string 
     const ix = mx + bw + 4;
     const iw = logoX - ix - 4;
 
-    pdf.setFont("helvetica", "bold");
+    pdf.setFont(F, "bold");
     pdf.setFontSize(10);
     pdf.setTextColor(...YELLOW);
     const titleLabel = "TITRE DE L'\u00c9V\u00c9NEMENT";
@@ -342,29 +345,29 @@ export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string 
     for (const m of metas) {
       if (!m.value) continue;
       pdf.setTextColor(...YELLOW);
-      pdf.setFont("helvetica", "bold");
+      pdf.setFont(F, "bold");
       pdf.text(m.label, ix, metaY);
       const lw = pdf.getStringUnitWidth(m.label) * 8 / pdf.internal.scaleFactor;
       pdf.setTextColor(...GRAY_TEXT);
-      pdf.setFont("helvetica", "normal");
+      pdf.setFont(F, "normal");
       pdf.text(` : ${sanitize(m.value)}`, ix + lw, metaY);
       metaY += 3.5;
     }
     // Date + Horaire
     if (dateStr) {
       pdf.setTextColor(...YELLOW);
-      pdf.setFont("helvetica", "bold");
+      pdf.setFont(F, "bold");
       pdf.text("Date", ix, metaY);
       pdf.setTextColor(...GRAY_TEXT);
-      pdf.setFont("helvetica", "normal");
+      pdf.setFont(F, "normal");
       pdf.text(` : ${dateStr}`, ix + 9, metaY);
       if (rex.horaire) {
         const dEnd = ix + 9 + pdf.getStringUnitWidth(` : ${dateStr}`) * 8 / pdf.internal.scaleFactor + 4;
         pdf.setTextColor(...YELLOW);
-        pdf.setFont("helvetica", "bold");
+        pdf.setFont(F, "bold");
         pdf.text("Horaire", dEnd, metaY);
         pdf.setTextColor(...GRAY_TEXT);
-        pdf.setFont("helvetica", "normal");
+        pdf.setFont(F, "normal");
         pdf.text(` : ${sanitize(rex.horaire)}`, dEnd + 14, metaY);
       }
     }
@@ -396,7 +399,7 @@ export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string 
   const availableForSections = pageH - y - footerEstimate - 8;
 
   // Pre-calculate total section height at 8pt to check if everything fits
-  pdf.setFont("helvetica", "normal");
+  pdf.setFont(F, "normal");
   pdf.setFontSize(8);
   let totalSectionH = 0;
   const sectionData: { key: string; text: string; photo: string | null; lines: string[]; textH: number }[] = [];
@@ -441,7 +444,7 @@ export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string 
         const bW = sec.key === "faits" ? 34 : sec.key === "causes" ? 42 : sec.key === "actions" ? 44 : 38;
         pdf.addImage(badge, "PNG", mx, y, bW, bH);
       } catch {
-        pdf.setFont("helvetica", "bold");
+        pdf.setFont(F, "bold");
         pdf.setFontSize(9);
         pdf.setTextColor(...NAVY);
         pdf.text(sec.key.toUpperCase(), mx, y + 5);
@@ -463,7 +466,7 @@ export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string 
     pdf.roundedRect(mx, y, textW, sec.textH, 1.5, 1.5, "S");
 
     // Text
-    pdf.setFont("helvetica", "normal");
+    pdf.setFont(F, "normal");
     pdf.setFontSize(secFontSize);
     pdf.setTextColor(...GRAY_TEXT);
     pdf.text(sec.lines, mx + 4, y + 4);
@@ -488,7 +491,7 @@ export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string 
   // ==========================================
 
   if (useNew) {
-    // ---- NEW TEMPLATE FOOTER: yellow box with rules ----
+    // ---- NEW TEMPLATE FOOTER: yellow box anchored at page bottom ----
     if (rex.conclusion_title && rex.conclusion_content) {
       // Parse content lines
       const contentLines = sanitize(rex.conclusion_content)
@@ -496,8 +499,8 @@ export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string 
         .map(l => l.replace(/^[\s\u2022\u25CF\u25A0\u2023*\-]+\s*/, "").trim())
         .filter(l => l.length > 0);
 
-      // Calculate height
-      pdf.setFont("helvetica", "bold");
+      // Calculate height with Inter bold 8pt
+      pdf.setFont(F, "bold");
       pdf.setFontSize(8);
       let contentH = 0;
       const wrappedLines: string[][] = [];
@@ -508,30 +511,33 @@ export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string 
       }
       const boxH = 10 + contentH + 4;
 
+      // Anchor at bottom of page
+      const footerBoxY = pageH - boxH - 6;
+
       // Yellow background
       pdf.setFillColor(...YELLOW_LIGHT);
-      pdf.roundedRect(mx, y, cw, boxH, 2, 2, "F");
+      pdf.roundedRect(mx, footerBoxY, cw, boxH, 2, 2, "F");
       pdf.setDrawColor(...YELLOW);
       pdf.setLineWidth(0.5);
-      pdf.roundedRect(mx, y, cw, boxH, 2, 2, "S");
+      pdf.roundedRect(mx, footerBoxY, cw, boxH, 2, 2, "S");
 
-      // Title — explicitly helvetica bold
-      pdf.setFont("helvetica", "bold");
+      // Title
+      pdf.setFont(F, "bold");
       pdf.setFontSize(11);
       pdf.setTextColor(...NAVY);
       const footerTitle = sanitize(rex.conclusion_title.toUpperCase());
       const titleWrapped = pdf.splitTextToSize(footerTitle, cw - 12);
-      pdf.text(titleWrapped, mx + 5, y + 6);
+      pdf.text(titleWrapped, mx + 5, footerBoxY + 6);
 
       // Bullet content
-      let bulletY = y + 10 + (titleWrapped.length > 1 ? (titleWrapped.length - 1) * 4.5 : 0);
+      let bulletY = footerBoxY + 10 + (titleWrapped.length > 1 ? (titleWrapped.length - 1) * 4.5 : 0);
       for (const wrapped of wrappedLines) {
         // Navy square bullet
         pdf.setFillColor(...NAVY);
         pdf.rect(mx + 5, bulletY - 2.2, 2, 2, "F");
 
-        // Bold navy text — explicitly helvetica
-        pdf.setFont("helvetica", "bold");
+        // Bold navy text
+        pdf.setFont(F, "bold");
         pdf.setFontSize(8);
         pdf.setTextColor(...NAVY);
         pdf.text(wrapped, mx + 10, bulletY);
@@ -549,7 +555,7 @@ export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string 
       y += 4;
 
       // Title underlined
-      pdf.setFont("helvetica", "bold");
+      pdf.setFont(F, "bold");
       pdf.setFontSize(9);
       pdf.setTextColor(...NAVY);
       const cTitle = sanitize(`${rex.conclusion_title} :`);
@@ -561,7 +567,7 @@ export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string 
       y += 5;
 
       // Content — explicit helvetica normal
-      pdf.setFont("helvetica", "normal");
+      pdf.setFont(F, "normal");
       pdf.setFontSize(8);
       pdf.setTextColor(...GRAY_TEXT);
       const cLines = pdf.splitTextToSize(sanitize(rex.conclusion_content), cw - 4);
@@ -580,14 +586,14 @@ export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string 
     const fy = footerY + 4;
 
     // Left: Déjà arrivé
-    pdf.setFont("helvetica", "bold");
+    pdf.setFont(F, "bold");
     pdf.setFontSize(8);
     pdf.setTextColor(...NAVY);
     pdf.text("D\u00c9J\u00c0 ARRIV\u00c9 ?", mx, fy);
     let leftY = fy + 4;
 
     if (rex.deja_arrive && rex.deja_arrive.length > 0) {
-      pdf.setFont("helvetica", "normal");
+      pdf.setFont(F, "normal");
       pdf.setFontSize(7);
       pdf.setTextColor(...GRAY_TEXT);
       for (const item of rex.deja_arrive) {
@@ -598,7 +604,7 @@ export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string 
         leftY += il.length * 3 + 1;
       }
     } else {
-      pdf.setFont("helvetica", "italic");
+      pdf.setFont(F, "italic");
       pdf.setFontSize(7);
       pdf.setTextColor(160, 160, 160);
       pdf.text("Non renseign\u00e9", mx + 4, leftY);
@@ -606,7 +612,7 @@ export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string 
 
     // Right: Type d'événement
     const rx = mx + halfW + 4;
-    pdf.setFont("helvetica", "bold");
+    pdf.setFont(F, "bold");
     pdf.setFontSize(8);
     pdf.setTextColor(...NAVY);
     pdf.text("TYPE D'\u00c9V\u00c9NEMENT", rx, fy);
@@ -617,11 +623,11 @@ export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string 
       if (active) {
         pdf.setFillColor(...NAVY);
         pdf.roundedRect(rx, ty - 2.5, halfW, 4.5, 1, 1, "F");
-        pdf.setFont("helvetica", "bold");
+        pdf.setFont(F, "bold");
         pdf.setFontSize(7);
         pdf.setTextColor(255, 255, 255);
       } else {
-        pdf.setFont("helvetica", "normal");
+        pdf.setFont(F, "normal");
         pdf.setFontSize(7);
         pdf.setTextColor(160, 160, 160);
       }
