@@ -15,7 +15,7 @@ export default async function AdminNewsPage() {
   const news = await getAllNewsAdmin();
 
   return (
-    <div className="px-7 py-6 pb-20 md:pb-7">
+    <div className="p-6 pb-20 md:pb-6">
       <div className="mb-6">
         <h1 className="text-base font-semibold text-[var(--heading)]">
           Gestion des actualités

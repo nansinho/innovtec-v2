@@ -59,7 +59,7 @@ export default async function UserDetailPage({
     `${user.first_name} ${user.last_name}`.trim() || user.email;
 
   return (
-    <div className="px-7 py-6 pb-20 md:pb-7">
+    <div className="p-6 pb-20 md:pb-6">
       {/* Back link */}
       {isAdminOrRh && (
         <Link

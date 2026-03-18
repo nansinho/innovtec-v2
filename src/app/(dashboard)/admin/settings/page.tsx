@@ -18,7 +18,7 @@ export default async function AdminSettingsPage() {
   ]);
 
   return (
-    <div className="px-7 py-6">
+    <div className="p-6 pb-20 md:pb-6">
       <h1 className="mb-1 text-base font-semibold text-[var(--heading)]">
         Paramètres
       </h1>
