@@ -23,6 +23,7 @@ import {
   markAsRead,
   markAllAsRead,
   deleteNotification,
+  deleteAllNotifications,
 } from "@/actions/notifications";
 import { useNotifications } from "@/components/notifications/notification-provider";
 import type { NotificationType } from "@/lib/types/database";
@@ -59,6 +60,7 @@ export default function NotificationSidebar({
     markAsReadLocal,
     markAllAsReadLocal,
     deleteLocal,
+    deleteAllLocal,
   } = useNotifications();
   const [filter, setFilter] = useState<"all" | "unread">("all");
   const [isPending, startTransition] = useTransition();
@@ -88,6 +90,13 @@ export default function NotificationSidebar({
     startTransition(async () => {
       deleteLocal(id);
       await deleteNotification(id);
+    });
+  }
+
+  function handleDeleteAll() {
+    startTransition(async () => {
+      deleteAllLocal();
+      await deleteAllNotifications();
     });
   }
 
@@ -160,16 +169,28 @@ export default function NotificationSidebar({
               Non lues ({unreadCount})
             </button>
           </div>
-          {unreadCount > 0 && (
-            <button
-              onClick={handleMarkAllAsRead}
-              disabled={isPending}
-              className="flex items-center gap-1 text-[11px] text-[var(--yellow)] transition-colors hover:text-[var(--yellow-hover)]"
-            >
-              <CheckCheck className="h-3.5 w-3.5" />
-              Tout lire
-            </button>
-          )}
+          <div className="flex items-center gap-2">
+            {unreadCount > 0 && (
+              <button
+                onClick={handleMarkAllAsRead}
+                disabled={isPending}
+                className="flex items-center gap-1 text-[11px] text-[var(--yellow)] transition-colors hover:text-[var(--yellow-hover)]"
+              >
+                <CheckCheck className="h-3.5 w-3.5" />
+                Tout lire
+              </button>
+            )}
+            {notifications.length > 0 && (
+              <button
+                onClick={handleDeleteAll}
+                disabled={isPending}
+                className="flex items-center gap-1 text-[11px] text-red-500 transition-colors hover:text-red-700"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                Tout supprimer
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Notification list */}

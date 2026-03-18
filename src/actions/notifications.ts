@@ -96,6 +96,20 @@ export async function deleteNotification(notificationId: string) {
   revalidatePath("/", "layout");
 }
 
+export async function deleteAllNotifications() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return;
+
+  await supabase.from("notifications").delete().eq("user_id", user.id);
+
+  await auditLog(user.id, "delete", "notification", null, { scope: "all" });
+
+  revalidatePath("/", "layout");
+}
+
 export async function createNotificationForAll(data: {
   type: Notification["type"];
   title: string;
