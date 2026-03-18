@@ -24,6 +24,7 @@ interface UserFormModalProps {
   departments?: Department[];
   teams?: Team[];
   allUsers?: Profile[];
+  currentUserRole?: string;
 }
 
 export default function UserFormModal({
@@ -34,6 +35,7 @@ export default function UserFormModal({
   departments = [],
   teams = [],
   allUsers = [],
+  currentUserRole = "collaborateur",
 }: UserFormModalProps) {
   const isEdit = !!user;
   const [loading, setLoading] = useState(false);
@@ -357,30 +359,35 @@ export default function UserFormModal({
             {/* Poste & Rôle */}
             <div>
               <label className="mb-2 block text-[11px] font-semibold text-[var(--text-muted)]">
-                Poste & Rôle
+                Poste {currentUserRole === "admin" && "& Rôle"}
               </label>
-              <div className="grid grid-cols-2 gap-3">
+              <div className={currentUserRole === "admin" ? "grid grid-cols-2 gap-3" : ""}>
                 <SearchableSelect
                   value={form.job_title}
                   onChange={(v) => handleChange("job_title", v)}
                   options={localJobTitles}
-                  placeholder="Poste"
+                  placeholder="Poste *"
                   onAdd={handleAddJobTitle}
                   onDelete={handleDeleteJobTitle}
                   addLabel="Nouveau poste"
                 />
-                <select
-                  value={form.role}
-                  onChange={(e) => handleChange("role", e.target.value)}
-                  className={selectClass}
-                >
-                  {roleOptions.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </option>
-                  ))}
-                </select>
+                {currentUserRole === "admin" && (
+                  <select
+                    value={form.role}
+                    onChange={(e) => handleChange("role", e.target.value)}
+                    className={selectClass}
+                  >
+                    {roleOptions.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                )}
               </div>
+              <p className="mt-1.5 text-[11px] text-[var(--text-muted)]">
+                Les permissions sont déterminées par le poste. Configurez-les dans Administration → Permissions.
+              </p>
             </div>
 
             {/* Contact */}

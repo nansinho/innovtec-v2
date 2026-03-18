@@ -1,14 +1,15 @@
 import { getProfile } from "@/actions/auth";
 import { redirect } from "next/navigation";
 import ActivityLogsTable from "@/components/admin/activity-logs-table";
+import { hasPermission, PERMISSIONS } from "@/lib/permissions";
 
 
 export default async function AdminLogsPage() {
   const profile = await getProfile();
 
-  if (!profile || !["admin", "rh"].includes(profile.role)) {
-    redirect("/");
-  }
+  if (!profile) redirect("/");
+  const canViewLogs = await hasPermission(profile.role, profile.job_title || "", PERMISSIONS.VIEW_LOGS);
+  if (!canViewLogs) redirect("/");
 
   return (
     <div className="p-6 pb-20 md:pb-6">

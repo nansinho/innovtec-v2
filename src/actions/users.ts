@@ -5,6 +5,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
 import type { Profile, UserRole } from "@/lib/types/database";
 import { auditLog } from "@/lib/audit-logger";
+import { hasPermission, PERMISSIONS } from "@/lib/permissions";
 
 // ==========================================
 // HELPERS
@@ -26,8 +27,11 @@ async function getCallerProfile() {
   return profile ? { ...profile, authId: user.id } : null;
 }
 
-function isAdminOrRh(role: string) {
-  return ["admin", "rh"].includes(role);
+async function callerCanManageUsers() {
+  const caller = await getCallerProfile();
+  if (!caller) return { caller: null, allowed: false };
+  const allowed = await hasPermission(caller.role, caller.job_title || "", PERMISSIONS.MANAGE_USERS);
+  return { caller, allowed };
 }
 
 function revalidateAll() {
@@ -146,8 +150,8 @@ export async function createUser(formData: {
   date_of_birth?: string;
   hire_date?: string;
 }): Promise<{ success: boolean; error?: string }> {
-  const caller = await getCallerProfile();
-  if (!caller || !isAdminOrRh(caller.role)) {
+  const { caller, allowed } = await callerCanManageUsers();
+  if (!caller || !allowed) {
     return { success: false, error: "Accès refusé" };
   }
 
@@ -273,8 +277,8 @@ export async function updateUser(
     manager_id?: string | null;
   }
 ): Promise<{ success: boolean; error?: string }> {
-  const caller = await getCallerProfile();
-  if (!caller || !isAdminOrRh(caller.role)) {
+  const { caller, allowed } = await callerCanManageUsers();
+  if (!caller || !allowed) {
     return { success: false, error: "Accès refusé" };
   }
 
@@ -319,8 +323,8 @@ export async function updateUserRole(
   userId: string,
   role: UserRole
 ): Promise<{ success: boolean; error?: string }> {
-  const caller = await getCallerProfile();
-  if (!caller || !isAdminOrRh(caller.role)) {
+  const { caller, allowed } = await callerCanManageUsers();
+  if (!caller || !allowed) {
     return { success: false, error: "Accès refusé" };
   }
 
@@ -355,8 +359,8 @@ export async function toggleUserActive(
   userId: string,
   isActive: boolean
 ): Promise<{ success: boolean; error?: string }> {
-  const caller = await getCallerProfile();
-  if (!caller || !isAdminOrRh(caller.role)) {
+  const { caller, allowed } = await callerCanManageUsers();
+  if (!caller || !allowed) {
     return { success: false, error: "Accès refusé" };
   }
 
@@ -481,9 +485,9 @@ export async function getActivityLogs(
   offset = 0
 ): Promise<{ logs: ActivityLog[]; total: number }> {
   const caller = await getCallerProfile();
-  if (!caller || !isAdminOrRh(caller.role)) {
-    return { logs: [], total: 0 };
-  }
+  if (!caller) return { logs: [], total: 0 };
+  const canViewLogs = await hasPermission(caller.role, caller.job_title || "", PERMISSIONS.VIEW_LOGS);
+  if (!canViewLogs) return { logs: [], total: 0 };
 
   const supabaseAdmin = createAdminClient();
 

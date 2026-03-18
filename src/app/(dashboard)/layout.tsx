@@ -9,6 +9,7 @@ import { getUnreadCountForUser } from "@/actions/notifications";
 import { isUserBirthday, getBirthdayWishesForUser } from "@/actions/birthday";
 import { ensureAdminExists } from "@/actions/users";
 import { getCompanyLogo } from "@/actions/settings";
+import { getUserPermissions } from "@/lib/permissions";
 import { redirect } from "next/navigation";
 
 export default async function DashboardLayout({
@@ -29,9 +30,10 @@ export default async function DashboardLayout({
   const userId = profile?.id ?? "";
 
   // Fetch critical layout data in parallel — defer birthday to avoid blocking render
-  const [unreadCount, logos] = await Promise.all([
+  const [unreadCount, logos, userPermissions] = await Promise.all([
     userId ? getUnreadCountForUser(userId) : Promise.resolve(0),
     getCompanyLogo(),
+    profile ? getUserPermissions(profile.role, profile.job_title || "") : Promise.resolve([]),
   ]);
 
   // Defer birthday check — non-critical for initial render
@@ -44,7 +46,7 @@ export default async function DashboardLayout({
 
   return (
     <NotificationProvider userId={profile?.id ?? ""} initialCount={unreadCount}>
-      <Sidebar profile={profile} logos={logos} />
+      <Sidebar profile={profile} logos={logos} userPermissions={userPermissions} />
       <div className="min-h-screen transition-all duration-300 ease-out md:ml-[var(--sidebar-width)]">
         <Topbar profile={profile} />
         <main>{children}</main>

@@ -595,6 +595,7 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
         departments={departments}
         teams={teams}
         allUsers={users}
+        currentUserRole={currentUserRole}
       />
 
       {/* Confirm Dialog */}

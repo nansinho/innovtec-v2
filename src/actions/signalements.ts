@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import type { DangerReport, SignalementCategory, DangerStatus, SignalementPriority } from "@/lib/types/database";
 import { createNotificationForUser } from "@/actions/notifications";
 import { auditLog } from "@/lib/audit-logger";
+import { hasPermission, PERMISSIONS } from "@/lib/permissions";
 
 // ==========================================
 // HELPERS
@@ -34,15 +35,15 @@ async function getAuthProfile() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("id, role")
+    .select("id, role, job_title")
     .eq("id", user.id)
     .single();
 
   return profile;
 }
 
-function isQseManager(role: string) {
-  return ["admin", "rh", "responsable_qse"].includes(role);
+async function canManageQse(profile: { role: string; job_title?: string | null }) {
+  return hasPermission(profile.role, profile.job_title || "", PERMISSIONS.MANAGE_QSE);
 }
 
 async function resolvePhotoUrls(report: DangerReport): Promise<DangerReport> {
@@ -93,7 +94,7 @@ export async function createSignalementCategory(
   color: string
 ): Promise<{ success: boolean; error?: string }> {
   const profile = await getAuthProfile();
-  if (!profile || !isQseManager(profile.role)) {
+  if (!profile || !(await canManageQse(profile))) {
     return { success: false, error: "Non autorisé" };
   }
 
@@ -128,7 +129,7 @@ export async function updateSignalementCategory(
   data: { name?: string; color?: string; is_active?: boolean; position?: number }
 ): Promise<{ success: boolean; error?: string }> {
   const profile = await getAuthProfile();
-  if (!profile || !isQseManager(profile.role)) {
+  if (!profile || !(await canManageQse(profile))) {
     return { success: false, error: "Non autorisé" };
   }
 
@@ -150,7 +151,7 @@ export async function deleteSignalementCategory(
   id: string
 ): Promise<{ success: boolean; error?: string }> {
   const profile = await getAuthProfile();
-  if (!profile || !isQseManager(profile.role)) {
+  if (!profile || !(await canManageQse(profile))) {
     return { success: false, error: "Non autorisé" };
   }
 
@@ -197,7 +198,7 @@ export async function getSignalements(): Promise<DangerReport[]> {
   reports = await Promise.all(reports.map(resolvePhotoUrls));
 
   // If not QSE manager, mask anonymous reporters
-  if (!isQseManager(profile.role)) {
+  if (!(await canManageQse(profile))) {
     return reports.map((d) => {
       if (d.is_anonymous) {
         return { ...d, reporter: null, reported_by: "" };
@@ -228,7 +229,7 @@ export async function getSignalement(id: string): Promise<DangerReport | null> {
   report = await resolvePhotoUrls(report);
 
   // Mask anonymous reporter for non-managers (unless it's their own)
-  if (report.is_anonymous && !isQseManager(profile.role) && report.reported_by !== profile.id) {
+  if (report.is_anonymous && !(await canManageQse(profile)) && report.reported_by !== profile.id) {
     return { ...report, reporter: null, reported_by: "" };
   }
 
@@ -322,7 +323,7 @@ export async function updateSignalementStatus(
   status: DangerStatus
 ): Promise<{ success: boolean; error?: string }> {
   const profile = await getAuthProfile();
-  if (!profile || !isQseManager(profile.role)) {
+  if (!profile || !(await canManageQse(profile))) {
     return { success: false, error: "Non autorisé" };
   }
 
@@ -375,7 +376,7 @@ export async function assignSignalement(
   assignedTo: string
 ): Promise<{ success: boolean; error?: string }> {
   const profile = await getAuthProfile();
-  if (!profile || !isQseManager(profile.role)) {
+  if (!profile || !(await canManageQse(profile))) {
     return { success: false, error: "Non autorisé" };
   }
 
@@ -440,7 +441,7 @@ export async function deleteSignalement(
   id: string
 ): Promise<{ success: boolean; error?: string }> {
   const profile = await getAuthProfile();
-  if (!profile || !isQseManager(profile.role)) {
+  if (!profile || !(await canManageQse(profile))) {
     return { success: false, error: "Non autorisé" };
   }
 

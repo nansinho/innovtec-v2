@@ -28,16 +28,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Profile } from "@/lib/types/database";
+import type { PermissionKey } from "@/lib/permissions";
 import { useState, useEffect } from "react";
-
-const roleLabels: Record<string, string> = {
-  admin: "Administrateur",
-  rh: "Ressources Humaines",
-  responsable_qse: "Responsable QSE",
-  chef_chantier: "Chef de chantier",
-  technicien: "Technicien",
-  collaborateur: "Collaborateur",
-};
 
 const mainNav = [
   { href: "/", label: "Tableau de bord", icon: LayoutGrid },
@@ -69,9 +61,10 @@ const ressourcesNav = [
 ];
 
 const adminNav = [
-  { href: "/admin/users", label: "Utilisateurs", icon: UserCog },
-  { href: "/admin/logs", label: "Journal d'activité", icon: ClipboardList },
-  { href: "/admin/settings", label: "Paramètres", icon: Settings },
+  { href: "/admin/users", label: "Utilisateurs", icon: UserCog, permission: "manage_users" as PermissionKey },
+  { href: "/admin/permissions", label: "Permissions", icon: Shield, permission: "manage_users" as PermissionKey },
+  { href: "/admin/logs", label: "Journal d'activité", icon: ClipboardList, permission: "view_logs" as PermissionKey },
+  { href: "/admin/settings", label: "Paramètres", icon: Settings, permission: "manage_settings" as PermissionKey },
 ];
 
 interface NavItemProps {
@@ -137,9 +130,10 @@ function SectionLabel({ label, collapsed }: { label: string; collapsed: boolean 
 interface SidebarProps {
   profile: Profile | null;
   logos?: { light: string | null; dark: string | null } | null;
+  userPermissions?: PermissionKey[];
 }
 
-export default function Sidebar({ profile, logos }: SidebarProps) {
+export default function Sidebar({ profile, logos, userPermissions = [] }: SidebarProps) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
 
@@ -149,7 +143,8 @@ export default function Sidebar({ profile, logos }: SidebarProps) {
     document.documentElement.style.setProperty("--sidebar-width", width);
   }, [collapsed]);
 
-  const isAdmin = profile && ["admin", "rh"].includes(profile.role);
+  const hasPerm = (perm: PermissionKey) => userPermissions.includes(perm);
+  const showAdmin = profile?.role === "admin" || hasPerm("view_admin") || hasPerm("manage_users") || hasPerm("manage_settings") || hasPerm("view_logs");
 
   return (
     <aside
@@ -238,17 +233,21 @@ export default function Sidebar({ profile, logos }: SidebarProps) {
           />
         ))}
 
-        {isAdmin && (
+        {showAdmin && (
           <>
             <SectionLabel label="Administration" collapsed={collapsed} />
-            {adminNav.map((item) => (
-              <NavItem
-                key={item.href}
-                {...item}
-                collapsed={collapsed}
-                isActive={pathname.startsWith(item.href)}
-              />
-            ))}
+            {adminNav
+              .filter((item) => profile?.role === "admin" || hasPerm(item.permission))
+              .map((item) => (
+                <NavItem
+                  key={item.href}
+                  href={item.href}
+                  label={item.label}
+                  icon={item.icon}
+                  collapsed={collapsed}
+                  isActive={pathname.startsWith(item.href)}
+                />
+              ))}
           </>
         )}
       </nav>

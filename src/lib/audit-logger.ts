@@ -67,7 +67,8 @@ export type AuditTargetType =
   | "timebit"
   | "qse_policy"
   | "danger_report"
-  | "orgchart";
+  | "orgchart"
+  | "job_title_permissions";
 
 interface AuditDetails {
   [key: string]: unknown;
