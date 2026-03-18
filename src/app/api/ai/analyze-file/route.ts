@@ -4,6 +4,9 @@ import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
 import { getAnthropicApiKey } from "@/actions/settings";
 
+// Extend serverless function timeout to 60s for AI analysis of large PDFs
+export const maxDuration = 60;
+
 const ROLE_CREDITS: Record<string, number> = {
   admin: 999999,
   rh: 100,
