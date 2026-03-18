@@ -1,9 +1,7 @@
 import { getProfile } from "@/actions/auth";
 import { getApiSettings, getCompanyLogo } from "@/actions/settings";
 import { redirect } from "next/navigation";
-import ApiKeySettings from "@/components/admin/api-key-settings";
-import ThemeSettings from "@/components/admin/theme-settings";
-import LogoSettings from "@/components/admin/logo-settings";
+import AdminSettingsTabs from "@/components/admin/admin-settings-tabs";
 
 export const dynamic = "force-dynamic";
 
@@ -24,18 +22,14 @@ export default async function AdminSettingsPage() {
       <h1 className="mb-1 text-base font-semibold text-[var(--heading)]">
         Paramètres
       </h1>
-      <p className="mb-8 text-[13px] text-[var(--text-secondary)]">
+      <p className="mb-6 text-[13px] text-[var(--text-secondary)]">
         Configuration générale de l&apos;intranet.
       </p>
 
-      <div className="max-w-2xl space-y-6">
-        <LogoSettings logos={logos} />
-        <ThemeSettings />
-        <ApiKeySettings
-          hasKey={apiSettings?.hasKey ?? false}
-          maskedKey={apiSettings?.maskedKey ?? ""}
-        />
-      </div>
+      <AdminSettingsTabs
+        logos={logos}
+        apiSettings={apiSettings}
+      />
     </div>
   );
 }

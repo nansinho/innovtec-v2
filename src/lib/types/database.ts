@@ -472,6 +472,27 @@ export interface NewsAttachment {
 }
 
 // ==========================================
+// INTERNAL MESSAGES
+// ==========================================
+
+export interface InternalMessage {
+  id: string;
+  from_user_id: string;
+  to_user_id: string;
+  content: string;
+  is_read: boolean;
+  created_at: string;
+  from_user?: Pick<Profile, "id" | "first_name" | "last_name" | "avatar_url">;
+  to_user?: Pick<Profile, "id" | "first_name" | "last_name" | "avatar_url">;
+}
+
+export interface Conversation {
+  user: Pick<Profile, "id" | "first_name" | "last_name" | "avatar_url">;
+  lastMessage: InternalMessage;
+  unreadCount: number;
+}
+
+// ==========================================
 // BIRTHDAY WISHES
 // ==========================================
 

@@ -99,6 +99,45 @@ export default function NotificationProvider({
           }
         }
       )
+      .on(
+        "postgres_changes",
+        {
+          event: "DELETE",
+          schema: "public",
+          table: "notifications",
+          filter: `user_id=eq.${userId}`,
+        },
+        (payload) => {
+          const deletedId = (payload.old as { id: string }).id;
+          setNotifications((prev) => {
+            const target = prev.find((n) => n.id === deletedId);
+            if (target && !target.is_read) {
+              setUnreadCount((c) => Math.max(0, c - 1));
+            }
+            return prev.filter((n) => n.id !== deletedId);
+          });
+        }
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "notifications",
+          filter: `user_id=eq.${userId}`,
+        },
+        (payload) => {
+          const updated = payload.new as Notification;
+          setNotifications((prev) =>
+            prev.map((n) => (n.id === updated.id ? updated : n))
+          );
+          // Recalculate unread count
+          setNotifications((prev) => {
+            setUnreadCount(prev.filter((n) => !n.is_read).length);
+            return prev;
+          });
+        }
+      )
       .subscribe();
 
     return () => {
