@@ -47,7 +47,7 @@ export default async function RecentDocs() {
             <Link
               key={doc.id}
               href={href}
-              className="flex items-center gap-2.5 px-4 py-2 transition-colors hover:bg-zinc-50/80"
+              className="flex items-center gap-2.5 px-4 py-2 transition-colors hover:bg-zinc-100"
             >
               <div className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md ${isRex ? "bg-[var(--teal-surface)]" : "bg-[var(--blue-surface)]"}`}>
                 <FileText className={`h-3.5 w-3.5 ${isRex ? "text-[color:var(--teal)]" : "text-[color:var(--blue)]"}`} />

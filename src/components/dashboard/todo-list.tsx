@@ -97,7 +97,7 @@ export default function TodoList() {
           {todos.map((todo) => (
             <div
               key={todo.id}
-              className="group flex items-center gap-3 px-5 py-2.5 transition-colors hover:bg-amber-50/30"
+              className="group flex items-center gap-3 px-5 py-2.5 transition-colors hover:bg-zinc-100"
             >
               <button
                 onClick={() => toggle(todo.id)}
@@ -105,7 +105,7 @@ export default function TodoList() {
                   "flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-[1.5px] transition-all duration-200",
                   todo.status === "done"
                     ? "border-amber-500 bg-amber-500 shadow-sm shadow-amber-500/20"
-                    : "border-zinc-300 hover:border-amber-400 hover:bg-amber-50"
+                    : "border-zinc-300 hover:border-zinc-400 hover:bg-zinc-100"
                 )}
               >
                 {todo.status === "done" && (
@@ -124,7 +124,7 @@ export default function TodoList() {
               </span>
               <button
                 onClick={() => handleDelete(todo.id)}
-                className="rounded-md p-1 text-zinc-400 opacity-0 transition-all hover:bg-red-50 hover:text-red-500 group-hover:opacity-100"
+                className="rounded-md p-1 text-zinc-400 opacity-0 transition-all hover:bg-zinc-100 hover:text-zinc-600 group-hover:opacity-100"
                 aria-label="Supprimer"
               >
                 <Trash2 className="h-3.5 w-3.5" />
