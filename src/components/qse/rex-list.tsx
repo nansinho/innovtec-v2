@@ -24,16 +24,14 @@ interface RexListProps {
 
 export default function RexList({ rexList, headerAction }: RexListProps) {
   const router = useRouter();
+  const refMap = useMemo(() => createReferenceMap(rexList, "REX"), [rexList]);
 
   const columns: ColumnDef<RexItem>[] = [
     {
       key: "index",
-      header: "#",
-      width: "50px",
-      render: (_) => {
-        const idx = rexList.indexOf(_);
-        return <span className="text-[var(--text-muted)]">{idx + 1}</span>;
-      },
+      header: "ID",
+      width: "120px",
+      render: (item) => <span className="text-[var(--text-muted)]">{refMap.get(item.id)}</span>,
     },
     {
       key: "rex_number",

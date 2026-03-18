@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { Users, Mail, Phone, Eye, Cake } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, createReferenceMap } from "@/lib/utils";
 import { DataTable, type ColumnDef, type FilterDef } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
 import { EQUIPE_MAP } from "@/lib/status-config";

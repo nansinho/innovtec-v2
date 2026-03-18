@@ -26,6 +26,7 @@ export function SseDashboardManager({ dashboards: initialDashboards }: SseDashbo
   const [creating, setCreating] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<SseDashboard | null>(null);
   const [isPending, startTransition] = useTransition();
+  const refMap = useMemo(() => createReferenceMap(dashboards, "SSE"), [dashboards]);
 
   function handleCreated(newDashboard: SseDashboard) {
     setDashboards((prev) => [newDashboard, ...prev].sort((a, b) => {
@@ -106,7 +107,7 @@ export function SseDashboardManager({ dashboards: initialDashboards }: SseDashbo
           <table className="w-full text-left text-sm">
             <thead className="border-b border-[var(--border-1)] bg-[var(--hover)]">
               <tr>
-                <th className="px-3 py-2 text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]">#</th>
+                <th className="px-3 py-2 text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]">ID</th>
                 <th className="px-3 py-2 text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]">Période</th>
                 <th className="px-3 py-2 text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]">ASAA</th>
                 <th className="px-3 py-2 text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]">Taux SST</th>
@@ -118,7 +119,7 @@ export function SseDashboardManager({ dashboards: initialDashboards }: SseDashbo
             <tbody className="divide-y divide-[var(--border-1)]">
               {dashboards.map((d, index) => (
                 <tr key={d.id} className="transition-colors hover:bg-[var(--hover)]">
-                  <td className="px-3 py-2 text-[13px] text-[var(--text-muted)]">{index + 1}</td>
+                  <td className="px-3 py-2 text-[13px] text-[var(--text-muted)]">{refMap.get(d.id)}</td>
                   <td className="px-3 py-2 font-medium text-[var(--heading)]">
                     {MONTH_NAMES[d.month - 1]} {d.year}
                   </td>
