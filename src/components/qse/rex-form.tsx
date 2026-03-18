@@ -61,6 +61,8 @@ interface RexFormData {
   deja_arrive: string[];
   type_evenement: string;
   source_file_url: string;
+  conclusion_title: string;
+  conclusion_content: string;
 }
 
 const emptyForm: RexFormData = {
@@ -84,6 +86,8 @@ const emptyForm: RexFormData = {
   deja_arrive: [],
   type_evenement: "",
   source_file_url: "",
+  conclusion_title: "",
+  conclusion_content: "",
 };
 
 interface RexFormProps {
@@ -114,6 +118,8 @@ function rexToFormData(rex: Rex): RexFormData {
     deja_arrive: rex.deja_arrive || [],
     type_evenement: rex.type_evenement || "",
     source_file_url: rex.source_file_url || "",
+    conclusion_title: rex.conclusion_title || "",
+    conclusion_content: rex.conclusion_content || "",
   };
 }
 
@@ -157,6 +163,8 @@ export default function RexForm({ onCreated, onClose, initialData }: RexFormProp
       deja_arrive: Array.isArray(r.deja_arrive) ? (r.deja_arrive as string[]) : [],
       type_evenement: (r.type_evenement as string) || "",
       source_file_url: fileUrl || "",
+      conclusion_title: (r.conclusion_title as string) || "",
+      conclusion_content: (r.conclusion_content as string) || "",
     });
     setMode("manual");
 
@@ -193,6 +201,8 @@ export default function RexForm({ onCreated, onClose, initialData }: RexFormProp
         causes: r.causes || "",
         actions_engagees: r.actions_engagees || r.actions || "",
         vigilance: r.vigilance || "",
+        conclusion_title: r.conclusion_title || "",
+        conclusion_content: r.conclusion_content || "",
       }));
       setMode("manual");
       toast.success("REX généré par l'IA");
@@ -529,6 +539,41 @@ export default function RexForm({ onCreated, onClose, initialData }: RexFormProp
                   </div>
                 );
               })}
+
+              {/* Conclusion (Règles vitales, Bonnes pratiques, etc.) */}
+              <div className="rounded-[var(--radius)] border border-[var(--border-1)] bg-white p-4">
+                <div className="mb-3 flex items-center gap-2">
+                  <div className="h-1 w-6 rounded bg-red-500" />
+                  <h3 className="text-[12px] font-semibold text-[var(--navy)]">
+                    Conclusion
+                  </h3>
+                </div>
+                <div className="space-y-3">
+                  <div>
+                    <label className="mb-1 block text-[11px] font-medium text-[var(--text-secondary)]">
+                      Titre de la conclusion
+                    </label>
+                    <input
+                      value={form.conclusion_title}
+                      onChange={(e) => setForm({ ...form, conclusion_title: e.target.value })}
+                      className={inputClass}
+                      placeholder="Ex: Règles vitales associées, Bonnes pratiques, Rappel réglementaire..."
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-[11px] font-medium text-[var(--text-secondary)]">
+                      Contenu
+                    </label>
+                    <textarea
+                      value={form.conclusion_content}
+                      onChange={(e) => setForm({ ...form, conclusion_content: e.target.value })}
+                      rows={3}
+                      className={`${inputClass} resize-none`}
+                      placeholder="Contenu de la conclusion..."
+                    />
+                  </div>
+                </div>
+              </div>
 
               {/* Footer: Déjà arrivé + Type d'événement */}
               <div className="grid grid-cols-2 gap-4">

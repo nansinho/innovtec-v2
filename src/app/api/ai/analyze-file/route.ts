@@ -204,8 +204,9 @@ STRUCTURE D'UNE FICHE REX INNOVTEC :
 2. Section "LES FAITS" (badge bleu avec engrenages) : description factuelle de ce qui s'est passé. Le texte est dans un encadré. Une photo peut accompagner à droite.
 3. Section "LES CAUSES ET LES CIRCONSTANCES" (badge vert avec point d'interrogation) : analyse des causes racines. Le texte est dans un encadré. Une photo peut accompagner.
 4. Section "LA SYNTHÈSE DES ACTIONS ENGAGÉES" (badge orange avec checklist) : mesures correctives prises. Le texte est dans un encadré. Une photo peut accompagner.
-5. Section "LE RAPPEL À VIGILANCE" (badge jaune avec triangle attention) : rappels et consignes de sécurité. Le texte est dans un encadré. Un badge "RÈGLE VITALE" peut accompagner.
-6. FOOTER : "DÉJÀ ARRIVÉ ?" avec liste de précédents similaires, et "TYPE D'ÉVÉNEMENT" où un type est mis en surbrillance parmi SD, PRESQU'ACCIDENT, ACCIDENT, HPE.
+5. Section "LE RAPPEL À VIGILANCE" (badge jaune avec triangle attention) : rappels et consignes de sécurité. Le texte est dans un encadré.
+6. Section CONCLUSION (optionnelle, après la vigilance) : séparée par une ligne rouge/orange. Le titre est dynamique (ex: "Règles vitales associées", "Bonnes pratiques associées", "Rappel réglementaire", etc.) et souligné. Le contenu contient du texte avec des passages en gras.
+7. FOOTER : "DÉJÀ ARRIVÉ ?" avec liste de précédents similaires, et "TYPE D'ÉVÉNEMENT" où un type est mis en surbrillance parmi SD, PRESQU'ACCIDENT, ACCIDENT, HPE.
 
 Retourne UNIQUEMENT un JSON valide avec ces champs :
 {
@@ -219,6 +220,8 @@ Retourne UNIQUEMENT un JSON valide avec ces champs :
   "causes": "<texte COMPLET et EXACT de la section Les Causes, en préservant chaque phrase et saut de ligne avec \\n>",
   "actions_engagees": "<texte COMPLET et EXACT de la section Actions Engagées, en préservant chaque phrase et saut de ligne avec \\n>",
   "vigilance": "<texte COMPLET et EXACT de la section Rappel à Vigilance, en préservant chaque phrase et saut de ligne avec \\n>",
+  "conclusion_title": "<titre EXACT de la section conclusion si présente, ex: 'Règles vitales associées', sinon chaîne vide>",
+  "conclusion_content": "<texte COMPLET et EXACT de la section conclusion si présente, en préservant chaque phrase et saut de ligne avec \\n, sinon chaîne vide>",
   "deja_arrive": ["<précédent 1>", "<précédent 2>"],
   "type_evenement": "<sd|presquaccident|accident|hpe — celui qui est en SURBRILLANCE ou encadré dans le footer>",
   "description": "<résumé clair en 1-2 phrases de ce qui s'est passé>",

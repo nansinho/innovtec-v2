@@ -211,6 +211,19 @@ export default function RexDetail({ rex, onExportPdf, onEdit, companyLogo }: Rex
           })}
         </div>
 
+        {/* Conclusion (Règles vitales, Bonnes pratiques, etc.) */}
+        {rex.conclusion_title && rex.conclusion_content && (
+          <div className="px-6 pb-4">
+            <div className="mb-3 h-1 w-full rounded bg-gradient-to-r from-red-500 to-orange-400" />
+            <h3 className="mb-2 text-sm font-semibold text-[#0B3655] underline">
+              {rex.conclusion_title} :
+            </h3>
+            <p className="whitespace-pre-line text-sm leading-relaxed text-[var(--heading)]">
+              {rex.conclusion_content}
+            </p>
+          </div>
+        )}
+
         {/* Footer */}
         <div className="border-t border-[var(--border-1)] bg-gray-50/50 p-6">
           <div className="grid grid-cols-2 gap-6">

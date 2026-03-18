@@ -275,6 +275,8 @@ export interface Rex {
   deja_arrive: string[];
   type_evenement: RexEventType;
   source_file_url: string;
+  conclusion_title: string;
+  conclusion_content: string;
 }
 
 export interface BonnePratique {
