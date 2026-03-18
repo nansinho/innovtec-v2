@@ -533,9 +533,36 @@ export async function updateRex(
     return { success: false, error: "Mise à jour impossible — vous n'avez pas les droits ou la fiche n'existe pas" };
   }
 
+  // Sync the linked document entry if title, number, year, or author changed
+  if (rex.title !== undefined || rex.rex_number !== undefined || rex.rex_year !== undefined || rex.author_id !== undefined) {
+    // Fetch the full REX to rebuild the document name
+    const { data: fullRex } = await supabase
+      .from("rex")
+      .select("title, rex_number, rex_year, source_file_url, author_id")
+      .eq("id", id)
+      .single();
+
+    if (fullRex) {
+      const rexNum = fullRex.rex_number || "X";
+      const rexYr = fullRex.rex_year || new Date().getFullYear();
+      const docName = `Fiche REX ${rexNum}/${rexYr} - ${fullRex.title}`;
+      const fileUrl = fullRex.source_file_url || `/qse/rex/${id}`;
+
+      const docUpdate: Record<string, unknown> = { name: docName };
+      if (fullRex.author_id) docUpdate.uploaded_by = fullRex.author_id;
+
+      await supabase
+        .from("documents")
+        .update(docUpdate)
+        .eq("file_url", fileUrl);
+    }
+  }
+
   await auditLog(user.id, "update", "rex", id, { title: rex.title });
   revalidatePath("/qse/rex");
   revalidatePath(`/qse/rex/${id}`);
+  revalidatePath("/documents");
+  revalidatePath("/");
   return { success: true };
 }
 
@@ -559,7 +586,7 @@ export async function deleteRex(
   const { error } = await supabase.from("rex").delete().eq("id", id);
   if (error) return { success: false, error: error.message };
 
-  // Clean up: delete linked document entry
+  // Clean up: delete linked document entry (source file OR internal link)
   if (rex?.source_file_url) {
     await supabase
       .from("documents")
@@ -569,6 +596,11 @@ export async function deleteRex(
     // Delete the source file from storage
     await supabase.storage.from("documents").remove([rex.source_file_url]);
   }
+  // Also delete document entries with internal link /qse/rex/{id}
+  await supabase
+    .from("documents")
+    .delete()
+    .eq("file_url", `/qse/rex/${id}`);
 
   // Clean up: delete section photos from storage
   const photoUrls = [
