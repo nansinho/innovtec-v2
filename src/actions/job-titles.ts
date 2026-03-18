@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
 import { auditLog } from "@/lib/audit-logger";
+import { checkCallerPermission, PERMISSIONS } from "@/lib/permissions";
 
 export interface JobTitle {
   id: string;
@@ -36,7 +37,8 @@ export async function addJobTitle(
     .eq("id", user.id)
     .single();
 
-  if (!callerProfile || !["admin", "rh"].includes(callerProfile.role)) {
+  const { allowed } = await checkCallerPermission(PERMISSIONS.MANAGE_USERS);
+  if (!allowed) {
     return { success: false, error: "Accès refusé" };
   }
 
@@ -75,7 +77,8 @@ export async function updateUserJobTitle(
     .eq("id", user.id)
     .single();
 
-  if (!callerProfile || !["admin", "rh"].includes(callerProfile.role)) {
+  const { allowed } = await checkCallerPermission(PERMISSIONS.MANAGE_USERS);
+  if (!allowed) {
     return { success: false, error: "Accès refusé" };
   }
 
@@ -109,7 +112,8 @@ export async function deleteJobTitle(
     .eq("id", user.id)
     .single();
 
-  if (!callerProfile || !["admin", "rh"].includes(callerProfile.role)) {
+  const { allowed } = await checkCallerPermission(PERMISSIONS.MANAGE_USERS);
+  if (!allowed) {
     return { success: false, error: "Accès refusé" };
   }
 

@@ -11,6 +11,7 @@ import type {
 } from "@/lib/types/database";
 import { createNotificationForUser } from "@/actions/notifications";
 import { auditLog } from "@/lib/audit-logger";
+import { hasPermission, PERMISSIONS } from "@/lib/permissions";
 
 // ==========================================
 // HELPERS
@@ -32,15 +33,15 @@ async function getAuthProfile() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("id, role")
+    .select("id, role, job_title")
     .eq("id", user.id)
     .single();
 
   return profile;
 }
 
-function isQseManager(role: string) {
-  return ["admin", "rh", "responsable_qse"].includes(role);
+async function canManageQse(profile: { role: string; job_title?: string | null }) {
+  return hasPermission(profile.role, profile.job_title || "", PERMISSIONS.MANAGE_QSE);
 }
 
 // ==========================================
@@ -132,7 +133,7 @@ export async function createActionPlan(planData: {
   signalement_id?: string;
 }): Promise<{ success: boolean; error?: string; id?: string }> {
   const profile = await getAuthProfile();
-  if (!profile || !isQseManager(profile.role)) {
+  if (!profile || !(await canManageQse(profile))) {
     return { success: false, error: "Non autorisé" };
   }
 
@@ -215,7 +216,7 @@ export async function updateActionPlan(
   }
 ): Promise<{ success: boolean; error?: string }> {
   const profile = await getAuthProfile();
-  if (!profile || !isQseManager(profile.role)) {
+  if (!profile || !(await canManageQse(profile))) {
     return { success: false, error: "Non autorisé" };
   }
 
@@ -270,7 +271,7 @@ export async function deleteActionPlan(
   id: string
 ): Promise<{ success: boolean; error?: string }> {
   const profile = await getAuthProfile();
-  if (!profile || !isQseManager(profile.role)) {
+  if (!profile || !(await canManageQse(profile))) {
     return { success: false, error: "Non autorisé" };
   }
 
@@ -310,7 +311,7 @@ export async function linkSignalement(
   signalementId: string
 ): Promise<{ success: boolean; error?: string }> {
   const profile = await getAuthProfile();
-  if (!profile || !isQseManager(profile.role)) {
+  if (!profile || !(await canManageQse(profile))) {
     return { success: false, error: "Non autorisé" };
   }
 
@@ -354,7 +355,7 @@ export async function unlinkSignalement(
   signalementId: string
 ): Promise<{ success: boolean; error?: string }> {
   const profile = await getAuthProfile();
-  if (!profile || !isQseManager(profile.role)) {
+  if (!profile || !(await canManageQse(profile))) {
     return { success: false, error: "Non autorisé" };
   }
 

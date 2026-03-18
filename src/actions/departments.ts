@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { auditLog } from "@/lib/audit-logger";
+import { checkCallerPermission, PERMISSIONS } from "@/lib/permissions";
 
 export interface Department {
   id: string;
@@ -35,7 +36,8 @@ export async function addDepartment(
     .eq("id", user.id)
     .single();
 
-  if (!callerProfile || !["admin", "rh"].includes(callerProfile.role)) {
+  const { allowed } = await checkCallerPermission(PERMISSIONS.MANAGE_TEAMS);
+  if (!allowed) {
     return { success: false, error: "Accès refusé" };
   }
 
@@ -73,7 +75,8 @@ export async function deleteDepartment(
     .eq("id", user.id)
     .single();
 
-  if (!callerProfile || !["admin", "rh"].includes(callerProfile.role)) {
+  const { allowed } = await checkCallerPermission(PERMISSIONS.MANAGE_TEAMS);
+  if (!allowed) {
     return { success: false, error: "Accès refusé" };
   }
 

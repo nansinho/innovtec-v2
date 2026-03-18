@@ -6,6 +6,7 @@ import { getTeams, getTeamsWithMembers } from "@/actions/teams";
 import { redirect } from "next/navigation";
 import UsersTable from "@/components/admin/users-table";
 import AdminBootstrap from "@/components/admin/admin-bootstrap";
+import { hasPermission, PERMISSIONS } from "@/lib/permissions";
 
 
 export default async function AdminUsersPage() {
@@ -23,13 +24,14 @@ export default async function AdminUsersPage() {
     redirect("/admin/users");
   }
 
-  // If user is not admin/rh and an admin already exists, redirect
-  if (!["admin", "rh"].includes(profile.role) && adminCheck.hasAdmin) {
+  // If user doesn't have manage_users permission and an admin already exists, redirect
+  const canManageUsers = await hasPermission(profile.role, profile.job_title || "", PERMISSIONS.MANAGE_USERS);
+  if (!canManageUsers && adminCheck.hasAdmin) {
     redirect("/");
   }
 
   // If no admin and user was NOT promoted (shouldn't happen normally)
-  if (!adminCheck.hasAdmin && !["admin", "rh"].includes(profile.role)) {
+  if (!adminCheck.hasAdmin && !canManageUsers) {
     return (
       <div className="p-6 pb-20 md:pb-6">
         <AdminBootstrap />

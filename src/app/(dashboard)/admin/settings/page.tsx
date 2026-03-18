@@ -2,14 +2,15 @@ import { getProfile } from "@/actions/auth";
 import { getApiSettings, getCompanyLogo } from "@/actions/settings";
 import { redirect } from "next/navigation";
 import AdminSettingsTabs from "@/components/admin/admin-settings-tabs";
+import { hasPermission, PERMISSIONS } from "@/lib/permissions";
 
 
 export default async function AdminSettingsPage() {
   const profile = await getProfile();
 
-  if (!profile || !["admin", "rh"].includes(profile.role)) {
-    redirect("/");
-  }
+  if (!profile) redirect("/");
+  const canManageSettings = await hasPermission(profile.role, profile.job_title || "", PERMISSIONS.MANAGE_SETTINGS);
+  if (!canManageSettings) redirect("/");
 
   const [apiSettings, logos] = await Promise.all([
     getApiSettings(),

@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import type { SseDashboard } from "@/lib/types/database";
 import { createNotificationForAll } from "@/actions/notifications";
 import { auditLog } from "@/lib/audit-logger";
+import { checkCallerPermission, PERMISSIONS } from "@/lib/permissions";
 
 // ==========================================
 // SSE DASHBOARDS
@@ -76,7 +77,8 @@ export async function createSseDashboard(
     .eq("id", user.id)
     .single();
 
-  if (!profile || !["admin", "responsable_qse"].includes(profile.role)) {
+  const { allowed: canQse } = await checkCallerPermission(PERMISSIONS.MANAGE_QSE);
+  if (!canQse) {
     return { success: false, error: "Acces refuse" };
   }
 
@@ -130,7 +132,8 @@ export async function updateSseDashboard(
     .eq("id", user.id)
     .single();
 
-  if (!profile || !["admin", "responsable_qse"].includes(profile.role)) {
+  const { allowed: canQse } = await checkCallerPermission(PERMISSIONS.MANAGE_QSE);
+  if (!canQse) {
     return { success: false, error: "Acces refuse" };
   }
 
@@ -184,7 +187,8 @@ export async function deleteSseDashboard(
     .eq("id", user.id)
     .single();
 
-  if (!profile || !["admin", "responsable_qse"].includes(profile.role)) {
+  const { allowed: canQse } = await checkCallerPermission(PERMISSIONS.MANAGE_QSE);
+  if (!canQse) {
     return { success: false, error: "Acces refuse" };
   }
 

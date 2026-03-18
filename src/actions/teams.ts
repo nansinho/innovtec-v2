@@ -31,8 +31,12 @@ async function getCallerProfile() {
   return profile ? { ...profile, authId: user.id } : null;
 }
 
-function isAdminOrRh(role: string) {
-  return ["admin", "rh"].includes(role);
+async function callerCanManageTeams() {
+  const caller = await getCallerProfile();
+  if (!caller) return { caller: null, allowed: false };
+  const { hasPermission, PERMISSIONS } = await import("@/lib/permissions");
+  const allowed = await hasPermission(caller.role, caller.job_title || "", PERMISSIONS.MANAGE_TEAMS);
+  return { caller, allowed };
 }
 
 function revalidateAll() {
@@ -178,7 +182,8 @@ export async function addTeam(
     .eq("id", user.id)
     .single();
 
-  if (!callerProfile || !["admin", "rh"].includes(callerProfile.role)) {
+  const { hasPermission: hasPerm, PERMISSIONS: P } = await import("@/lib/permissions");
+  if (!callerProfile || !(await hasPerm(callerProfile.role, (callerProfile as unknown as { job_title: string }).job_title || "", P.MANAGE_TEAMS))) {
     return { success: false, error: "Accès refusé" };
   }
 
@@ -209,8 +214,8 @@ export async function createTeam(
   label: string,
   description?: string
 ): Promise<{ success: boolean; team?: Team; error?: string }> {
-  const caller = await getCallerProfile();
-  if (!caller || !isAdminOrRh(caller.role)) {
+  const { caller, allowed } = await callerCanManageTeams();
+  if (!caller || !allowed) {
     return { success: false, error: "Accès refusé" };
   }
 
@@ -244,8 +249,8 @@ export async function updateTeam(
   teamId: string,
   data: { label?: string; description?: string }
 ): Promise<{ success: boolean; error?: string }> {
-  const caller = await getCallerProfile();
-  if (!caller || !isAdminOrRh(caller.role)) {
+  const { caller, allowed } = await callerCanManageTeams();
+  if (!caller || !allowed) {
     return { success: false, error: "Accès refusé" };
   }
 
@@ -292,7 +297,8 @@ export async function deleteTeam(
     .eq("id", user.id)
     .single();
 
-  if (!callerProfile || !["admin", "rh"].includes(callerProfile.role)) {
+  const { hasPermission: hasPerm, PERMISSIONS: P } = await import("@/lib/permissions");
+  if (!callerProfile || !(await hasPerm(callerProfile.role, (callerProfile as unknown as { job_title: string }).job_title || "", P.MANAGE_TEAMS))) {
     return { success: false, error: "Accès refusé" };
   }
 
@@ -318,8 +324,8 @@ export async function addTeamMember(
   userId: string,
   role: TeamMemberRole
 ): Promise<{ success: boolean; error?: string }> {
-  const caller = await getCallerProfile();
-  if (!caller || !isAdminOrRh(caller.role)) {
+  const { caller, allowed } = await callerCanManageTeams();
+  if (!caller || !allowed) {
     return { success: false, error: "Accès refusé" };
   }
 
@@ -371,8 +377,8 @@ export async function removeTeamMember(
   teamId: string,
   userId: string
 ): Promise<{ success: boolean; error?: string }> {
-  const caller = await getCallerProfile();
-  if (!caller || !isAdminOrRh(caller.role)) {
+  const { caller, allowed } = await callerCanManageTeams();
+  if (!caller || !allowed) {
     return { success: false, error: "Accès refusé" };
   }
 
@@ -409,8 +415,8 @@ export async function updateTeamMemberRole(
   userId: string,
   role: TeamMemberRole
 ): Promise<{ success: boolean; error?: string }> {
-  const caller = await getCallerProfile();
-  if (!caller || !isAdminOrRh(caller.role)) {
+  const { caller, allowed } = await callerCanManageTeams();
+  if (!caller || !allowed) {
     return { success: false, error: "Accès refusé" };
   }
 
