@@ -129,6 +129,8 @@ const FeedPost = memo(function FeedPost({
   const [editSaving, setEditSaving] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const editFileRef = useRef<HTMLInputElement>(null);
+  const likePendingRef = useRef(false);
+  const deletingCommentIdRef = useRef<string | null>(null);
 
   const isOwner = currentUserId && post.author_id === currentUserId;
 
@@ -155,6 +157,9 @@ const FeedPost = memo(function FeedPost({
   }, [showMenu]);
 
   async function handleLike() {
+    if (likePendingRef.current) return;
+    likePendingRef.current = true;
+
     const newLiked = !liked;
     const newCount = newLiked ? likesCount + 1 : likesCount - 1;
     setLiked(newLiked);
@@ -162,10 +167,14 @@ const FeedPost = memo(function FeedPost({
     setLikeAnimating(true);
     setTimeout(() => setLikeAnimating(false), 300);
 
-    const result = await toggleFeedLike(post.id);
-    setLiked(result.liked);
-    setLikesCount(result.count);
-    onLikeUpdate(post.id, result.liked, result.count);
+    try {
+      const result = await toggleFeedLike(post.id);
+      setLiked(result.liked);
+      setLikesCount(result.count);
+      onLikeUpdate(post.id, result.liked, result.count);
+    } finally {
+      likePendingRef.current = false;
+    }
   }
 
   async function handleToggleComments() {
@@ -192,10 +201,16 @@ const FeedPost = memo(function FeedPost({
   }
 
   async function handleDeleteComment(commentId: string) {
-    const result = await deleteFeedComment(commentId);
-    if (result.success) {
-      setComments((prev) => prev.filter((c) => c.id !== commentId));
-      onCommentCountChange(post.id, -1);
+    if (deletingCommentIdRef.current === commentId) return;
+    deletingCommentIdRef.current = commentId;
+    try {
+      const result = await deleteFeedComment(commentId);
+      if (result.success) {
+        setComments((prev) => prev.filter((c) => c.id !== commentId));
+        onCommentCountChange(post.id, -1);
+      }
+    } finally {
+      deletingCommentIdRef.current = null;
     }
   }
 

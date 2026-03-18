@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useTransition } from "react";
+import { useState, useEffect, useTransition, useRef } from "react";
 import { Check, Trash2, Plus, ListTodo } from "lucide-react";
 import { Card, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -13,6 +13,7 @@ export default function TodoList() {
   const [loading, setLoading] = useState(true);
   const [isPending, startTransition] = useTransition();
   const [newLabel, setNewLabel] = useState("");
+  const busyIdsRef = useRef(new Set<string>());
 
   useEffect(() => {
     getUserTodos().then((data) => {
@@ -22,6 +23,8 @@ export default function TodoList() {
   }, []);
 
   function toggle(id: string) {
+    if (busyIdsRef.current.has(id)) return;
+    busyIdsRef.current.add(id);
     setTodos((prev) =>
       prev.map((t) =>
         t.id === id
@@ -29,13 +32,17 @@ export default function TodoList() {
           : t
       )
     );
-    startTransition(() => {
-      toggleTodo(id);
+    startTransition(async () => {
+      try {
+        await toggleTodo(id);
+      } finally {
+        busyIdsRef.current.delete(id);
+      }
     });
   }
 
   function handleAdd() {
-    if (!newLabel.trim()) return;
+    if (!newLabel.trim() || isPending) return;
     const label = newLabel.trim();
     setNewLabel("");
     const tempId = `temp-${Date.now()}`;
@@ -51,9 +58,15 @@ export default function TodoList() {
   }
 
   function handleDelete(id: string) {
+    if (busyIdsRef.current.has(id)) return;
+    busyIdsRef.current.add(id);
     setTodos((prev) => prev.filter((t) => t.id !== id));
-    startTransition(() => {
-      deleteTodo(id);
+    startTransition(async () => {
+      try {
+        await deleteTodo(id);
+      } finally {
+        busyIdsRef.current.delete(id);
+      }
     });
   }
 
