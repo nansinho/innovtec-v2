@@ -449,31 +449,6 @@ export async function createRex(
     excludeUserId: user.id,
   });
 
-  // Save as document entry so it appears in "Documents récents"
-  const rexNum = rex.rex_number || "X";
-  const rexYr = rex.rex_year || new Date().getFullYear();
-  const docName = `Fiche REX ${rexNum}/${rexYr} - ${rex.title}`;
-  const fileUrl = rex.source_file_url || `/qse/rex/${data?.id}`;
-  const fileType = rex.source_file_url ? "pdf" : "rex";
-
-  await supabase.from("documents").insert({
-    name: docName,
-    file_url: fileUrl,
-    file_type: fileType,
-    category: "rex",
-    uploaded_by: user.id,
-  });
-
-  // Notify all users about the new document
-  await createNotificationForAll({
-    type: "news",
-    title: "Nouveau document REX",
-    message: docName,
-    link: `/qse/rex/${data?.id}`,
-    related_id: data?.id,
-    excludeUserId: user.id,
-  });
-
   await auditLog(user.id, "create", "rex", data?.id ?? null, { title: rex.title });
   revalidatePath("/qse/rex");
   revalidatePath("/documents");
@@ -536,6 +511,8 @@ export async function updateRex(
   await auditLog(user.id, "update", "rex", id, { title: rex.title });
   revalidatePath("/qse/rex");
   revalidatePath(`/qse/rex/${id}`);
+  revalidatePath("/documents");
+  revalidatePath("/");
   return { success: true };
 }
 
@@ -559,14 +536,8 @@ export async function deleteRex(
   const { error } = await supabase.from("rex").delete().eq("id", id);
   if (error) return { success: false, error: error.message };
 
-  // Clean up: delete linked document entry
+  // Delete source PDF from storage if it exists
   if (rex?.source_file_url) {
-    await supabase
-      .from("documents")
-      .delete()
-      .eq("file_url", rex.source_file_url);
-
-    // Delete the source file from storage
     await supabase.storage.from("documents").remove([rex.source_file_url]);
   }
 
