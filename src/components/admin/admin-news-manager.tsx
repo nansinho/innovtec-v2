@@ -409,25 +409,28 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
                   aria-label="Sélectionner tout"
                 />
               </th>
-              <th className="px-3 py-2 text-xs font-medium text-[var(--text-secondary)]">
+              <th className="px-3 py-2 text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]">
+                #
+              </th>
+              <th className="px-3 py-2 text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]">
                 Titre
               </th>
-              <th className="px-3 py-2 text-xs font-medium text-[var(--text-secondary)]">
+              <th className="px-3 py-2 text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]">
                 Catégorie
               </th>
-              <th className="px-3 py-2 text-xs font-medium text-[var(--text-secondary)]">
+              <th className="px-3 py-2 text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]">
                 Statut
               </th>
-              <th className="px-3 py-2 text-xs font-medium text-[var(--text-secondary)]">
+              <th className="px-3 py-2 text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]">
                 Date
               </th>
-              <th className="px-3 py-2 text-right text-xs font-medium text-[var(--text-secondary)]">
+              <th className="px-3 py-2 text-right text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]">
                 Actions
               </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[var(--border-1)]">
-            {filtered.map((article) => {
+            {filtered.map((article, index) => {
               const authorName = article.author
                 ? `${article.author.first_name} ${article.author.last_name}`
                 : "—";
@@ -448,6 +451,7 @@ export default function AdminNewsManager({ news: initialNews }: AdminNewsManager
                       className="h-4 w-4 rounded border-zinc-300 accent-[var(--yellow)]"
                     />
                   </td>
+                  <td className="px-3 py-2 text-[13px] text-[var(--text-muted)]">{index + 1}</td>
                   <td className="px-3 py-2">
                     <div>
                       <div className="font-medium text-[var(--heading)]">
