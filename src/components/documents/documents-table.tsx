@@ -27,6 +27,7 @@ interface DocItem {
   file_size?: number;
   created_at: string;
   uploaded_by_profile?: { first_name: string; last_name: string } | null;
+  rex_link?: string;
 }
 
 function getFileIcon(name: string, category?: string) {
@@ -194,19 +195,27 @@ export default function DocumentsTable({ documents }: DocumentsTableProps) {
         title: "Aucun document",
         description: "Aucun document n'a été partagé pour le moment.",
       }}
+      onRowClick={(doc) => {
+        if (doc.category === "rex" && doc.rex_link) {
+          router.push(doc.rex_link);
+        } else if (doc.file_url?.startsWith("/")) {
+          router.push(doc.file_url);
+        }
+      }}
       actions={(doc) => {
-        const isInternalLink = doc.file_url?.startsWith("/");
+        const isRex = doc.category === "rex";
+        const rexLink = doc.rex_link;
         return [
         {
-          label: isInternalLink ? "Ouvrir le REX" : "Télécharger",
-          icon: isInternalLink ? ExternalLink : Download,
+          label: isRex ? "Ouvrir le REX" : "Télécharger",
+          icon: isRex ? ExternalLink : Download,
           onClick: () => {
-            if (doc.file_url) {
-              if (isInternalLink) {
-                router.push(doc.file_url);
-              } else {
-                window.open(doc.file_url, "_blank");
-              }
+            if (isRex && rexLink) {
+              router.push(rexLink);
+            } else if (doc.file_url?.startsWith("/")) {
+              router.push(doc.file_url);
+            } else if (doc.file_url) {
+              window.open(doc.file_url, "_blank");
             }
           },
         },
