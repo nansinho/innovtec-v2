@@ -186,6 +186,13 @@ export default function DocumentsTable({ documents }: DocumentsTableProps) {
         title: "Aucun document",
         description: "Aucun document n'a été partagé pour le moment.",
       }}
+      onRowClick={(doc) => {
+        if (doc.category === "rex" && doc.internal_link) {
+          router.push(doc.internal_link);
+        } else if (doc.file_url?.startsWith("/")) {
+          router.push(doc.file_url);
+        }
+      }}
       actions={(doc) => {
         const isRex = !!doc.internal_link;
         return [

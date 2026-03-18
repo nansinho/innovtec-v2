@@ -508,6 +508,7 @@ export default function RexForm({ onCreated, onClose, initialData, profiles = []
                         label: `${p.first_name} ${p.last_name}`,
                       }))}
                       placeholder="Sélectionner un auteur..."
+                      valueKey="id"
                     />
                   </div>
                 )}

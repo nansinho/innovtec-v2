@@ -20,6 +20,8 @@ interface SearchableSelectProps {
   addLabel?: string;
   className?: string;
   disabled?: boolean;
+  /** Which field to use as the value: "label" (default) or "id" */
+  valueKey?: "id" | "label";
 }
 
 export default function SearchableSelect({
@@ -32,6 +34,7 @@ export default function SearchableSelect({
   addLabel = "Ajouter",
   className,
   disabled,
+  valueKey = "label",
 }: SearchableSelectProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -118,7 +121,7 @@ export default function SearchableSelect({
     }
   }, [adding]);
 
-  const selectedLabel = options.find((o) => o.label === value)?.label || value;
+  const selectedLabel = options.find((o) => o[valueKey] === value)?.label || value;
 
   async function handleAdd() {
     if (!newValue.trim() || !onAdd) return;
@@ -126,7 +129,7 @@ export default function SearchableSelect({
     const result = await onAdd(newValue.trim());
     setLoading(false);
     if (result) {
-      onChange(result.label);
+      onChange(result[valueKey]);
       setNewValue("");
       setAdding(false);
       setSearch("");
@@ -139,7 +142,7 @@ export default function SearchableSelect({
     setLoading(true);
     const success = await onDelete(option.id);
     setLoading(false);
-    if (success && value === option.label) {
+    if (success && value === option[valueKey]) {
       onChange("");
     }
   }
@@ -238,7 +241,7 @@ export default function SearchableSelect({
                   key={option.id}
                   className={cn(
                     "group flex items-center rounded-lg transition-colors",
-                    value === option.label
+                    value === option[valueKey]
                       ? "bg-[var(--yellow-surface)]"
                       : "hover:bg-[var(--hover)]"
                   )}
@@ -246,13 +249,13 @@ export default function SearchableSelect({
                   <button
                     type="button"
                     onClick={() => {
-                      onChange(option.label);
+                      onChange(option[valueKey]);
                       setOpen(false);
                       setSearch("");
                     }}
                     className={cn(
                       "flex flex-1 items-center px-3 py-2 text-left text-xs",
-                      value === option.label
+                      value === option[valueKey]
                         ? "font-medium text-[var(--yellow)]"
                         : "text-[var(--heading)]"
                     )}
