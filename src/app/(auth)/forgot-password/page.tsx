@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { requestPasswordReset } from "@/actions/auth";
@@ -8,6 +8,14 @@ import { Zap, Mail, ArrowLeft } from "lucide-react";
 import { useAuthLogos } from "@/components/auth/auth-logo-provider";
 
 export default function ForgotPasswordPage() {
+  return (
+    <Suspense>
+      <ForgotPasswordContent />
+    </Suspense>
+  );
+}
+
+function ForgotPasswordContent() {
   const logos = useAuthLogos();
   const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
