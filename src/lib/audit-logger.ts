@@ -33,7 +33,9 @@ export type AuditAction =
   | "reactivate"
   | "send_wish"
   | "update_manager"
-  | "import_orgchart";
+  | "import_orgchart"
+  | "analyze_orgchart_image"
+  | "apply_ai_orgchart";
 
 export type AuditTargetType =
   | "user"
