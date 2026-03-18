@@ -14,6 +14,17 @@ const ALLOWED_TYPES: Record<string, string[]> = {
   ],
   "company-logos": ["image/jpeg", "image/png", "image/webp", "image/svg+xml"],
   "avatars": ["image/jpeg", "image/png", "image/webp"],
+  "chat-attachments": [
+    "image/jpeg",
+    "image/png",
+    "image/webp",
+    "image/gif",
+    "application/pdf",
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "application/vnd.ms-excel",
+  ],
 };
 
 const MAX_SIZE = 10 * 1024 * 1024; // 10MB

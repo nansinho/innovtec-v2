@@ -77,19 +77,35 @@ export async function getConversationMessages(
   return (data as InternalMessage[]) ?? [];
 }
 
-export async function sendMessage(toUserId: string, content: string) {
+export async function sendMessage(
+  toUserId: string,
+  content: string,
+  attachment?: {
+    file_url: string;
+    file_name: string;
+    file_type: string;
+    file_size: number;
+  }
+) {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { success: false, error: "Non authentifié" };
 
-  if (!content.trim()) return { success: false, error: "Message vide" };
+  if (!content.trim() && !attachment)
+    return { success: false, error: "Message vide" };
 
   const { error } = await supabase.from("internal_messages").insert({
     from_user_id: user.id,
     to_user_id: toUserId,
     content: content.trim(),
+    ...(attachment && {
+      file_url: attachment.file_url,
+      file_name: attachment.file_name,
+      file_type: attachment.file_type,
+      file_size: attachment.file_size,
+    }),
   });
 
   if (error) return { success: false, error: error.message };

@@ -485,6 +485,10 @@ export interface InternalMessage {
   content: string;
   is_read: boolean;
   created_at: string;
+  file_url?: string | null;
+  file_name?: string | null;
+  file_type?: string | null;
+  file_size?: number | null;
   from_user?: Pick<Profile, "id" | "first_name" | "last_name" | "avatar_url">;
   to_user?: Pick<Profile, "id" | "first_name" | "last_name" | "avatar_url">;
 }
