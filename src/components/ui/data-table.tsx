@@ -71,6 +71,7 @@ export interface DataTableProps<T> {
   loading?: boolean;
   onRowClick?: (item: T) => void;
   headerAction?: React.ReactNode;
+  tabsSlot?: React.ReactNode;
 }
 
 /* ------------------------------------------------------------------ */
@@ -97,6 +98,7 @@ export function DataTable<T>({
   loading = false,
   onRowClick,
   headerAction,
+  tabsSlot,
 }: DataTableProps<T>) {
   const [search, setSearch] = useState("");
   const [filterValues, setFilterValues] = useState<Record<string, string>>({});
@@ -277,6 +279,9 @@ export function DataTable<T>({
           </div>
         </div>
       )}
+
+      {/* ============ TABS SLOT ============ */}
+      {tabsSlot}
 
       {/* ============ ROW 2: Search + Filters button ============ */}
       {hasToolbar && (

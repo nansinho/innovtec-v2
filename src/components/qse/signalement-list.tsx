@@ -13,12 +13,14 @@ import { SIGNALEMENT_STATUS_MAP, PRIORITY_MAP } from "@/lib/status-config";
 import { getStandardToolbarActions } from "@/lib/table-toolbar-actions";
 import { createReferenceMap } from "@/lib/utils";
 import type { DangerReport, SignalementCategory } from "@/lib/types/database";
+import type { ReactNode } from "react";
 
 interface SignalementListProps {
   signalements: DangerReport[];
   categories: SignalementCategory[];
   canManage: boolean;
   onAdd?: () => void;
+  tabsSlot?: ReactNode;
 }
 
 function exportCsv(signalements: DangerReport[]) {
@@ -53,7 +55,7 @@ function exportCsv(signalements: DangerReport[]) {
   URL.revokeObjectURL(url);
 }
 
-export default function SignalementList({ signalements: initial, categories, canManage, onAdd }: SignalementListProps) {
+export default function SignalementList({ signalements: initial, categories, canManage, onAdd, tabsSlot }: SignalementListProps) {
   const [signalements, setSignalements] = useState(initial);
   const [isPending, startTransition] = useTransition();
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -249,6 +251,7 @@ export default function SignalementList({ signalements: initial, categories, can
       title="Signalements"
       description="Signalez et suivez les situations dangereuses identifiées."
       toolbarActions={getStandardToolbarActions({ onExport: () => exportCsv(signalements) })}
+      tabsSlot={tabsSlot}
       selectable
       searchable
       searchPlaceholder="Rechercher un signalement..."

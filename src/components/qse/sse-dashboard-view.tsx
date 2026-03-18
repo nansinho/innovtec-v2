@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useTransition } from "react";
+import { useState, useRef, useTransition, useMemo } from "react";
 import type { SseDashboard } from "@/lib/types/database";
 import { CompanyLogo } from "@/components/ui/company-logo";
 import { SseDashboardForm } from "@/components/admin/sse-dashboard-form";
@@ -9,6 +9,7 @@ import ConfirmDialog from "@/components/ui/confirm-dialog";
 import { toast } from "sonner";
 import { DropdownMenu } from "@/components/ui/dropdown-menu";
 import { getStandardToolbarActions } from "@/lib/table-toolbar-actions";
+import { createReferenceMap } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -122,6 +123,7 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
   const [exporting, setExporting] = useState<"pdf" | "excel" | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<SseDashboard | null>(null);
   const [isDeleting, startDeleteTransition] = useTransition();
+  const refMap = useMemo(() => createReferenceMap(dashboards, "SSE"), [dashboards]);
 
   // Group dashboards by year
   const grouped = dashboards.reduce<Record<number, SseDashboard[]>>((acc, d) => {
@@ -459,6 +461,7 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
           <table className="w-full">
             <thead>
               <tr className="border-b border-[var(--border-1)] bg-[var(--hover)]">
+                <th className="px-3 py-2 text-left text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "120px" }}>ID</th>
                 <th className="px-3 py-2 text-left text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]">Mois</th>
                 <th className="px-3 py-2 text-left text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "80px" }}>Année</th>
                 <th className="px-3 py-2 text-center text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "80px" }}>ASAA</th>
@@ -493,6 +496,9 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
                     onClick={() => openDetail(d)}
                     className="cursor-pointer transition-colors duration-200 hover:bg-[var(--hover)]"
                   >
+                    <td className="px-3 py-2">
+                      <span className="text-[var(--text-muted)]">{refMap.get(d.id)}</span>
+                    </td>
                     <td className="px-3 py-2">
                       <span className="text-sm font-medium text-[var(--heading)]">{MONTH_NAMES[d.month - 1]}</span>
                     </td>
