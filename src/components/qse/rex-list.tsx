@@ -1,6 +1,6 @@
 "use client";
 
-import { BookOpen, Eye, Download, Trash2 } from "lucide-react";
+import { FileText, Eye, Download, Trash2 } from "lucide-react";
 import { DataTable, type ColumnDef } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
 import { TypeBadge } from "@/components/ui/status-badge";
@@ -24,6 +24,15 @@ export default function RexList({ rexList, headerAction }: RexListProps) {
   const router = useRouter();
 
   const columns: ColumnDef<RexItem>[] = [
+    {
+      key: "index",
+      header: "#",
+      width: "50px",
+      render: (_) => {
+        const idx = rexList.indexOf(_);
+        return <span className="text-[var(--text-muted)]">{idx + 1}</span>;
+      },
+    },
     {
       key: "rex_number",
       header: "N°",
@@ -112,7 +121,7 @@ export default function RexList({ rexList, headerAction }: RexListProps) {
       searchable
       searchPlaceholder="Rechercher un REX..."
       emptyState={{
-        icon: BookOpen,
+        icon: FileText,
         title: "Aucune fiche REX",
         description: "Aucun retour d'expérience n'a été enregistré pour le moment.",
       }}

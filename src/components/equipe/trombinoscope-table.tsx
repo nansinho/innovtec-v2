@@ -35,6 +35,15 @@ export default function TrombinoscopeTable({
 
   const columns: ColumnDef<Profile>[] = [
     {
+      key: "index",
+      header: "#",
+      width: "50px",
+      render: (_) => {
+        const idx = users.indexOf(_);
+        return <span className="text-[var(--text-muted)]">{idx + 1}</span>;
+      },
+    },
+    {
       key: "avatar",
       header: "",
       width: "50px",

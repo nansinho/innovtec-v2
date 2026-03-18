@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { BookOpen, Trash2, Image as ImageIcon } from "lucide-react";
+import { FileText, Trash2, Image as ImageIcon } from "lucide-react";
 import { DataTable, type ColumnDef } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
 import { CategoryBadge } from "@/components/ui/status-badge";
@@ -34,6 +34,15 @@ export default function BonnesPratiquesList({ items, headerAction }: BonnesPrati
   }
 
   const columns: ColumnDef<BonnePratique>[] = [
+    {
+      key: "index",
+      header: "#",
+      width: "50px",
+      render: (_) => {
+        const idx = items.indexOf(_);
+        return <span className="text-[var(--text-muted)]">{idx + 1}</span>;
+      },
+    },
     {
       key: "created_at",
       header: "Date",
@@ -117,7 +126,7 @@ export default function BonnesPratiquesList({ items, headerAction }: BonnesPrati
       searchable
       searchPlaceholder="Rechercher une bonne pratique..."
       emptyState={{
-        icon: BookOpen,
+        icon: FileText,
         title: "Aucune bonne pratique",
         description: "Aucune bonne pratique n'a été enregistrée pour le moment.",
       }}

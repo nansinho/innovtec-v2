@@ -42,6 +42,15 @@ export default function ActionPlanList({ plans: initial, canManage, onEdit, onAd
 
   const columns: ColumnDef<ActionPlan>[] = [
     {
+      key: "index",
+      header: "#",
+      width: "50px",
+      render: (_) => {
+        const idx = plans.indexOf(_);
+        return <span className="text-[var(--text-muted)]">{idx + 1}</span>;
+      },
+    },
+    {
       key: "title",
       header: "Titre",
       sortable: true,

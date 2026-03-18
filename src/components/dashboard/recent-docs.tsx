@@ -1,4 +1,4 @@
-import { FileText, ChevronRight, FolderOpen, BookOpen } from "lucide-react";
+import { FileText, ChevronRight, FolderOpen } from "lucide-react";
 import Link from "next/link";
 import { Card, CardHeader } from "@/components/ui/card";
 import { getDocuments } from "@/actions/documents";
@@ -78,11 +78,7 @@ export default async function RecentDocs() {
               className="flex items-center gap-3 px-5 py-2.5 transition-colors hover:bg-zinc-50/80"
             >
               <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${isRex ? "bg-[#0B3655]/10" : "bg-[#0B3655]/10"}`}>
-                {isRex ? (
-                  <BookOpen className="h-4 w-4 text-[#0B3655]" />
-                ) : (
-                  <FileText className="h-4 w-4 text-[#0B3655]" />
-                )}
+                <FileText className="h-4 w-4 text-[#0B3655]" />
               </div>
               <div className="min-w-0 flex-1">
                 <div className="truncate text-sm font-medium text-[var(--heading)]">

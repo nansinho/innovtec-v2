@@ -10,7 +10,7 @@ import {
   Plus,
   Loader2,
   Camera,
-  BookOpen,
+  FileText,
 } from "lucide-react";
 import { createRex, updateRex, uploadRexPhoto } from "@/actions/qse";
 import type { Rex } from "@/lib/types/database";
@@ -23,6 +23,8 @@ import {
   RexActionsBadge,
   RexVigilanceBadge,
 } from "@/components/icons/rex-section-icons";
+import SearchableSelect from "@/components/ui/searchable-select";
+import type { SelectOption } from "@/components/ui/searchable-select";
 
 type Mode = "import" | "ai" | "manual";
 
@@ -64,6 +66,7 @@ interface RexFormData {
   conclusion_title: string;
   conclusion_content: string;
   type_travaux: string;
+  author_id: string;
 }
 
 const emptyForm: RexFormData = {
@@ -90,12 +93,20 @@ const emptyForm: RexFormData = {
   conclusion_title: "",
   conclusion_content: "",
   type_travaux: "",
+  author_id: "",
 };
+
+export interface RexAuthorOption {
+  id: string;
+  first_name: string;
+  last_name: string;
+}
 
 interface RexFormProps {
   onCreated: (id?: string) => void;
   onClose: () => void;
   initialData?: Rex;
+  profiles?: RexAuthorOption[];
 }
 
 function rexToFormData(rex: Rex): RexFormData {
@@ -123,10 +134,11 @@ function rexToFormData(rex: Rex): RexFormData {
     conclusion_title: rex.conclusion_title || "",
     conclusion_content: rex.conclusion_content || "",
     type_travaux: rex.type_travaux || "",
+    author_id: rex.author_id || "",
   };
 }
 
-export default function RexForm({ onCreated, onClose, initialData }: RexFormProps) {
+export default function RexForm({ onCreated, onClose, initialData, profiles = [] }: RexFormProps) {
   const isEdit = !!initialData;
   const [mode, setMode] = useState<Mode>(isEdit ? "manual" : "import");
   const [aiPrompt, setAiPrompt] = useState("");
@@ -169,6 +181,7 @@ export default function RexForm({ onCreated, onClose, initialData }: RexFormProp
       conclusion_title: (r.conclusion_title as string) || "",
       conclusion_content: (r.conclusion_content as string) || "",
       type_travaux: (r.type_travaux as string) || "",
+      author_id: form.author_id,
     });
     setMode("manual");
 
@@ -307,7 +320,7 @@ export default function RexForm({ onCreated, onClose, initialData }: RexFormProp
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[var(--border-1)] px-6 py-4">
           <div className="flex items-center gap-2">
-            <BookOpen className="h-5 w-5 text-[var(--yellow)]" />
+            <FileText className="h-5 w-5 text-[var(--yellow)]" />
             <h2 className="text-lg font-semibold text-[var(--heading)]">
               {isEdit ? "Modifier la fiche REX" : "Nouvelle fiche REX"}
             </h2>
@@ -482,6 +495,22 @@ export default function RexForm({ onCreated, onClose, initialData }: RexFormProp
                     />
                   </div>
                 </div>
+                {profiles.length > 0 && (
+                  <div className="mt-3">
+                    <label className="mb-1 block text-[11px] font-medium text-[var(--text-secondary)]">
+                      Auteur / Collaborateur
+                    </label>
+                    <SearchableSelect
+                      value={form.author_id}
+                      onChange={(value) => setForm({ ...form, author_id: value })}
+                      options={profiles.map((p) => ({
+                        id: p.id,
+                        label: `${p.first_name} ${p.last_name}`,
+                      }))}
+                      placeholder="Sélectionner un auteur..."
+                    />
+                  </div>
+                )}
               </div>
 
               {/* 4 Sections */}

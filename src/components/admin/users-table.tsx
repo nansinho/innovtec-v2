@@ -286,6 +286,9 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
                   aria-label="Sélectionner tout"
                 />
               </th>
+              <th className="w-12 px-3 py-2 text-xs font-medium text-[var(--text-secondary)]">
+                #
+              </th>
               <th className="px-3 py-2 text-xs font-medium text-[var(--text-secondary)]">
                 Collaborateur
               </th>
@@ -304,7 +307,7 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
             </tr>
           </thead>
           <tbody className="divide-y divide-[var(--border-1)]">
-            {filtered.map((user) => {
+            {filtered.map((user, idx) => {
               const isMe = user.id === currentUserId;
               const initials =
                 `${user.first_name?.[0] ?? ""}${user.last_name?.[0] ?? ""}`.toUpperCase() || "?";
@@ -325,6 +328,8 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
                       className="h-4 w-4 rounded border-zinc-300 accent-[var(--yellow)]"
                     />
                   </td>
+                  {/* # */}
+                  <td className="px-3 py-2 text-[var(--text-muted)]">{idx + 1}</td>
                   {/* User info */}
                   <td className="px-3 py-2">
                     <div className="flex items-center gap-3">

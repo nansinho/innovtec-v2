@@ -86,6 +86,15 @@ export default function SignalementList({ signalements: initial, categories, can
 
   const columns: ColumnDef<DangerReport>[] = [
     {
+      key: "index",
+      header: "#",
+      width: "50px",
+      render: (_) => {
+        const idx = signalements.indexOf(_);
+        return <span className="text-[var(--text-muted)]">{idx + 1}</span>;
+      },
+    },
+    {
       key: "incident_date",
       header: "Date",
       sortable: true,
