@@ -75,18 +75,18 @@ export default async function RecentDocs() {
             <Link
               key={doc.id}
               href={href}
-              className="flex items-center gap-3 px-5 py-2.5 transition-colors hover:bg-zinc-50/80"
+              className="flex items-center gap-2.5 px-4 py-2 transition-colors hover:bg-zinc-50/80"
             >
-              <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${isRex ? "bg-[#0B3655]/10" : "bg-[#0B3655]/10"}`}>
-                <FileText className="h-4 w-4 text-[#0B3655]" />
+              <div className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md ${isRex ? "bg-[#0B3655]/8" : "bg-[#0B3655]/8"}`}>
+                <FileText className="h-3.5 w-3.5 text-[#0B3655]" />
               </div>
               <div className="min-w-0 flex-1">
-                <div className="truncate text-sm font-medium text-[var(--heading)]">
+                <div className="truncate text-xs font-medium text-[var(--heading)]">
                   {doc.name}
                 </div>
-                <div className="flex items-center gap-1.5 text-[11px] text-[var(--text-muted)]">
+                <div className="flex items-center gap-1.5 text-[10px] text-[var(--text-muted)]">
                   {isRex && (
-                    <span className="rounded bg-[#C8A84E]/20 px-1 py-0.5 text-[10px] font-medium text-[#0B3655]">
+                    <span className="rounded bg-[#C8A84E]/15 px-1 py-px text-[9px] font-medium text-[#0B3655]">
                       REX
                     </span>
                   )}
