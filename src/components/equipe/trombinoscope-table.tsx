@@ -85,7 +85,7 @@ export default function TrombinoscopeTable({
       accessor: (user) => `${user.first_name} ${user.last_name}`,
       render: (user) => (
         <div>
-          <span className="font-medium text-[var(--heading)]">
+          <span className="font-medium">
             {user.first_name}{" "}
             <span className="uppercase">{user.last_name}</span>
           </span>
@@ -97,7 +97,7 @@ export default function TrombinoscopeTable({
       header: "Poste",
       sortable: true,
       render: (user) => (
-        <span className="text-[var(--text-secondary)]">
+        <span>
           {user.job_title || "—"}
         </span>
       ),
@@ -120,7 +120,7 @@ export default function TrombinoscopeTable({
       header: "Site",
       sortable: true,
       render: (user) => (
-        <span className="text-[var(--text-secondary)]">
+        <span>
           {user.agency || "—"}
         </span>
       ),
@@ -133,7 +133,7 @@ export default function TrombinoscopeTable({
           <a
             href={`tel:${user.phone}`}
             onClick={(e) => e.stopPropagation()}
-            className="text-[var(--text-secondary)] hover:text-[var(--navy)]"
+            className="hover:text-[var(--navy)]"
           >
             {user.phone}
           </a>
@@ -149,7 +149,7 @@ export default function TrombinoscopeTable({
           <a
             href={`mailto:${user.email}`}
             onClick={(e) => e.stopPropagation()}
-            className="text-[var(--text-secondary)] hover:text-[var(--navy)]"
+            className="hover:text-[var(--navy)]"
           >
             {user.email}
           </a>
