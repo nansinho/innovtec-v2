@@ -17,19 +17,11 @@ import { getStandardToolbarActions } from "@/lib/table-toolbar-actions";
 import { createReferenceMap } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
-import { deleteDocument, batchDeleteDocuments } from "@/actions/documents";
+import { deleteDocument, batchDeleteDocuments, type UnifiedDocument } from "@/actions/documents";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
-interface DocItem {
-  id: string;
-  name: string;
-  category: string;
-  file_url: string;
-  file_size?: number;
-  created_at: string;
-  uploaded_by_profile?: { first_name: string; last_name: string } | null;
-}
+type DocItem = UnifiedDocument;
 
 function getFileIcon(name: string, category?: string) {
   if (category === "rex") {
@@ -195,18 +187,16 @@ export default function DocumentsTable({ documents }: DocumentsTableProps) {
         description: "Aucun document n'a été partagé pour le moment.",
       }}
       actions={(doc) => {
-        const isInternalLink = doc.file_url?.startsWith("/");
+        const isRex = !!doc.internal_link;
         return [
         {
-          label: isInternalLink ? "Ouvrir le REX" : "Télécharger",
-          icon: isInternalLink ? ExternalLink : Download,
+          label: isRex ? "Ouvrir le REX" : "Télécharger",
+          icon: isRex ? ExternalLink : Download,
           onClick: () => {
-            if (doc.file_url) {
-              if (isInternalLink) {
-                router.push(doc.file_url);
-              } else {
-                window.open(doc.file_url, "_blank");
-              }
+            if (isRex) {
+              router.push(doc.internal_link!);
+            } else if (doc.file_url) {
+              window.open(doc.file_url, "_blank");
             }
           },
         },
@@ -218,12 +208,12 @@ export default function DocumentsTable({ documents }: DocumentsTableProps) {
             toast.success("Lien copié");
           },
         },
-        {
+        ...(!isRex ? [{
           label: "Supprimer",
           icon: Trash2,
           onClick: () => handleDelete(doc),
           variant: "danger" as const,
-        },
+        }] : []),
       ];
       }}
     />

@@ -4,37 +4,10 @@ import { Card, CardHeader } from "@/components/ui/card";
 import { getDocuments } from "@/actions/documents";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
-import { createClient } from "@/lib/supabase/server";
-
-async function getRexIdByFileUrl(fileUrl: string): Promise<string | null> {
-  const supabase = await createClient();
-  const { data } = await supabase
-    .from("rex")
-    .select("id")
-    .eq("source_file_url", fileUrl)
-    .limit(1)
-    .single();
-  return data?.id ?? null;
-}
 
 export default async function RecentDocs() {
   const allDocs = await getDocuments();
   const docs = allDocs.slice(0, 5);
-
-  // Resolve REX links for rex documents
-  const rexLinks: Record<string, string> = {};
-  for (const doc of docs) {
-    if (doc.category === "rex") {
-      if (doc.file_url?.startsWith("/qse/rex/")) {
-        // REX without source file: file_url is already the detail page URL
-        rexLinks[doc.id] = doc.file_url;
-      } else if (doc.file_url) {
-        // REX with source file: look up REX by source_file_url
-        const rexId = await getRexIdByFileUrl(doc.file_url);
-        if (rexId) rexLinks[doc.id] = `/qse/rex/${rexId}`;
-      }
-    }
-  }
 
   return (
     <Card>
@@ -59,9 +32,8 @@ export default async function RecentDocs() {
         </div>
       ) : (
         docs.map((doc) => {
-          const uploaderProfile = doc.uploaded_by_profile as { first_name: string; last_name: string } | null;
-          const uploaderName = uploaderProfile
-            ? `${uploaderProfile.first_name}`.trim()
+          const uploaderName = doc.uploaded_by_profile
+            ? `${doc.uploaded_by_profile.first_name}`.trim()
             : "";
           const timeAgo = formatDistanceToNow(new Date(doc.created_at), {
             addSuffix: true,
@@ -69,7 +41,7 @@ export default async function RecentDocs() {
           });
           const meta = uploaderName ? `${timeAgo} par ${uploaderName}` : timeAgo;
           const isRex = doc.category === "rex";
-          const href = isRex ? (rexLinks[doc.id] || "/qse/rex") : "/documents";
+          const href = doc.internal_link || "/documents";
 
           return (
             <Link
@@ -77,7 +49,7 @@ export default async function RecentDocs() {
               href={href}
               className="flex items-center gap-2.5 px-4 py-2 transition-colors hover:bg-zinc-50/80"
             >
-              <div className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md ${isRex ? "bg-[#0B3655]/8" : "bg-[#0B3655]/8"}`}>
+              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-[#0B3655]/8">
                 <FileText className="h-3.5 w-3.5 text-[#0B3655]" />
               </div>
               <div className="min-w-0 flex-1">

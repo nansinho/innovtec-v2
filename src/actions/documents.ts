@@ -4,19 +4,94 @@ import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { auditLog } from "@/lib/audit-logger";
 
-export async function getDocuments(category?: string) {
-  const supabase = await createClient();
-  let query = supabase
-    .from("documents")
-    .select("*, uploaded_by_profile:profiles(first_name, last_name)")
-    .order("created_at", { ascending: false });
+export interface UnifiedDocument {
+  id: string;
+  name: string;
+  file_url: string;
+  file_size?: number;
+  file_type: string;
+  category: string;
+  created_at: string;
+  uploaded_by_profile?: { first_name: string; last_name: string } | null;
+  /** For REX items, link directly to the detail page */
+  internal_link?: string;
+}
 
-  if (category && category !== "general") {
-    query = query.eq("category", category);
+/**
+ * Get all documents: real uploaded docs + REX fiches (read directly from rex table).
+ * This avoids any sync issues since REX data is always read from the source.
+ */
+export async function getDocuments(category?: string): Promise<UnifiedDocument[]> {
+  const supabase = await createClient();
+
+  // 1. Get real uploaded documents (exclude old rex category duplicates)
+  const shouldFetchDocs = !category || category === "general" || (category !== "rex");
+  const shouldFetchRex = !category || category === "general" || category === "rex";
+
+  const results: UnifiedDocument[] = [];
+
+  if (shouldFetchDocs) {
+    let query = supabase
+      .from("documents")
+      .select("*, uploaded_by_profile:profiles(first_name, last_name)")
+      .neq("category", "rex") // Skip old rex duplicates
+      .order("created_at", { ascending: false });
+
+    if (category && category !== "general" && category !== "rex") {
+      query = query.eq("category", category);
+    }
+
+    const { data } = await query.limit(50);
+    if (data) {
+      results.push(
+        ...data.map((d) => ({
+          id: d.id,
+          name: d.name,
+          file_url: d.file_url,
+          file_size: d.file_size ?? undefined,
+          file_type: d.file_type ?? "pdf",
+          category: d.category ?? "general",
+          created_at: d.created_at,
+          uploaded_by_profile: d.uploaded_by_profile as { first_name: string; last_name: string } | null,
+        }))
+      );
+    }
   }
 
-  const { data } = await query.limit(50);
-  return data ?? [];
+  // 2. Get REX fiches directly from the source table
+  if (shouldFetchRex) {
+    const { data: rexList } = await supabase
+      .from("rex")
+      .select("id, title, rex_number, rex_year, created_at, source_file_url, author:profiles!rex_author_id_fkey(first_name, last_name)")
+      .order("created_at", { ascending: false })
+      .limit(50);
+
+    if (rexList) {
+      results.push(
+        ...rexList.map((r) => {
+          const rexNum = r.rex_number || "X";
+          const rexYr = r.rex_year || new Date().getFullYear();
+          const authorRaw = r.author as unknown;
+          const author = Array.isArray(authorRaw) ? authorRaw[0] as { first_name: string; last_name: string } | undefined : authorRaw as { first_name: string; last_name: string } | null;
+          return {
+            id: `rex-${r.id}`,
+            name: `Fiche REX ${rexNum}/${rexYr} - ${r.title}`,
+            file_url: r.source_file_url || `/qse/rex/${r.id}`,
+            file_type: r.source_file_url ? "pdf" : "rex",
+            category: "rex",
+            created_at: r.created_at,
+            uploaded_by_profile: author,
+            internal_link: `/qse/rex/${r.id}`,
+          };
+        })
+      );
+    }
+  }
+
+  // Sort all results by date descending
+  results.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+  return results;
 }
 
 export async function deleteDocument(

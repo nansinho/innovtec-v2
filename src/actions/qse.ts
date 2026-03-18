@@ -449,31 +449,6 @@ export async function createRex(
     excludeUserId: user.id,
   });
 
-  // Save as document entry so it appears in "Documents récents"
-  const rexNum = rex.rex_number || "X";
-  const rexYr = rex.rex_year || new Date().getFullYear();
-  const docName = `Fiche REX ${rexNum}/${rexYr} - ${rex.title}`;
-  const fileUrl = rex.source_file_url || `/qse/rex/${data?.id}`;
-  const fileType = rex.source_file_url ? "pdf" : "rex";
-
-  await supabase.from("documents").insert({
-    name: docName,
-    file_url: fileUrl,
-    file_type: fileType,
-    category: "rex",
-    uploaded_by: user.id,
-  });
-
-  // Notify all users about the new document
-  await createNotificationForAll({
-    type: "news",
-    title: "Nouveau document REX",
-    message: docName,
-    link: `/qse/rex/${data?.id}`,
-    related_id: data?.id,
-    excludeUserId: user.id,
-  });
-
   await auditLog(user.id, "create", "rex", data?.id ?? null, { title: rex.title });
   revalidatePath("/qse/rex");
   revalidatePath("/documents");
@@ -533,31 +508,6 @@ export async function updateRex(
     return { success: false, error: "Mise à jour impossible — vous n'avez pas les droits ou la fiche n'existe pas" };
   }
 
-  // Sync the linked document entry if title, number, year, or author changed
-  if (rex.title !== undefined || rex.rex_number !== undefined || rex.rex_year !== undefined || rex.author_id !== undefined) {
-    // Fetch the full REX to rebuild the document name
-    const { data: fullRex } = await supabase
-      .from("rex")
-      .select("title, rex_number, rex_year, source_file_url, author_id")
-      .eq("id", id)
-      .single();
-
-    if (fullRex) {
-      const rexNum = fullRex.rex_number || "X";
-      const rexYr = fullRex.rex_year || new Date().getFullYear();
-      const docName = `Fiche REX ${rexNum}/${rexYr} - ${fullRex.title}`;
-      const fileUrl = fullRex.source_file_url || `/qse/rex/${id}`;
-
-      const docUpdate: Record<string, unknown> = { name: docName };
-      if (fullRex.author_id) docUpdate.uploaded_by = fullRex.author_id;
-
-      await supabase
-        .from("documents")
-        .update(docUpdate)
-        .eq("file_url", fileUrl);
-    }
-  }
-
   await auditLog(user.id, "update", "rex", id, { title: rex.title });
   revalidatePath("/qse/rex");
   revalidatePath(`/qse/rex/${id}`);
@@ -586,21 +536,10 @@ export async function deleteRex(
   const { error } = await supabase.from("rex").delete().eq("id", id);
   if (error) return { success: false, error: error.message };
 
-  // Clean up: delete linked document entry (source file OR internal link)
+  // Delete source PDF from storage if it exists
   if (rex?.source_file_url) {
-    await supabase
-      .from("documents")
-      .delete()
-      .eq("file_url", rex.source_file_url);
-
-    // Delete the source file from storage
     await supabase.storage.from("documents").remove([rex.source_file_url]);
   }
-  // Also delete document entries with internal link /qse/rex/{id}
-  await supabase
-    .from("documents")
-    .delete()
-    .eq("file_url", `/qse/rex/${id}`);
 
   // Clean up: delete section photos from storage
   const photoUrls = [
