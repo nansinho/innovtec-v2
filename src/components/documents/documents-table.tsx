@@ -6,6 +6,7 @@ import {
   FileImage,
   FileSpreadsheet,
   Download,
+  ExternalLink,
   Share2,
   Trash2,
   FolderOpen,
@@ -184,12 +185,20 @@ export default function DocumentsTable({ documents }: DocumentsTableProps) {
         title: "Aucun document",
         description: "Aucun document n'a été partagé pour le moment.",
       }}
-      actions={(doc) => [
+      actions={(doc) => {
+        const isInternalLink = doc.file_url?.startsWith("/");
+        return [
         {
-          label: "Télécharger",
-          icon: Download,
+          label: isInternalLink ? "Ouvrir le REX" : "Télécharger",
+          icon: isInternalLink ? ExternalLink : Download,
           onClick: () => {
-            if (doc.file_url) window.open(doc.file_url, "_blank");
+            if (doc.file_url) {
+              if (isInternalLink) {
+                router.push(doc.file_url);
+              } else {
+                window.open(doc.file_url, "_blank");
+              }
+            }
           },
         },
         {
@@ -206,7 +215,8 @@ export default function DocumentsTable({ documents }: DocumentsTableProps) {
           onClick: () => handleDelete(doc),
           variant: "danger" as const,
         },
-      ]}
+      ];
+      }}
     />
   );
 }

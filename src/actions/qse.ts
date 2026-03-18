@@ -434,21 +434,32 @@ export async function createRex(
   });
 
   // Save as document entry so it appears in "Documents récents"
-  if (rex.source_file_url) {
-    const rexNum = rex.rex_number || "X";
-    const rexYr = rex.rex_year || new Date().getFullYear();
-    const docName = `Fiche REX ${rexNum}/${rexYr} - ${rex.title}`;
+  const rexNum = rex.rex_number || "X";
+  const rexYr = rex.rex_year || new Date().getFullYear();
+  const docName = `Fiche REX ${rexNum}/${rexYr} - ${rex.title}`;
+  const fileUrl = rex.source_file_url || `/qse/rex/${data?.id}`;
+  const fileType = rex.source_file_url ? "pdf" : "rex";
 
-    await supabase.from("documents").insert({
-      name: docName,
-      file_url: rex.source_file_url,
-      file_type: "pdf",
-      category: "rex",
-      uploaded_by: user.id,
-    });
-  }
+  await supabase.from("documents").insert({
+    name: docName,
+    file_url: fileUrl,
+    file_type: fileType,
+    category: "rex",
+    uploaded_by: user.id,
+  });
+
+  // Notify all users about the new document
+  await createNotificationForAll({
+    type: "news",
+    title: "Nouveau document REX",
+    message: docName,
+    link: `/qse/rex/${data?.id}`,
+    related_id: data?.id,
+    excludeUserId: user.id,
+  });
 
   revalidatePath("/qse/rex");
+  revalidatePath("/documents");
   revalidatePath("/");
   return { success: true, id: data?.id };
 }
