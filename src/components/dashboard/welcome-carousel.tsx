@@ -140,7 +140,6 @@ export default function WelcomeCarousel() {
                     src={slide.image}
                     alt=""
                     fill
-                    priority={i === 0}
                     sizes="(max-width: 768px) 0vw, 38vw"
                     className="object-cover"
                   />

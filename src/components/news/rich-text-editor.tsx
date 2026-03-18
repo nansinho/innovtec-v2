@@ -10,6 +10,7 @@ import Placeholder from "@tiptap/extension-placeholder";
 import Highlight from "@tiptap/extension-highlight";
 import { TextStyle } from "@tiptap/extension-text-style";
 import { Color } from "@tiptap/extension-color";
+import { toast } from "sonner";
 import {
   Bold,
   Italic,
@@ -128,8 +129,9 @@ export default function RichTextEditor({
         if (data.url) {
           editor.chain().focus().setImage({ src: data.url }).run();
         }
-      } catch {
-        // Upload failed silently
+      } catch (err) {
+        console.error("Image upload failed:", err);
+        toast.error("L'envoi de l'image a échoué. Veuillez réessayer.");
       }
 
       // Reset input

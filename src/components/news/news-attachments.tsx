@@ -10,6 +10,7 @@ import {
   Download,
   Loader2,
 } from "lucide-react";
+import { toast } from "sonner";
 import type { NewsAttachment } from "@/lib/types/database";
 
 interface AttachmentUploadProps {
@@ -85,8 +86,9 @@ export default function NewsAttachmentsManager({
               file_type: file.type,
             });
           }
-        } catch {
-          // Upload failed
+        } catch (err) {
+          console.error("Attachment upload failed:", err);
+          toast.error("L'envoi du fichier a échoué. Veuillez réessayer.");
         }
       }
       setUploading(false);
