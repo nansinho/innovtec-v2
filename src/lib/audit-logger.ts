@@ -31,7 +31,9 @@ export type AuditAction =
   | "change_role"
   | "deactivate"
   | "reactivate"
-  | "send_wish";
+  | "send_wish"
+  | "update_manager"
+  | "import_orgchart";
 
 export type AuditTargetType =
   | "user"
@@ -59,7 +61,8 @@ export type AuditTargetType =
   | "ai_credit"
   | "timebit"
   | "qse_policy"
-  | "danger_report";
+  | "danger_report"
+  | "orgchart";
 
 interface AuditDetails {
   [key: string]: unknown;

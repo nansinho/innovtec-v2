@@ -270,6 +270,7 @@ export async function updateUser(
     agency?: string;
     date_of_birth?: string | null;
     hire_date?: string | null;
+    manager_id?: string | null;
   }
 ): Promise<{ success: boolean; error?: string }> {
   const caller = await getCallerProfile();

@@ -11,6 +11,7 @@ import {
   Calendar,
   Cake,
   Send,
+  GitBranch,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { sendBirthdayWish } from "@/actions/birthday";
@@ -22,6 +23,7 @@ interface ProfileDrawerProps {
   onClose: () => void;
   isBirthday: boolean;
   currentUserId: string;
+  allUsers?: Profile[];
 }
 
 export default function ProfileDrawer({
@@ -30,6 +32,7 @@ export default function ProfileDrawer({
   onClose,
   isBirthday,
   currentUserId,
+  allUsers = [],
 }: ProfileDrawerProps) {
   const [wishSent, setWishSent] = useState(false);
   const [wishMessage, setWishMessage] = useState("");
@@ -159,6 +162,24 @@ export default function ProfileDrawer({
                 </div>
               </div>
             )}
+
+            {profile.manager_id && (() => {
+              const manager = allUsers.find((u) => u.id === profile.manager_id);
+              if (!manager) return null;
+              return (
+                <div className="flex items-center gap-3 rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--hover)] px-4 py-3">
+                  <GitBranch className="h-4 w-4 shrink-0 text-[var(--navy)]" />
+                  <div>
+                    <p className="text-[10px] font-medium text-[var(--text-muted)]">
+                      Responsable
+                    </p>
+                    <p className="text-[13px] font-medium text-[var(--heading)]">
+                      {manager.first_name} {manager.last_name}
+                    </p>
+                  </div>
+                </div>
+              );
+            })()}
 
             {profile.hire_date && (
               <div className="flex items-center gap-3 rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--hover)] px-4 py-3">
