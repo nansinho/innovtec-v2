@@ -171,7 +171,7 @@ export default function NewsTable({ news }: NewsTableProps) {
                           {article.title}
                         </h3>
                       </div>
-                      <p className="mt-0.5 truncate text-[11.5px] text-[var(--text-secondary)]">
+                      <p className="mt-0.5 truncate text-xs text-[var(--text-secondary)]">
                         {article.excerpt}
                       </p>
 
@@ -205,7 +205,7 @@ export default function NewsTable({ news }: NewsTableProps) {
 
                   {/* Author - desktop */}
                   <div className="hidden md:block">
-                    <span className="text-[11.5px] text-[var(--text-secondary)]">
+                    <span className="text-xs text-[var(--text-secondary)]">
                       {authorName}
                     </span>
                   </div>

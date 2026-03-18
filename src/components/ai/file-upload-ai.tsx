@@ -199,7 +199,7 @@ export default function FileUploadAi({
       {file && !loading && (
         <button
           onClick={handleAnalyze}
-          className="flex w-full items-center justify-center gap-2 rounded-[var(--radius-sm)] bg-[var(--navy)] py-2 text-sm font-medium text-white transition-all hover:bg-[var(--navy)]/90 active:scale-[0.97]"
+          className="flex w-full items-center justify-center gap-2 rounded-[var(--radius-sm)] bg-[var(--navy)] py-2 text-sm font-medium text-white transition-all hover:bg-[var(--navy)]/90 active:scale-[0.98]"
         >
           <Sparkles className="h-4 w-4" />
           Analyser avec l&apos;IA

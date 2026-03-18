@@ -540,21 +540,21 @@ export default function PolitiqueContent({
           <button
             onClick={handleSave}
             disabled={isPending}
-            className="inline-flex items-center gap-2 rounded-xl bg-[var(--yellow)] px-4 py-2 text-[13px] font-semibold text-white shadow-sm transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-md active:scale-[0.97] disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-xl bg-[var(--yellow)] px-4 py-2 text-[13px] font-semibold text-white shadow-sm transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-md active:scale-[0.98] disabled:opacity-50"
           >
             <Save className="h-4 w-4" />
             {isPending ? "Enregistrement..." : "Enregistrer"}
           </button>
           <button
             onClick={() => { setEditing(false); setEditingId(null); setShowUpload(false); }}
-            className="inline-flex items-center gap-2 rounded-xl border border-[var(--border-1)] bg-[var(--card)] px-4 py-2 text-[13px] font-medium text-[var(--text-secondary)] shadow-xs transition-all duration-200 hover:bg-[var(--hover)] hover:shadow-sm active:scale-[0.97]"
+            className="inline-flex items-center gap-2 rounded-xl border border-[var(--border-1)] bg-[var(--card)] px-4 py-2 text-[13px] font-medium text-[var(--text-secondary)] shadow-xs transition-all duration-200 hover:bg-[var(--hover)] hover:shadow-sm active:scale-[0.98]"
           >
             Annuler
           </button>
           {!showUpload && (
             <button
               onClick={() => setShowUpload(true)}
-              className="inline-flex items-center gap-2 rounded-xl border border-[var(--navy)]/20 bg-[var(--navy)]/5 px-4 py-2 text-[13px] font-medium text-[var(--navy)] transition-all duration-200 hover:bg-[var(--navy)] hover:text-white hover:shadow-sm active:scale-[0.97]"
+              className="inline-flex items-center gap-2 rounded-xl border border-[var(--navy)]/20 bg-[var(--navy)]/5 px-4 py-2 text-[13px] font-medium text-[var(--navy)] transition-all duration-200 hover:bg-[var(--navy)] hover:text-white hover:shadow-sm active:scale-[0.98]"
             >
               <Sparkles className="h-4 w-4 text-[var(--yellow)]" />
               Importer un PDF / Image (IA)
@@ -616,7 +616,7 @@ export default function PolitiqueContent({
           <div className="rounded-xl border border-[var(--border-1)] bg-[var(--card)] shadow-sm">
             <div className="flex items-center gap-3 border-b border-[var(--border-1)] px-5 py-4">
               <FileText className="h-5 w-5 text-[var(--text-muted)]" />
-              <h3 className="text-[14px] font-semibold text-[var(--heading)]">Présentation générale</h3>
+              <h3 className="text-sm font-semibold text-[var(--heading)]">Présentation générale</h3>
             </div>
             <div className="p-5">
               <textarea
@@ -694,7 +694,7 @@ export default function PolitiqueContent({
         <div className="rounded-xl border border-[var(--border-1)] bg-[var(--card)] shadow-sm">
           <div className="flex items-center gap-3 border-b border-[var(--border-1)] px-5 py-4">
             <FileText className="h-5 w-5 text-[var(--yellow)]" />
-            <h3 className="text-[14px] font-semibold text-[var(--heading)]">Documents obligatoires</h3>
+            <h3 className="text-sm font-semibold text-[var(--heading)]">Documents obligatoires</h3>
           </div>
           <div className="divide-y divide-[var(--border-1)]">
             {documents.map((doc, index) => (
@@ -791,7 +791,7 @@ export default function PolitiqueContent({
         <div className="rounded-xl border border-[var(--border-1)] bg-[var(--card)] shadow-sm">
           <div className="flex items-center gap-3 border-b border-[var(--border-1)] px-5 py-4">
             <Award className="h-5 w-5 text-[var(--green)]" />
-            <h3 className="text-[14px] font-semibold text-[var(--heading)]">Engagement de la direction</h3>
+            <h3 className="text-sm font-semibold text-[var(--heading)]">Engagement de la direction</h3>
           </div>
           <div className="space-y-4 p-5">
             <div>
@@ -888,21 +888,21 @@ export default function PolitiqueContent({
             <div className="flex items-center gap-2">
               <button
                 onClick={() => startEditing(selected)}
-                className="inline-flex items-center gap-2 rounded-xl bg-[var(--yellow)] px-3.5 py-1.5 text-[13px] font-semibold text-white shadow-sm transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-md active:scale-[0.97]"
+                className="inline-flex items-center gap-2 rounded-xl bg-[var(--yellow)] px-3.5 py-1.5 text-[13px] font-semibold text-white shadow-sm transition-all duration-200 hover:bg-[var(--yellow-hover)] hover:shadow-md active:scale-[0.98]"
               >
                 <Edit3 className="h-3.5 w-3.5" />
                 Modifier
               </button>
               <button
                 onClick={() => duplicateDoc(selected)}
-                className="inline-flex items-center gap-2 rounded-xl border border-[var(--border-1)] bg-[var(--card)] px-3.5 py-1.5 text-[13px] font-medium text-[var(--text-secondary)] transition-all duration-200 hover:bg-[var(--hover)] active:scale-[0.97]"
+                className="inline-flex items-center gap-2 rounded-xl border border-[var(--border-1)] bg-[var(--card)] px-3.5 py-1.5 text-[13px] font-medium text-[var(--text-secondary)] transition-all duration-200 hover:bg-[var(--hover)] active:scale-[0.98]"
               >
                 <Copy className="h-3.5 w-3.5" />
                 Dupliquer
               </button>
               <button
                 onClick={() => setShowUpload(!showUpload)}
-                className="inline-flex items-center gap-2 rounded-xl border border-[var(--navy)]/20 bg-[var(--navy)]/5 px-3.5 py-1.5 text-[13px] font-medium text-[var(--navy)] transition-all duration-200 hover:bg-[var(--navy)] hover:text-white active:scale-[0.97]"
+                className="inline-flex items-center gap-2 rounded-xl border border-[var(--navy)]/20 bg-[var(--navy)]/5 px-3.5 py-1.5 text-[13px] font-medium text-[var(--navy)] transition-all duration-200 hover:bg-[var(--navy)] hover:text-white active:scale-[0.98]"
               >
                 <Sparkles className="h-3.5 w-3.5" />
                 Réimporter
@@ -910,7 +910,7 @@ export default function PolitiqueContent({
               <button
                 onClick={() => handleDelete(selected.id, selected.title)}
                 disabled={isPending}
-                className="inline-flex items-center gap-2 rounded-xl border border-red-100 px-3.5 py-1.5 text-[13px] font-medium text-red-500 transition-all duration-200 hover:bg-red-50 hover:text-red-600 active:scale-[0.97] disabled:opacity-50"
+                className="inline-flex items-center gap-2 rounded-xl border border-red-100 px-3.5 py-1.5 text-[13px] font-medium text-red-500 transition-all duration-200 hover:bg-red-50 hover:text-red-600 active:scale-[0.98] disabled:opacity-50"
               >
                 <Trash2 className="h-3.5 w-3.5" />
                 Supprimer
@@ -943,7 +943,7 @@ export default function PolitiqueContent({
               <button
                 onClick={() => handleDownloadFile(selected.source_file_url)}
                 disabled={isDownloading}
-                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[var(--navy)] to-[#2a4a7a] px-5 py-2.5 text-[13px] font-semibold text-white shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.97] disabled:opacity-50"
+                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[var(--navy)] to-[#2a4a7a] px-5 py-2.5 text-[13px] font-semibold text-white shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 active:scale-[0.98] disabled:opacity-50"
               >
                 <Download className="h-4 w-4" />
                 {isDownloading ? "Chargement..." : "Télécharger le document"}
@@ -1137,7 +1137,7 @@ export default function PolitiqueContent({
           <div className="flex items-center gap-2">
             <button
               onClick={() => { setShowUpload(!showUpload); setEditingId(null); }}
-              className="inline-flex h-7 items-center gap-1.5 rounded-lg border border-[var(--border-1)] bg-white px-2.5 text-[11px] font-medium text-[var(--text-secondary)] shadow-xs transition-all hover:bg-zinc-50 hover:text-[var(--heading)] hover:border-zinc-300 active:scale-[0.97]"
+              className="inline-flex h-7 items-center gap-1.5 rounded-lg border border-[var(--border-1)] bg-white px-2.5 text-[11px] font-medium text-[var(--text-secondary)] shadow-xs transition-all hover:bg-zinc-50 hover:text-[var(--heading)] hover:border-zinc-300 active:scale-[0.98]"
             >
               <Sparkles className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">Importer (IA)</span>

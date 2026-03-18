@@ -127,7 +127,7 @@ export default function WelcomeCarousel() {
                   <h2 className="mb-1.5 sm:mb-2 text-lg sm:text-[22px] font-bold leading-snug tracking-tight text-white line-clamp-2">
                     {slide.title}
                   </h2>
-                  <p className="hidden sm:block max-w-[420px] text-[14px] leading-relaxed text-white/60 line-clamp-2">
+                  <p className="hidden sm:block max-w-[420px] text-sm leading-relaxed text-white/60 line-clamp-2">
                     {slide.description}
                   </p>
                   <span className="mt-3 sm:mt-5 inline-flex w-fit items-center gap-2 text-[13px] font-medium text-white/80 transition-all duration-200 group-hover:text-white group-hover:gap-3">

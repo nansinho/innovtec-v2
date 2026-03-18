@@ -352,7 +352,7 @@ const FeedPost = memo(function FeedPost({
                   <button
                     onClick={handleSaveEdit}
                     disabled={!editContent.trim() || editSaving}
-                    className="rounded-full bg-[var(--yellow)] px-3 py-1 text-xs font-medium text-white hover:bg-[var(--yellow-hover)] disabled:opacity-40"
+                    className="rounded-full bg-[var(--yellow)] px-3 py-1 text-xs font-medium text-white hover:bg-[var(--yellow-hover)] disabled:opacity-50"
                   >
                     {editSaving ? "Enregistrement..." : "Enregistrer"}
                   </button>
@@ -543,12 +543,12 @@ const FeedPost = memo(function FeedPost({
                     }
                   }}
                   placeholder="Écrire un commentaire..."
-                  className="flex-1 rounded-full bg-white px-4 py-2 text-xs text-[var(--heading)] shadow-xs ring-1 ring-black/[0.06] outline-none placeholder:text-zinc-400 focus:ring-[var(--yellow)]"
+                  className="flex-1 rounded-full bg-white px-4 py-2 text-xs text-[var(--heading)] shadow-xs ring-1 ring-black/[0.04] outline-none placeholder:text-zinc-400 focus:ring-[var(--yellow-surface)]"
                 />
                 <button
                   onClick={handleSubmitComment}
                   disabled={submitting || !commentText.trim()}
-                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--yellow)] text-white shadow-sm transition-all hover:bg-[var(--yellow-hover)] disabled:opacity-40"
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--yellow)] text-white shadow-sm transition-all hover:bg-[var(--yellow-hover)] disabled:opacity-50"
                 >
                   <Send className="h-3.5 w-3.5" />
                 </button>

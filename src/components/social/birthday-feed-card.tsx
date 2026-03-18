@@ -273,7 +273,7 @@ export default function BirthdayFeedCard({
                               <button
                                 onClick={saveEditWish}
                                 disabled={editSaving || !editMessage.trim()}
-                                className="flex items-center gap-1 text-[10px] font-medium text-pink-500 hover:text-pink-600 disabled:opacity-40"
+                                className="flex items-center gap-1 text-[10px] font-medium text-pink-500 hover:text-pink-600 disabled:opacity-50"
                               >
                                 <Check className="h-3 w-3" />
                                 Enregistrer
@@ -353,13 +353,13 @@ export default function BirthdayFeedCard({
                     }}
                     placeholder={placeholder}
                     disabled={inputDisabled}
-                    className="flex-1 rounded-full bg-white px-4 py-2 text-xs text-[var(--heading)] shadow-xs ring-1 ring-black/[0.06] outline-none placeholder:text-zinc-400 focus:ring-pink-300 disabled:opacity-50"
+                    className="flex-1 rounded-full bg-white px-4 py-2 text-xs text-[var(--heading)] shadow-xs ring-1 ring-black/[0.04] outline-none placeholder:text-zinc-400 focus:ring-pink-300 disabled:opacity-50"
                   />
                   {!inputDisabled && (
                     <button
                       onClick={handleSendWish}
                       disabled={isPending || !wishMessage.trim()}
-                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-pink-500 text-white shadow-sm transition-all hover:bg-pink-600 disabled:opacity-40"
+                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-pink-500 text-white shadow-sm transition-all hover:bg-pink-600 disabled:opacity-50"
                     >
                       <Send className="h-3.5 w-3.5" />
                     </button>

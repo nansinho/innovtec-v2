@@ -115,7 +115,7 @@ export default function CreatePost() {
         <button
           onClick={handleSubmit}
           disabled={!content.trim() || isPending}
-          className="flex items-center gap-1.5 rounded-full bg-[var(--yellow)] px-4 py-1.5 text-xs font-medium text-white shadow-xs transition-all hover:bg-[var(--yellow-hover)] disabled:opacity-40"
+          className="flex items-center gap-1.5 rounded-full bg-[var(--yellow)] px-4 py-1.5 text-xs font-medium text-white shadow-xs transition-all hover:bg-[var(--yellow-hover)] disabled:opacity-50"
         >
           <Send className="h-3.5 w-3.5" />
           {isPending ? "Publication..." : "Publier"}

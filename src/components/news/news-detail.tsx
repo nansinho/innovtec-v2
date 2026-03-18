@@ -141,7 +141,7 @@ export default function NewsDetail({
         {canEdit && (
           <Link
             href={`/actualites/${article.id}/modifier`}
-            className="inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] px-3 py-1.5 text-[11.5px] font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--hover)]"
+            className="inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] px-3 py-1.5 text-xs font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--hover)]"
           >
             <Pencil className="h-3 w-3" />
             Modifier
@@ -178,13 +178,13 @@ export default function NewsDetail({
           </h1>
 
           {article.excerpt && (
-            <p className="mb-4 text-[14px] leading-relaxed text-[var(--text-secondary)]">
+            <p className="mb-4 text-sm leading-relaxed text-[var(--text-secondary)]">
               {article.excerpt}
             </p>
           )}
 
           {/* Author & meta */}
-          <div className="flex flex-wrap items-center gap-4 text-[11.5px] text-[var(--text-muted)]">
+          <div className="flex flex-wrap items-center gap-4 text-xs text-[var(--text-muted)]">
             <div className="flex items-center gap-1.5">
               <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--navy)] text-[8px] font-medium text-white">
                 {authorName
@@ -213,13 +213,13 @@ export default function NewsDetail({
         <div className="mb-6 rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] p-6 shadow-sm">
           {isHtml ? (
             <div
-              className="prose-news text-[13.5px] leading-relaxed text-[var(--text)]"
+              className="prose-news text-[13px] leading-relaxed text-[var(--text)]"
               dangerouslySetInnerHTML={{
                 __html: DOMPurify.sanitize(article.content),
               }}
             />
           ) : (
-            <div className="whitespace-pre-wrap text-[13.5px] leading-relaxed text-[var(--text)]">
+            <div className="whitespace-pre-wrap text-[13px] leading-relaxed text-[var(--text)]">
               {article.content || article.excerpt}
             </div>
           )}
@@ -290,7 +290,7 @@ export default function NewsDetail({
                   onChange={(e) => setNewComment(e.target.value)}
                   placeholder="Écrire un commentaire..."
                   rows={2}
-                  className="flex-1 resize-none rounded-[var(--radius-sm)] border border-[var(--border-1)] px-3 py-2 text-[13px] text-[var(--heading)] outline-none placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-1 focus:ring-[var(--yellow)]"
+                  className="flex-1 resize-none rounded-[var(--radius-sm)] border border-[var(--border-1)] px-3 py-2 text-[13px] text-[var(--heading)] outline-none placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
                 />
                 <button
                   onClick={handleSubmitComment}

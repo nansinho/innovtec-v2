@@ -19,7 +19,7 @@ export default function QuickLinks() {
         {links.map((link) => (
           <button
             key={link.label}
-            className="flex flex-col items-center gap-1.5 rounded-lg py-3 transition-colors duration-150 hover:bg-zinc-100 active:scale-[0.97]"
+            className="flex flex-col items-center gap-1.5 rounded-lg py-3 transition-colors duration-150 hover:bg-zinc-100 active:scale-[0.98]"
           >
             <link.icon className={cn("h-[18px] w-[18px]", link.color)} strokeWidth={1.6} />
             <span className="text-[11px] font-medium text-[var(--text-secondary)]">{link.label}</span>

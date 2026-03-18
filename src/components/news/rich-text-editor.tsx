@@ -81,7 +81,7 @@ export default function RichTextEditor({
     editorProps: {
       attributes: {
         class:
-          "prose-news min-h-[400px] outline-none px-6 py-5 text-[14px] leading-relaxed text-[var(--text)]",
+          "prose-news min-h-[400px] outline-none px-6 py-5 text-sm leading-relaxed text-[var(--text)]",
       },
     },
   });
