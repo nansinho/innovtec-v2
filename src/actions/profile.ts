@@ -343,10 +343,17 @@ export async function updatePassword(data: {
     return { success: false, error: "Non authentifié" };
   }
 
-  if (data.newPassword.length < 6) {
+  if (
+    data.newPassword.length < 8 ||
+    !/[A-Z]/.test(data.newPassword) ||
+    !/[a-z]/.test(data.newPassword) ||
+    !/[0-9]/.test(data.newPassword) ||
+    !/[^A-Za-z0-9]/.test(data.newPassword)
+  ) {
     return {
       success: false,
-      error: "Le nouveau mot de passe doit contenir au moins 6 caractères",
+      error:
+        "Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial",
     };
   }
 

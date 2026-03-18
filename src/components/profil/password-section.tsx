@@ -4,6 +4,9 @@ import { useState } from "react";
 import { Lock, Save } from "lucide-react";
 import { toast } from "sonner";
 import { updatePassword } from "@/actions/profile";
+import PasswordStrength, {
+  validatePasswordStrength,
+} from "@/components/ui/password-strength";
 
 export default function PasswordSection() {
   const [form, setForm] = useState({
@@ -21,8 +24,9 @@ export default function PasswordSection() {
       return;
     }
 
-    if (form.newPassword.length < 6) {
-      toast.error("Le nouveau mot de passe doit contenir au moins 6 caractères");
+    const { score } = validatePasswordStrength(form.newPassword);
+    if (score < 4) {
+      toast.error("Le mot de passe doit remplir toutes les conditions de sécurité");
       return;
     }
 
@@ -77,7 +81,7 @@ export default function PasswordSection() {
             <input
               type="password"
               required
-              minLength={6}
+              minLength={8}
               value={form.newPassword}
               onChange={(e) =>
                 setForm({ ...form, newPassword: e.target.value })
@@ -92,7 +96,7 @@ export default function PasswordSection() {
             <input
               type="password"
               required
-              minLength={6}
+              minLength={8}
               value={form.confirmPassword}
               onChange={(e) =>
                 setForm({ ...form, confirmPassword: e.target.value })
@@ -101,6 +105,8 @@ export default function PasswordSection() {
             />
           </div>
         </div>
+
+        <PasswordStrength password={form.newPassword} />
 
         <div>
           <button

@@ -96,8 +96,18 @@ export async function signUp(formData: {
     return { success: false, error: "Tous les champs sont obligatoires" };
   }
 
-  if (password.length < 6) {
-    return { success: false, error: "Le mot de passe doit contenir au moins 6 caractères" };
+  if (
+    password.length < 8 ||
+    !/[A-Z]/.test(password) ||
+    !/[a-z]/.test(password) ||
+    !/[0-9]/.test(password) ||
+    !/[^A-Za-z0-9]/.test(password)
+  ) {
+    return {
+      success: false,
+      error:
+        "Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial",
+    };
   }
 
   try {
@@ -158,13 +168,17 @@ export async function signUp(formData: {
 // PASSWORD RESET (custom, sans GoTrue)
 // ==========================================
 
-const RESET_SECRET = process.env.SUPABASE_SERVICE_ROLE_KEY ?? "fallback-secret";
+function getResetSecret(): string {
+  const secret = process.env.PASSWORD_RESET_SECRET ?? process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!secret) throw new Error("PASSWORD_RESET_SECRET or SUPABASE_SERVICE_ROLE_KEY must be set");
+  return secret;
+}
 const RESET_EXPIRY_MS = 60 * 60 * 1000; // 1 heure
 
 function generateResetToken(userId: string): string {
   const expiry = Date.now() + RESET_EXPIRY_MS;
   const payload = `${userId}:${expiry}`;
-  const signature = createHmac("sha256", RESET_SECRET)
+  const signature = createHmac("sha256", getResetSecret())
     .update(payload)
     .digest("hex");
   // Encode en base64url pour passer dans une URL
@@ -184,7 +198,7 @@ function verifyResetToken(token: string): { userId: string } | null {
     if (Date.now() > expiry) return null;
 
     // Vérifier signature
-    const expectedSig = createHmac("sha256", RESET_SECRET)
+    const expectedSig = createHmac("sha256", getResetSecret())
       .update(`${userId}:${expiryStr}`)
       .digest("hex");
 
@@ -234,8 +248,19 @@ export async function updatePasswordWithToken(
   token: string,
   newPassword: string
 ): Promise<{ success: boolean; error?: string }> {
-  if (!newPassword || newPassword.length < 6) {
-    return { success: false, error: "Le mot de passe doit contenir au moins 6 caractères" };
+  if (
+    !newPassword ||
+    newPassword.length < 8 ||
+    !/[A-Z]/.test(newPassword) ||
+    !/[a-z]/.test(newPassword) ||
+    !/[0-9]/.test(newPassword) ||
+    !/[^A-Za-z0-9]/.test(newPassword)
+  ) {
+    return {
+      success: false,
+      error:
+        "Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial",
+    };
   }
 
   const result = verifyResetToken(token);

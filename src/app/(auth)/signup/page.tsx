@@ -5,6 +5,9 @@ import Link from "next/link";
 import { signUp, signIn } from "@/actions/auth";
 import { Zap, Mail, Lock, User } from "lucide-react";
 import { useAuthLogos } from "@/components/auth/auth-logo-provider";
+import PasswordStrength, {
+  validatePasswordStrength,
+} from "@/components/ui/password-strength";
 
 export default function SignupPage() {
   const logos = useAuthLogos();
@@ -19,6 +22,13 @@ export default function SignupPage() {
     e.preventDefault();
     setLoading(true);
     setError("");
+
+    const { score } = validatePasswordStrength(password);
+    if (score < 4) {
+      setError("Le mot de passe doit remplir toutes les conditions de sécurité");
+      setLoading(false);
+      return;
+    }
 
     try {
       // Create user via server action (admin API)
@@ -156,10 +166,11 @@ export default function SignupPage() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               required
-              minLength={6}
+              minLength={8}
               className="w-full rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] py-3 pl-11 pr-4 text-sm text-[var(--heading)] outline-none transition-all placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
             />
           </div>
+          <PasswordStrength password={password} />
         </div>
 
         {error && (

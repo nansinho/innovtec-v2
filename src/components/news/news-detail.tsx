@@ -14,6 +14,7 @@ import {
   Trash2,
   Pencil,
 } from "lucide-react";
+import DOMPurify from "dompurify";
 import { cn, formatDate, formatRelative } from "@/lib/utils";
 import {
   addNewsComment,
@@ -214,7 +215,7 @@ export default function NewsDetail({
             <div
               className="prose-news text-[13.5px] leading-relaxed text-[var(--text)]"
               dangerouslySetInnerHTML={{
-                __html: article.content,
+                __html: DOMPurify.sanitize(article.content),
               }}
             />
           ) : (

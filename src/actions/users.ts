@@ -191,8 +191,18 @@ export async function createUser(formData: {
     return { success: false, error: "Les champs email, mot de passe, prénom et nom sont obligatoires" };
   }
 
-  if (password.length < 6) {
-    return { success: false, error: "Le mot de passe doit contenir au moins 6 caractères" };
+  if (
+    password.length < 8 ||
+    !/[A-Z]/.test(password) ||
+    !/[a-z]/.test(password) ||
+    !/[0-9]/.test(password) ||
+    !/[^A-Za-z0-9]/.test(password)
+  ) {
+    return {
+      success: false,
+      error:
+        "Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial",
+    };
   }
 
   try {

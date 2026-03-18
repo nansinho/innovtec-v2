@@ -5,6 +5,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { updatePasswordWithToken } from "@/actions/auth";
 import { Zap, Lock, AlertTriangle } from "lucide-react";
 import { useAuthLogos } from "@/components/auth/auth-logo-provider";
+import PasswordStrength, {
+  validatePasswordStrength,
+} from "@/components/ui/password-strength";
 import Link from "next/link";
 
 export default function ResetPasswordPage() {
@@ -53,8 +56,9 @@ export default function ResetPasswordPage() {
       return;
     }
 
-    if (password.length < 6) {
-      setError("Le mot de passe doit contenir au moins 6 caractères");
+    const { score } = validatePasswordStrength(password);
+    if (score < 4) {
+      setError("Le mot de passe doit remplir toutes les conditions de sécurité");
       return;
     }
 
@@ -123,10 +127,11 @@ export default function ResetPasswordPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 required
-                minLength={6}
+                minLength={8}
                 className="w-full rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] py-3 pl-11 pr-4 text-sm text-[var(--heading)] outline-none transition-all placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
               />
             </div>
+            <PasswordStrength password={password} />
           </div>
 
           <div>
@@ -145,7 +150,7 @@ export default function ResetPasswordPage() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="••••••••"
                 required
-                minLength={6}
+                minLength={8}
                 className="w-full rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] py-3 pl-11 pr-4 text-sm text-[var(--heading)] outline-none transition-all placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
               />
             </div>
