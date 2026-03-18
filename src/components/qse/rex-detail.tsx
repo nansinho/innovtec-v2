@@ -131,7 +131,7 @@ export default function RexDetail({ rex, onExportPdf, onEdit, companyLogo }: Rex
             {/* Left: Badge + Info */}
             <div className="flex items-start gap-4">
               {/* Badge FICHE REX */}
-              <div className="flex flex-col items-center rounded-lg bg-gradient-to-b from-orange-500 to-orange-600 px-3 py-2 text-white shadow-sm">
+              <div className="flex flex-col items-center rounded-lg bg-[#F59E0B] px-3 py-2 text-white shadow-sm">
                 <span className="text-[10px] font-bold">
                   Fiche REX
                 </span>
@@ -142,7 +142,7 @@ export default function RexDetail({ rex, onExportPdf, onEdit, companyLogo }: Rex
               {/* Info */}
               <div>
                 <h1 className="text-base font-bold text-[var(--heading)]">
-                  <span className="text-orange-500">TITRE DE L&apos;ÉVÉNEMENT</span>
+                  <span className="text-[#F59E0B]">TITRE DE L&apos;ÉVÉNEMENT</span>
                   {" — "}
                   {rex.title}
                 </h1>
@@ -170,8 +170,8 @@ export default function RexDetail({ rex, onExportPdf, onEdit, companyLogo }: Rex
           </div>
         </div>
 
-        {/* Orange separator */}
-        <div className="h-1 bg-gradient-to-r from-orange-400 via-orange-500 to-red-500" />
+        {/* Yellow separator */}
+        <div className="h-1 bg-gradient-to-r from-[#F59E0B] via-[#D97706] to-[#0B3655]" />
 
         {/* Sections */}
         <div className="space-y-6 p-6">
