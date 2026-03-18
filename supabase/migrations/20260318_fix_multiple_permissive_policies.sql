@@ -272,7 +272,7 @@ DROP POLICY IF EXISTS "Tout le monde lit les news publiées" ON news;
 CREATE POLICY "Lire les news publiées"
   ON news FOR SELECT
   TO authenticated
-  USING (published = true OR public.is_admin_or_rh());
+  USING (is_published = true OR public.is_admin_or_rh());
 
 CREATE POLICY "Créer une news"
   ON news FOR INSERT
