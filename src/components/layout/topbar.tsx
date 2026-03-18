@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { Bell, MessageSquare, Settings, ChevronRight, LogOut } from "lucide-react";
@@ -10,7 +10,9 @@ import { signOut } from "@/actions/auth";
 import type { Profile } from "@/lib/types/database";
 import { useNotifications } from "@/components/notifications/notification-provider";
 import NotificationSidebar from "@/components/notifications/notification-sidebar";
+import MessageSidebar from "@/components/messages/message-sidebar";
 import SearchBar from "@/components/search/search-bar";
+import { getUnreadMessagesCount } from "@/actions/messages";
 
 /* Breadcrumb label mapping */
 const breadcrumbLabels: Record<string, string> = {
@@ -43,9 +45,17 @@ interface TopbarProps {
 
 export default function Topbar({ profile }: TopbarProps) {
   const [notifOpen, setNotifOpen] = useState(false);
+  const [msgOpen, setMsgOpen] = useState(false);
+  const [unreadMessages, setUnreadMessages] = useState(0);
   const { unreadCount } = useNotifications();
   const pathname = usePathname();
   const router = useRouter();
+
+  const isAdmin = profile && ["admin", "rh"].includes(profile.role);
+
+  useEffect(() => {
+    getUnreadMessagesCount().then(setUnreadMessages);
+  }, [msgOpen]);
 
   const displayName = profile
     ? `${profile.first_name} ${profile.last_name}`.trim() || profile.email
@@ -116,12 +126,19 @@ export default function Topbar({ profile }: TopbarProps) {
             )}
           </button>
           <button
-            className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-all duration-200 hover:bg-black/[0.04] hover:text-[var(--heading)]"
+            onClick={() => setMsgOpen(true)}
+            className="relative flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-all duration-200 hover:bg-black/[0.04] hover:text-[var(--heading)]"
             aria-label="Messages"
           >
             <MessageSquare className="h-[18px] w-[18px]" />
+            {unreadMessages > 0 && (
+              <div className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-[var(--yellow)] text-[8px] font-bold text-white shadow-sm">
+                {unreadMessages > 9 ? "9+" : unreadMessages}
+              </div>
+            )}
           </button>
           <button
+            onClick={() => router.push(isAdmin ? "/admin/settings" : "/profil")}
             className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-muted)] transition-all duration-200 hover:bg-black/[0.04] hover:text-[var(--heading)]"
             aria-label="Paramètres"
           >
@@ -165,6 +182,13 @@ export default function Topbar({ profile }: TopbarProps) {
       <NotificationSidebar
         isOpen={notifOpen}
         onClose={() => setNotifOpen(false)}
+      />
+
+      {/* Message sidebar */}
+      <MessageSidebar
+        isOpen={msgOpen}
+        onClose={() => setMsgOpen(false)}
+        currentUserId={profile?.id ?? ""}
       />
     </>
   );

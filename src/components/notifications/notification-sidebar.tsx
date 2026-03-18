@@ -235,7 +235,7 @@ export default function NotificationSidebar({
                     </div>
 
                     {/* Actions (on hover) */}
-                    <div className="absolute right-3 top-3 hidden items-center gap-0.5 group-hover:flex">
+                    <div className="absolute right-3 top-3 z-20 hidden items-center gap-0.5 group-hover:flex">
                       {!notification.is_read && (
                         <button
                           onClick={() => handleMarkAsRead(notification.id)}
