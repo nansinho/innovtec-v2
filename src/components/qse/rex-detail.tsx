@@ -17,10 +17,10 @@ import { toast } from "sonner";
 import { useState } from "react";
 
 const EVENT_TYPES = [
-  { value: "sd", label: "SD", full: "Situation Dangereuse", color: "text-orange-600", bg: "bg-orange-100" },
-  { value: "presquaccident", label: "PRESQU'ACCIDENT", full: "Presqu'accident", color: "text-yellow-700", bg: "bg-yellow-200" },
-  { value: "accident", label: "ACCIDENT", full: "Accident", color: "text-red-600", bg: "bg-red-100" },
-  { value: "hpe", label: "HPE", full: "High Potential Events", color: "text-purple-600", bg: "bg-purple-100" },
+  { value: "sd", label: "SD", full: "Situation Dangereuse", color: "text-[#0B3655]", bg: "bg-[#F59E0B]/10" },
+  { value: "presquaccident", label: "PRESQU'ACCIDENT", full: "Presqu'accident", color: "text-[#0B3655]", bg: "bg-[#F59E0B]/10" },
+  { value: "accident", label: "ACCIDENT", full: "Accident", color: "text-white", bg: "bg-[#0B3655]" },
+  { value: "hpe", label: "HPE", full: "High Potential Events", color: "text-[#0B3655]", bg: "bg-[#F59E0B]/10" },
 ];
 
 const SECTIONS = [
@@ -149,17 +149,17 @@ export default function RexDetail({ rex, onExportPdf, onEdit, companyLogo }: Rex
                 <div className="mt-1.5 space-y-0.5 text-sm text-[var(--text-secondary)]">
                   {rex.lieu && (
                     <p>
-                      <span className="font-semibold text-blue-600">Lieu</span> : {rex.lieu}
+                      <span className="font-semibold text-[#F59E0B]">Lieu</span> : {rex.lieu}
                     </p>
                   )}
                   {dateFormatted && (
                     <p>
-                      <span className="font-semibold text-blue-600">Date</span> : {dateFormatted}
+                      <span className="font-semibold text-[#F59E0B]">Date</span> : {dateFormatted}
                     </p>
                   )}
                   {rex.horaire && (
                     <p>
-                      <span className="font-semibold text-blue-600">Horaire</span> : {rex.horaire}
+                      <span className="font-semibold text-[#F59E0B]">Horaire</span> : {rex.horaire}
                     </p>
                   )}
                 </div>
@@ -216,14 +216,14 @@ export default function RexDetail({ rex, onExportPdf, onEdit, companyLogo }: Rex
           <div className="grid grid-cols-2 gap-6">
             {/* Déjà arrivé */}
             <div>
-              <h3 className="mb-2 text-[12px] font-bold text-blue-600">
+              <h3 className="mb-2 text-[12px] font-bold text-[#0B3655]">
                 Déjà arrivé ?
               </h3>
               {rex.deja_arrive && rex.deja_arrive.length > 0 ? (
                 <ul className="space-y-1">
                   {rex.deja_arrive.map((item, i) => (
                     <li key={i} className="flex items-start gap-2 text-sm text-[var(--heading)]">
-                      <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[var(--text-muted)]" />
+                      <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[#F59E0B]" />
                       {item}
                     </li>
                   ))}
@@ -235,7 +235,7 @@ export default function RexDetail({ rex, onExportPdf, onEdit, companyLogo }: Rex
 
             {/* Type d'événement */}
             <div>
-              <h3 className="mb-2 text-[12px] font-bold text-orange-600">
+              <h3 className="mb-2 text-[12px] font-bold text-[#0B3655]">
                 Type d&apos;événement
               </h3>
               <div className="space-y-1">
