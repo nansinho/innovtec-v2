@@ -134,7 +134,6 @@ export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string 
     faits: badgeFaits, causes: badgeCauses, actions: badgeActions, vigilance: badgeVigilance,
   };
 
-  // Count sections with content to calculate available space
   const sections = [
     { key: "faits", text: rex.faits, photo: photoFaits },
     { key: "causes", text: rex.causes, photo: photoCauses },
@@ -142,28 +141,26 @@ export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string 
     { key: "vigilance", text: rex.vigilance, photo: photoVigilance },
   ] as const;
 
-  const activeSections = sections.filter(s => s.text || s.photo);
-
   // ==========================================
-  // HEADER — compact
+  // HEADER
   // ==========================================
 
   // Badge "FICHE REX n/year" — yellow rounded rectangle
-  const bw = 28, bh = 18;
+  const bw = 30, bh = 20;
   pdf.setFillColor(...YELLOW);
   pdf.roundedRect(mx, y, bw, bh, 2.5, 2.5, "F");
   pdf.setFont("helvetica", "bold");
-  pdf.setFontSize(7);
+  pdf.setFontSize(8);
   pdf.setTextColor(255, 255, 255);
-  pdf.text("FICHE REX", mx + bw / 2, y + 6, { align: "center" });
-  pdf.setFontSize(14);
-  pdf.text(`${rex.rex_number || "-"}/${rex.rex_year || "-"}`, mx + bw / 2, y + 15, { align: "center" });
+  pdf.text("FICHE REX", mx + bw / 2, y + 7, { align: "center" });
+  pdf.setFontSize(15);
+  pdf.text(`${rex.rex_number || "-"}/${rex.rex_year || "-"}`, mx + bw / 2, y + 16, { align: "center" });
 
   // Company logo (top right)
-  const logoX = pageW - mx - 42;
+  const logoX = pageW - mx - 46;
   let logoOk = false;
   if (logoData) {
-    try { pdf.addImage(logoData, "PNG", logoX, y, 40, 14); logoOk = true; } catch { /* fallback */ }
+    try { pdf.addImage(logoData, "PNG", logoX, y, 44, 15); logoOk = true; } catch { /* fallback */ }
   }
   if (!logoOk) {
     pdf.setFont("helvetica", "bold");
@@ -223,7 +220,7 @@ export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string 
     metaY += 3.5;
   }
 
-  y += bh + 4;
+  y += bh + 5;
 
   // Yellow-to-navy gradient separator
   const gradSteps = 20;
@@ -234,143 +231,134 @@ export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string 
     const g = Math.round(158 + (54 - 158) * t);
     const b = Math.round(11 + (85 - 11) * t);
     pdf.setFillColor(r, g, b);
-    pdf.rect(mx + i * stepW, y, stepW + 0.5, 1.2, "F");
+    pdf.rect(mx + i * stepW, y, stepW + 0.5, 1.5, "F");
   }
-  y += 4;
+  y += 6;
 
   // ==========================================
-  // SECTIONS — dynamically sized to fit 1 page
+  // SECTIONS — natural size, no compression
   // ==========================================
-
-  // Reserve space for footer
-  const footerH = 30;
-  const availableH = pageH - y - footerH - 5;
-  // Distribute space equally among active sections
-  const maxSectionH = activeSections.length > 0 ? availableH / activeSections.length : availableH;
 
   for (const sec of sections) {
     if (!sec.text && !sec.photo) continue;
 
-    // Badge image
+    // Badge image (SVG rendered to PNG)
     const badge = badges[sec.key];
     if (badge) {
       try {
-        const badgeH = 8;
-        const badgeW = sec.key === "faits" ? 36 : sec.key === "causes" ? 42 : sec.key === "actions" ? 44 : 38;
+        const badgeH = 9;
+        const badgeW = sec.key === "faits" ? 38 : sec.key === "causes" ? 46 : sec.key === "actions" ? 48 : 42;
         pdf.addImage(badge, "PNG", mx, y - 1, badgeW, badgeH);
       } catch {
         pdf.setFont("helvetica", "bold");
-        pdf.setFontSize(9);
+        pdf.setFontSize(10);
         pdf.setTextColor(...NAVY);
-        pdf.text(sec.key.toUpperCase(), mx, y + 4);
+        pdf.text(sec.key.toUpperCase(), mx, y + 5);
       }
     }
 
-    y += 10;
+    y += 12;
 
-    // Text content box
+    // Text content box with golden border
     const hasPhoto = !!sec.photo;
     const textW = hasPhoto ? cw * 0.58 : cw;
     const sanitizedText = sanitize(sec.text || "");
     pdf.setFont("helvetica", "normal");
-    pdf.setFontSize(8);
-    const lines = pdf.splitTextToSize(sanitizedText, textW - 8);
+    pdf.setFontSize(9);
+    const lines = pdf.splitTextToSize(sanitizedText, textW - 10);
+    const textH = Math.max(lines.length * 4.2 + 8, 20);
 
-    // Limit text height to fit in available space
-    const maxTextLines = Math.floor((maxSectionH - 14) / 3.5);
-    const displayLines = lines.slice(0, Math.max(maxTextLines, 3));
-    const textH = Math.max(displayLines.length * 3.5 + 6, 14);
-
-    // White bg + border
+    // White background
     pdf.setFillColor(255, 255, 255);
-    pdf.roundedRect(mx, y - 1, textW, textH, 1.5, 1.5, "F");
+    pdf.roundedRect(mx, y - 2, textW, textH, 1.5, 1.5, "F");
+
+    // Golden border
     pdf.setDrawColor(...GOLD_BORDER);
-    pdf.setLineWidth(0.4);
-    pdf.roundedRect(mx, y - 1, textW, textH, 1.5, 1.5, "S");
+    pdf.setLineWidth(0.5);
+    pdf.roundedRect(mx, y - 2, textW, textH, 1.5, 1.5, "S");
 
     // Text
     pdf.setTextColor(...GRAY_TEXT);
     pdf.setFont("helvetica", "normal");
-    pdf.setFontSize(8);
-    pdf.text(displayLines, mx + 4, y + 3);
+    pdf.setFontSize(9);
+    pdf.text(lines, mx + 5, y + 4);
 
     // Photo (right column)
     if (sec.photo) {
-      const px = mx + textW + 3;
-      const pw = cw - textW - 3;
-      const ph = textH;
+      const px = mx + textW + 4;
+      const pw = cw - textW - 4;
+      const ph = Math.max(textH, 28);
       try {
-        pdf.addImage(sec.photo, "JPEG", px, y - 1, pw, ph);
+        pdf.addImage(sec.photo, "JPEG", px, y - 2, pw, ph);
       } catch {
         // skip
       }
     }
 
-    y += textH + 4;
+    y += textH + 6;
   }
 
   // ==========================================
-  // FOOTER
+  // FOOTER — fixed at bottom of page
   // ==========================================
+  const footerY = pageH - 38; // Fixed position near bottom
 
-  // Separator
+  // Separator line
   pdf.setDrawColor(220, 220, 220);
   pdf.setLineWidth(0.3);
-  pdf.line(mx, y, pageW - mx, y);
-  y += 4;
+  pdf.line(mx, footerY, pageW - mx, footerY);
 
   const halfW = cw / 2 - 2;
-  const fy = y;
+  let fy = footerY + 5;
 
   // Left: Déjà arrivé — navy title
   pdf.setFont("helvetica", "bold");
-  pdf.setFontSize(8);
+  pdf.setFontSize(9);
   pdf.setTextColor(...NAVY);
-  pdf.text("D\u00c9J\u00c0 ARRIV\u00c9 ?", mx, y);
-  y += 4;
+  pdf.text("D\u00c9J\u00c0 ARRIV\u00c9 ?", mx, fy);
+  let leftY = fy + 5;
 
   if (rex.deja_arrive && rex.deja_arrive.length > 0) {
     pdf.setFont("helvetica", "normal");
-    pdf.setFontSize(7);
+    pdf.setFontSize(8);
     pdf.setTextColor(...GRAY_TEXT);
     for (const item of rex.deja_arrive) {
       pdf.setFillColor(...YELLOW);
-      pdf.circle(mx + 2, y - 0.5, 0.6, "F");
+      pdf.circle(mx + 2, leftY - 0.5, 0.7, "F");
       const il = pdf.splitTextToSize(sanitize(item), halfW - 8);
-      pdf.text(il, mx + 5, y);
-      y += il.length * 3 + 1;
+      pdf.text(il, mx + 6, leftY);
+      leftY += il.length * 3.5 + 1;
     }
   } else {
     pdf.setFont("helvetica", "italic");
-    pdf.setFontSize(7);
+    pdf.setFontSize(8);
     pdf.setTextColor(160, 160, 160);
-    pdf.text("Non renseign\u00e9", mx + 4, y);
+    pdf.text("Non renseign\u00e9", mx + 4, leftY);
   }
 
   // Right: Type d'événement — navy title
   const rx = mx + halfW + 4;
-  let ty = fy;
   pdf.setFont("helvetica", "bold");
-  pdf.setFontSize(8);
+  pdf.setFontSize(9);
   pdf.setTextColor(...NAVY);
-  pdf.text("TYPE D'\u00c9V\u00c9NEMENT", rx, ty);
-  ty += 4;
+  pdf.text("TYPE D'\u00c9V\u00c9NEMENT", rx, fy);
+  let ty = fy + 5;
 
   for (const t of EVENT_TYPES) {
     const active = rex.type_evenement === t.value;
     if (active) {
       pdf.setFillColor(...NAVY);
-      pdf.roundedRect(rx, ty - 2.5, halfW, 4.5, 0.8, 0.8, "F");
+      pdf.roundedRect(rx, ty - 3, halfW, 5.5, 1, 1, "F");
       pdf.setFont("helvetica", "bold");
-      pdf.setFontSize(7);
+      pdf.setFontSize(8);
       pdf.setTextColor(255, 255, 255);
     } else {
       pdf.setFont("helvetica", "normal");
-      pdf.setFontSize(7);
+      pdf.setFontSize(8);
       pdf.setTextColor(160, 160, 160);
     }
     pdf.text(sanitize(t.label), rx + 2, ty);
-    ty += 5;
+    ty += 6;
   }
 
   // ==========================================
