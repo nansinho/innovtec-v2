@@ -277,6 +277,7 @@ export interface Rex {
   source_file_url: string;
   conclusion_title: string;
   conclusion_content: string;
+  type_travaux: string;
 }
 
 export interface BonnePratique {

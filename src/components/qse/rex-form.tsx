@@ -63,6 +63,7 @@ interface RexFormData {
   source_file_url: string;
   conclusion_title: string;
   conclusion_content: string;
+  type_travaux: string;
 }
 
 const emptyForm: RexFormData = {
@@ -88,6 +89,7 @@ const emptyForm: RexFormData = {
   source_file_url: "",
   conclusion_title: "",
   conclusion_content: "",
+  type_travaux: "",
 };
 
 interface RexFormProps {
@@ -120,6 +122,7 @@ function rexToFormData(rex: Rex): RexFormData {
     source_file_url: rex.source_file_url || "",
     conclusion_title: rex.conclusion_title || "",
     conclusion_content: rex.conclusion_content || "",
+    type_travaux: rex.type_travaux || "",
   };
 }
 
@@ -165,6 +168,7 @@ export default function RexForm({ onCreated, onClose, initialData }: RexFormProp
       source_file_url: fileUrl || "",
       conclusion_title: (r.conclusion_title as string) || "",
       conclusion_content: (r.conclusion_content as string) || "",
+      type_travaux: (r.type_travaux as string) || "",
     });
     setMode("manual");
 
@@ -203,6 +207,7 @@ export default function RexForm({ onCreated, onClose, initialData }: RexFormProp
         vigilance: r.vigilance || "",
         conclusion_title: r.conclusion_title || "",
         conclusion_content: r.conclusion_content || "",
+        type_travaux: r.type_travaux || "",
       }));
       setMode("manual");
       toast.success("REX généré par l'IA");
@@ -453,16 +458,29 @@ export default function RexForm({ onCreated, onClose, initialData }: RexFormProp
                     />
                   </div>
                 </div>
-                <div className="mt-3">
-                  <label className="mb-1 block text-[11px] font-medium text-[var(--text-secondary)]">
-                    Chantier
-                  </label>
-                  <input
-                    value={form.chantier}
-                    onChange={(e) => setForm({ ...form, chantier: e.target.value })}
-                    className={inputClass}
-                    placeholder="DC25-068944"
-                  />
+                <div className="mt-3 grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="mb-1 block text-[11px] font-medium text-[var(--text-secondary)]">
+                      Chantier
+                    </label>
+                    <input
+                      value={form.chantier}
+                      onChange={(e) => setForm({ ...form, chantier: e.target.value })}
+                      className={inputClass}
+                      placeholder="Chauffage Urbain - DALKIA"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-[11px] font-medium text-[var(--text-secondary)]">
+                      Type de travaux
+                    </label>
+                    <input
+                      value={form.type_travaux}
+                      onChange={(e) => setForm({ ...form, type_travaux: e.target.value })}
+                      className={inputClass}
+                      placeholder="Pose de réseau de chaleur"
+                    />
+                  </div>
                 </div>
               </div>
 

@@ -200,7 +200,7 @@ IMPORTANT:
 Analyse cette fiche REX avec une EXTRÊME PRÉCISION et extrais TOUTES les informations structurées.
 
 STRUCTURE D'UNE FICHE REX INNOVTEC :
-1. HEADER : badge orange "FICHE REX N/ANNÉE", titre de l'événement, lieu, date (format JJ/MM/AAAA), horaire
+1. HEADER : badge orange "FICHE REX N/ANNÉE", titre de l'événement, chantier, adresse/lieu, type de travaux, date (format JJ/MM/AAAA), horaire
 2. Section "LES FAITS" (badge bleu avec engrenages) : description factuelle de ce qui s'est passé. Le texte est dans un encadré. Une photo peut accompagner à droite.
 3. Section "LES CAUSES ET LES CIRCONSTANCES" (badge vert avec point d'interrogation) : analyse des causes racines. Le texte est dans un encadré. Une photo peut accompagner.
 4. Section "LA SYNTHÈSE DES ACTIONS ENGAGÉES" (badge orange avec checklist) : mesures correctives prises. Le texte est dans un encadré. Une photo peut accompagner.
@@ -227,6 +227,7 @@ Retourne UNIQUEMENT un JSON valide avec ces champs :
   "description": "<résumé clair en 1-2 phrases de ce qui s'est passé>",
   "lessons_learned": "<principales leçons tirées de cet événement>",
   "chantier": "<nom du chantier ou référence si mentionné, sinon chaîne vide>",
+  "type_travaux": "<type de travaux si mentionné (ex: Pose de réseau de chaleur, Tirage de câble, etc.), sinon chaîne vide>",
   "images_detected": <nombre d'images/photos visibles dans le document (hors icônes et logos)>
 }
 
