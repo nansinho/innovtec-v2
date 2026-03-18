@@ -247,7 +247,7 @@ export function DataTable<T>({
       {title && (
         <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h1 className="text-base font-semibold text-[var(--heading)]">{title}</h1>
+            <h1 className="text-lg font-semibold text-[var(--heading)]">{title}</h1>
             {description && (
               <p className="mt-0.5 text-[13px] text-[var(--text-secondary)]">{description}</p>
             )}

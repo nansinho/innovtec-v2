@@ -26,7 +26,7 @@ export default function AdminBootstrap() {
       <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--yellow-surface)]">
         <AlertCircle className="h-8 w-8 text-[var(--yellow)]" />
       </div>
-      <h1 className="mb-2 text-base font-semibold text-[var(--heading)]">
+      <h1 className="mb-2 text-lg font-semibold text-[var(--heading)]">
         Aucun administrateur configuré
       </h1>
       <p className="mb-6 text-[13px] text-[var(--text-secondary)]">

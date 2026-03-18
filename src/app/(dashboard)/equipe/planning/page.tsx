@@ -18,7 +18,7 @@ export default async function PlanningPage() {
   return (
     <div className="p-6 pb-20 md:pb-6">
       <div className="mb-6">
-        <h1 className="text-base font-semibold text-[var(--heading)]">
+        <h1 className="text-lg font-semibold text-[var(--heading)]">
           Planning
         </h1>
         <p className="mt-1 text-[13px] text-[var(--text-secondary)]">
