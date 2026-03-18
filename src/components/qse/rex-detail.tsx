@@ -60,6 +60,7 @@ interface RexDetailProps {
 export default function RexDetail({ rex, onExportPdf, onEdit, companyLogo }: RexDetailProps) {
   const router = useRouter();
   const [deleting, setDeleting] = useState(false);
+  const author = (rex as unknown as { author?: { first_name: string; last_name: string } | null }).author;
 
   const dateFormatted = rex.date_evenement
     ? new Date(rex.date_evenement).toLocaleDateString("fr-FR", {
@@ -175,6 +176,11 @@ export default function RexDetail({ rex, onExportPdf, onEdit, companyLogo }: Rex
                   {!dateFormatted && rex.horaire && (
                     <p>
                       <span className="font-semibold text-[#F59E0B]">Horaire</span> : {rex.horaire}
+                    </p>
+                  )}
+                  {author && (
+                    <p>
+                      <span className="font-semibold text-[#F59E0B]">Auteur</span> : {author.first_name} {author.last_name}
                     </p>
                   )}
                 </div>

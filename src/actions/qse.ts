@@ -381,6 +381,7 @@ export interface CreateRexInput {
   source_file_url?: string;
   conclusion_title?: string;
   conclusion_content?: string;
+  author_id?: string;
 }
 
 export async function createRex(
@@ -397,7 +398,7 @@ export async function createRex(
     description: rex.description,
     lessons_learned: rex.lessons_learned || "",
     chantier: rex.chantier || "",
-    author_id: user.id,
+    author_id: rex.author_id || user.id,
   };
 
   if (rex.rex_number !== undefined) insertData.rex_number = rex.rex_number;
@@ -502,6 +503,7 @@ export async function updateRex(
   if (rex.source_file_url !== undefined) updateData.source_file_url = rex.source_file_url;
   if (rex.conclusion_title !== undefined) updateData.conclusion_title = rex.conclusion_title;
   if (rex.conclusion_content !== undefined) updateData.conclusion_content = rex.conclusion_content;
+  if (rex.author_id !== undefined) updateData.author_id = rex.author_id;
 
   if (Object.keys(updateData).length === 0) {
     return { success: false, error: "Aucune donnée à mettre à jour" };

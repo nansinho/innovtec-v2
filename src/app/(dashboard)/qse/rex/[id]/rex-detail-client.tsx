@@ -6,12 +6,15 @@ import type { Rex } from "@/lib/types/database";
 import type { CompanyLogos } from "@/actions/settings";
 import RexDetail from "@/components/qse/rex-detail";
 import RexForm from "@/components/qse/rex-form";
+import type { RexAuthorOption } from "@/components/qse/rex-form";
+
 interface Props {
   rex: Rex;
   companyLogo: CompanyLogos;
+  profiles?: RexAuthorOption[];
 }
 
-export default function RexDetailClient({ rex, companyLogo }: Props) {
+export default function RexDetailClient({ rex, companyLogo, profiles = [] }: Props) {
   const [editing, setEditing] = useState(false);
   const router = useRouter();
 
@@ -41,6 +44,7 @@ export default function RexDetailClient({ rex, companyLogo }: Props) {
             router.refresh();
           }}
           onClose={() => setEditing(false)}
+          profiles={profiles}
         />
       )}
     </>

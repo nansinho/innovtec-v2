@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import RexList from "@/components/qse/rex-list";
 import RexForm from "@/components/qse/rex-form";
 import type { Rex } from "@/lib/types/database";
+import type { RexAuthorOption } from "@/components/qse/rex-form";
 
 interface RexItem extends Rex {
   author?: { first_name: string; last_name: string } | null;
@@ -14,9 +15,10 @@ interface RexItem extends Rex {
 
 interface Props {
   rexList: RexItem[];
+  profiles?: RexAuthorOption[];
 }
 
-export default function RexPageClient({ rexList }: Props) {
+export default function RexPageClient({ rexList, profiles = [] }: Props) {
   const [showForm, setShowForm] = useState(false);
   const router = useRouter();
 
@@ -42,6 +44,7 @@ export default function RexPageClient({ rexList }: Props) {
             router.refresh();
           }}
           onClose={() => setShowForm(false)}
+          profiles={profiles}
         />
       )}
     </div>
