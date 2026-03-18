@@ -260,7 +260,7 @@ export function DataTable<T>({
                   key={i}
                   onClick={action.onClick}
                   disabled={action.disabled}
-                  className="inline-flex h-7 items-center gap-1.5 rounded-lg border border-[var(--border-1)] bg-white px-2.5 text-[11px] font-medium text-[var(--text-secondary)] shadow-xs transition-all hover:bg-zinc-50 hover:text-[var(--heading)] hover:border-zinc-300 active:scale-[0.97] disabled:opacity-40 disabled:pointer-events-none"
+                  className="inline-flex h-7 items-center gap-1.5 rounded-lg border border-[var(--border-1)] bg-white px-2.5 text-[11px] font-medium text-[var(--text-secondary)] shadow-xs transition-all hover:bg-zinc-50 hover:text-[var(--heading)] hover:border-zinc-300 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none"
                 >
                   <Icon className="h-3.5 w-3.5" />
                   <span className="hidden sm:inline">{action.label}</span>
@@ -567,7 +567,7 @@ export function DataTable<T>({
               <button
                 onClick={() => setPage((p) => Math.max(0, p - 1))}
                 disabled={page === 0}
-                className="flex h-7 w-7 items-center justify-center rounded-lg text-[var(--text-muted)] transition-colors hover:bg-zinc-100 disabled:opacity-30"
+                className="flex h-7 w-7 items-center justify-center rounded-lg text-[var(--text-muted)] transition-colors hover:bg-zinc-100 disabled:opacity-50"
                 aria-label="Page précédente"
               >
                 <ChevronLeft className="h-4 w-4" />
@@ -593,7 +593,7 @@ export function DataTable<T>({
               <button
                 onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
                 disabled={page >= totalPages - 1}
-                className="flex h-7 w-7 items-center justify-center rounded-lg text-[var(--text-muted)] transition-colors hover:bg-zinc-100 disabled:opacity-30"
+                className="flex h-7 w-7 items-center justify-center rounded-lg text-[var(--text-muted)] transition-colors hover:bg-zinc-100 disabled:opacity-50"
                 aria-label="Page suivante"
               >
                 <ChevronRight className="h-4 w-4" />

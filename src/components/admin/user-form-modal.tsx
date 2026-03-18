@@ -251,7 +251,7 @@ export default function UserFormModal({
       />
 
       {/* Modal */}
-      <div className="relative mx-4 w-full max-w-[560px] max-h-[90vh] animate-scale-in overflow-hidden rounded-xl bg-white shadow-xl ring-1 ring-black/[0.05]">
+      <div className="relative mx-4 w-full max-w-[560px] max-h-[90vh] animate-scale-in overflow-hidden rounded-xl bg-white shadow-xl ring-1 ring-black/[0.04]">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[var(--border-1)] px-6 py-4">
           <div className="flex items-center gap-3">

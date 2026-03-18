@@ -54,7 +54,7 @@ export default function MyBirthdayWishes({ wishes }: MyBirthdayWishesProps) {
                 <p className="text-[12px] font-semibold text-[var(--heading)]">
                   {name}
                 </p>
-                <p className="mt-0.5 text-[11.5px] text-[var(--text)]">
+                <p className="mt-0.5 text-xs text-[var(--text)]">
                   {wish.message}
                 </p>
                 <p className="mt-0.5 text-[10px] text-[var(--text-muted)]">

@@ -231,7 +231,7 @@ export default function ProfileDrawer({
                   <button
                     onClick={handleSendWish}
                     disabled={isPending}
-                    className="rounded-lg bg-[var(--yellow)] px-3 py-1.5 text-white transition-all duration-200 hover:bg-[var(--yellow-hover)] active:scale-[0.97] disabled:opacity-50"
+                    className="rounded-lg bg-[var(--yellow)] px-3 py-1.5 text-white transition-all duration-200 hover:bg-[var(--yellow-hover)] active:scale-[0.98] disabled:opacity-50"
                   >
                     <Send className="h-3.5 w-3.5" />
                   </button>
@@ -239,7 +239,7 @@ export default function ProfileDrawer({
               ) : (
                 <button
                   onClick={() => setShowWishInput(true)}
-                  className="rounded-full bg-[var(--yellow)] px-3 py-1 text-[11px] font-medium text-white transition-all duration-200 hover:bg-[var(--yellow-hover)] active:scale-[0.97]"
+                  className="rounded-full bg-[var(--yellow)] px-3 py-1 text-[11px] font-medium text-white transition-all duration-200 hover:bg-[var(--yellow-hover)] active:scale-[0.98]"
                 >
                   Souhaiter son anniversaire
                 </button>

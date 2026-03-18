@@ -310,7 +310,7 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
               <select
                 value={form.month}
                 onChange={(e) => set("month", parseInt(e.target.value))}
-                className="w-full rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-3 py-2 text-sm text-[var(--heading)] outline-none focus:border-[var(--yellow)] focus:ring-1 focus:ring-[var(--yellow)]"
+                className="w-full rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-3 py-2 text-sm text-[var(--heading)] outline-none focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
               >
                 {MONTH_NAMES.map((name, i) => (
                   <option key={i} value={i + 1}>{name}</option>
@@ -323,7 +323,7 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
                 type="number"
                 value={form.year}
                 onChange={(e) => set("year", parseInt(e.target.value) || currentYear)}
-                className="w-full rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-3 py-2 text-sm text-[var(--heading)] outline-none focus:border-[var(--yellow)] focus:ring-1 focus:ring-[var(--yellow)]"
+                className="w-full rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-3 py-2 text-sm text-[var(--heading)] outline-none focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
               />
             </div>
           </div>
@@ -518,7 +518,7 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
               type="number"
               value={form.field_visits_count}
               onChange={(e) => set("field_visits_count", parseInt(e.target.value) || 0)}
-              className="w-48 rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-3 py-2 text-sm text-[var(--heading)] outline-none focus:border-[var(--yellow)] focus:ring-1 focus:ring-[var(--yellow)]"
+              className="w-48 rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-3 py-2 text-sm text-[var(--heading)] outline-none focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
             />
           </div>
         </Section>
@@ -530,7 +530,7 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
             onChange={(e) => set("monthly_report", e.target.value)}
             rows={6}
             placeholder="Rédigez le bilan mensuel..."
-            className="w-full rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-3 py-2 text-sm text-[var(--heading)] outline-none focus:border-[var(--yellow)] focus:ring-1 focus:ring-[var(--yellow)]"
+            className="w-full rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-3 py-2 text-sm text-[var(--heading)] outline-none focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
           />
         </Section>
 
@@ -564,7 +564,7 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
               type="text"
               value={form.focus_event_title}
               onChange={(e) => set("focus_event_title", e.target.value)}
-              className="w-full rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-3 py-2 text-sm text-[var(--heading)] outline-none focus:border-[var(--yellow)] focus:ring-1 focus:ring-[var(--yellow)]"
+              className="w-full rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-3 py-2 text-sm text-[var(--heading)] outline-none focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
             />
           </div>
           <DynamicList
@@ -582,7 +582,7 @@ export function SseDashboardForm({ dashboard, onSave, onCancel }: SseDashboardFo
             type="text"
             value={form.quote}
             onChange={(e) => set("quote", e.target.value)}
-            className="w-full rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-3 py-2 text-sm italic text-[var(--heading)] outline-none focus:border-[var(--yellow)] focus:ring-1 focus:ring-[var(--yellow)]"
+            className="w-full rounded-[var(--radius-xs)] border border-[var(--border-2)] bg-white px-3 py-2 text-sm italic text-[var(--heading)] outline-none focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
           />
         </Section>
 

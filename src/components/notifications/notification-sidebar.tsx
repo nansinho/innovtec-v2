@@ -225,7 +225,7 @@ export default function NotificationSidebar({
                         )}
                       </div>
                       {notification.message && (
-                        <p className="mt-0.5 text-[11.5px] leading-snug text-[var(--text-secondary)] line-clamp-2">
+                        <p className="mt-0.5 text-xs leading-snug text-[var(--text-secondary)] line-clamp-2">
                           {notification.message}
                         </p>
                       )}

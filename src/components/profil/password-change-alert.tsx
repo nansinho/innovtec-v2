@@ -23,7 +23,7 @@ export default function PasswordChangeAlert() {
         </div>
         <Link
           href="/profil"
-          className="shrink-0 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-3 py-1.5 text-xs font-medium text-white transition-all duration-200 hover:bg-[var(--yellow-hover)] active:scale-[0.97]"
+          className="shrink-0 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-3 py-1.5 text-xs font-medium text-white transition-all duration-200 hover:bg-[var(--yellow-hover)] active:scale-[0.98]"
         >
           Modifier
         </Link>

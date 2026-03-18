@@ -337,7 +337,7 @@ export default function MessageSidebar({
                         </span>
                       </div>
                       <div className="flex items-center justify-between gap-2">
-                        <p className="truncate text-[11.5px] text-[var(--text-secondary)]">
+                        <p className="truncate text-xs text-[var(--text-secondary)]">
                           {conv.lastMessage.from_user_id === currentUserId
                             ? `Vous : ${conv.lastMessage.content}`
                             : conv.lastMessage.content}

@@ -323,7 +323,7 @@ export default function NewsEditorPage({
             onChange={(e) => setExcerpt(e.target.value)}
             placeholder="Résumé / chapeau de l'article (optionnel)"
             rows={2}
-            className="w-full resize-none border-0 bg-transparent text-[14px] leading-relaxed text-[var(--text-secondary)] outline-none placeholder:text-[var(--text-muted)]"
+            className="w-full resize-none border-0 bg-transparent text-sm leading-relaxed text-[var(--text-secondary)] outline-none placeholder:text-[var(--text-muted)]"
           />
           <div className="h-px bg-[var(--border-1)]" />
         </div>
@@ -345,7 +345,7 @@ export default function NewsEditorPage({
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value as NewsCategory)}
-              className="w-full rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] px-3 py-2 text-[13px] text-[var(--heading)] outline-none focus:border-[var(--yellow)] focus:ring-1 focus:ring-[var(--yellow)]"
+              className="w-full rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] px-3 py-2 text-[13px] text-[var(--heading)] outline-none focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
             >
               {Object.entries(categoryLabels).map(([key, label]) => (
                 <option key={key} value={key}>
@@ -362,7 +362,7 @@ export default function NewsEditorPage({
             <select
               value={priority}
               onChange={(e) => setPriority(e.target.value as NewsPriority)}
-              className="w-full rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] px-3 py-2 text-[13px] text-[var(--heading)] outline-none focus:border-[var(--yellow)] focus:ring-1 focus:ring-[var(--yellow)]"
+              className="w-full rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] px-3 py-2 text-[13px] text-[var(--heading)] outline-none focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
             >
               {Object.entries(priorityLabels).map(([key, label]) => (
                 <option key={key} value={key}>
@@ -381,7 +381,7 @@ export default function NewsEditorPage({
                 type="datetime-local"
                 value={publishedAt}
                 onChange={(e) => setPublishedAt(e.target.value)}
-                className="w-full rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] px-3 py-2 text-[13px] text-[var(--heading)] outline-none focus:border-[var(--yellow)] focus:ring-1 focus:ring-[var(--yellow)]"
+                className="w-full rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] px-3 py-2 text-[13px] text-[var(--heading)] outline-none focus:border-[var(--yellow)] focus:ring-2 focus:ring-[var(--yellow-surface)]"
               />
             </div>
           )}

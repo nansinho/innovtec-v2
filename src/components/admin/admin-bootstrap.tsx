@@ -36,7 +36,7 @@ export default function AdminBootstrap() {
       <button
         onClick={handlePromote}
         disabled={isPending}
-        className="inline-flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-4 py-2 text-sm font-semibold text-white transition-all duration-200 hover:bg-[var(--yellow-hover)] active:scale-[0.97] disabled:opacity-50"
+        className="inline-flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-4 py-2 text-sm font-semibold text-white transition-all duration-200 hover:bg-[var(--yellow-hover)] active:scale-[0.98] disabled:opacity-50"
       >
         <Shield className="h-4 w-4" />
         {isPending ? "Configuration..." : "Devenir administrateur"}

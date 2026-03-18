@@ -195,7 +195,7 @@ export default function ThemeSettings() {
         </div>
         <div className="flex gap-2">
           <button
-            className="rounded-xl px-4 py-2 text-xs font-semibold text-white shadow-sm transition-all duration-200 hover:shadow-md active:scale-[0.97]"
+            className="rounded-xl px-4 py-2 text-xs font-semibold text-white shadow-sm transition-all duration-200 hover:shadow-md active:scale-[0.98]"
             style={{ background: currentColor }}
           >
             Bouton principal
