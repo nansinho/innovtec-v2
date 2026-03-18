@@ -135,7 +135,13 @@ export default function MessageSidebar({
               return [...prev, newMsg];
             });
             // Auto-mark as read
-            markConversationAsRead(active.id);
+            startTransition(async () => {
+              try {
+                await markConversationAsRead(active.id);
+              } catch {
+                // Stale client — server action not found after rebuild
+              }
+            });
           }
 
           // Refresh conversation list (for unread counts & previews)
