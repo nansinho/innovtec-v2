@@ -2,7 +2,6 @@ import { getRexList } from "@/actions/qse";
 import { getAllUsers } from "@/actions/users";
 import RexPageClient from "./page-client";
 
-export const dynamic = "force-dynamic";
 
 export default async function RexPage() {
   const [rexList, allUsers] = await Promise.all([getRexList(), getAllUsers()]);

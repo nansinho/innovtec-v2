@@ -2,7 +2,6 @@ import { getProfile } from "@/actions/auth";
 import { redirect } from "next/navigation";
 import ActivityLogsTable from "@/components/admin/activity-logs-table";
 
-export const dynamic = "force-dynamic";
 
 export default async function AdminLogsPage() {
   const profile = await getProfile();

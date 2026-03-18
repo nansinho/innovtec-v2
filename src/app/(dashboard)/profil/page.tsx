@@ -5,10 +5,10 @@ import {
   getUserFormations,
   getUserDocuments,
 } from "@/actions/profile";
+import { getUserTeams } from "@/actions/teams";
 import ProfileTabs from "@/components/profil/profile-tabs";
 import ProfileAvatarSection from "@/components/profil/profile-avatar-section";
 
-export const dynamic = "force-dynamic";
 
 export default async function ProfilPage() {
   const [profile, experiences, diplomas, formations, documents] =
@@ -19,6 +19,8 @@ export default async function ProfilPage() {
       getUserFormations(),
       getUserDocuments(),
     ]);
+
+  const userTeams = profile ? await getUserTeams(profile.id) : [];
 
   if (!profile) {
     return (
@@ -49,6 +51,7 @@ export default async function ProfilPage() {
         diplomas={diplomas}
         formations={formations}
         documents={documents}
+        userTeams={userTeams}
       />
     </div>
   );

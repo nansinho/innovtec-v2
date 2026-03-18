@@ -15,7 +15,6 @@ import { getProfile } from "@/actions/auth";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 
-export const dynamic = "force-dynamic";
 
 function CardSkeleton({ className = "h-[200px]" }: { className?: string }) {
   return (

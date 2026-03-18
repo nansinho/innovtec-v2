@@ -3,7 +3,6 @@ import { getSseDashboards, getLatestSseDashboard } from "@/actions/sse-dashboard
 import { getCompanyLogo } from "@/actions/settings";
 import { SseDashboardView } from "@/components/qse/sse-dashboard-view";
 
-export const dynamic = "force-dynamic";
 
 export default async function TableauSsePage() {
   const [dashboards, latest, profile, logos] = await Promise.all([

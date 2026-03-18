@@ -3,7 +3,6 @@ import { getApiSettings, getCompanyLogo } from "@/actions/settings";
 import { redirect } from "next/navigation";
 import AdminSettingsTabs from "@/components/admin/admin-settings-tabs";
 
-export const dynamic = "force-dynamic";
 
 export default async function AdminSettingsPage() {
   const profile = await getProfile();

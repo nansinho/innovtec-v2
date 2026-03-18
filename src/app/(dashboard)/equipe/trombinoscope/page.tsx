@@ -3,7 +3,6 @@ import { getTodayBirthdays } from "@/actions/birthday";
 import { getProfile } from "@/actions/auth";
 import TrombinoscopeGrid from "@/components/equipe/trombinoscope-grid";
 
-export const dynamic = "force-dynamic";
 
 export default async function TrombinoscopePage() {
   const [users, birthdays, profile] = await Promise.all([

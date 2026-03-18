@@ -2,7 +2,6 @@ import { getUpcomingEvents, getTodayEvents, getMonthEvents } from "@/actions/eve
 import { getTodayBirthdays, getUpcomingBirthdays } from "@/actions/birthday";
 import PlanningView from "@/components/equipe/planning-view";
 
-export const dynamic = "force-dynamic";
 
 export default async function PlanningPage() {
   const now = new Date();

@@ -2,7 +2,6 @@ import { getQseContent, getAllQseContent, getQseFileUrls } from "@/actions/qse";
 import { getProfile } from "@/actions/auth";
 import PolitiqueContent from "@/components/qse/politique-content";
 
-export const dynamic = "force-dynamic";
 
 export default async function PolitiqueQSEPage() {
   const [content, allContent, profile] = await Promise.all([

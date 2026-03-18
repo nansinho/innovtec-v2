@@ -1,7 +1,6 @@
 import { getDocuments } from "@/actions/documents";
 import DocumentsTable from "@/components/documents/documents-table";
 
-export const dynamic = "force-dynamic";
 
 export default async function DocumentsPage() {
   const documents = await getDocuments();

@@ -3,7 +3,6 @@ import { getAllNewsAdmin } from "@/actions/news";
 import { redirect } from "next/navigation";
 import AdminNewsManager from "@/components/admin/admin-news-manager";
 
-export const dynamic = "force-dynamic";
 
 export default async function AdminNewsPage() {
   const profile = await getProfile();

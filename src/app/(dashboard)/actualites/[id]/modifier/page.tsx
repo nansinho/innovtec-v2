@@ -3,7 +3,6 @@ import { getProfile } from "@/actions/auth";
 import { getNewsByIdAdmin, getNewsAttachments } from "@/actions/news";
 import NewsEditorPage from "@/components/news/news-editor-page";
 
-export const dynamic = "force-dynamic";
 
 interface Props {
   params: Promise<{ id: string }>;

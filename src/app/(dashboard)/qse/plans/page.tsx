@@ -4,7 +4,6 @@ import { getSignalements } from "@/actions/signalements";
 import { getAllUsers } from "@/actions/users";
 import PlansPageClient from "./page-client";
 
-export const dynamic = "force-dynamic";
 
 export default async function PlansActionsPage() {
   const [profile, plans, signalements, users] = await Promise.all([

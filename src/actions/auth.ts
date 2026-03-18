@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createHmac } from "crypto";
 import { auditLog } from "@/lib/audit-logger";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export async function signOut() {
   const supabase = await createClient();
@@ -20,6 +21,16 @@ export async function signIn(formData: {
   email: string;
   password: string;
 }): Promise<{ error: string }> {
+  // Rate limit: 10 attempts per minute per email
+  const { success: rateLimitOk } = checkRateLimit(
+    `signIn:${formData.email.toLowerCase()}`,
+    10,
+    60_000
+  );
+  if (!rateLimitOk) {
+    return { error: "Trop de tentatives. Réessayez dans quelques minutes." };
+  }
+
   const supabase = await createClient();
 
   // 1. Essai normal via GoTrue
@@ -221,6 +232,16 @@ function verifyResetToken(token: string): { userId: string } | null {
 export async function requestPasswordReset(email: string): Promise<{ success: boolean; error?: string }> {
   if (!email) {
     return { success: false, error: "Veuillez saisir votre email" };
+  }
+
+  // Rate limit: 3 attempts per minute per email
+  const { success: rateLimitOk } = checkRateLimit(
+    `passwordReset:${email.toLowerCase()}`,
+    3,
+    60_000
+  );
+  if (!rateLimitOk) {
+    return { success: false, error: "Trop de tentatives. Réessayez dans quelques minutes." };
   }
 
   const supabaseAdmin = createAdminClient();

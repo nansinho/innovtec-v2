@@ -28,12 +28,14 @@ export default async function DashboardLayout({
 
   const userId = profile?.id ?? "";
 
-  // Fetch all layout data in parallel — no extra auth calls
-  const [unreadCount, isBirthday, logos] = await Promise.all([
+  // Fetch critical layout data in parallel — defer birthday to avoid blocking render
+  const [unreadCount, logos] = await Promise.all([
     userId ? getUnreadCountForUser(userId) : Promise.resolve(0),
-    userId ? isUserBirthday(userId) : Promise.resolve(false),
     getCompanyLogo(),
   ]);
+
+  // Defer birthday check — non-critical for initial render
+  const isBirthday = userId ? await isUserBirthday(userId) : false;
   const wishes = isBirthday ? await getBirthdayWishesForUser(userId) : [];
 
   const userName = profile

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
 import { getAnthropicApiKey } from "@/actions/settings";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 const ROLE_CREDITS: Record<string, number> = {
   admin: 999999,
@@ -21,6 +22,19 @@ export async function POST(req: NextRequest) {
 
     if (!user) {
       return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
+    }
+
+    // Rate limit: 10 requests per minute per user
+    const { success: rateLimitOk } = checkRateLimit(
+      `aiGenerate:${user.id}`,
+      10,
+      60_000
+    );
+    if (!rateLimitOk) {
+      return NextResponse.json(
+        { error: "Trop de tentatives. Réessayez dans quelques minutes." },
+        { status: 429 }
+      );
     }
 
     // Get user profile for role

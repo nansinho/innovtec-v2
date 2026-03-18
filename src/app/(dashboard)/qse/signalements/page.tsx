@@ -2,7 +2,6 @@ import { getProfile } from "@/actions/auth";
 import { getSignalements, getSignalementCategories, getMySignalements } from "@/actions/signalements";
 import SignalementPageClient from "./page-client";
 
-export const dynamic = "force-dynamic";
 
 export default async function SignalementsPage() {
   const [profile, signalements, categories, mySignalements] = await Promise.all([

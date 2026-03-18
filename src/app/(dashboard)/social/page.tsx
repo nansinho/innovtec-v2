@@ -8,7 +8,6 @@ import UpcomingBirthdays from "@/components/social/upcoming-birthdays";
 import BirthdayFeedCard from "@/components/social/birthday-feed-card";
 import CreatePost from "@/components/social/create-post";
 
-export const dynamic = "force-dynamic";
 
 export default async function SocialPage() {
   const [posts, birthdays, upcomingBirthdays, profile] = await Promise.all([
