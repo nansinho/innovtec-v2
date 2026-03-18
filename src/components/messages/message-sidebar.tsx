@@ -176,7 +176,7 @@ export default function MessageSidebar({
 
     // Optimistic: add message immediately
     const optimisticMsg: InternalMessage = {
-      id: crypto.randomUUID(),
+      id: crypto.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2)}`,
       from_user_id: currentUserId,
       to_user_id: activeConversation.id,
       content: content.trim(),
