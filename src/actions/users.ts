@@ -237,6 +237,23 @@ export async function createUser(formData: {
       console.error("[createUser] Profile error:", profileError.message);
     }
 
+    // Sync team_members if a team was specified
+    if (team) {
+      const { data: teamRow } = await supabaseAdmin
+        .from("teams")
+        .select("id")
+        .eq("label", team)
+        .single();
+      if (teamRow) {
+        await supabaseAdmin
+          .from("team_members")
+          .upsert(
+            { team_id: teamRow.id, user_id: authData.user.id, role: "member" },
+            { onConflict: "team_id,user_id" }
+          );
+      }
+    }
+
     await auditLog(caller.authId, "create", "user", authData.user.id, {
       email,
       name: `${first_name} ${last_name}`,
@@ -301,6 +318,56 @@ export async function updateUser(
 
   if (error) {
     return { success: false, error: error.message };
+  }
+
+  // Sync team_members when team label changes
+  if (data.team !== undefined) {
+    const oldTeamLabel = currentProfile?.team ?? "";
+    const newTeamLabel = data.team ?? "";
+
+    if (oldTeamLabel !== newTeamLabel) {
+      // Remove from old team (only member role, not manager)
+      if (oldTeamLabel) {
+        const { data: oldTeam } = await supabaseAdmin
+          .from("teams")
+          .select("id")
+          .eq("label", oldTeamLabel)
+          .single();
+        if (oldTeam) {
+          // Only remove if user is a regular member (preserve manager assignments)
+          const { data: membership } = await supabaseAdmin
+            .from("team_members")
+            .select("role")
+            .eq("team_id", oldTeam.id)
+            .eq("user_id", userId)
+            .single();
+          if (membership && membership.role === "member") {
+            await supabaseAdmin
+              .from("team_members")
+              .delete()
+              .eq("team_id", oldTeam.id)
+              .eq("user_id", userId);
+          }
+        }
+      }
+
+      // Add to new team
+      if (newTeamLabel) {
+        const { data: newTeam } = await supabaseAdmin
+          .from("teams")
+          .select("id")
+          .eq("label", newTeamLabel)
+          .single();
+        if (newTeam) {
+          await supabaseAdmin
+            .from("team_members")
+            .upsert(
+              { team_id: newTeam.id, user_id: userId, role: "member" },
+              { onConflict: "team_id,user_id" }
+            );
+        }
+      }
+    }
   }
 
   await auditLog(caller.authId, "update", "user", userId, {
