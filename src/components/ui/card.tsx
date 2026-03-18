@@ -7,9 +7,9 @@ const cardVariants = cva("overflow-hidden transition-all duration-300 ease-out",
   variants: {
     variant: {
       default:
-        "rounded-xl bg-white/92 shadow-[0_1px_4px_rgba(0,0,0,0.04)] ring-1 ring-black/[0.03] backdrop-blur-xl hover:shadow-[0_4px_16px_rgba(0,0,0,0.06)] hover:translate-y-[-1px]",
+        "rounded-xl bg-white/92 border border-[var(--border-1)] shadow-sm backdrop-blur-xl hover:shadow-md hover:translate-y-[-1px]",
       stat:
-        "rounded-lg bg-[var(--hover)] p-4 ring-1 ring-black/[0.03]",
+        "rounded-lg bg-[var(--hover)] p-4 border border-[var(--border-1)]",
       flat:
         "rounded-xl bg-transparent p-4",
     },

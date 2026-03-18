@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { auditLog } from "@/lib/audit-logger";
 
 export async function getUserTodos() {
   const supabase = await createClient();
@@ -41,15 +42,25 @@ export async function createTodo(label: string) {
     status: "pending",
     position: nextPosition,
   });
+
+  await auditLog(user.id, "create", "todo", null, { label });
 }
 
 export async function deleteTodo(id: string) {
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   await supabase.from("todos").delete().eq("id", id);
+
+  if (user) await auditLog(user.id, "delete", "todo", id, {});
 }
 
 export async function toggleTodo(id: string) {
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   const { data: todo } = await supabase
     .from("todos")
     .select("status")
@@ -62,4 +73,6 @@ export async function toggleTodo(id: string) {
     .from("todos")
     .update({ status: todo.status === "done" ? "pending" : "done" })
     .eq("id", id);
+
+  if (user) await auditLog(user.id, "update", "todo", id, { new_status: todo.status === "done" ? "pending" : "done" });
 }

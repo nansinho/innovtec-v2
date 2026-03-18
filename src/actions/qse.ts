@@ -6,6 +6,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
 import type { DangerReport, Rex, QseContent, QseContentSection, QseDocument } from "@/lib/types/database";
 import { createNotificationForAll } from "@/actions/notifications";
+import { auditLog } from "@/lib/audit-logger";
 
 // ==========================================
 // POLITIQUE QSE
@@ -96,6 +97,7 @@ export async function saveQseContent(
     if (error) return { success: false, error: error.message };
   }
 
+  await auditLog(user.id, id ? "update" : "create", "qse_policy", id ?? null, { title, type });
   revalidatePath("/qse/politique");
   revalidatePath("/qse");
 
@@ -146,6 +148,7 @@ export async function createQseContent(
 
   if (error) return { success: false, error: error.message };
 
+  await auditLog(user.id, "create", "qse_policy", null, { title, type });
   revalidatePath("/qse/politique");
   revalidatePath("/qse");
 
@@ -176,6 +179,7 @@ export async function deleteQseContent(
 
   if (error) return { success: false, error: error.message };
 
+  await auditLog(user.id, "delete", "qse_policy", id, {});
   revalidatePath("/qse/politique");
   return { success: true };
 }
@@ -308,6 +312,7 @@ export async function createDangerReport(report: {
 
   if (error) return { success: false, error: error.message };
 
+  await auditLog(user.id, "create", "danger_report", null, { title: report.title, severity: report.severity });
   revalidatePath("/qse/dangers");
   return { success: true };
 }
@@ -317,6 +322,11 @@ export async function updateDangerStatus(
   status: string
 ): Promise<{ success: boolean; error?: string }> {
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { success: false, error: "Non authentifié" };
+
   const updateData: Record<string, unknown> = { status };
   if (status === "resolu") {
     updateData.resolved_at = new Date().toISOString();
@@ -329,6 +339,7 @@ export async function updateDangerStatus(
 
   if (error) return { success: false, error: error.message };
 
+  await auditLog(user.id, "status_change", "danger_report", id, { status });
   revalidatePath("/qse/dangers");
   return { success: true };
 }
@@ -463,6 +474,7 @@ export async function createRex(
     excludeUserId: user.id,
   });
 
+  await auditLog(user.id, "create", "rex", data?.id ?? null, { title: rex.title });
   revalidatePath("/qse/rex");
   revalidatePath("/documents");
   revalidatePath("/");
@@ -521,6 +533,7 @@ export async function updateRex(
     return { success: false, error: "Mise à jour impossible — vous n'avez pas les droits ou la fiche n'existe pas" };
   }
 
+  await auditLog(user.id, "update", "rex", id, { title: rex.title });
   revalidatePath("/qse/rex");
   revalidatePath(`/qse/rex/${id}`);
   return { success: true };
@@ -579,6 +592,7 @@ export async function deleteRex(
     }
   }
 
+  await auditLog(user.id, "delete", "rex", id, {});
   revalidatePath("/qse/rex");
   revalidatePath("/documents");
   revalidatePath("/");

@@ -6,10 +6,13 @@ import { sendPasswordResetEmail } from "@/lib/email";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createHmac } from "crypto";
+import { auditLog } from "@/lib/audit-logger";
 
 export async function signOut() {
   const supabase = await createClient();
+  const { data: { user: signOutUser } } = await supabase.auth.getUser();
   await supabase.auth.signOut();
+  if (signOutUser) await auditLog(signOutUser.id, "logout", "user", signOutUser.id, {});
   revalidatePath("/", "layout");
 }
 
@@ -26,6 +29,8 @@ export async function signIn(formData: {
   });
 
   if (!error) {
+    const { data: { user: signedInUser } } = await supabase.auth.getUser();
+    if (signedInUser) await auditLog(signedInUser.id, "login", "user", signedInUser.id, { method: "password" });
     revalidatePath("/", "layout");
     redirect("/");
   }
@@ -69,6 +74,8 @@ export async function signIn(formData: {
     password: formData.password,
   });
 
+  const { data: { user: signedInUser } } = await supabase.auth.getUser();
+  if (signedInUser) await auditLog(signedInUser.id, "login", "user", signedInUser.id, { method: "password" });
   revalidatePath("/", "layout");
   redirect("/");
 }
@@ -154,6 +161,7 @@ export async function signUp(formData: {
       console.error("Profile creation error (non-blocking):", profileError.message);
     }
 
+    await auditLog(authData.user.id, "create", "user", authData.user.id, { email, self_signup: true });
     return { success: true };
   } catch (error) {
     console.error("Signup error:", error);
@@ -278,6 +286,7 @@ export async function updatePasswordWithToken(
     return { success: false, error: "Impossible de mettre à jour le mot de passe : " + error.message };
   }
 
+  await auditLog(result.userId, "password_reset", "user", result.userId, {});
   return { success: true };
 }
 

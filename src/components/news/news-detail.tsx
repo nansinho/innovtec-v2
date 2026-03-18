@@ -290,7 +290,7 @@ export default function NewsDetail({
                   onChange={(e) => setNewComment(e.target.value)}
                   placeholder="Écrire un commentaire..."
                   rows={2}
-                  className="flex-1 resize-none rounded-[var(--radius-sm)] border border-[var(--border-1)] px-3 py-2 text-[12.5px] text-[var(--heading)] outline-none placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-1 focus:ring-[var(--yellow)]"
+                  className="flex-1 resize-none rounded-[var(--radius-sm)] border border-[var(--border-1)] px-3 py-2 text-[13px] text-[var(--heading)] outline-none placeholder:text-[var(--text-muted)] focus:border-[var(--yellow)] focus:ring-1 focus:ring-[var(--yellow)]"
                 />
                 <button
                   onClick={handleSubmitComment}
@@ -305,7 +305,7 @@ export default function NewsDetail({
 
           {/* Comments list */}
           {comments.length === 0 ? (
-            <div className="py-8 text-center text-[12.5px] text-[var(--text-muted)]">
+            <div className="py-8 text-center text-[13px] text-[var(--text-muted)]">
               Aucun commentaire. Soyez le premier à réagir !
             </div>
           ) : (
@@ -352,7 +352,7 @@ export default function NewsDetail({
                         </button>
                       )}
                     </div>
-                    <p className="mt-1.5 pl-[38px] text-[12.5px] leading-relaxed text-[var(--text)]">
+                    <p className="mt-1.5 pl-[38px] text-[13px] leading-relaxed text-[var(--text)]">
                       {comment.content}
                     </p>
                   </div>

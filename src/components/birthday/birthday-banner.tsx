@@ -67,10 +67,10 @@ export default function BirthdayBanner({
                     {initials}
                   </div>
                   <div>
-                    <p className="text-[12.5px] font-medium text-[var(--heading)]">
+                    <p className="text-[13px] font-medium text-[var(--heading)]">
                       {person.first_name} {person.last_name}
                     </p>
-                    <p className="text-[10.5px] text-[var(--text-muted)]">
+                    <p className="text-[11px] text-[var(--text-muted)]">
                       {person.job_title || "Collaborateur"}
                     </p>
                   </div>

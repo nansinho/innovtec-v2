@@ -1,4 +1,3 @@
-import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 export type BadgeVariant =
@@ -14,53 +13,43 @@ export type BadgeVariant =
 
 export type BadgeSize = "default" | "sm" | "lg";
 
-const badgeVariants = cva(
-  "inline-flex items-center gap-1 rounded-full font-medium border bg-transparent transition-colors",
-  {
-    variants: {
-      variant: {
-        green:
-          "border-green-500 text-green-700 dark:border-green-400 dark:text-green-300",
-        purple:
-          "border-purple-400 text-purple-700 dark:border-purple-300 dark:text-purple-200",
-        amber:
-          "border-amber-500 text-amber-700 dark:border-amber-400 dark:text-amber-300",
-        blue:
-          "border-blue-500 text-blue-700 dark:border-blue-400 dark:text-blue-300",
-        red:
-          "border-red-500 text-red-700 dark:border-red-400 dark:text-red-300",
-        teal:
-          "border-teal-500 text-teal-700 dark:border-teal-400 dark:text-teal-300",
-        coral:
-          "border-orange-500 text-orange-700 dark:border-orange-400 dark:text-orange-300",
-        pink:
-          "border-pink-500 text-pink-700 dark:border-pink-400 dark:text-pink-300",
-        gray:
-          "border-zinc-400 text-zinc-600 dark:border-zinc-500 dark:text-zinc-400",
-      },
-      size: {
-        default: "px-2 py-[1px] text-[11px]",
-        sm: "px-1.5 py-px text-[10px]",
-        lg: "px-2.5 py-0.5 text-xs",
-      },
-    },
-    defaultVariants: {
-      variant: "gray",
-      size: "default",
-    },
-  }
-);
+const variantStyles: Record<BadgeVariant, string> = {
+  green:
+    "border-[color:var(--green)] text-[color:var(--green)] bg-[var(--green-surface)]",
+  purple:
+    "border-[color:var(--purple)] text-[color:var(--purple)] bg-[var(--purple-surface)]",
+  amber:
+    "border-[color:var(--amber)] text-[color:var(--amber)] bg-[var(--amber-surface)]",
+  blue:
+    "border-[color:var(--blue)] text-[color:var(--blue)] bg-[var(--blue-surface)]",
+  red:
+    "border-[color:var(--red)] text-[color:var(--red)] bg-[var(--red-surface)]",
+  teal:
+    "border-[color:var(--teal)] text-[color:var(--teal)] bg-[var(--teal-surface)]",
+  coral:
+    "border-[color:var(--coral)] text-[color:var(--coral)] bg-[var(--coral-surface)]",
+  pink:
+    "border-[color:var(--pink)] text-[color:var(--pink)] bg-[var(--pink-surface)]",
+  gray:
+    "border-zinc-400 text-zinc-600 bg-zinc-50",
+};
 
-const dotVariants: Record<BadgeVariant, string> = {
-  green: "bg-green-500 dark:bg-green-400",
-  purple: "bg-purple-400 dark:bg-purple-300",
-  amber: "bg-amber-500 dark:bg-amber-400",
-  blue: "bg-blue-500 dark:bg-blue-400",
-  red: "bg-red-500 dark:bg-red-400",
-  teal: "bg-teal-500 dark:bg-teal-400",
-  coral: "bg-orange-500 dark:bg-orange-400",
-  pink: "bg-pink-500 dark:bg-pink-400",
-  gray: "bg-zinc-400 dark:bg-zinc-500",
+const dotStyles: Record<BadgeVariant, string> = {
+  green: "bg-[var(--green)]",
+  purple: "bg-[var(--purple)]",
+  amber: "bg-[var(--amber)]",
+  blue: "bg-[var(--blue)]",
+  red: "bg-[var(--red)]",
+  teal: "bg-[var(--teal)]",
+  coral: "bg-[var(--coral)]",
+  pink: "bg-[var(--pink)]",
+  gray: "bg-zinc-400",
+};
+
+const sizeStyles: Record<BadgeSize, string> = {
+  default: "px-2 py-[1px] text-[11px]",
+  sm: "px-1.5 py-px text-[10px]",
+  lg: "px-2.5 py-0.5 text-xs",
 };
 
 interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
@@ -84,7 +73,12 @@ export function Badge({
 
   return (
     <span
-      className={cn(badgeVariants({ variant, size }), className)}
+      className={cn(
+        "inline-flex items-center gap-1 rounded-full font-medium border transition-colors",
+        variantStyles[variant],
+        sizeStyles[size],
+        className
+      )}
       {...props}
     >
       {dot && (
@@ -92,7 +86,7 @@ export function Badge({
           className={cn(
             "shrink-0 rounded-full",
             dotSize,
-            dotVariants[variant]
+            dotStyles[variant]
           )}
         />
       )}

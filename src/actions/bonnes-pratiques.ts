@@ -6,6 +6,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
 import type { BonnePratique } from "@/lib/types/database";
 import { createNotificationForAll } from "@/actions/notifications";
+import { auditLog } from "@/lib/audit-logger";
 
 export async function getBonnesPratiques(): Promise<BonnePratique[]> {
   const supabase = await createClient();
@@ -94,6 +95,7 @@ export async function createBonnePratique(bp: {
       excludeUserId: user.id,
     });
 
+    await auditLog(user.id, "create", "best_practice", null, { title: bp.title, pillar: bp.pillar });
     revalidatePath("/qse/bonnes-pratiques");
     revalidatePath("/qse");
     return { success: true };
@@ -119,6 +121,7 @@ export async function deleteBonnePratique(
 
   if (error) return { success: false, error: error.message };
 
+  await auditLog(user.id, "delete", "best_practice", id, {});
   revalidatePath("/qse/bonnes-pratiques");
   revalidatePath("/qse");
   return { success: true };

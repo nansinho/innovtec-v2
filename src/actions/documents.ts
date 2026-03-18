@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { auditLog } from "@/lib/audit-logger";
 
 export async function getDocuments(category?: string) {
   const supabase = await createClient();
@@ -73,6 +74,8 @@ export async function deleteDocument(
   const { error } = await supabase.from("documents").delete().eq("id", id);
   if (error) return { success: false, error: error.message };
 
+  await auditLog(user.id, "delete", "document", id, { file_url: doc?.file_url });
+
   revalidatePath("/documents");
   revalidatePath("/");
   return { success: true };
@@ -113,6 +116,8 @@ export async function batchDeleteDocuments(
   // Delete document records
   const { error } = await supabase.from("documents").delete().in("id", ids);
   if (error) return { success: false, error: error.message };
+
+  await auditLog(user.id, "batch_delete", "document", null, { ids, count: ids.length });
 
   revalidatePath("/documents");
   revalidatePath("/");

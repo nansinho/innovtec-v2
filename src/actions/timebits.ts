@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import type { TimebitMode } from "@/lib/types/database";
+import { auditLog } from "@/lib/audit-logger";
 
 export async function getActiveTimebit() {
   const supabase = await createClient();
@@ -32,10 +33,15 @@ export async function startTimebit(mode: TimebitMode) {
     user_id: user.id,
     mode,
   });
+
+  await auditLog(user.id, "start", "timebit", null, { mode });
 }
 
 export async function stopTimebit(id: string) {
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   const now = new Date();
 
   const { data: timebit } = await supabase
@@ -55,4 +61,6 @@ export async function stopTimebit(id: string) {
     .from("timebits")
     .update({ ended_at: now.toISOString(), duration_minutes: durationMinutes })
     .eq("id", id);
+
+  if (user) await auditLog(user.id, "stop", "timebit", id, { duration_minutes: durationMinutes });
 }

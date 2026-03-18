@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { auditLog } from "@/lib/audit-logger";
 
 export interface Department {
   id: string;
@@ -52,6 +53,7 @@ export async function addDepartment(
     return { success: false, error: error.message };
   }
 
+  await auditLog(user.id, "create", "department", data?.id ?? null, { label: label.trim() });
   return { success: true, department: data as Department };
 }
 
@@ -83,5 +85,6 @@ export async function deleteDepartment(
 
   if (error) return { success: false, error: error.message };
 
+  await auditLog(user.id, "delete", "department", id, {});
   return { success: true };
 }

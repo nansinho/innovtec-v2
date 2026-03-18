@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createNotificationForUser } from "@/actions/notifications";
 import { createFeedPost } from "@/actions/feed";
 import type { Profile, BirthdayWish } from "@/lib/types/database";
+import { auditLog } from "@/lib/audit-logger";
 
 export async function getTodayBirthdays(): Promise<Profile[]> {
   const supabase = await createClient();
@@ -135,6 +136,7 @@ export async function sendBirthdayWish(
     );
   }
 
+  await auditLog(user.id, "send_wish", "birthday", toUserId, { year });
   return { success: true };
 }
 
@@ -195,6 +197,8 @@ export async function updateBirthdayWish(
     .eq("from_user_id", user.id);
 
   if (error) return { success: false, error: error.message };
+
+  await auditLog(user.id, "update", "birthday", wishId, {});
   return { success: true };
 }
 
@@ -214,6 +218,8 @@ export async function deleteBirthdayWish(
     .eq("from_user_id", user.id);
 
   if (error) return { success: false, error: error.message };
+
+  await auditLog(user.id, "delete", "birthday", wishId, {});
   return { success: true };
 }
 

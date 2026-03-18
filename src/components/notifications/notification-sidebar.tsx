@@ -212,7 +212,7 @@ export default function NotificationSidebar({
                       <div className="flex items-start justify-between gap-2">
                         <p
                           className={cn(
-                            "text-[12.5px] leading-tight",
+                            "text-[13px] leading-tight",
                             !notification.is_read
                               ? "font-semibold text-[var(--heading)]"
                               : "font-medium text-[var(--heading)]"

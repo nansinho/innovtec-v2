@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
+import { auditLog } from "@/lib/audit-logger";
 
 export async function getApiSettings() {
   const supabase = await createClient();
@@ -73,6 +74,7 @@ export async function saveApiKey(
     return { success: false, error: "Erreur lors de la sauvegarde" };
   }
 
+  await auditLog(user.id, "update", "settings", null, { key: "anthropic_api_key" });
   revalidatePath("/admin/settings");
   return { success: true };
 }
@@ -109,6 +111,7 @@ export async function deleteApiKey(): Promise<{
     return { success: false, error: "Erreur lors de la suppression" };
   }
 
+  await auditLog(user.id, "delete", "settings", null, { key: "anthropic_api_key" });
   revalidatePath("/admin/settings");
   return { success: true };
 }
@@ -204,6 +207,7 @@ export async function saveCompanyLogo(
     return { success: false, error: "Erreur lors de la sauvegarde" };
   }
 
+  await auditLog(user.id, "update", "settings", null, { key: `company_logo_${variant}` });
   revalidatePath("/", "layout");
   return { success: true };
 }
@@ -260,6 +264,7 @@ export async function deleteCompanyLogo(
     return { success: false, error: "Erreur lors de la suppression" };
   }
 
+  await auditLog(user.id, "delete", "settings", null, { key: `company_logo_${variant}` });
   revalidatePath("/", "layout");
   return { success: true };
 }

@@ -53,7 +53,7 @@ export default function UpcomingBirthdays({ birthdays }: UpcomingBirthdaysProps)
                 {initials}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-[12.5px] font-medium text-[var(--heading)]">
+                <p className="truncate text-[13px] font-medium text-[var(--heading)]">
                   {person.first_name} {person.last_name}
                 </p>
                 <p className="text-[11px] text-[var(--text-muted)]">

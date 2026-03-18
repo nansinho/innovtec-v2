@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import type { InternalMessage, Conversation } from "@/lib/types/database";
+import { auditLog } from "@/lib/audit-logger";
 
 export async function getConversations(): Promise<Conversation[]> {
   const supabase = await createClient();
@@ -93,6 +94,7 @@ export async function sendMessage(toUserId: string, content: string) {
 
   if (error) return { success: false, error: error.message };
 
+  await auditLog(user.id, "send", "message", null, { to: toUserId });
   revalidatePath("/");
   return { success: true };
 }
@@ -130,7 +132,12 @@ export async function getUnreadMessagesCount(): Promise<number> {
 
 export async function deleteMessage(messageId: string) {
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   await supabase.from("internal_messages").delete().eq("id", messageId);
+
+  if (user) await auditLog(user.id, "delete", "message", messageId, {});
   revalidatePath("/");
 }
 

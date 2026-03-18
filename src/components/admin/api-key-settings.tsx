@@ -118,7 +118,7 @@ export default function ApiKeySettings({ hasKey, maskedKey }: ApiKeySettingsProp
           </button>
         </div>
         <div className="flex items-center justify-between">
-          <p className="text-[10.5px] text-[var(--text-muted)]">
+          <p className="text-[11px] text-[var(--text-muted)]">
             Obtenez votre cle sur{" "}
             <span className="font-medium text-[var(--purple)]">
               console.anthropic.com

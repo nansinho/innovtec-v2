@@ -107,19 +107,19 @@ export default function NewsTable({ news }: NewsTableProps) {
         <div className="overflow-hidden rounded-[var(--radius)] border border-[var(--border-1)] bg-[var(--card)] shadow-sm">
           {/* Table header */}
           <div className="hidden border-b border-[var(--border-1)] bg-[var(--hover)] px-5 py-3 md:grid md:grid-cols-[1fr_100px_100px_80px_120px_24px] md:items-center md:gap-4">
-            <span className="text-[10.5px] font-medium text-[var(--text-muted)]">
+            <span className="text-[11px] font-medium text-[var(--text-muted)]">
               Article
             </span>
-            <span className="text-[10.5px] font-medium text-[var(--text-muted)]">
+            <span className="text-[11px] font-medium text-[var(--text-muted)]">
               Catégorie
             </span>
-            <span className="text-[10.5px] font-medium text-[var(--text-muted)]">
+            <span className="text-[11px] font-medium text-[var(--text-muted)]">
               Auteur
             </span>
-            <span className="text-[10.5px] font-medium text-[var(--text-muted)]">
+            <span className="text-[11px] font-medium text-[var(--text-muted)]">
               Date
             </span>
-            <span className="text-center text-[10.5px] font-medium text-[var(--text-muted)]">
+            <span className="text-center text-[11px] font-medium text-[var(--text-muted)]">
               Engagement
             </span>
             <span />
@@ -213,7 +213,7 @@ export default function NewsTable({ news }: NewsTableProps) {
                   {/* Date - desktop */}
                   <div className="hidden md:block">
                     {article.published_at && (
-                      <span className="flex items-center gap-1 text-[10.5px] text-[var(--text-muted)]">
+                      <span className="flex items-center gap-1 text-[11px] text-[var(--text-muted)]">
                         <Clock className="h-3 w-3" />
                         {formatRelative(article.published_at)}
                       </span>
@@ -223,28 +223,28 @@ export default function NewsTable({ news }: NewsTableProps) {
                   {/* Engagement - desktop */}
                   <div className="hidden md:flex md:items-center md:justify-center md:gap-3">
                     <span
-                      className="flex items-center gap-1 text-[10.5px] text-[var(--text-muted)]"
+                      className="flex items-center gap-1 text-[11px] text-[var(--text-muted)]"
                       title="Vues"
                     >
                       <Eye className="h-3 w-3" />
                       {article.views_count}
                     </span>
                     <span
-                      className="flex items-center gap-1 text-[10.5px] text-[var(--text-muted)]"
+                      className="flex items-center gap-1 text-[11px] text-[var(--text-muted)]"
                       title="Likes"
                     >
                       <Heart className="h-3 w-3" />
                       {article.likes_count ?? 0}
                     </span>
                     <span
-                      className="flex items-center gap-1 text-[10.5px] text-[var(--text-muted)]"
+                      className="flex items-center gap-1 text-[11px] text-[var(--text-muted)]"
                       title="Commentaires"
                     >
                       <MessageSquare className="h-3 w-3" />
                       {article.comments_count}
                     </span>
                     <span
-                      className="flex items-center gap-1 text-[10.5px] text-[var(--text-muted)]"
+                      className="flex items-center gap-1 text-[11px] text-[var(--text-muted)]"
                       title="Partages"
                     >
                       <Share2 className="h-3 w-3" />

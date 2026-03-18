@@ -228,7 +228,7 @@ export default function NewsEditorPage({
           <button
             onClick={() => handleSubmit(false)}
             disabled={isPending}
-            className="inline-flex items-center gap-2 rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] px-4 py-2 text-[12.5px] font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--hover)] disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] px-4 py-2 text-[13px] font-medium text-[var(--text-secondary)] transition-colors hover:bg-[var(--hover)] disabled:opacity-50"
           >
             {isPending ? (
               <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -240,7 +240,7 @@ export default function NewsEditorPage({
           <button
             onClick={() => handleSubmit(true)}
             disabled={isPending}
-            className="inline-flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-4 py-2 text-[12.5px] font-medium text-white transition-colors hover:bg-[var(--yellow-hover)] disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-[var(--radius-sm)] bg-[var(--yellow)] px-4 py-2 text-[13px] font-medium text-white transition-colors hover:bg-[var(--yellow-hover)] disabled:opacity-50"
           >
             {isPending ? (
               <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -298,7 +298,7 @@ export default function NewsEditorPage({
               ) : (
                 <Upload className="h-8 w-8 text-[var(--text-muted)]" />
               )}
-              <p className="text-[12.5px] text-[var(--text-secondary)]">
+              <p className="text-[13px] text-[var(--text-secondary)]">
                 Cliquez ou glissez une image de couverture
               </p>
             </div>
@@ -345,7 +345,7 @@ export default function NewsEditorPage({
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value as NewsCategory)}
-              className="w-full rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] px-3 py-2 text-[12.5px] text-[var(--heading)] outline-none focus:border-[var(--yellow)] focus:ring-1 focus:ring-[var(--yellow)]"
+              className="w-full rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] px-3 py-2 text-[13px] text-[var(--heading)] outline-none focus:border-[var(--yellow)] focus:ring-1 focus:ring-[var(--yellow)]"
             >
               {Object.entries(categoryLabels).map(([key, label]) => (
                 <option key={key} value={key}>
@@ -362,7 +362,7 @@ export default function NewsEditorPage({
             <select
               value={priority}
               onChange={(e) => setPriority(e.target.value as NewsPriority)}
-              className="w-full rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] px-3 py-2 text-[12.5px] text-[var(--heading)] outline-none focus:border-[var(--yellow)] focus:ring-1 focus:ring-[var(--yellow)]"
+              className="w-full rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] px-3 py-2 text-[13px] text-[var(--heading)] outline-none focus:border-[var(--yellow)] focus:ring-1 focus:ring-[var(--yellow)]"
             >
               {Object.entries(priorityLabels).map(([key, label]) => (
                 <option key={key} value={key}>
@@ -381,13 +381,13 @@ export default function NewsEditorPage({
                 type="datetime-local"
                 value={publishedAt}
                 onChange={(e) => setPublishedAt(e.target.value)}
-                className="w-full rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] px-3 py-2 text-[12.5px] text-[var(--heading)] outline-none focus:border-[var(--yellow)] focus:ring-1 focus:ring-[var(--yellow)]"
+                className="w-full rounded-[var(--radius-sm)] border border-[var(--border-1)] bg-[var(--card)] px-3 py-2 text-[13px] text-[var(--heading)] outline-none focus:border-[var(--yellow)] focus:ring-1 focus:ring-[var(--yellow)]"
               />
             </div>
           )}
 
           <div className="flex items-end">
-            <label className="flex cursor-pointer items-center gap-2 text-[12.5px] text-[var(--heading)]">
+            <label className="flex cursor-pointer items-center gap-2 text-[13px] text-[var(--heading)]">
               <input
                 type="checkbox"
                 checked={isCarousel}

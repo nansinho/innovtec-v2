@@ -425,7 +425,7 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
       )}
 
       {allSorted.length === 0 ? (
-        <div className="flex flex-col items-center rounded-xl border border-[var(--border-1)] bg-white py-16 text-center shadow-sm ring-1 ring-black/[0.03]">
+        <div className="flex flex-col items-center rounded-xl border border-[var(--border-1)] bg-white py-16 text-center shadow-sm">
           <BarChart3 className="mb-3 h-12 w-12 text-zinc-300" />
           <p className="text-sm font-medium text-[var(--heading)]">
             Aucun tableau SSE
@@ -441,7 +441,7 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
           )}
         </div>
       ) : (
-        <div className="overflow-hidden rounded-xl border border-[var(--border-1)] bg-white shadow-sm ring-1 ring-black/[0.03]">
+        <div className="overflow-hidden rounded-xl border border-[var(--border-1)] bg-white shadow-sm">
           <table className="w-full">
             <thead>
               <tr className="border-b border-[var(--border-1)] bg-[var(--hover)]">

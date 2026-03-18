@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { auditLog } from "@/lib/audit-logger";
 import type { FeedComment } from "@/lib/types/database";
 import { createNotificationForUser } from "@/actions/notifications";
 
@@ -115,6 +116,7 @@ export async function createFeedPost(
 
   if (error) return { success: false, error: error.message };
 
+  await auditLog(user.id, "create", "feed_post", null, { has_image: !!imageUrl });
   revalidatePath("/");
   revalidatePath("/social");
   return { success: true };
@@ -156,6 +158,7 @@ export async function toggleFeedLike(
     .select("*", { count: "exact", head: true })
     .eq("post_id", postId);
 
+  await auditLog(user.id, "like", "feed_post", postId, { liked: !existing });
   return { liked: !existing, count: count ?? 0 };
 }
 
@@ -221,6 +224,7 @@ export async function addFeedComment(
     });
   }
 
+  await auditLog(user.id, "comment", "feed_post", postId, {});
   return { success: true };
 }
 
@@ -241,6 +245,7 @@ export async function deleteFeedPost(
 
   if (error) return { success: false, error: error.message };
 
+  await auditLog(user.id, "delete", "feed_post", postId, {});
   revalidatePath("/");
   revalidatePath("/social");
   return { success: true };
@@ -273,6 +278,7 @@ export async function updateFeedPost(
 
   if (error) return { success: false, error: error.message };
 
+  await auditLog(user.id, "update", "feed_post", postId, {});
   revalidatePath("/");
   revalidatePath("/social");
   return { success: true };
@@ -294,5 +300,6 @@ export async function deleteFeedComment(
     .eq("author_id", user.id);
 
   if (error) return { success: false, error: error.message };
+  await auditLog(user.id, "delete", "feed_comment", commentId, {});
   return { success: true };
 }
