@@ -10,7 +10,7 @@ import {
   Plus,
   Loader2,
   Camera,
-  BookOpen,
+  FileText,
 } from "lucide-react";
 import { createRex, updateRex, uploadRexPhoto } from "@/actions/qse";
 import type { Rex } from "@/lib/types/database";
@@ -320,7 +320,7 @@ export default function RexForm({ onCreated, onClose, initialData, profiles = []
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[var(--border-1)] px-6 py-4">
           <div className="flex items-center gap-2">
-            <BookOpen className="h-5 w-5 text-[var(--yellow)]" />
+            <FileText className="h-5 w-5 text-[var(--yellow)]" />
             <h2 className="text-lg font-semibold text-[var(--heading)]">
               {isEdit ? "Modifier la fiche REX" : "Nouvelle fiche REX"}
             </h2>

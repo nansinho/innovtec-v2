@@ -82,6 +82,15 @@ export default function DocumentsTable({ documents }: DocumentsTableProps) {
 
   const columns: ColumnDef<DocItem>[] = [
     {
+      key: "index",
+      header: "#",
+      width: "50px",
+      render: (_) => {
+        const idx = documents.indexOf(_);
+        return <span className="text-[var(--text-muted)]">{idx + 1}</span>;
+      },
+    },
+    {
       key: "icon",
       header: "",
       width: "45px",
