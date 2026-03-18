@@ -299,6 +299,36 @@ export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string 
   }
 
   // ==========================================
+  // CONCLUSION (Règles vitales, Bonnes pratiques, etc.)
+  // ==========================================
+  if (rex.conclusion_title && rex.conclusion_content) {
+    // Red separator line
+    pdf.setFillColor(239, 68, 68); // red-500
+    pdf.rect(mx, y, cw, 1.2, "F");
+    y += 5;
+
+    // Title (underlined)
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(10);
+    pdf.setTextColor(...NAVY);
+    const conclusionTitle = sanitize(`${rex.conclusion_title} :`);
+    pdf.text(conclusionTitle, mx, y);
+    const titleWidth = pdf.getStringUnitWidth(conclusionTitle) * 10 / pdf.internal.scaleFactor;
+    pdf.setDrawColor(...NAVY);
+    pdf.setLineWidth(0.3);
+    pdf.line(mx, y + 1, mx + titleWidth, y + 1);
+    y += 6;
+
+    // Content
+    pdf.setFont("helvetica", "normal");
+    pdf.setFontSize(9);
+    pdf.setTextColor(...GRAY_TEXT);
+    const conclusionLines = pdf.splitTextToSize(sanitize(rex.conclusion_content), cw - 5);
+    pdf.text(conclusionLines, mx + 2, y);
+    y += conclusionLines.length * 4.2 + 6;
+  }
+
+  // ==========================================
   // FOOTER — fixed at bottom of page
   // ==========================================
   const footerY = pageH - 38; // Fixed position near bottom

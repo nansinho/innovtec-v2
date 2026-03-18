@@ -379,6 +379,8 @@ export interface CreateRexInput {
   deja_arrive?: string[];
   type_evenement?: string;
   source_file_url?: string;
+  conclusion_title?: string;
+  conclusion_content?: string;
 }
 
 export async function createRex(
@@ -414,6 +416,8 @@ export async function createRex(
   if (rex.deja_arrive !== undefined) insertData.deja_arrive = rex.deja_arrive;
   if (rex.type_evenement !== undefined) insertData.type_evenement = rex.type_evenement;
   if (rex.source_file_url !== undefined) insertData.source_file_url = rex.source_file_url;
+  if (rex.conclusion_title !== undefined) insertData.conclusion_title = rex.conclusion_title;
+  if (rex.conclusion_content !== undefined) insertData.conclusion_content = rex.conclusion_content;
 
   const { data, error } = await supabase
     .from("rex")
@@ -496,6 +500,8 @@ export async function updateRex(
   if (rex.deja_arrive !== undefined) updateData.deja_arrive = rex.deja_arrive;
   if (rex.type_evenement !== undefined) updateData.type_evenement = rex.type_evenement;
   if (rex.source_file_url !== undefined) updateData.source_file_url = rex.source_file_url;
+  if (rex.conclusion_title !== undefined) updateData.conclusion_title = rex.conclusion_title;
+  if (rex.conclusion_content !== undefined) updateData.conclusion_content = rex.conclusion_content;
 
   if (Object.keys(updateData).length === 0) {
     return { success: false, error: "Aucune donnée à mettre à jour" };
