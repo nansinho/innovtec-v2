@@ -65,11 +65,18 @@ export async function getTeams(): Promise<Team[]> {
 export async function getTeamsWithMembers(): Promise<TeamWithMembers[]> {
   const supabaseAdmin = createAdminClient();
 
-  // Fetch all teams
-  const { data: teams, error: teamsError } = await supabaseAdmin
+  // Fetch all teams (try with description, fallback without)
+  let { data: teams, error: teamsError } = await supabaseAdmin
     .from("teams")
     .select("id, label, description, department_id, created_at")
     .order("label", { ascending: true });
+
+  if (teamsError && teamsError.message?.includes("description")) {
+    ({ data: teams, error: teamsError } = await supabaseAdmin
+      .from("teams")
+      .select("id, label, department_id, created_at")
+      .order("label", { ascending: true }));
+  }
 
   if (teamsError || !teams) return [];
 
@@ -111,11 +118,19 @@ export async function getTeamsWithMembers(): Promise<TeamWithMembers[]> {
 export async function getTeamById(teamId: string): Promise<TeamWithMembers | null> {
   const supabaseAdmin = createAdminClient();
 
-  const { data: team, error: teamError } = await supabaseAdmin
+  let { data: team, error: teamError } = await supabaseAdmin
     .from("teams")
     .select("id, label, description, department_id, created_at")
     .eq("id", teamId)
     .single();
+
+  if (teamError && teamError.message?.includes("description")) {
+    ({ data: team, error: teamError } = await supabaseAdmin
+      .from("teams")
+      .select("id, label, department_id, created_at")
+      .eq("id", teamId)
+      .single());
+  }
 
   if (teamError || !team) return null;
 
@@ -220,25 +235,39 @@ export async function createTeam(
   }
 
   const supabaseAdmin = createAdminClient();
-  const { data, error } = await supabaseAdmin
+
+  // Try with description first, fallback without if column doesn't exist
+  const insertData: Record<string, string> = { label: label.trim() };
+  if (description?.trim()) insertData.description = description.trim();
+
+  let result = await supabaseAdmin
     .from("teams")
-    .insert({ label: label.trim(), description: description?.trim() ?? "" })
+    .insert(insertData)
     .select("id, label")
     .single();
 
-  if (error) {
-    if (error.code === "23505") {
-      return { success: false, error: "Cette équipe existe déjà" };
-    }
-    return { success: false, error: error.message };
+  // If description column doesn't exist, retry without it
+  if (result.error && result.error.message?.includes("description")) {
+    result = await supabaseAdmin
+      .from("teams")
+      .insert({ label: label.trim() })
+      .select("id, label")
+      .single();
   }
 
-  await auditLog(caller.authId, "create", "team", data?.id ?? null, {
+  if (result.error) {
+    if (result.error.code === "23505") {
+      return { success: false, error: "Cette équipe existe déjà" };
+    }
+    return { success: false, error: result.error.message };
+  }
+
+  await auditLog(caller.authId, "create", "team", result.data?.id ?? null, {
     label: label.trim(),
     description: description?.trim() ?? "",
   });
   revalidateAll();
-  return { success: true, team: data as Team };
+  return { success: true, team: result.data as Team };
 }
 
 // ==========================================
@@ -260,10 +289,19 @@ export async function updateTeam(
   if (data.label !== undefined) updateData.label = data.label.trim();
   if (data.description !== undefined) updateData.description = data.description.trim();
 
-  const { error } = await supabaseAdmin
+  let { error } = await supabaseAdmin
     .from("teams")
     .update(updateData)
     .eq("id", teamId);
+
+  // If description column doesn't exist, retry without it
+  if (error && error.message?.includes("description") && updateData.description !== undefined) {
+    const { description: _desc, ...rest } = updateData;
+    ({ error } = await supabaseAdmin
+      .from("teams")
+      .update(rest)
+      .eq("id", teamId));
+  }
 
   if (error) {
     if (error.code === "23505") {
