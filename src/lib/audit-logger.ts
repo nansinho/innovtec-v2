@@ -35,7 +35,10 @@ export type AuditAction =
   | "update_manager"
   | "import_orgchart"
   | "analyze_orgchart_image"
-  | "apply_ai_orgchart";
+  | "apply_ai_orgchart"
+  | "add_member"
+  | "remove_member"
+  | "update_member_role";
 
 export type AuditTargetType =
   | "user"

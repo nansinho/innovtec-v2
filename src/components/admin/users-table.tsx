@@ -20,6 +20,7 @@ import { updateUserRole, toggleUserActive, deleteUser } from "@/actions/users";
 import { updateUserJobTitle, addJobTitle, type JobTitle } from "@/actions/job-titles";
 import type { Department } from "@/actions/departments";
 import type { Team } from "@/actions/teams";
+import type { TeamWithMembers } from "@/lib/types/database";
 import { DropdownMenu } from "@/components/ui/dropdown-menu";
 import type { Profile, UserRole } from "@/lib/types/database";
 import ConfirmDialog from "@/components/ui/confirm-dialog";
@@ -48,9 +49,10 @@ interface UsersTableProps {
   jobTitles: JobTitle[];
   departments: Department[];
   teams: Team[];
+  teamsWithMembers?: TeamWithMembers[];
 }
 
-export default function UsersTable({ users, currentUserId, currentUserRole, jobTitles: initialJobTitles, departments, teams }: UsersTableProps) {
+export default function UsersTable({ users, currentUserId, currentUserRole, jobTitles: initialJobTitles, departments, teams, teamsWithMembers = [] }: UsersTableProps) {
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -62,6 +64,19 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
   const [loading, setLoading] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const refMap = useMemo(() => createReferenceMap(users, "USER"), [users]);
+
+  // Build a map: userId -> list of teams
+  const userTeamsMap = useMemo(() => {
+    const map = new Map<string, { teamLabel: string; role: string }[]>();
+    for (const team of teamsWithMembers) {
+      for (const member of team.members) {
+        const list = map.get(member.user_id) ?? [];
+        list.push({ teamLabel: team.label, role: member.role });
+        map.set(member.user_id, list);
+      }
+    }
+    return map;
+  }, [teamsWithMembers]);
 
   // Modals
   const [formModal, setFormModal] = useState<{ open: boolean; user: Profile | null }>({
@@ -316,6 +331,9 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
               <th className="hidden px-3 py-2 text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)] lg:table-cell">
                 Manager
               </th>
+              <th className="hidden px-3 py-2 text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)] xl:table-cell">
+                Équipe(s)
+              </th>
               <th className="px-3 py-2 text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]">
                 Rôle
               </th>
@@ -445,6 +463,25 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
                             ? `${mgr.first_name} ${mgr.last_name}`
                             : "—"}
                         </span>
+                      );
+                    })()}
+                  </td>
+
+                  {/* Équipe(s) */}
+                  <td className="hidden px-3 py-2 xl:table-cell">
+                    {(() => {
+                      const teams: { teamLabel: string; role: string }[] | undefined = userTeamsMap.get(user.id);
+                      if (!teams || teams.length === 0) {
+                        return <span className="text-xs text-[var(--text-muted)]">—</span>;
+                      }
+                      return (
+                        <div className="flex flex-wrap gap-1">
+                          {teams.map((t, i) => (
+                            <Badge key={i} variant={t.role === "manager" ? "amber" : "blue"} size="sm">
+                              {t.teamLabel}
+                            </Badge>
+                          ))}
+                        </div>
                       );
                     })()}
                   </td>

@@ -22,7 +22,11 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { updateManager } from "@/actions/organigramme";
 import type { OrgChartProfile } from "@/actions/organigramme";
-import OrgChartImportModal from "./org-chart-import-modal";
+import dynamic from "next/dynamic";
+
+const OrgChartImportModal = dynamic(() => import("./org-chart-import-modal"), {
+  ssr: false,
+});
 import { Button } from "@/components/ui/button";
 import {
   DndContext,

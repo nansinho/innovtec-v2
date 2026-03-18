@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { User, Save } from "lucide-react";
+import { User, Save, Crown } from "lucide-react";
 import { toast } from "sonner";
 import { updateProfile } from "@/actions/profile";
-import type { Profile } from "@/lib/types/database";
+import type { Profile, TeamMemberRole } from "@/lib/types/database";
+import { Badge } from "@/components/ui/badge";
 
 const roleLabels: Record<string, string> = {
   admin: "Administrateur",
@@ -51,8 +52,10 @@ const jobTitles = [
 
 export default function ProfileInfoSection({
   profile,
+  userTeams = [],
 }: {
   profile: Profile;
+  userTeams?: { team_id: string; team_label: string; role: TeamMemberRole }[];
 }) {
   const [form, setForm] = useState({
     first_name: profile.first_name,
@@ -249,6 +252,26 @@ export default function ProfileInfoSection({
             />
           </div>
         </div>
+
+        {/* Mes équipes */}
+        {userTeams.length > 0 && (
+          <div>
+            <label className="mb-1.5 block text-xs font-medium text-[var(--text-secondary)]">
+              Mes équipes
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {userTeams.map((t) => (
+                <Badge key={t.team_id} variant={t.role === "manager" ? "amber" : "blue"} size="lg">
+                  {t.role === "manager" && <Crown className="h-3 w-3" />}
+                  {t.team_label}
+                  {t.role === "manager" && (
+                    <span className="ml-0.5 text-[10px] opacity-70">Manager</span>
+                  )}
+                </Badge>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div>
           <button

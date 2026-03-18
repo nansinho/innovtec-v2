@@ -24,6 +24,7 @@ import {
   ClipboardList,
   BarChart3,
   GitBranch,
+  UsersRound,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Profile } from "@/lib/types/database";
@@ -55,6 +56,7 @@ const qseNav = [
 ];
 
 const equipeNav = [
+  { href: "/equipe/equipes", label: "Équipes", icon: UsersRound },
   { href: "/equipe/trombinoscope", label: "Trombinoscope", icon: Users },
   { href: "/equipe/organigramme", label: "Organigramme", icon: GitBranch },
   { href: "/equipe/planning", label: "Planning", icon: Calendar },

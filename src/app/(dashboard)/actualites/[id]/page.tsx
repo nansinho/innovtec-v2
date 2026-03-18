@@ -12,7 +12,6 @@ import {
 import { getProfile } from "@/actions/auth";
 import NewsDetail from "@/components/news/news-detail";
 
-export const dynamic = "force-dynamic";
 
 interface Props {
   params: Promise<{ id: string }>;

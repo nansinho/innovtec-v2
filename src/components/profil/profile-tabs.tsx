@@ -16,7 +16,7 @@ import DiplomasSection from "./diplomas-section";
 import FormationsSection from "./formations-section";
 import PasswordSection from "./password-section";
 import DocumentsSection from "./documents-section";
-import type { Profile, UserExperience, UserDiploma, UserFormation, Document } from "@/lib/types/database";
+import type { Profile, UserExperience, UserDiploma, UserFormation, Document, TeamMemberRole } from "@/lib/types/database";
 
 const tabs = [
   { id: "info", label: "Informations", icon: User },
@@ -35,6 +35,7 @@ interface ProfileTabsProps {
   diplomas: UserDiploma[];
   formations: UserFormation[];
   documents: Document[];
+  userTeams?: { team_id: string; team_label: string; role: TeamMemberRole }[];
 }
 
 export default function ProfileTabs({
@@ -43,6 +44,7 @@ export default function ProfileTabs({
   diplomas,
   formations,
   documents,
+  userTeams = [],
 }: ProfileTabsProps) {
   const [active, setActive] = useState<TabId>("info");
 
@@ -73,7 +75,7 @@ export default function ProfileTabs({
         })}
       </div>
 
-      {active === "info" && <ProfileInfoSection profile={profile} />}
+      {active === "info" && <ProfileInfoSection profile={profile} userTeams={userTeams} />}
       {active === "experiences" && <ExperiencesSection experiences={experiences} />}
       {active === "diplomas" && <DiplomasSection diplomas={diplomas} />}
       {active === "formations" && <FormationsSection formations={formations} />}

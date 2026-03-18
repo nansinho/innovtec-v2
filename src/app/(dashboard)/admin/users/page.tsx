@@ -2,12 +2,11 @@ import { getProfile } from "@/actions/auth";
 import { getAllUsers, ensureAdminExists } from "@/actions/users";
 import { getJobTitles } from "@/actions/job-titles";
 import { getDepartments } from "@/actions/departments";
-import { getTeams } from "@/actions/teams";
+import { getTeams, getTeamsWithMembers } from "@/actions/teams";
 import { redirect } from "next/navigation";
 import UsersTable from "@/components/admin/users-table";
 import AdminBootstrap from "@/components/admin/admin-bootstrap";
 
-export const dynamic = "force-dynamic";
 
 export default async function AdminUsersPage() {
   const profile = await getProfile();
@@ -38,11 +37,12 @@ export default async function AdminUsersPage() {
     );
   }
 
-  const [users, jobTitles, departments, teams] = await Promise.all([
+  const [users, jobTitles, departments, teams, teamsWithMembers] = await Promise.all([
     getAllUsers(),
     getJobTitles(),
     getDepartments(),
     getTeams(),
+    getTeamsWithMembers(),
   ]);
 
   return (
@@ -64,6 +64,7 @@ export default async function AdminUsersPage() {
         jobTitles={jobTitles}
         departments={departments}
         teams={teams}
+        teamsWithMembers={teamsWithMembers}
       />
     </div>
   );

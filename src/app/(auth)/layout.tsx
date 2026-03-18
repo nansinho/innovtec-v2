@@ -1,4 +1,3 @@
-export const dynamic = "force-dynamic";
 
 import { Zap, Shield, Users, Newspaper } from "lucide-react";
 import { getCompanyLogo } from "@/actions/settings";

@@ -5,7 +5,6 @@ import { getActionPlans } from "@/actions/action-plans";
 import { getAllUsers } from "@/actions/users";
 import SignalementDetail from "@/components/qse/signalement-detail";
 
-export const dynamic = "force-dynamic";
 
 interface Props {
   params: Promise<{ id: string }>;

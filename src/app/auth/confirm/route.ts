@@ -19,7 +19,11 @@ export async function GET(request: NextRequest) {
     | "signup"
     | "magiclink"
     | null;
-  const next = searchParams.get("next") ?? "/";
+  // Validate the next parameter to prevent open redirect attacks
+  let next = searchParams.get("next") ?? "/";
+  if (!next.startsWith("/") || next.includes("://") || next.toLowerCase().includes("javascript:")) {
+    next = "/";
+  }
   const baseUrl = getBaseUrl(request);
 
   if (token_hash && type) {

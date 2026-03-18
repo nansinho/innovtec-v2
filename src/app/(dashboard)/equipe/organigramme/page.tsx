@@ -3,7 +3,6 @@ import { getOrgChartData } from "@/actions/organigramme";
 import { redirect } from "next/navigation";
 import OrgChart from "@/components/equipe/org-chart";
 
-export const dynamic = "force-dynamic";
 
 export default async function OrganigrammePage() {
   const profile = await getProfile();

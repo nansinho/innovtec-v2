@@ -17,7 +17,6 @@ import UserProfileTabs from "@/components/admin/user-profile-tabs";
 import { RoleBadge } from "@/components/ui/status-badge";
 import { Badge } from "@/components/ui/badge";
 
-export const dynamic = "force-dynamic";
 
 const roleLabels: Record<string, string> = {
   admin: "Administrateur",

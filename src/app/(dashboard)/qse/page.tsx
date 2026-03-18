@@ -13,7 +13,6 @@ import { getActionPlans } from "@/actions/action-plans";
 import { getSseDashboards } from "@/actions/sse-dashboard";
 import { getBonnesPratiques } from "@/actions/bonnes-pratiques";
 
-export const dynamic = "force-dynamic";
 
 const qseCards = [
   {

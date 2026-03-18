@@ -600,6 +600,29 @@ export interface UserDiploma {
   updated_at: string;
 }
 
+// ==========================================
+// TEAM MEMBERS
+// ==========================================
+
+export type TeamMemberRole = "manager" | "member";
+
+export interface TeamMember {
+  id: string;
+  team_id: string;
+  user_id: string;
+  role: TeamMemberRole;
+  created_at: string;
+}
+
+export interface TeamWithMembers {
+  id: string;
+  label: string;
+  description: string;
+  department_id: string | null;
+  created_at: string;
+  members: (TeamMember & { profile: Pick<Profile, "id" | "first_name" | "last_name" | "email" | "avatar_url" | "job_title" | "role"> })[];
+}
+
 export interface UserFormation {
   id: string;
   user_id: string;
