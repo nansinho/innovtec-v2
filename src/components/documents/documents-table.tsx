@@ -25,7 +25,7 @@ type DocItem = UnifiedDocument;
 
 function getFileIcon(name: string, category?: string) {
   if (category === "rex") {
-    return { icon: FileText, color: "text-[#0B3655] bg-[#0B3655]/10" };
+    return { icon: FileText, color: "text-[color:var(--teal)] bg-[var(--teal-surface)]" };
   }
   const ext = name.split(".").pop()?.toLowerCase() ?? "";
   if (["jpg", "jpeg", "png", "gif", "webp", "svg"].includes(ext))
@@ -33,8 +33,8 @@ function getFileIcon(name: string, category?: string) {
   if (["xls", "xlsx", "csv"].includes(ext))
     return { icon: FileSpreadsheet, color: "text-emerald-500 bg-emerald-50" };
   if (["pdf"].includes(ext))
-    return { icon: File, color: "text-[#0B3655] bg-[#0B3655]/10" };
-  return { icon: FileText, color: "text-[#0B3655] bg-[#0B3655]/10" };
+    return { icon: File, color: "text-[color:var(--blue)] bg-[var(--blue-surface)]" };
+  return { icon: FileText, color: "text-[color:var(--blue)] bg-[var(--blue-surface)]" };
 }
 
 function formatSize(bytes?: number) {

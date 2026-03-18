@@ -49,8 +49,8 @@ export default async function RecentDocs() {
               href={href}
               className="flex items-center gap-2.5 px-4 py-2 transition-colors hover:bg-zinc-50/80"
             >
-              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-[#0B3655]/8">
-                <FileText className="h-3.5 w-3.5 text-[#0B3655]" />
+              <div className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md ${isRex ? "bg-[var(--teal-surface)]" : "bg-[var(--blue-surface)]"}`}>
+                <FileText className={`h-3.5 w-3.5 ${isRex ? "text-[color:var(--teal)]" : "text-[color:var(--blue)]"}`} />
               </div>
               <div className="min-w-0 flex-1">
                 <div className="truncate text-xs font-medium text-[var(--heading)]">
@@ -58,7 +58,7 @@ export default async function RecentDocs() {
                 </div>
                 <div className="flex items-center gap-1.5 text-[10px] text-[var(--text-muted)]">
                   {isRex && (
-                    <span className="rounded bg-[#C8A84E]/15 px-1 py-px text-[9px] font-medium text-[#0B3655]">
+                    <span className="rounded bg-[var(--teal-surface)] px-1 py-px text-[9px] font-medium text-[color:var(--teal)]">
                       REX
                     </span>
                   )}
