@@ -13,6 +13,7 @@ import {
   Paperclip,
   Loader2,
 } from "lucide-react";
+import { toast } from "sonner";
 import { cn, formatRelative } from "@/lib/utils";
 import {
   getConversations,
@@ -252,9 +253,9 @@ export default function MessageSidebar({
         type: data.fileType,
         size: data.fileSize,
       });
-    } catch {
-      // Could show a toast here
-      console.error("Upload failed");
+    } catch (err) {
+      console.error("Upload failed:", err);
+      toast.error("L'envoi du fichier a échoué. Veuillez réessayer.");
     } finally {
       setIsUploading(false);
     }

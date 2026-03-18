@@ -29,9 +29,17 @@ export async function updateSession(request: NextRequest) {
     }
   );
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  let user = null;
+  try {
+    const { data, error } = await supabase.auth.getUser();
+    if (error) {
+      console.warn("[middleware] Auth error:", error.message);
+    } else {
+      user = data.user;
+    }
+  } catch (e) {
+    console.warn("[middleware] Auth request failed:", e instanceof Error ? e.message : e);
+  }
 
   // Protected routes — redirect to login if not authenticated
   if (
