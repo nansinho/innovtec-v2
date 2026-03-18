@@ -18,30 +18,56 @@ CREATE POLICY "Tout le monde lit les postes"
 -- 2. FIX FUNCTION SEARCH PATHS (SECURITY)
 -- ==========================================
 
-ALTER FUNCTION update_updated_at() SET search_path = '';
-ALTER FUNCTION get_post_likes_count(UUID) SET search_path = '';
-ALTER FUNCTION get_post_comments_count(UUID) SET search_path = '';
-ALTER FUNCTION get_news_views_count(UUID) SET search_path = '';
+-- update_updated_at: trigger function, no table references needed
+CREATE OR REPLACE FUNCTION public.update_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = now();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SET search_path = '';
+
+-- Recreate SQL functions with fully-qualified table names + search_path
+CREATE OR REPLACE FUNCTION public.get_post_likes_count(post_uuid UUID)
+RETURNS INTEGER AS $$
+  SELECT COUNT(*)::INTEGER FROM public.feed_likes WHERE post_id = post_uuid;
+$$ LANGUAGE sql STABLE SET search_path = '';
+
+CREATE OR REPLACE FUNCTION public.get_post_comments_count(post_uuid UUID)
+RETURNS INTEGER AS $$
+  SELECT COUNT(*)::INTEGER FROM public.feed_comments WHERE post_id = post_uuid;
+$$ LANGUAGE sql STABLE SET search_path = '';
+
+CREATE OR REPLACE FUNCTION public.get_news_views_count(news_uuid UUID)
+RETURNS INTEGER AS $$
+  SELECT COUNT(*)::INTEGER FROM public.news_views WHERE news_id = news_uuid;
+$$ LANGUAGE sql STABLE SET search_path = '';
 
 -- Recreate helper functions with search_path AND initplan fix
-CREATE OR REPLACE FUNCTION get_my_role()
+CREATE OR REPLACE FUNCTION public.get_my_role()
 RETURNS user_role AS $$
   SELECT role FROM public.profiles WHERE id = (select auth.uid());
 $$ LANGUAGE sql STABLE SECURITY DEFINER SET search_path = '';
 
-CREATE OR REPLACE FUNCTION is_admin_or_rh()
+CREATE OR REPLACE FUNCTION public.is_admin_or_rh()
 RETURNS BOOLEAN AS $$
   SELECT public.get_my_role() IN ('admin', 'rh');
 $$ LANGUAGE sql STABLE SECURITY DEFINER SET search_path = '';
 
-CREATE OR REPLACE FUNCTION is_admin_rh_or_qse()
+CREATE OR REPLACE FUNCTION public.is_admin_rh_or_qse()
 RETURNS BOOLEAN AS $$
   SELECT public.get_my_role() IN ('admin', 'rh', 'responsable_qse');
 $$ LANGUAGE sql STABLE SECURITY DEFINER SET search_path = '';
 
--- Fix update_updated_at_column if it exists
+-- Fix update_updated_at_column if it exists (dashboard-created variant)
 DO $$ BEGIN
-  ALTER FUNCTION update_updated_at_column() SET search_path = '';
+  EXECUTE 'CREATE OR REPLACE FUNCTION public.update_updated_at_column()
+  RETURNS TRIGGER AS $fn$
+  BEGIN
+    NEW.updated_at = now();
+    RETURN NEW;
+  END;
+  $fn$ LANGUAGE plpgsql SET search_path = ''''';
 EXCEPTION WHEN undefined_function THEN NULL;
 END $$;
 
