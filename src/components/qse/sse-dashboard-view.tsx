@@ -8,6 +8,7 @@ import { deleteSseDashboard } from "@/actions/sse-dashboard";
 import ConfirmDialog from "@/components/ui/confirm-dialog";
 import { toast } from "sonner";
 import { DropdownMenu } from "@/components/ui/dropdown-menu";
+import { getStandardToolbarActions } from "@/lib/table-toolbar-actions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -414,15 +415,28 @@ export function SseDashboardView({ dashboards: initialDashboards, initialDashboa
 
   return (
     <div>
-      {/* Header with action */}
-      {canManage && (
-        <div className="mb-4 flex items-center justify-end">
+      {/* Header with toolbar actions */}
+      <div className="mb-4 flex items-center justify-end gap-2">
+        {getStandardToolbarActions().map((action) => {
+          const Icon = action.icon;
+          return (
+            <button
+              key={action.label}
+              onClick={action.onClick}
+              className="inline-flex h-7 items-center gap-1.5 rounded-lg border border-[var(--border-1)] bg-white px-2.5 text-[11px] font-medium text-[var(--text-secondary)] shadow-xs transition-all hover:bg-zinc-50 hover:text-[var(--heading)] hover:border-zinc-300 active:scale-[0.98]"
+            >
+              <Icon className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">{action.label}</span>
+            </button>
+          );
+        })}
+        {canManage && (
           <Button size="sm" onClick={() => setMode("create")}>
             <Plus className="h-3.5 w-3.5" />
             Nouveau tableau
           </Button>
-        </div>
-      )}
+        )}
+      </div>
 
       {allSorted.length === 0 ? (
         <div className="flex flex-col items-center rounded-xl border border-[var(--border-1)] bg-white py-16 text-center shadow-sm">

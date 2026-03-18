@@ -23,6 +23,7 @@ import {
 import { cn, formatDate } from "@/lib/utils";
 import { toast } from "sonner";
 import { DropdownMenu } from "@/components/ui/dropdown-menu";
+import { getStandardToolbarActions } from "@/lib/table-toolbar-actions";
 import FileUploadAi from "@/components/ai/file-upload-ai";
 import {
   saveQseContent,
@@ -1133,21 +1134,36 @@ export default function PolitiqueContent({
             La politique Qualité, Sécurité et Environnement d&apos;INNOVTEC Réseaux.
           </p>
         </div>
-        {canEdit && (
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => { setShowUpload(!showUpload); setEditingId(null); }}
-              className="inline-flex h-7 items-center gap-1.5 rounded-lg border border-[var(--border-1)] bg-white px-2.5 text-[11px] font-medium text-[var(--text-secondary)] shadow-xs transition-all hover:bg-zinc-50 hover:text-[var(--heading)] hover:border-zinc-300 active:scale-[0.98]"
-            >
-              <Sparkles className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Importer (IA)</span>
-            </button>
-            <Button size="sm" onClick={startNew}>
-              <Plus className="h-3.5 w-3.5" />
-              Nouvelle politique QSE
-            </Button>
-          </div>
-        )}
+        <div className="flex items-center gap-2">
+          {getStandardToolbarActions().map((action) => {
+            const Icon = action.icon;
+            return (
+              <button
+                key={action.label}
+                onClick={action.onClick}
+                className="inline-flex h-7 items-center gap-1.5 rounded-lg border border-[var(--border-1)] bg-white px-2.5 text-[11px] font-medium text-[var(--text-secondary)] shadow-xs transition-all hover:bg-zinc-50 hover:text-[var(--heading)] hover:border-zinc-300 active:scale-[0.98]"
+              >
+                <Icon className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">{action.label}</span>
+              </button>
+            );
+          })}
+          {canEdit && (
+            <>
+              <button
+                onClick={() => { setShowUpload(!showUpload); setEditingId(null); }}
+                className="inline-flex h-7 items-center gap-1.5 rounded-lg border border-[var(--border-1)] bg-white px-2.5 text-[11px] font-medium text-[var(--text-secondary)] shadow-xs transition-all hover:bg-zinc-50 hover:text-[var(--heading)] hover:border-zinc-300 active:scale-[0.98]"
+              >
+                <Sparkles className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Importer (IA)</span>
+              </button>
+              <Button size="sm" onClick={startNew}>
+                <Plus className="h-3.5 w-3.5" />
+                Nouvelle politique QSE
+              </Button>
+            </>
+          )}
+        </div>
       </div>
 
       {showUpload && (
@@ -1184,13 +1200,13 @@ export default function PolitiqueContent({
           <table className="w-full">
             <thead>
               <tr className="border-b border-[var(--border-2)] bg-[var(--hover)]">
-                <th className="px-3 py-2 text-left text-[11px] font-medium text-[var(--text-muted)]">Titre</th>
-                <th className="px-3 py-2 text-left text-[11px] font-medium text-[var(--text-muted)]" style={{ width: "80px" }}>Année</th>
-                <th className="px-3 py-2 text-left text-[11px] font-medium text-[var(--text-muted)]" style={{ width: "130px" }}>Signature</th>
-                <th className="px-3 py-2 text-left text-[11px] font-medium text-[var(--text-muted)]">Piliers</th>
-                <th className="px-3 py-2 text-left text-[11px] font-medium text-[var(--text-muted)]" style={{ width: "130px" }}>Date</th>
+                <th className="px-3 py-2 text-left text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]">Titre</th>
+                <th className="px-3 py-2 text-left text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "80px" }}>Année</th>
+                <th className="px-3 py-2 text-left text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "130px" }}>Signature</th>
+                <th className="px-3 py-2 text-left text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]">Piliers</th>
+                <th className="px-3 py-2 text-left text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "130px" }}>Date</th>
                 {canEdit && (
-                  <th className="px-3 py-2 text-right text-[11px] font-medium text-[var(--text-muted)]" style={{ width: "120px" }}>Actions</th>
+                  <th className="px-3 py-2 text-right text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]" style={{ width: "120px" }}>Actions</th>
                 )}
               </tr>
             </thead>
