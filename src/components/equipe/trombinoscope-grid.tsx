@@ -222,6 +222,7 @@ export default function TrombinoscopeGrid({
         onClose={() => setSelectedUser(null)}
         isBirthday={selectedUser ? birthdaySet.has(selectedUser.id) : false}
         currentUserId={currentUserId}
+        allUsers={users}
       />
     </>
   );

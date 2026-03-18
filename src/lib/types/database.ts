@@ -62,6 +62,7 @@ export interface Profile {
   department: string;
   team: string;
   agency: string;
+  manager_id: string | null;
   emergency_contact_name: string;
   emergency_contact_phone: string;
   emergency_contact_relation: string;

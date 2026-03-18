@@ -23,6 +23,7 @@ interface UserFormModalProps {
   jobTitles?: JobTitle[];
   departments?: Department[];
   teams?: Team[];
+  allUsers?: Profile[];
 }
 
 export default function UserFormModal({
@@ -32,6 +33,7 @@ export default function UserFormModal({
   jobTitles = [],
   departments = [],
   teams = [],
+  allUsers = [],
 }: UserFormModalProps) {
   const isEdit = !!user;
   const [loading, setLoading] = useState(false);
@@ -50,6 +52,7 @@ export default function UserFormModal({
     agency: "Siège",
     date_of_birth: "",
     hire_date: "",
+    manager_id: "",
   });
 
   // Local lists (updated optimistically when creating/deleting items)
@@ -79,6 +82,7 @@ export default function UserFormModal({
         agency: user.agency || "Siège",
         date_of_birth: user.date_of_birth || "",
         hire_date: user.hire_date || "",
+        manager_id: user.manager_id || "",
       });
     } else {
       setForm({
@@ -95,6 +99,7 @@ export default function UserFormModal({
         agency: "Siège",
         date_of_birth: "",
         hire_date: "",
+        manager_id: "",
       });
     }
   }, [user, open]);
@@ -137,6 +142,7 @@ export default function UserFormModal({
           agency: form.agency,
           date_of_birth: form.date_of_birth || null,
           hire_date: form.hire_date || null,
+          manager_id: form.manager_id || null,
         });
         if (result.success) {
           toast.success(`${form.first_name} ${form.last_name} mis à jour`);
@@ -424,6 +430,30 @@ export default function UserFormModal({
                 />
               </div>
             </div>
+
+            {/* Manager */}
+            {allUsers.length > 0 && (
+              <div>
+                <label className="mb-2 block text-[11px] font-semibold text-[var(--text-muted)]">
+                  Manager
+                </label>
+                <select
+                  value={form.manager_id}
+                  onChange={(e) => handleChange("manager_id", e.target.value)}
+                  className={selectClass}
+                >
+                  <option value="">— Aucun manager —</option>
+                  {allUsers
+                    .filter((u) => u.id !== user?.id && u.is_active)
+                    .map((u) => (
+                      <option key={u.id} value={u.id}>
+                        {u.first_name} {u.last_name}
+                        {u.job_title ? ` — ${u.job_title}` : ""}
+                      </option>
+                    ))}
+                </select>
+              </div>
+            )}
 
             {/* Dates */}
             <div>

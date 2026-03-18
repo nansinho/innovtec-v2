@@ -313,6 +313,9 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
               <th className="hidden px-3 py-2 text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)] md:table-cell">
                 Poste
               </th>
+              <th className="hidden px-3 py-2 text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)] lg:table-cell">
+                Manager
+              </th>
               <th className="px-3 py-2 text-[11px] font-medium uppercase tracking-wider text-[var(--text-muted)]">
                 Rôle
               </th>
@@ -430,6 +433,22 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
                     )}
                   </td>
 
+                  {/* Manager */}
+                  <td className="hidden px-3 py-2 lg:table-cell">
+                    {(() => {
+                      const mgr = user.manager_id
+                        ? users.find((u) => u.id === user.manager_id)
+                        : null;
+                      return (
+                        <span className="text-xs text-[var(--text-secondary)]">
+                          {mgr
+                            ? `${mgr.first_name} ${mgr.last_name}`
+                            : "—"}
+                        </span>
+                      );
+                    })()}
+                  </td>
+
                   {/* Role */}
                   <td className="px-3 py-2">
                     {editingRole === user.id ? (
@@ -538,6 +557,7 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
         jobTitles={jobTitles}
         departments={departments}
         teams={teams}
+        allUsers={users}
       />
 
       {/* Confirm Dialog */}
