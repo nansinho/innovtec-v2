@@ -20,7 +20,6 @@ const EVENT_TYPES: { value: string; label: string }[] = [
 ];
 
 /**
- * Determine which PDF template to use.
  * New template: fiche >= 8/2025
  */
 function isNewTemplate(rex: Rex): boolean {
@@ -29,9 +28,6 @@ function isNewTemplate(rex: Rex): boolean {
   return year > 2025 || (year === 2025 && num >= 8);
 }
 
-/**
- * Sanitize text for Helvetica/WinAnsiEncoding.
- */
 function sanitize(text: string): string {
   return text
     .replace(/[\u2018\u2019]/g, "'")
@@ -44,15 +40,11 @@ function sanitize(text: string): string {
     .replace(/\u2265/g, ">=");
 }
 
-/**
- * Render an inline SVG string to a PNG data URL via canvas.
- */
 function svgStringToPng(svgString: string, scale = 3): Promise<string | null> {
   return new Promise((resolve) => {
     const blob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const img = new Image();
-
     img.onload = () => {
       const canvas = document.createElement("canvas");
       canvas.width = img.naturalWidth * scale;
@@ -64,15 +56,11 @@ function svgStringToPng(svgString: string, scale = 3): Promise<string | null> {
       resolve(canvas.toDataURL("image/png"));
       URL.revokeObjectURL(url);
     };
-
     img.onerror = () => { resolve(null); URL.revokeObjectURL(url); };
     img.src = url;
   });
 }
 
-/**
- * Load an image URL to base64 via Image element (works with CORS).
- */
 function imageUrlToBase64(url: string): Promise<string | null> {
   return new Promise((resolve) => {
     const img = new Image();
@@ -90,9 +78,7 @@ function imageUrlToBase64(url: string): Promise<string | null> {
         fetchImageAsBase64(url).then(resolve);
       }
     };
-    img.onerror = () => {
-      fetchImageAsBase64(url).then(resolve);
-    };
+    img.onerror = () => { fetchImageAsBase64(url).then(resolve); };
     img.src = url;
   });
 }
@@ -111,79 +97,6 @@ async function fetchImageAsBase64(url: string): Promise<string | null> {
   }
 }
 
-/**
- * Render metadata lines (yellow labels + gray values).
- */
-function renderMetadata(
-  pdf: jsPDF,
-  metaLines: { items: { label: string; value: string; lw: number }[] }[],
-  startX: number,
-  startY: number,
-): number {
-  let metaY = startY;
-  pdf.setFontSize(8);
-  for (const line of metaLines) {
-    let lineX = startX;
-    let hasContent = false;
-    for (const m of line.items) {
-      if (!m.value) continue;
-      hasContent = true;
-      pdf.setTextColor(...YELLOW);
-      pdf.setFont("helvetica", "bold");
-      pdf.text(m.label, lineX, metaY);
-      pdf.setTextColor(...GRAY_TEXT);
-      pdf.setFont("helvetica", "normal");
-      const valText = ` : ${sanitize(m.value)}`;
-      pdf.text(valText, lineX + m.lw, metaY);
-      lineX += m.lw + pdf.getStringUnitWidth(valText) * 8 / pdf.internal.scaleFactor + 8;
-    }
-    if (hasContent) metaY += 3.5;
-  }
-  return metaY;
-}
-
-/**
- * Build common metadata lines for header.
- */
-function buildMetaLines(rex: Rex): { items: { label: string; value: string; lw: number }[] }[] {
-  return [
-    { items: [{ label: "CHANTIER", value: rex.chantier, lw: 20 }] },
-    { items: [{ label: "ADRESSE", value: rex.lieu, lw: 18 }] },
-    { items: [{ label: "TYPE DE TRAVAUX", value: rex.type_travaux || "", lw: 34 }] },
-    {
-      items: [
-        {
-          label: "DATE",
-          value: rex.date_evenement
-            ? new Date(rex.date_evenement).toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" })
-            : "",
-          lw: 11,
-        },
-        { label: "HORAIRE", value: rex.horaire, lw: 17 },
-      ],
-    },
-  ];
-}
-
-/**
- * Render the INNOVTEC logo fallback text.
- */
-function renderLogoFallback(pdf: jsPDF, x: number, y: number) {
-  pdf.setFont("helvetica", "bold");
-  pdf.setFontSize(14);
-  pdf.setTextColor(30, 58, 95);
-  pdf.text("INN", x, y + 9);
-  pdf.setTextColor(245, 158, 11);
-  pdf.text("O", x + 14, y + 9);
-  pdf.setTextColor(30, 58, 95);
-  pdf.text("VTEC", x + 18, y + 9);
-  pdf.setFontSize(6);
-  pdf.setTextColor(100, 100, 100);
-  pdf.text("R\u00c9SEAUX", x + 9, y + 13);
-  pdf.setFillColor(245, 158, 11);
-  pdf.rect(x, y + 14, 34, 0.4, "F");
-}
-
 // ==========================================
 // MAIN EXPORT
 // ==========================================
@@ -192,7 +105,7 @@ export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string 
   const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
   const pageW = 210;
   const pageH = 297;
-  const mx = 10; // margin X
+  const mx = 8; // margin X
   const cw = pageW - mx * 2; // content width
   let y = 0;
 
@@ -228,126 +141,183 @@ export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string 
     { key: "vigilance", text: rex.vigilance, photo: photoVigilance },
   ] as const;
 
+  // Helper: format date
+  const dateStr = rex.date_evenement
+    ? new Date(rex.date_evenement).toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" })
+    : "";
+
   // ==========================================
   // HEADER
   // ==========================================
 
   if (useNew) {
     // ---- NEW TEMPLATE HEADER ----
-    // Navy bar at top
-    const barH = 18;
-    pdf.setFillColor(...NAVY);
-    pdf.rect(0, 0, pageW, barH, "F");
+    y = 6;
 
-    // Logo on LEFT inside navy bar
+    // Logo on LEFT
     let logoOk = false;
     if (logoData) {
-      try { pdf.addImage(logoData, "PNG", mx, 2, 44, 14); logoOk = true; } catch { /* fallback */ }
+      try { pdf.addImage(logoData, "PNG", mx, y, 40, 13); logoOk = true; } catch { /* fallback */ }
     }
     if (!logoOk) {
-      // White text fallback on dark bg
       pdf.setFont("helvetica", "bold");
-      pdf.setFontSize(14);
-      pdf.setTextColor(255, 255, 255);
-      pdf.text("INNOVTEC", mx, 11);
-      pdf.setFontSize(6);
-      pdf.text("R\u00c9SEAUX", mx, 15);
+      pdf.setFontSize(16);
+      pdf.setTextColor(...NAVY);
+      pdf.text("INN", mx, y + 8);
+      pdf.setTextColor(...YELLOW);
+      pdf.text("O", mx + 16, y + 8);
+      pdf.setTextColor(...NAVY);
+      pdf.text("VTEC", mx + 20, y + 8);
+      pdf.setFontSize(7);
+      pdf.setTextColor(100, 100, 100);
+      pdf.text("R\u00c9SEAUX", mx + 8, y + 12);
+      pdf.setFillColor(...YELLOW);
+      pdf.rect(mx, y + 13, 38, 0.5, "F");
     }
 
     // FICHE REX badge on RIGHT — yellow rounded rect
-    const badgeW = 58;
-    const badgeH = 14;
+    const badgeW = 52;
+    const badgeH = 13;
     const badgeX = pageW - mx - badgeW;
-    const badgeY = 2;
     pdf.setFillColor(...YELLOW);
-    pdf.roundedRect(badgeX, badgeY, badgeW, badgeH, 2, 2, "F");
+    pdf.roundedRect(badgeX, y, badgeW, badgeH, 2, 2, "F");
     pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(14);
+    pdf.setFontSize(13);
     pdf.setTextColor(...NAVY);
-    pdf.text("FICHE REX", badgeX + 3, badgeY + 6);
-    pdf.setFontSize(12);
-    pdf.text(`${rex.rex_number || "-"}/${rex.rex_year || "-"}`, badgeX + 3, badgeY + 12);
+    pdf.text("FICHE REX", badgeX + 3, y + 5.5);
+    pdf.setFontSize(11);
+    pdf.text(`${rex.rex_number || "-"}/${rex.rex_year || "-"}`, badgeX + 3, y + 11);
 
-    y = barH + 4;
+    y += 17;
 
-    // Title
+    // TITRE DE L'ÉVÉNEMENT
     pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(9);
+    pdf.setFontSize(10);
     pdf.setTextColor(...YELLOW);
-    const titleLabel = "TITRE DE L'\u00c9V\u00c9NEMENT :";
-    pdf.text(titleLabel, mx, y + 4);
-    const tlW = pdf.getStringUnitWidth(titleLabel) * 9 / pdf.internal.scaleFactor;
-
+    const tLabel = "TITRE DE L'\u00c9V\u00c9NEMENT : ";
+    pdf.text(tLabel, mx, y);
+    const tLabelW = pdf.getStringUnitWidth(tLabel) * 10 / pdf.internal.scaleFactor;
     pdf.setTextColor(...NAVY);
+    const titleLines = pdf.splitTextToSize(sanitize(rex.title), cw - tLabelW);
+    pdf.text(titleLines, mx + tLabelW, y);
+    y += 4 + (titleLines.length > 1 ? (titleLines.length - 1) * 4 : 0);
+
+    // Metadata lines — 9pt, proper spacing
     pdf.setFontSize(9);
-    const titleText = sanitize(rex.title);
-    const maxTitleW = cw - tlW - 2;
-    const titleLines = pdf.splitTextToSize(titleText, maxTitleW);
-    pdf.text(titleLines, mx + tlW + 1, y + 4);
+    const metaItems: { label: string; value: string }[] = [
+      { label: "CHANTIER", value: rex.chantier },
+      { label: "ADRESSE", value: rex.lieu },
+      { label: "TYPE DE TRAVAUX", value: rex.type_travaux || "" },
+    ];
+    for (const m of metaItems) {
+      if (!m.value) continue;
+      pdf.setFont("helvetica", "bold");
+      pdf.setTextColor(...YELLOW);
+      pdf.text(m.label, mx, y);
+      const lw = pdf.getStringUnitWidth(m.label) * 9 / pdf.internal.scaleFactor;
+      pdf.setFont("helvetica", "normal");
+      pdf.setTextColor(...GRAY_TEXT);
+      pdf.text(` : ${sanitize(m.value)}`, mx + lw, y);
+      y += 3.8;
+    }
 
-    let metaStartY = y + 8 + (titleLines.length > 1 ? (titleLines.length - 1) * 3.5 : 0);
+    // DATE + HORAIRE on same line
+    if (dateStr || rex.horaire) {
+      let lineX = mx;
+      if (dateStr) {
+        pdf.setFont("helvetica", "bold");
+        pdf.setTextColor(...YELLOW);
+        pdf.text("DATE", lineX, y);
+        const dw = pdf.getStringUnitWidth("DATE") * 9 / pdf.internal.scaleFactor;
+        pdf.setFont("helvetica", "normal");
+        pdf.setTextColor(...GRAY_TEXT);
+        const dateVal = ` : ${dateStr}`;
+        pdf.text(dateVal, lineX + dw, y);
+        lineX += dw + pdf.getStringUnitWidth(dateVal) * 9 / pdf.internal.scaleFactor + 8;
+      }
+      if (rex.horaire) {
+        pdf.setFont("helvetica", "bold");
+        pdf.setTextColor(...YELLOW);
+        pdf.text("HORAIRE", lineX, y);
+        const hw = pdf.getStringUnitWidth("HORAIRE") * 9 / pdf.internal.scaleFactor;
+        pdf.setFont("helvetica", "normal");
+        pdf.setTextColor(...GRAY_TEXT);
+        pdf.text(` : ${sanitize(rex.horaire)}`, lineX + hw, y);
+      }
+      y += 3.8;
+    }
 
-    // Metadata
-    const metaLines = buildMetaLines(rex);
-    metaStartY = renderMetadata(pdf, metaLines, mx, metaStartY);
-
-    // Type d'événement in header (small badge)
+    // Type d'événement badge in header (if set)
     if (rex.type_evenement) {
       const evtType = EVENT_TYPES.find(t => t.value === rex.type_evenement);
       if (evtType) {
+        y += 1;
         const evtLabel = sanitize(evtType.label);
-        const evtW = pdf.getStringUnitWidth(evtLabel) * 7 / pdf.internal.scaleFactor + 6;
-        pdf.setFillColor(...NAVY);
-        pdf.roundedRect(mx, metaStartY, evtW, 5, 1, 1, "F");
         pdf.setFont("helvetica", "bold");
         pdf.setFontSize(7);
+        const evtW = pdf.getStringUnitWidth(evtLabel) * 7 / pdf.internal.scaleFactor + 6;
+        pdf.setFillColor(...NAVY);
+        pdf.roundedRect(mx, y - 3, evtW, 4.5, 1, 1, "F");
         pdf.setTextColor(255, 255, 255);
-        pdf.text(evtLabel, mx + 3, metaStartY + 3.5);
-        metaStartY += 7;
+        pdf.text(evtLabel, mx + 3, y);
+        y += 4;
       }
     }
 
-    y = metaStartY + 2;
+    y += 1;
 
     // Yellow-to-navy gradient separator
     const gradSteps = 20;
     const stepW = cw / gradSteps;
     for (let i = 0; i < gradSteps; i++) {
       const t = i / gradSteps;
-      const r = Math.round(245 + (11 - 245) * t);
-      const g = Math.round(158 + (54 - 158) * t);
-      const b = Math.round(11 + (85 - 11) * t);
-      pdf.setFillColor(r, g, b);
-      pdf.rect(mx + i * stepW, y, stepW + 0.5, 1.5, "F");
+      pdf.setFillColor(
+        Math.round(245 + (11 - 245) * t),
+        Math.round(158 + (54 - 158) * t),
+        Math.round(11 + (85 - 11) * t),
+      );
+      pdf.rect(mx + i * stepW, y, stepW + 0.5, 1.2, "F");
     }
-    y += 6;
+    y += 4;
 
   } else {
     // ---- OLD TEMPLATE HEADER ----
-    y = 10;
+    y = 8;
 
-    // Badge "FICHE REX n/year" — yellow rounded rectangle (LEFT)
-    const bw = 30, bh = 20;
+    // Badge "FICHE REX" LEFT
+    const bw = 28, bh = 18;
     pdf.setFillColor(...YELLOW);
     pdf.roundedRect(mx, y, bw, bh, 2.5, 2.5, "F");
     pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(8);
+    pdf.setFontSize(7);
     pdf.setTextColor(255, 255, 255);
-    pdf.text("FICHE REX", mx + bw / 2, y + 7, { align: "center" });
-    pdf.setFontSize(15);
-    pdf.text(`${rex.rex_number || "-"}/${rex.rex_year || "-"}`, mx + bw / 2, y + 16, { align: "center" });
+    pdf.text("FICHE REX", mx + bw / 2, y + 6, { align: "center" });
+    pdf.setFontSize(13);
+    pdf.text(`${rex.rex_number || "-"}/${rex.rex_year || "-"}`, mx + bw / 2, y + 14, { align: "center" });
 
-    // Company logo (top RIGHT)
-    const logoX = pageW - mx - 46;
+    // Company logo RIGHT
+    const logoX = pageW - mx - 44;
     let logoOk = false;
     if (logoData) {
-      try { pdf.addImage(logoData, "PNG", logoX, y, 44, 15); logoOk = true; } catch { /* fallback */ }
+      try { pdf.addImage(logoData, "PNG", logoX, y, 42, 14); logoOk = true; } catch { /* fallback */ }
     }
     if (!logoOk) {
-      renderLogoFallback(pdf, logoX, y);
+      pdf.setFont("helvetica", "bold");
+      pdf.setFontSize(14);
+      pdf.setTextColor(30, 58, 95);
+      pdf.text("INN", logoX, y + 9);
+      pdf.setTextColor(245, 158, 11);
+      pdf.text("O", logoX + 14, y + 9);
+      pdf.setTextColor(30, 58, 95);
+      pdf.text("VTEC", logoX + 18, y + 9);
+      pdf.setFontSize(6);
+      pdf.setTextColor(100, 100, 100);
+      pdf.text("R\u00c9SEAUX", logoX + 9, y + 13);
+      pdf.setFillColor(245, 158, 11);
+      pdf.rect(logoX, y + 14, 34, 0.4, "F");
     }
 
-    // Title + metadata
+    // Title + metadata between badge and logo
     const ix = mx + bw + 4;
     const iw = logoX - ix - 4;
 
@@ -357,235 +327,279 @@ export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string 
     const titleLabel = "TITRE DE L'\u00c9V\u00c9NEMENT";
     pdf.text(titleLabel, ix, y + 5);
     const tlW = pdf.getStringUnitWidth(titleLabel) * 10 / pdf.internal.scaleFactor;
-
     pdf.setTextColor(...NAVY);
-    pdf.setFontSize(10);
     const titleText = sanitize(` -- ${rex.title}`);
     const titleLines = pdf.splitTextToSize(titleText, iw - tlW);
     pdf.text(titleLines, ix + tlW, y + 5);
 
     // Metadata
-    const metaStartY = y + 10 + (titleLines.length > 1 ? (titleLines.length - 1) * 3.5 : 0);
-    const metaLines = buildMetaLines(rex);
-    renderMetadata(pdf, metaLines, ix, metaStartY);
+    pdf.setFontSize(8);
+    let metaY = y + 10 + (titleLines.length > 1 ? (titleLines.length - 1) * 3.5 : 0);
+    const metas: { label: string; value: string }[] = [
+      { label: "Chantier", value: rex.chantier },
+      { label: "Adresse", value: rex.lieu },
+    ];
+    for (const m of metas) {
+      if (!m.value) continue;
+      pdf.setTextColor(...YELLOW);
+      pdf.setFont("helvetica", "bold");
+      pdf.text(m.label, ix, metaY);
+      const lw = pdf.getStringUnitWidth(m.label) * 8 / pdf.internal.scaleFactor;
+      pdf.setTextColor(...GRAY_TEXT);
+      pdf.setFont("helvetica", "normal");
+      pdf.text(` : ${sanitize(m.value)}`, ix + lw, metaY);
+      metaY += 3.5;
+    }
+    // Date + Horaire
+    if (dateStr) {
+      pdf.setTextColor(...YELLOW);
+      pdf.setFont("helvetica", "bold");
+      pdf.text("Date", ix, metaY);
+      pdf.setTextColor(...GRAY_TEXT);
+      pdf.setFont("helvetica", "normal");
+      pdf.text(` : ${dateStr}`, ix + 9, metaY);
+      if (rex.horaire) {
+        const dEnd = ix + 9 + pdf.getStringUnitWidth(` : ${dateStr}`) * 8 / pdf.internal.scaleFactor + 4;
+        pdf.setTextColor(...YELLOW);
+        pdf.setFont("helvetica", "bold");
+        pdf.text("Horaire", dEnd, metaY);
+        pdf.setTextColor(...GRAY_TEXT);
+        pdf.setFont("helvetica", "normal");
+        pdf.text(` : ${sanitize(rex.horaire)}`, dEnd + 14, metaY);
+      }
+    }
 
-    y += bh + 5;
+    y += bh + 4;
 
-    // Yellow-to-navy gradient separator
+    // Gradient separator
     const gradSteps = 20;
     const stepW = cw / gradSteps;
     for (let i = 0; i < gradSteps; i++) {
       const t = i / gradSteps;
-      const r = Math.round(245 + (11 - 245) * t);
-      const g = Math.round(158 + (54 - 158) * t);
-      const b = Math.round(11 + (85 - 11) * t);
-      pdf.setFillColor(r, g, b);
-      pdf.rect(mx + i * stepW, y, stepW + 0.5, 1.5, "F");
+      pdf.setFillColor(
+        Math.round(245 + (11 - 245) * t),
+        Math.round(158 + (54 - 158) * t),
+        Math.round(11 + (85 - 11) * t),
+      );
+      pdf.rect(mx + i * stepW, y, stepW + 0.5, 1.2, "F");
     }
-    y += 6;
+    y += 4;
   }
 
   // ==========================================
-  // SECTIONS — natural size, keep colored SVG badges
+  // Calculate remaining space for sections + footer
+  // to determine text size & spacing
   // ==========================================
+  const footerEstimate = useNew
+    ? (rex.conclusion_title && rex.conclusion_content ? 25 : 0)
+    : ((rex.conclusion_title && rex.conclusion_content ? 22 : 0) + 30);
+  const availableForSections = pageH - y - footerEstimate - 8;
 
+  // Pre-calculate total section height at 8pt to check if everything fits
+  pdf.setFont("helvetica", "normal");
+  pdf.setFontSize(8);
+  let totalSectionH = 0;
+  const sectionData: { key: string; text: string; photo: string | null; lines: string[]; textH: number }[] = [];
   for (const sec of sections) {
     if (!sec.text && !sec.photo) continue;
+    const hasPhoto = !!sec.photo;
+    const textW = hasPhoto ? cw * 0.58 - 8 : cw - 8;
+    const lines = pdf.splitTextToSize(sanitize(sec.text || ""), textW);
+    const textH = Math.max(lines.length * 3.6 + 6, 16);
+    totalSectionH += textH + 14; // badge(10) + gap(4)
+    sectionData.push({ key: sec.key, text: sec.text || "", photo: sec.photo, lines, textH });
+  }
 
-    // Badge image (SVG rendered to PNG)
+  // Choose font size: 8pt if tight, 9pt if space allows
+  const useSmallerFont = totalSectionH > availableForSections;
+  const secFontSize = useSmallerFont ? 7.5 : 8;
+  const secLineH = useSmallerFont ? 3.2 : 3.6;
+  const secGap = useSmallerFont ? 2 : 4;
+  const badgeGap = useSmallerFont ? 8 : 10;
+
+  // Re-calculate with chosen font size
+  if (useSmallerFont) {
+    pdf.setFontSize(secFontSize);
+    for (const sec of sectionData) {
+      const hasPhoto = !!sec.photo;
+      const textW = hasPhoto ? cw * 0.58 - 8 : cw - 8;
+      sec.lines = pdf.splitTextToSize(sanitize(sec.text), textW);
+      sec.textH = Math.max(sec.lines.length * secLineH + 6, 14);
+    }
+  }
+
+  // ==========================================
+  // SECTIONS
+  // ==========================================
+
+  for (const sec of sectionData) {
+    // Badge image
     const badge = badges[sec.key];
     if (badge) {
       try {
-        const badgeH = 9;
-        const badgeW = sec.key === "faits" ? 38 : sec.key === "causes" ? 46 : sec.key === "actions" ? 48 : 42;
-        pdf.addImage(badge, "PNG", mx, y - 1, badgeW, badgeH);
+        const bH = 8;
+        const bW = sec.key === "faits" ? 34 : sec.key === "causes" ? 42 : sec.key === "actions" ? 44 : 38;
+        pdf.addImage(badge, "PNG", mx, y, bW, bH);
       } catch {
         pdf.setFont("helvetica", "bold");
-        pdf.setFontSize(10);
+        pdf.setFontSize(9);
         pdf.setTextColor(...NAVY);
         pdf.text(sec.key.toUpperCase(), mx, y + 5);
       }
     }
-
-    y += 12;
+    y += badgeGap;
 
     // Text content box
     const hasPhoto = !!sec.photo;
     const textW = hasPhoto ? cw * 0.58 : cw;
-    const sanitizedText = sanitize(sec.text || "");
-    pdf.setFont("helvetica", "normal");
-    pdf.setFontSize(9);
-    const lines = pdf.splitTextToSize(sanitizedText, textW - 10);
-    const textH = Math.max(lines.length * 4.2 + 8, 20);
 
-    // Background: cream for new template, white for old
-    if (useNew) {
-      pdf.setFillColor(...CREAM_BG);
-    } else {
-      pdf.setFillColor(255, 255, 255);
-    }
-    pdf.roundedRect(mx, y - 2, textW, textH, 1.5, 1.5, "F");
+    // Background
+    pdf.setFillColor(useNew ? CREAM_BG[0] : 255, useNew ? CREAM_BG[1] : 255, useNew ? CREAM_BG[2] : 255);
+    pdf.roundedRect(mx, y, textW, sec.textH, 1.5, 1.5, "F");
 
-    // Golden border
+    // Border
     pdf.setDrawColor(...GOLD_BORDER);
-    pdf.setLineWidth(0.5);
-    pdf.roundedRect(mx, y - 2, textW, textH, 1.5, 1.5, "S");
+    pdf.setLineWidth(0.4);
+    pdf.roundedRect(mx, y, textW, sec.textH, 1.5, 1.5, "S");
 
     // Text
-    pdf.setTextColor(...GRAY_TEXT);
     pdf.setFont("helvetica", "normal");
-    pdf.setFontSize(9);
-    pdf.text(lines, mx + 5, y + 4);
+    pdf.setFontSize(secFontSize);
+    pdf.setTextColor(...GRAY_TEXT);
+    pdf.text(sec.lines, mx + 4, y + 4);
 
-    // Photo (right column)
+    // Photo
     if (sec.photo) {
-      const px = mx + textW + 4;
-      const pw = cw - textW - 4;
-      const ph = Math.max(textH, 28);
+      const px = mx + textW + 3;
+      const pw = cw - textW - 3;
+      const ph = Math.max(sec.textH, 22);
       try {
-        pdf.addImage(sec.photo, "JPEG", px, y - 2, pw, ph);
+        pdf.addImage(sec.photo, "JPEG", px, y, pw, ph);
       } catch {
         // skip
       }
     }
 
-    y += textH + 6;
+    y += sec.textH + secGap;
   }
 
   // ==========================================
-  // CONCLUSION / FOOTER — template-dependent
+  // CONCLUSION / FOOTER
   // ==========================================
 
   if (useNew) {
-    // ---- NEW TEMPLATE FOOTER ----
-    // Yellow background with Règles vitales associées
+    // ---- NEW TEMPLATE FOOTER: yellow box with rules ----
     if (rex.conclusion_title && rex.conclusion_content) {
-      // Split content into lines by \n for bullet rendering
+      // Parse content lines
       const contentLines = sanitize(rex.conclusion_content)
         .split("\n")
-        .map(l => l.replace(/^[\s\u2022\u25CF\u25A0\u2023*-]+\s*/, "").trim())
+        .map(l => l.replace(/^[\s\u2022\u25CF\u25A0\u2023*\-]+\s*/, "").trim())
         .filter(l => l.length > 0);
 
-      // Calculate needed height
+      // Calculate height
       pdf.setFont("helvetica", "bold");
-      pdf.setFontSize(9);
-      let totalContentH = 0;
+      pdf.setFontSize(8);
+      let contentH = 0;
+      const wrappedLines: string[][] = [];
       for (const line of contentLines) {
-        const wrapped = pdf.splitTextToSize(line, cw - 18);
-        totalContentH += wrapped.length * 4.2 + 1.5;
+        const wrapped = pdf.splitTextToSize(line, cw - 20);
+        wrappedLines.push(wrapped);
+        contentH += wrapped.length * 3.6 + 1.5;
       }
-      const footerH = 12 + totalContentH + 6; // title + content + padding
+      const boxH = 10 + contentH + 4;
 
-      // Add new page if footer won't fit
-      if (y + footerH > pageH - 10) {
-        pdf.addPage();
-        y = 15;
-      }
-
-      // Yellow background rectangle
+      // Yellow background
       pdf.setFillColor(...YELLOW_LIGHT);
-      pdf.roundedRect(mx, y, cw, footerH, 2, 2, "F");
-
-      // Yellow border
+      pdf.roundedRect(mx, y, cw, boxH, 2, 2, "F");
       pdf.setDrawColor(...YELLOW);
       pdf.setLineWidth(0.5);
-      pdf.roundedRect(mx, y, cw, footerH, 2, 2, "S");
+      pdf.roundedRect(mx, y, cw, boxH, 2, 2, "S");
 
-      // Title
+      // Title — explicitly helvetica bold
       pdf.setFont("helvetica", "bold");
-      pdf.setFontSize(12);
+      pdf.setFontSize(11);
       pdf.setTextColor(...NAVY);
       const footerTitle = sanitize(rex.conclusion_title.toUpperCase());
-      pdf.text(footerTitle, mx + 6, y + 8);
+      const titleWrapped = pdf.splitTextToSize(footerTitle, cw - 12);
+      pdf.text(titleWrapped, mx + 5, y + 6);
 
       // Bullet content
-      let bulletY = y + 14;
-      pdf.setFontSize(9);
-      for (const line of contentLines) {
+      let bulletY = y + 10 + (titleWrapped.length > 1 ? (titleWrapped.length - 1) * 4.5 : 0);
+      for (const wrapped of wrappedLines) {
         // Navy square bullet
         pdf.setFillColor(...NAVY);
-        pdf.rect(mx + 6, bulletY - 2.5, 2.5, 2.5, "F");
+        pdf.rect(mx + 5, bulletY - 2.2, 2, 2, "F");
 
-        // Bold navy text
+        // Bold navy text — explicitly helvetica
         pdf.setFont("helvetica", "bold");
+        pdf.setFontSize(8);
         pdf.setTextColor(...NAVY);
-        const wrapped = pdf.splitTextToSize(line, cw - 18);
-        pdf.text(wrapped, mx + 11, bulletY);
-        bulletY += wrapped.length * 4.2 + 1.5;
+        pdf.text(wrapped, mx + 10, bulletY);
+        bulletY += wrapped.length * 3.6 + 1.5;
       }
     }
 
   } else {
-    // ---- OLD TEMPLATE: Conclusion + Footer ----
+    // ---- OLD TEMPLATE: Conclusion + Déjà arrivé/Type d'événement ----
 
-    // Conclusion (Règles vitales, Bonnes pratiques, etc.)
     if (rex.conclusion_title && rex.conclusion_content) {
-      // Red separator line
-      pdf.setFillColor(239, 68, 68); // red-500
-      pdf.rect(mx, y, cw, 1.2, "F");
-      y += 5;
+      // Red separator
+      pdf.setFillColor(239, 68, 68);
+      pdf.rect(mx, y, cw, 1, "F");
+      y += 4;
 
-      // Title (underlined)
+      // Title underlined
       pdf.setFont("helvetica", "bold");
-      pdf.setFontSize(10);
+      pdf.setFontSize(9);
       pdf.setTextColor(...NAVY);
-      const conclusionTitle = sanitize(`${rex.conclusion_title} :`);
-      pdf.text(conclusionTitle, mx, y);
-      const titleWidth = pdf.getStringUnitWidth(conclusionTitle) * 10 / pdf.internal.scaleFactor;
+      const cTitle = sanitize(`${rex.conclusion_title} :`);
+      pdf.text(cTitle, mx, y);
+      const tw = pdf.getStringUnitWidth(cTitle) * 9 / pdf.internal.scaleFactor;
       pdf.setDrawColor(...NAVY);
       pdf.setLineWidth(0.3);
-      pdf.line(mx, y + 1, mx + titleWidth, y + 1);
-      y += 6;
+      pdf.line(mx, y + 1, mx + tw, y + 1);
+      y += 5;
 
-      // Content
+      // Content — explicit helvetica normal
       pdf.setFont("helvetica", "normal");
-      pdf.setFontSize(9);
+      pdf.setFontSize(8);
       pdf.setTextColor(...GRAY_TEXT);
-      const conclusionLines = pdf.splitTextToSize(sanitize(rex.conclusion_content), cw - 5);
-      pdf.text(conclusionLines, mx + 2, y);
-      y += conclusionLines.length * 4.2 + 6;
+      const cLines = pdf.splitTextToSize(sanitize(rex.conclusion_content), cw - 4);
+      pdf.text(cLines, mx + 2, y);
+      y += cLines.length * 3.5 + 4;
     }
 
-    // Footer: DÉJÀ ARRIVÉ + TYPE D'ÉVÉNEMENT
-    const footerHeight = 32;
-
-    // Add new page if footer won't fit
-    if (y + footerHeight > pageH - 10) {
-      pdf.addPage();
-      y = 15;
-    }
-
+    // Footer: Déjà arrivé + Type d'événement
     const footerY = y;
 
-    // Separator line
     pdf.setDrawColor(220, 220, 220);
     pdf.setLineWidth(0.3);
     pdf.line(mx, footerY, pageW - mx, footerY);
 
     const halfW = cw / 2 - 2;
-    const fy = footerY + 5;
+    const fy = footerY + 4;
 
     // Left: Déjà arrivé
     pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(9);
+    pdf.setFontSize(8);
     pdf.setTextColor(...NAVY);
     pdf.text("D\u00c9J\u00c0 ARRIV\u00c9 ?", mx, fy);
-    let leftY = fy + 5;
+    let leftY = fy + 4;
 
     if (rex.deja_arrive && rex.deja_arrive.length > 0) {
       pdf.setFont("helvetica", "normal");
-      pdf.setFontSize(8);
+      pdf.setFontSize(7);
       pdf.setTextColor(...GRAY_TEXT);
       for (const item of rex.deja_arrive) {
         pdf.setFillColor(...YELLOW);
-        pdf.circle(mx + 2, leftY - 0.5, 0.7, "F");
+        pdf.circle(mx + 2, leftY - 0.5, 0.6, "F");
         const il = pdf.splitTextToSize(sanitize(item), halfW - 8);
-        pdf.text(il, mx + 6, leftY);
-        leftY += il.length * 3.5 + 1;
+        pdf.text(il, mx + 5, leftY);
+        leftY += il.length * 3 + 1;
       }
     } else {
       pdf.setFont("helvetica", "italic");
-      pdf.setFontSize(8);
+      pdf.setFontSize(7);
       pdf.setTextColor(160, 160, 160);
       pdf.text("Non renseign\u00e9", mx + 4, leftY);
     }
@@ -593,26 +607,26 @@ export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string 
     // Right: Type d'événement
     const rx = mx + halfW + 4;
     pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(9);
+    pdf.setFontSize(8);
     pdf.setTextColor(...NAVY);
     pdf.text("TYPE D'\u00c9V\u00c9NEMENT", rx, fy);
-    let ty = fy + 5;
+    let ty = fy + 4;
 
     for (const t of EVENT_TYPES) {
       const active = rex.type_evenement === t.value;
       if (active) {
         pdf.setFillColor(...NAVY);
-        pdf.roundedRect(rx, ty - 3, halfW, 5.5, 1, 1, "F");
+        pdf.roundedRect(rx, ty - 2.5, halfW, 4.5, 1, 1, "F");
         pdf.setFont("helvetica", "bold");
-        pdf.setFontSize(8);
+        pdf.setFontSize(7);
         pdf.setTextColor(255, 255, 255);
       } else {
         pdf.setFont("helvetica", "normal");
-        pdf.setFontSize(8);
+        pdf.setFontSize(7);
         pdf.setTextColor(160, 160, 160);
       }
       pdf.text(sanitize(t.label), rx + 2, ty);
-      ty += 6;
+      ty += 5;
     }
   }
 
