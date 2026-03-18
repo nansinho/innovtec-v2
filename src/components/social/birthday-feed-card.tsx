@@ -32,6 +32,7 @@ export default function BirthdayFeedCard({
   const [editingWishId, setEditingWishId] = useState<string | null>(null);
   const [editMessage, setEditMessage] = useState("");
   const [editSaving, setEditSaving] = useState(false);
+  const [deletingWishId, setDeletingWishId] = useState<string | null>(null);
 
   useEffect(() => {
     setWishes(initialWishes);
@@ -114,14 +115,20 @@ export default function BirthdayFeedCard({
   }
 
   async function handleDeleteWish(wishId: string) {
-    const result = await deleteBirthdayWish(wishId);
-    if (result.success) {
-      setWishes((prev) => prev.filter((w) => w.id !== wishId));
-      // If the user deleted their own wish, they can send another
-      const remaining = wishes.filter((w) => w.id !== wishId);
-      if (!remaining.some((w) => w.from_user_id === currentUserId)) {
-        setLiked(false);
+    if (deletingWishId) return;
+    setDeletingWishId(wishId);
+    try {
+      const result = await deleteBirthdayWish(wishId);
+      if (result.success) {
+        setWishes((prev) => prev.filter((w) => w.id !== wishId));
+        // If the user deleted their own wish, they can send another
+        const remaining = wishes.filter((w) => w.id !== wishId);
+        if (!remaining.some((w) => w.from_user_id === currentUserId)) {
+          setLiked(false);
+        }
       }
+    } finally {
+      setDeletingWishId(null);
     }
   }
 
@@ -310,7 +317,8 @@ export default function BirthdayFeedCard({
                                   </button>
                                   <button
                                     onClick={() => handleDeleteWish(wish.id)}
-                                    className="hidden text-[10px] text-zinc-400 hover:text-red-500 group-hover:inline-flex"
+                                    disabled={deletingWishId === wish.id}
+                                    className="hidden text-[10px] text-zinc-400 hover:text-red-500 disabled:opacity-50 group-hover:inline-flex"
                                     title="Supprimer"
                                   >
                                     <Trash2 className="h-3 w-3" />
