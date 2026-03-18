@@ -198,26 +198,41 @@ export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string 
   // Metadata — yellow labels
   pdf.setFontSize(8);
   let metaY = y + 10 + (titleLines.length > 1 ? (titleLines.length - 1) * 3.5 : 0);
-  const metaItems = [
-    { label: "Lieu", value: rex.lieu, lw: 8 },
+
+  // Line-by-line metadata matching expected layout
+  const metaLines: { items: { label: string; value: string; lw: number }[] }[] = [
+    { items: [{ label: "CHANTIER", value: rex.chantier, lw: 20 }] },
+    { items: [{ label: "ADRESSE", value: rex.lieu, lw: 18 }] },
+    { items: [{ label: "TYPE DE TRAVAUX", value: rex.type_travaux || "", lw: 34 }] },
     {
-      label: "Date",
-      value: rex.date_evenement
-        ? new Date(rex.date_evenement).toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" })
-        : "",
-      lw: 9,
+      items: [
+        {
+          label: "DATE",
+          value: rex.date_evenement
+            ? new Date(rex.date_evenement).toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" })
+            : "",
+          lw: 11,
+        },
+        { label: "HORAIRE", value: rex.horaire, lw: 17 },
+      ],
     },
-    { label: "Horaire", value: rex.horaire, lw: 14 },
   ];
-  for (const m of metaItems) {
-    if (!m.value) continue;
-    pdf.setTextColor(...YELLOW);
-    pdf.setFont("helvetica", "bold");
-    pdf.text(m.label, ix, metaY);
-    pdf.setTextColor(...GRAY_TEXT);
-    pdf.setFont("helvetica", "normal");
-    pdf.text(` : ${sanitize(m.value)}`, ix + m.lw, metaY);
-    metaY += 3.5;
+
+  for (const line of metaLines) {
+    let lineX = ix;
+    let hasContent = false;
+    for (const m of line.items) {
+      if (!m.value) continue;
+      hasContent = true;
+      pdf.setTextColor(...YELLOW);
+      pdf.setFont("helvetica", "bold");
+      pdf.text(m.label, lineX, metaY);
+      pdf.setTextColor(...GRAY_TEXT);
+      pdf.setFont("helvetica", "normal");
+      pdf.text(` : ${sanitize(m.value)}`, lineX + m.lw, metaY);
+      lineX += m.lw + pdf.getStringUnitWidth(` : ${sanitize(m.value)}`) * 8 / pdf.internal.scaleFactor + 8;
+    }
+    if (hasContent) metaY += 3.5;
   }
 
   y += bh + 5;
@@ -329,9 +344,17 @@ export async function exportRexPdf(rex: Rex, filename: string, logoUrl?: string 
   }
 
   // ==========================================
-  // FOOTER — fixed at bottom of page
+  // FOOTER — dynamic position after content
   // ==========================================
-  const footerY = pageH - 38; // Fixed position near bottom
+  const footerHeight = 32; // estimated height for footer content
+
+  // Add new page if footer won't fit
+  if (y + footerHeight > pageH - 10) {
+    pdf.addPage();
+    y = 15;
+  }
+
+  const footerY = y;
 
   // Separator line
   pdf.setDrawColor(220, 220, 220);

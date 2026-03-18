@@ -147,17 +147,32 @@ export default function RexDetail({ rex, onExportPdf, onEdit, companyLogo }: Rex
                   {rex.title}
                 </h1>
                 <div className="mt-1.5 space-y-0.5 text-sm text-[var(--text-secondary)]">
+                  {rex.chantier && (
+                    <p>
+                      <span className="font-semibold text-[#F59E0B]">Chantier</span> : {rex.chantier}
+                    </p>
+                  )}
                   {rex.lieu && (
                     <p>
-                      <span className="font-semibold text-[#F59E0B]">Lieu</span> : {rex.lieu}
+                      <span className="font-semibold text-[#F59E0B]">Adresse</span> : {rex.lieu}
+                    </p>
+                  )}
+                  {rex.type_travaux && (
+                    <p>
+                      <span className="font-semibold text-[#F59E0B]">Type de travaux</span> : {rex.type_travaux}
                     </p>
                   )}
                   {dateFormatted && (
                     <p>
                       <span className="font-semibold text-[#F59E0B]">Date</span> : {dateFormatted}
+                      {rex.horaire && (
+                        <span className="ml-4">
+                          <span className="font-semibold text-[#F59E0B]">Horaire</span> : {rex.horaire}
+                        </span>
+                      )}
                     </p>
                   )}
-                  {rex.horaire && (
+                  {!dateFormatted && rex.horaire && (
                     <p>
                       <span className="font-semibold text-[#F59E0B]">Horaire</span> : {rex.horaire}
                     </p>
