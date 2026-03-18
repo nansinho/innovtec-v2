@@ -29,6 +29,7 @@ import { ROLE_MAP } from "@/lib/status-config";
 import { createReferenceMap } from "@/lib/utils";
 import { RoleBadge } from "@/components/ui/status-badge";
 import { Button } from "@/components/ui/button";
+import { getStandardToolbarActions } from "@/lib/table-toolbar-actions";
 
 const roleLabels: Record<string, string> = {
   admin: "Admin",
@@ -245,11 +246,26 @@ export default function UsersTable({ users, currentUserId, currentUserRole, jobT
           </div>
         </div>
 
-        {/* Add button */}
-        <Button size="sm" onClick={() => setFormModal({ open: true, user: null })}>
-          <UserPlus className="h-3.5 w-3.5" />
-          Ajouter
-        </Button>
+        {/* Toolbar actions + Add button */}
+        <div className="flex items-center gap-2">
+          {getStandardToolbarActions().map((action) => {
+            const Icon = action.icon;
+            return (
+              <button
+                key={action.label}
+                onClick={action.onClick}
+                className="inline-flex h-7 items-center gap-1.5 rounded-lg border border-[var(--border-1)] bg-white px-2.5 text-[11px] font-medium text-[var(--text-secondary)] shadow-xs transition-all hover:bg-zinc-50 hover:text-[var(--heading)] hover:border-zinc-300 active:scale-[0.98]"
+              >
+                <Icon className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">{action.label}</span>
+              </button>
+            );
+          })}
+          <Button size="sm" onClick={() => setFormModal({ open: true, user: null })}>
+            <UserPlus className="h-3.5 w-3.5" />
+            Ajouter
+          </Button>
+        </div>
       </div>
 
       {/* Stats */}
